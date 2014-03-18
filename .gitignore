@@ -35,5 +35,3 @@ nosetests.xml
 .project
 .pydevproject
 .idea
-
-fabdefs.py

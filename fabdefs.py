@@ -1,11 +1,9 @@
 from fabric.api import *
 
 """
-The server environments that this app deploys to, are defined here.
+Define the server environments that this app will be deployed to.
+Ensure that you have SSH access to the servers for the scripts in 'fabfile.py' to work.
 """
-
-env.hosts = ["user@server:port"]
-code_dir = "/path/to/code/root"
 
 
 def staging():

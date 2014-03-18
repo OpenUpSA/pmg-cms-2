@@ -16,6 +16,17 @@ Describe the main user interface, and provide a link if it is already in product
 
 If the project implements an API, list the API endpoints.
 
+To start out with this template on a new project:
+
+    1. Create a new empty repo on GitHub, called my-new-project
+    2. Checkout this template to the new project's directory on your local drive
+        git clone git@github.com:Code4SA/project-template.git my-new-project
+    3. Update the project's "origin" remote to point to the new GitHub repo:
+        cd my-new-project
+        git remote set-url origin git@github.com:Code4SA/my-new-project.git
+    4. Push the template to the empty GitHub repo:
+        git push origin master
+
 ## Contributing to the project
 
 This project is open-source, and anyone is welcome to contribute. If you just want to make us aware of a bug / make

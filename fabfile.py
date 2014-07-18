@@ -3,12 +3,10 @@ from fabdefs import *
 from fabric.api import *
 from contextlib import contextmanager
 
-# hook for activating a virtualenv on the server
-env.activate = 'source %s/env/bin/activate' % env.code_dir
 
 @contextmanager
 def virtualenv():
-    with cd(env.code_dir):
+    with cd(env.project_dir):
         with prefix(env.activate):
             yield
 
@@ -16,8 +14,7 @@ def virtualenv():
 def upload_db():
     put('instance/tmp.db', '/tmp/tmp.db')
     with settings(warn_only=True):
-        sudo('service nginx stop')
-        sudo("supervisorctl stop backend")
+        sudo("supervisorctl stop pmg_cms")
     sudo('mv /tmp/tmp.db %s/instance/tmp.db' % env.project_dir)
     set_permissions()
     restart()
@@ -33,7 +30,7 @@ def download_db():
 
 
 def restart():
-    sudo("supervisorctl restart backend")
+    sudo("supervisorctl restart pmg_cms")
     sudo('service nginx restart')
     return
 
@@ -51,12 +48,13 @@ def setup():
 
     # # update locale
     # sudo('locale-gen en_ZA.UTF-8')
-    # sudo('apt-get update')
+    sudo('apt-get update')
 
     # # install packages
     # sudo('apt-get install build-essential')
     # sudo('apt-get install python-pip supervisor')
     # sudo('pip install virtualenv')
+    sudo('apt-get install git')
 
     # create application directory if it doesn't exist yet
     with settings(warn_only=True):
@@ -107,10 +105,10 @@ def configure():
     # configure Flask
     with settings(warn_only=True):
         sudo('mkdir %s/instance' % env.project_dir)
-    put(env.config_dir + '/config_backend.py', '/tmp/config_backend.py')
-    put(env.config_dir + '/config_backend_private.py', '/tmp/config_backend_private.py')
-    sudo('mv /tmp/config_backend.py ' + env.project_dir + '/instance/config_backend.py')
-    sudo('mv /tmp/config_backend_private.py ' + env.project_dir + '/instance/config_backend_private.py')
+    put(env.config_dir + '/config.py', '/tmp/config.py')
+    put(env.config_dir + '/config_private.py', '/tmp/config_private.py')
+    sudo('mv /tmp/config.py ' + env.project_dir + '/instance/config.py')
+    sudo('mv /tmp/config_private.py ' + env.project_dir + '/instance/config_private.py')
 
     restart()
     return

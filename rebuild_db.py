@@ -1,8 +1,14 @@
 import os
 import json
 import time
-from backend.database import session
 import backend.models as models
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+engine = create_engine('sqlite:///instance/tmp.db')
+Session = sessionmaker(bind=engine)
+session = Session()
 
 
 def dump_db():

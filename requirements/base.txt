@@ -1,3 +1,4 @@
+fabric
 Flask==0.10.1
 SQLAlchemy==0.8.2
 Flask-SQLAlchemy==1.0

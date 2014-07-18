@@ -5,6 +5,13 @@ from backend.database import session
 import backend.models as models
 
 
+def dump_db():
+    try:
+        os.remove('instance/tmp.db')
+    except Exception:
+        pass
+    return
+
 def read_data():
     start = time.time()
     files = os.listdir('data')
@@ -23,24 +30,49 @@ def read_data():
     return data
 
 
-def create_models(data):
+def print_model_defs(data):
 
-    model_dict = {}
-   
     model_names = data.keys()
     model_names.sort()
 
     for name in model_names:
-        print "\n" + name
         fields = data[name][0].keys()
         fields.sort()
+        print "('" + name + "', " + str(fields) + "),"
+    return
 
-        model_dict[name] = models.get_content_type_model(name, fields)
 
-    return model_dict
+def populate_db(model, records):
+
+    for rec in records:
+        tmp = model()
+        fields = rec.keys()
+        fields.sort()
+        for field in fields:
+            if rec[field]:
+                if type(rec[field]=='dict'):
+                    val = json.dumps(rec[field]).encode('utf-8').strip()
+                else:
+                    val = rec[field].encode('utf-8').strip()
+                setattr(tmp, field, val)
+        session.add(tmp)
+    return
 
 if __name__ == '__main__':
 
+    dump_db()
+
     data = read_data()
-    model_dict = create_models(data)
+    model_dict = models.generate_models()
     print model_dict
+
+    start = time.time()
+
+    model_names = model_dict.keys()
+    model_names.sort()
+
+    for name in model_names:
+        print name
+        populate_db(model_dict[name], data[name][0:99])
+        session.commit()
+        print str(int(time.time() - start)) + " seconds"

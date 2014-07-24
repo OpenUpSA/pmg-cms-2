@@ -12,10 +12,19 @@ def virtualenv():
 
 
 def upload_db():
-    put('instance/tmp.db', '/tmp/tmp.db')
-    with settings(warn_only=True):
-        sudo("supervisorctl stop pmg_cms")
-    sudo('mv /tmp/tmp.db %s/instance/tmp.db' % env.project_dir)
+    # tar the database file
+    local('tar -czf tmp.tar.gz instance/tmp.db', capture=False)
+    put('tmp.tar.gz', '/tmp/tmp.tar.gz')
+
+    # enter application directory
+    with cd(env.project_dir):
+        # and unzip new files
+        sudo('tar xzf /tmp/tmp.tar.gz')
+
+    # now that all is set up, delete the tarballs again
+    sudo('rm /tmp/tmp.tar.gz')
+    local('rm tmp.tar.gz')
+
     set_permissions()
     restart()
     return

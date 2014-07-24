@@ -79,6 +79,6 @@ if __name__ == '__main__':
 
     for name in model_names:
         print name
-        populate_db(model_dict[name], data[name][0:99])
+        populate_db(model_dict[name], data[name][0:50])
         session.commit()
         print str(int(time.time() - start)) + " seconds"

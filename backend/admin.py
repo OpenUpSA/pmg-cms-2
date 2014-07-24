@@ -1,7 +1,33 @@
 import models
+import json
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
-from app import app, db
+from flask.ext.admin.model.template import macro
+from app import logger, app, db
+
+def _jinja2_filter_json(json_string):
+    tmp = ""
+    try:
+        tmp = json.loads(json_string)
+        tmp = json.dumps(tmp, indent=4)
+        tmp = tmp.replace('\n', '<br>')
+        tmp = tmp.replace(' ', "&nbsp;")
+    except TypeError, ValueError:
+        pass
+    return tmp
+
+class MyModelView(ModelView):
+    can_create = False
+    can_edit = False
+    can_delete = False
+    page_size = app.config['RESULTS_PER_PAGE']
+    list_template = "admin/custom_list_template.html"
+    column_exclude_list = []
+
+    column_formatters = dict(
+        files=macro('render_json'),
+        )
+
 
 model_dict = models.generate_models()
 
@@ -11,5 +37,9 @@ model_names = model_dict.keys()
 model_names.sort()
 
 for name in model_names:
-    admin.add_view(ModelView(model_dict[name], db.session, name=name.title(), endpoint=name))
+    admin.add_view(MyModelView(model_dict[name], db.session, name=name.title(), endpoint=name))
+
+# add our function to the filters of the jinja2 environment
+app.jinja_env.filters['json'] = _jinja2_filter_json
+
 

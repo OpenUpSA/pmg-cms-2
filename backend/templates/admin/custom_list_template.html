@@ -1,0 +1,5 @@
+{% extends 'admin/model/list.html' %}
+
+{% macro render_json(model, column) %}
+    <verbatim>{{ model[column] | json | safe }}</verbatim>
+{% endmacro %}

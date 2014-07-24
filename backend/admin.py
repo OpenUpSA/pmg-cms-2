@@ -42,6 +42,7 @@ class MyModelView(ModelView):
     column_exclude_list = []
 
     column_formatters = dict(
+        title=macro('render_title'),
         _id=macro('render_json'),
         revisions=macro('render_json'),
         files=macro('render_json'),

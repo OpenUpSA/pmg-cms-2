@@ -1,5 +1,13 @@
 {% extends 'admin/model/list.html' %}
 
 {% macro render_json(model, column) %}
-    <verbatim>{{ model[column] | json | safe }}</verbatim>
+    {{ model[column] | json | safe }}
+{% endmacro %}
+
+{% macro render_html(model, column) %}
+    {{ model[column] | safe }}
+{% endmacro %}
+
+{% macro render_date(model, column) %}
+    {{ model[column] | convert_timestamp | safe }}
 {% endmacro %}

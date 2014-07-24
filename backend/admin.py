@@ -52,6 +52,7 @@ class MyModelView(ModelView):
         effective_date=macro('render_date'),
         breefing_date=macro('render_date'),
         )
+    column_searchable_list = ['title', 'terms',]
 
 
 model_dict = models.generate_models()

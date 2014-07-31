@@ -40,3 +40,4 @@ env/
 data/
 *.db
 *.log
+.boto

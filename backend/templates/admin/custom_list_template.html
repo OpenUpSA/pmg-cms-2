@@ -11,7 +11,7 @@
 {% endmacro %}
 
 {% macro render_html(model, column) %}
-    <div style="min-width: 650px;">{{ model[column] | safe }}</div>
+    <div style="min-width: 650px;">{{ model[column] | replace('\\"', '') | replace('\\r', '') | replace('\\n', '') | replace('\\t', '') | safe }}</div>
 {% endmacro %}
 
 {% macro render_date(model, column) %}

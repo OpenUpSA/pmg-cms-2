@@ -45,7 +45,13 @@
       </span>
         <span>
       {% if column == "files" %}
-      <strong>{{ file['field_document_description'] }}</strong>
+      <strong>
+        {% if file['field_document_description'] %}
+        {{ file['field_document_description'] }}
+        {% else %}
+        {{ file['filename'] }}
+        {% endif %}
+      </strong>
       {% else %}
       <strong>{{ file['filename'] }}</strong>
       {% endif %}

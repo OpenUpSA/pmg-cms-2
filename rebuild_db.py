@@ -50,7 +50,7 @@ def print_model_defs():
     model_names = data.keys()
     model_names.sort()
 
-    field_order = [u'start_date', u'title', u'minutes', u'meeting_date', u'terms', u'version', u'revisions', u'files']
+    field_order = [u'start_date', u'title', u'minutes', u'files', u'meeting_date', u'terms', u'audio', u'version', u'revisions']
     field_order.reverse()
 
     for name in model_names:
@@ -81,21 +81,21 @@ def populate_db(model, records):
 
 if __name__ == '__main__':
 
-    # print_model_defs()
+    print_model_defs()
 
-    dump_db()
-
-    data = read_data()
-    model_dict = models.generate_models()
-    print model_dict
-
-    start = time.time()
-
-    model_names = model_dict.keys()
-    model_names.sort()
-
-    for name in model_names:
-        print name
-        populate_db(model_dict[name], data[name])
-        session.commit()
-        print str(int(time.time() - start)) + " seconds"
+    # dump_db()
+    #
+    # data = read_data()
+    # model_dict = models.generate_models()
+    # print model_dict
+    #
+    # start = time.time()
+    #
+    # model_names = model_dict.keys()
+    # model_names.sort()
+    #
+    # for name in model_names:
+    #     print name
+    #     populate_db(model_dict[name], data[name])
+    #     session.commit()
+    #     print str(int(time.time() - start)) + " seconds"

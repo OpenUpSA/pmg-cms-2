@@ -18,34 +18,43 @@
 {{ model[column] | convert_timestamp | safe }}
 {% endmacro %}
 
-{% macro render_files(model, column) %}
+{% macro render_attachments(model, column) %}
 {% set files = model[column] | json_to_list %}
 {% for file in files %}
 
 {% set icon = "fa-file-text-o" %}
 {% if file['filemime'] == "application/pdf" %}
 {% set icon = "fa-file-pdf-o" %}
-
-{% elif file['filemime'] == "application/vnd.ms-powerpoint" %}
+{% elif "powerpoint" in file['filemime'] %}
 {% set icon = "fa-file-powerpoint-o" %}
+{% elif "audio" in file['filemime'] %}
+{% set icon = "fa-file-audio-o" %}
 {% endif %}
-<div class="row-fluid">
-  <div class="span10 offset1">
-    <a
-        href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ file['filepath'] | strip_file }}"
-        target="_blank">
-      <div class="well" style="min-height:35px;">
+
+<div style="max-width: 400px; min-width: 350px; word-wrap: break-word;">
+  <div class="row-fluid">
+    <div class="span10 offset1">
+      <a
+          href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ file['filepath'] | strip_file }}"
+          target="_blank">
+        <div class="well" style="min-height:35px;">
 
       <span class="fa-stack fa-lg pull-right">
         <i class="fa fa-circle fa-stack-2x"></i>
         <i class="fa {{ icon }} fa-stack-1x fa-inverse"></i>
       </span>
-        <strong>{{ file['field_document_description'] }}</strong>
-      </div>
-    </a>
+        <span>
+      {% if column == "files" %}
+      <strong>{{ file['field_document_description'] }}</strong>
+      {% else %}
+      <strong>{{ file['filename'] }}</strong>
+      {% endif %}
+          </span>
+        </div>
+      </a>
+    </div>
   </div>
 </div>
-
 {% endfor %}
-{{ render_json(model, column) }}
+<!--{{ render_json(model, column) }}-->
 {% endmacro %}

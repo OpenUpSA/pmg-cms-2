@@ -1,19 +1,51 @@
 {% extends 'admin/model/list.html' %}
 
 {% macro render_title(model, column) %}
-    <div style="min-width: 150px;"><strong>{{ model[column]}}</strong></div>
+<div style="min-width: 150px;"><strong>{{ model[column]}}</strong></div>
 {% endmacro %}
 
 {% macro render_json(model, column) %}
-    <div style="max-width: 400px; word-wrap: break-word;">
-        {{ model[column] | json | safe }}
-    </div>
+<div style="max-width: 400px; word-wrap: break-word;">
+  {{ model[column] | json | safe }}
+</div>
 {% endmacro %}
 
 {% macro render_html(model, column) %}
-    <div style="min-width: 650px;">{{ model[column] | replace('\\"', '') | replace('\\r', '') | replace('\\n', '') | replace('\\t', '') | safe }}</div>
+<div style="min-width: 650px;">{{ model[column] | replace('\\"', '') | replace('\\r', '') | replace('\\n', '') | replace('\\t', '') | safe }}</div>
 {% endmacro %}
 
 {% macro render_date(model, column) %}
-    {{ model[column] | convert_timestamp | safe }}
+{{ model[column] | convert_timestamp | safe }}
+{% endmacro %}
+
+{% macro render_files(model, column) %}
+{% set files = model[column] | json_to_list %}
+{% for file in files %}
+
+{% set icon = "fa-file-text-o" %}
+{% if file['filemime'] == "application/pdf" %}
+{% set icon = "fa-file-pdf-o" %}
+
+{% elif file['filemime'] == "application/vnd.ms-powerpoint" %}
+{% set icon = "fa-file-powerpoint-o" %}
+{% endif %}
+<div class="row-fluid">
+  <div class="span10 offset1">
+    <a
+        href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ file['filepath'] | strip_file }}"
+        target="_blank">
+      <div class="well" style="min-height:35px;">
+
+      <span class="fa-stack fa-lg pull-right">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa {{ icon }} fa-stack-1x fa-inverse"></i>
+      </span>
+        <strong>{{ file['field_document_description'] }}</strong>
+      </div>
+    </a>
+  </div>
+</div>
+
+{% endfor %}
+{{ render_json(model, column) }}
 {% endmacro %}

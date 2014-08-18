@@ -6,12 +6,12 @@
 # Packages
 *.egg
 *.egg-info
-dist
+#dist
 build
 eggs
 parts
 bin
-var
+#var
 sdist
 develop-eggs
 .installed.cfg
@@ -37,6 +37,6 @@ nosetests.xml
 .idea
 
 env/
-data/
+#data/
 *.db
 *.log

@@ -13,6 +13,11 @@
 @font-size-h5:            @font-size-base;
 @font-size-h6:            ceil((@font-size-base * 0.85)); // ~12px
 
+//** Global textual link color.
+@link-color:            #0178d8;
+//** Link hover color set via `darken()` function.
+@link-hover-color:      darken(@link-color, 15%);
+
 @import "../../bower_components/bootstrap/less/mixins.less";
 
 @import "../../bower_components/bootstrap/less/normalize.less";
@@ -150,5 +155,13 @@
 
 	table {
 		margin-top: 35px;
+	}
+}
+
+.top-links {
+	a {
+		text-decoration: underline;
+		color: #444;
+		margin-top: 15px;
 	}
 }

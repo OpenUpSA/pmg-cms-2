@@ -898,12 +898,12 @@ textarea {
   line-height: inherit;
 }
 a {
-  color: #428bca;
+  color: #0178d8;
   text-decoration: none;
 }
 a:hover,
 a:focus {
-  color: #2a6496;
+  color: #014e8c;
   text-decoration: underline;
 }
 a:focus {
@@ -3020,7 +3020,7 @@ fieldset[disabled] .btn-danger.active {
   background-color: #ffffff;
 }
 .btn-link {
-  color: #428bca;
+  color: #0178d8;
   font-weight: normal;
   cursor: pointer;
   border-radius: 0;
@@ -3042,7 +3042,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #2a6496;
+  color: #014e8c;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -3116,7 +3116,7 @@ input[type="button"].btn-block {
 .nav .open > a:hover,
 .nav .open > a:focus {
   background-color: #eeeeee;
-  border-color: #428bca;
+  border-color: #0178d8;
 }
 .nav .nav-divider {
   height: 1px;
@@ -4266,4 +4266,9 @@ a.label:focus {
 }
 #reports table {
   margin-top: 35px;
+}
+.top-links a {
+  text-decoration: underline;
+  color: #444;
+  margin-top: 15px;
 }

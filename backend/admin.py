@@ -1,9 +1,9 @@
-import models
+import drupal_models as models
 import json
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.model.template import macro
-from app import logger, app, db
+from backend import logger, app, db, model_dict
 import datetime
 
 
@@ -79,9 +79,7 @@ class MyModelView(ModelView):
     column_searchable_list = ['title', 'terms',]
 
 
-model_dict = models.generate_models()
-
-admin = Admin(app=app, name='PMG DATA', url='/', base_template='admin/my_master.html')
+admin = Admin(app=app, name='PMG DATA', url='/admin', base_template='admin/my_master.html')
 
 model_names = model_dict.keys()
 model_names.sort()

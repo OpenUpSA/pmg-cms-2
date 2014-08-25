@@ -22,7 +22,7 @@ file_formatter = logging.Formatter(
     '[in %(pathname)s:%(lineno)d]'
 )
 
-# also log to stdout
+# log to stdout
 stream_handler = logging.StreamHandler(sys.stdout)
 stream_handler.setLevel(LOG_LEVEL)
 stream_handler.setFormatter(file_formatter)

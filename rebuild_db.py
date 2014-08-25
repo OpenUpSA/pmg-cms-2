@@ -1,7 +1,7 @@
 import os
 import json
 import time
-import backend.models as models
+import backend.drupal_models as models
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

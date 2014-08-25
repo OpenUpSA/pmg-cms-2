@@ -36,14 +36,29 @@ def read_data():
     return data
 
 
-def print_model_defs(data):
+def move_to_front(entry, entry_list):
 
+    if entry in entry_list:
+        i = entry_list.index(entry)
+        entry_list = [entry,] + entry_list[0:i] + entry_list[i+1::]
+    return entry_list
+
+
+def print_model_defs():
+
+    data = read_data()
     model_names = data.keys()
     model_names.sort()
+
+    field_order = [u'start_date', u'title', u'minutes', u'files', u'meeting_date', u'terms', u'audio', u'version', u'revisions']
+    field_order.reverse()
 
     for name in model_names:
         fields = data[name][0].keys()
         fields.sort()
+        for field_name in field_order:
+            fields = move_to_front(field_name, fields)
+
         print "('" + name + "', " + str(fields) + "),"
     return
 
@@ -66,19 +81,21 @@ def populate_db(model, records):
 
 if __name__ == '__main__':
 
-    dump_db()
+    print_model_defs()
 
-    data = read_data()
-    model_dict = models.generate_models()
-    print model_dict
-
-    start = time.time()
-
-    model_names = model_dict.keys()
-    model_names.sort()
-
-    for name in model_names:
-        print name
-        populate_db(model_dict[name], data[name][0:99])
-        session.commit()
-        print str(int(time.time() - start)) + " seconds"
+    # dump_db()
+    #
+    # data = read_data()
+    # model_dict = models.generate_models()
+    # print model_dict
+    #
+    # start = time.time()
+    #
+    # model_names = model_dict.keys()
+    # model_names.sort()
+    #
+    # for name in model_names:
+    #     print name
+    #     populate_db(model_dict[name], data[name])
+    #     session.commit()
+    #     print str(int(time.time() - start)) + " seconds"

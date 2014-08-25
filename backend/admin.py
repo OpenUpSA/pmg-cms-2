@@ -3,7 +3,7 @@ import json
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.model.template import macro
-from backend import logger, app, db, model_dict
+from app import db, logger, app, model_dict
 import datetime
 
 

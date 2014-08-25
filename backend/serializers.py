@@ -1,7 +1,6 @@
 import json
 from datetime import datetime, date
-from backend import db, logger
-from backend import app
+from app import db, logger, app
 from operator import itemgetter
 
 API_HOST = app.config["API_HOST"]

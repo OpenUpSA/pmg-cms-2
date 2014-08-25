@@ -1,4 +1,4 @@
-from backend import app
+from backend.app import app
 
 if __name__ == "__main__":
     # run Flask dev-server

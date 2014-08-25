@@ -1,4 +1,4 @@
-from backend import logger, app, db, model_dict
+from app import db, logger, app, model_dict
 import drupal_models as models
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
@@ -16,8 +16,7 @@ API_HOST = app.config["API_HOST"]
 app.static_folder = 'static'
 app.add_url_rule('/static/<path:filename>',
                  endpoint='static',
-                 view_func=app.send_static_file,
-                 subdomain='api-med-db')
+                 view_func=app.send_static_file)
 
 
 class ApiException(Exception):

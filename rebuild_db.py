@@ -1,7 +1,7 @@
 import os
 import json
 import time
-import backend.drupal_models as models
+from backend.drupal_models import generate_models
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -79,23 +79,24 @@ def populate_db(model, records):
         session.add(tmp)
     return
 
+
 if __name__ == '__main__':
 
-    print_model_defs()
+    # print_model_defs()
 
-    # dump_db()
-    #
-    # data = read_data()
-    # model_dict = models.generate_models()
-    # print model_dict
-    #
-    # start = time.time()
-    #
-    # model_names = model_dict.keys()
-    # model_names.sort()
-    #
-    # for name in model_names:
-    #     print name
-    #     populate_db(model_dict[name], data[name])
-    #     session.commit()
-    #     print str(int(time.time() - start)) + " seconds"
+    dump_db()
+
+    data = read_data()
+    model_dict = generate_models()
+    print model_dict
+
+    start = time.time()
+
+    model_names = model_dict.keys()
+    model_names.sort()
+
+    for name in model_names:
+        print name
+        populate_db(model_dict[name], data[name])
+        session.commit()
+        print str(int(time.time() - start)) + " seconds"

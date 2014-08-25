@@ -47,35 +47,19 @@ def committees():
     return render_template('committee_list.html')
 
 
-# @app.route('/bill/<bill_id>/')
-# def detail(bill_id=None):
-#     """
-#     Display all available detail for the requested bill.
-#     """
-#
-#     try:
-#         bill_id = int(bill_id)
-#     except:
-#         abort(error_bad_request)
-#
-#     logger.debug("detail page called")
-#     api_url = url("bill", str(bill_id))
-#     r = requests.get(api_url)
-#     if not r.status_code == 200:
-#         return(r.text, r.status_code)
-#     bill = r.json()
-#
-#     entries = bill["entries"]
-#
-#     # separate special entries from the rest of the list
-#     version_types = ["bill-version", "act"]
-#     special_types = ["original-act", "gazette", "whitepaper", "memorandum", "greenpaper", "draft"]
-#
-#     bill["entries"] = [entry for entry in entries if entry["type"] not in version_types + special_types]
-#
-#     bill["versions"] = [entry for entry in entries if entry["type"] in version_types]
-#     special_entries = [entry for entry in entries if entry["type"] in special_types]
-#     for entry in special_entries:
-#         bill[entry["type"]] = entry
-#
-#     return render_template('detail.html', bill=bill)
+@app.route('/committee/<int:committee_id>/')
+def committee_detail(committee_id=None):
+    """
+    Display all available detail for ta committee.
+    """
+
+    logger.debug("committee detail page called")
+
+    # api_url = url("committee", str(committee))
+    # r = requests.get(api_url)
+    # if not r.status_code == 200:
+    #     return(r.text, r.status_code)
+    # committee = r.json()
+    committee = None
+
+    return render_template('committee_detail.html', committee=committee)

@@ -3,7 +3,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 import sys
 
-app = Flask(__name__, instance_relative_config=True, static_folder="not_static")
+app = Flask(__name__, instance_relative_config=True, static_folder="static")
 app.config.from_pyfile('config.py', silent=True)
 
 db = SQLAlchemy(app)
@@ -28,4 +28,4 @@ stream_handler.setLevel(LOG_LEVEL)
 stream_handler.setFormatter(file_formatter)
 logger.addHandler(stream_handler)
 
-import admin
+import views

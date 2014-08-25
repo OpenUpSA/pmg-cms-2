@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %}Parliamentary Monitoring Group | South Africa{% endblock %}</title>
+  <link rel="stylesheet" href="static/resources/css/style.css">
+  {% block head %}
+  {% endblock %}
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-pmg" role="navigation">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#"><img id="logo" src="static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
+    </div>
+    <form class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control " placeholder="Search for reports, bills, ministers, schedules and documents">
+      </div>
+      <button type="submit" class="btn btn-success">Search</button>
+    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <button type="button" class="btn btn-primary navbar-btn">Create an account</button>
+    </ul>
+  </div><!-- /.container-fluid -->
+</nav>
+
+{% block page %}
+
+{% endblock page %}
+
+<script src="static/bower_components/jquery/dist/jquery.min.js"></script>
+</body>
+</html>

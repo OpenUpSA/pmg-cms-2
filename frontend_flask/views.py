@@ -25,6 +25,28 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/bills/')
+def bills():
+    """
+    Page through all available bills.
+    """
+
+    logger.debug("bills page called")
+
+    return render_template('bill_list.html')
+
+
+@app.route('/committees/')
+def committees():
+    """
+    Page through all available committees.
+    """
+
+    logger.debug("committees page called")
+
+    return render_template('committee_list.html')
+
+
 # @app.route('/bill/<bill_id>/')
 # def detail(bill_id=None):
 #     """

@@ -40,6 +40,7 @@ def download_db():
 
 def restart():
     sudo("supervisorctl restart pmg_cms")
+    sudo("supervisorctl restart pmg_frontend")
     sudo('service nginx restart')
     return
 
@@ -126,18 +127,23 @@ def configure():
 def deploy():
     # create a tarball of our packages
     local('tar -czf backend.tar.gz backend/', capture=False)
+    local('tar -czf frontend_flask.tar.gz frontend_flask/', capture=False)
 
     # upload the source tarballs to the server
     put('backend.tar.gz', '/tmp/backend.tar.gz')
+    put('frontend_flask.tar.gz', '/tmp/frontend_flask.tar.gz')
 
     # enter application directory
     with cd(env.project_dir):
         # and unzip new files
         sudo('tar xzf /tmp/backend.tar.gz')
+        sudo('tar xzf /tmp/frontend_flask.tar.gz')
 
     # now that all is set up, delete the tarballs again
     sudo('rm /tmp/backend.tar.gz')
+    sudo('rm /tmp/frontend_flask.tar.gz')
     local('rm backend.tar.gz')
+    local('rm frontend_flask.tar.gz')
 
     set_permissions()
     restart()

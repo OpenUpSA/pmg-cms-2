@@ -7,3 +7,4 @@ Flask-Login==0.2.10
 requests==2.0.1
 WTForms==1.0.5
 simplejson
+PopIt-Python==0.1.7

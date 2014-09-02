@@ -6,4 +6,3 @@ Flask-Admin==1.0.7
 Flask-Login==0.2.10
 requests==2.0.1
 WTForms==1.0.5
-simplejson

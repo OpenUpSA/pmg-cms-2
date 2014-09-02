@@ -39,41 +39,37 @@ class Popit(object):
         print query_url
         response = requests.get(query_url, headers=self.headers)
         print response.status_code
-        print json.dumps(response.headers, indent=4)
-        return response.json
+        return response.json()
 
     def post(self, resource_name, resource_dict):
         query_url = self.api_base_url + resource_name + "/"
-        resource_dict["apikey"] = "1601b253b458b613ea7b00ba685d38a64b011010"
         data = json.dumps(resource_dict)
         print query_url
-        # req = requests.Request('POST', query_url, data=data, headers=self.headers)
+        # req = requests.Request('POST', query_url, data=data, headers=self.headers, auth=HTTPBasicAuth(self.user, self.password))
         # prepared = req.prepare()
         # pretty_print_POST(prepared)
         # s = requests.Session()
         # response = s.send(prepared)
-        response = requests.post(query_url, data=data, headers=self.headers)
+        response = requests.post(query_url, data=data, headers=self.headers, auth=HTTPBasicAuth(self.user, self.password))
+        print json.dumps(response.headers, indent=4)
         print response.status_code
-        return response.json
+        return response.json()
 
     def put(self, resource_name, resource_id, resource_dict):
         query_url = self.api_base_url + resource_name + "/" + str(resource_id)
-        resource_dict["apikey"] = "1601b253b458b613ea7b00ba685d38a64b011010"
         data = json.dumps(resource_dict)
         print query_url
-        response = requests.put(query_url, data=data, headers=self.headers)
+        response = requests.put(query_url, data=data, headers=self.headers, auth=HTTPBasicAuth(self.user, self.password))
         print response.status_code
-        return response.json
+        return response.json()
 
     def delete(self, resource_name, resource_id):
         query_url = self.api_base_url + resource_name + "/" + str(resource_id)
-        data = {"apikey": "1601b253b458b613ea7b00ba685d38a64b011010"}
-        data = json.dumps(data)
         print query_url
-        response = requests.delete(query_url, data=data, headers=self.headers, auth=HTTPBasicAuth(self.user, self.password))
+        response = requests.delete(query_url, headers=self.headers, auth=HTTPBasicAuth(self.user, self.password))
         print response.status_code
         if response.content:
-            return response.json
+            return response.json()
         else:
             return
 

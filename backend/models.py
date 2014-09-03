@@ -39,9 +39,6 @@ class User(db.Model):
     activated = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
-    country = db.relationship('Country')
-
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 
@@ -86,7 +83,7 @@ class Bill(db.Model):
 
     __tablename__ = "bill"
 
-    __table_args__ = (db.UniqueConstraint('code', 'year', 'name'), {})
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'name'), {})
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
     act_name = db.Column(db.String(250))
@@ -161,7 +158,7 @@ class Member(db.Model):
     __tablename__ = "member"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     profile_pic_url = db.Column(db.String(200))
     version = db.Column(db.Integer, nullable=False)
 

@@ -1,102 +1,65 @@
 import os
 import json
 import time
-from backend.drupal_models import generate_models
+from backend.app import app, db
+from backend.models import *
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-engine = create_engine('sqlite:///instance/tmp.db')
-Session = sessionmaker(bind=engine)
-session = Session()
+STATIC_HOST = app.config['STATIC_HOST']
 
 
-def dump_db():
+def strip_filpath(filepath):
+
+    return "/".join(filepath.split("/")[1::])
+
+
+def dump_db(name):
     try:
-        os.remove('instance/tmp.db')
-    except Exception:
+        os.remove(name)
+    except Exception as e:
+        print e
         pass
     return
 
-def read_data():
+
+def read_data(filename):
     start = time.time()
-    files = os.listdir('data')
-    data = {}
 
-    for file in files:
-        print "reading " + file
-        with open('data/' + file, 'r') as f:
-            records = []
-            lines = f.readlines()
-            for line in lines:
-                records.append(json.loads(line))
-            example = records[0]
-            data[file[4:-5]] = records
-    print str(int(time.time() - start)) + " seconds, ready"
-    return data
+    print "reading " + filename
+    with open('data/' + filename, 'r') as f:
+        records = []
+        lines = f.readlines()
+        for line in lines:
+            records.append(json.loads(line))
+    return records
 
 
-def move_to_front(entry, entry_list):
+def rebuild_db(db_name):
+    """
+    Save json fixtures into a structured database, intended for use in our app.
+    """
 
-    if entry in entry_list:
-        i = entry_list.index(entry)
-        entry_list = [entry,] + entry_list[0:i] + entry_list[i+1::]
-    return entry_list
+    dump_db(db_name)
+    db.create_all()
 
+    start = time.time()
 
-def print_model_defs():
-
-    data = read_data()
-    model_names = data.keys()
-    model_names.sort()
-
-    field_order = [u'start_date', u'title', u'minutes', u'files', u'meeting_date', u'terms', u'audio', u'version', u'revisions']
-    field_order.reverse()
-
-    for name in model_names:
-        fields = data[name][0].keys()
-        fields.sort()
-        for field_name in field_order:
-            fields = move_to_front(field_name, fields)
-
-        print "('" + name + "', " + str(fields) + "),"
-    return
-
-
-def populate_db(model, records):
-
-    for rec in records:
-        tmp = model()
-        fields = rec.keys()
-        fields.sort()
-        for field in fields:
-            if rec[field]:
-                if type(rec[field]=='dict'):
-                    val = json.dumps(rec[field]).encode('utf-8').strip()
-                else:
-                    val = rec[field].encode('utf-8').strip()
-                setattr(tmp, field, val)
-        session.add(tmp)
+    # populate committee members
+    members = read_data('pmg_committee_member.json')
+    for member in members:
+        member_obj = Member(
+            name=member['title'].strip(),
+            version=0
+        )
+        if member.get('files'):
+            print json.dumps(member['files'], indent=4)
+            member_obj.profile_pic_url = STATIC_HOST + strip_filpath(member["files"][-1]['filepath'])
+        print member_obj.name
+        print member_obj.profile_pic_url
+        db.session.add(member_obj)
+    db.session.commit()
     return
 
 
 if __name__ == '__main__':
 
-    # print_model_defs()
-
-    dump_db()
-
-    data = read_data()
-    model_dict = generate_models()
-    print model_dict
-
-    start = time.time()
-
-    model_names = model_dict.keys()
-    model_names.sort()
-
-    for name in model_names:
-        print name
-        populate_db(model_dict[name], data[name])
-        session.commit()
-        print str(int(time.time() - start)) + " seconds"
+    rebuild_db('instance/tmp.db')

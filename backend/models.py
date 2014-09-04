@@ -153,6 +153,14 @@ class Location(db.Model):
         return u'%s' % self.value
 
 
+# M2M table
+membership_table = db.Table(
+    'member_organisation', db.Model.metadata,
+    db.Column('member_id', db.Integer, db.ForeignKey('member.id'), primary_key=True),
+    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True)
+)
+
+
 class Member(db.Model):
 
     __tablename__ = "member"
@@ -160,29 +168,46 @@ class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     profile_pic_url = db.Column(db.String(200))
+    bio = db.Column(db.String(1500))
     version = db.Column(db.Integer, nullable=False)
+
+    memberships = db.relationship("Organisation",
+                    secondary=membership_table,
+                    backref="followed_by"
+    )
 
     def __unicode__(self):
         return u'%s' % self.value
-
-
-# M2M table
-membership_table = db.Table(
-    'member_organisation', db.Model.metadata,
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id')),
-    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'))
-)
 
 
 class Organisation(db.Model):
 
     __tablename__ = "organisation"
 
+    __table_args__ = (db.UniqueConstraint('name', 'type', 'location'), {})
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(50), nullable=False)
-    location = db.Column(db.String(50), unique=True, nullable=False)
+    location = db.Column(db.String(50), unique=True)
     version = db.Column(db.Integer, nullable=False)
+
+    parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    parent = db.relationship('Organisation')
+
+    def __unicode__(self):
+        return u'%s' % self.value
+
+
+class CommitteeInfo(db.Model):
+
+    __tablename__ = "committee_info"
+
+    id = db.Column(db.Integer, primary_key=True)
+    about = db.Column(db.String(1500))
+    contact_details = db.Column(db.String(1500))
+
+    organization_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    organization = db.relationship('Organisation', backref='info')
 
     def __unicode__(self):
         return u'%s' % self.value

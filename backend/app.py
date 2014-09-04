@@ -27,7 +27,7 @@ stream_handler.setLevel(LOG_LEVEL)
 stream_handler.setFormatter(file_formatter)
 logger.addHandler(stream_handler)
 
-import drupal_models as models
-model_dict = models.generate_models()
+# import drupal_models as models
+# model_dict = models.generate_models()
 
 import admin, views

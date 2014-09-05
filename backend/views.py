@@ -1,5 +1,5 @@
-from app import db, logger, app, model_dict
-import drupal_models as models
+from app import db, logger, app
+import models
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
 from functools import wraps

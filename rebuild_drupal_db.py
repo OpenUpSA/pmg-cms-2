@@ -1,19 +1,19 @@
 import os
 import json
 import time
-from backend.drupal_models import generate_models
+from backend_drupal.models import generate_models
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('sqlite:///instance/tmp.db')
+engine = create_engine('sqlite:///instance/tmp_drupal.db')
 Session = sessionmaker(bind=engine)
 session = Session()
 
 
 def dump_db():
     try:
-        os.remove('instance/tmp.db')
+        os.remove('instance/tmp_drupal.db')
     except Exception:
         pass
     return

@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import sys
 
 app = Flask(__name__, instance_relative_config=True, static_folder="not_static")
-app.config.from_pyfile('drupal_config.py', silent=True)
+app.config.from_pyfile('config_drupal.py', silent=True)
 db = SQLAlchemy(app)
 
 # load log level from config

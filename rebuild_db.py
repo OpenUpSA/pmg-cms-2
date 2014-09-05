@@ -1,8 +1,9 @@
 import os
 import json
 import time
-from backend.app import app, db
+from backend.app import app, db, logger
 from backend.models import *
+import parsers
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -16,7 +17,7 @@ def dump_db(name):
     try:
         os.remove(name)
     except Exception as e:
-        print e
+        logger.debug(e)
         pass
     return
 
@@ -24,7 +25,7 @@ def dump_db(name):
 def read_data(filename):
     start = time.time()
 
-    print "reading " + filename
+    logger.debug("reading " + filename)
     with open('data/' + filename, 'r') as f:
         records = []
         lines = f.readlines()
@@ -45,7 +46,7 @@ def rebuild_db(db_name):
 
     # populate committees
     committees = {}
-    drupal_recs = read_data('pmg_comm_info_page.json')
+    drupal_recs = read_data('comm_info_page.json')
     for rec in drupal_recs:
         if rec['terms']:
             name = rec['terms'][0].strip()
@@ -56,9 +57,9 @@ def rebuild_db(db_name):
             elif rec['comm_info_type'] == '"About"':
                 committees[name]["about"] = rec["revisions"][0]["body"]
             if len(rec["revisions"]) > 1:
-                print "MULTIPLE REVISIONS"
+                logger.debug("MULTIPLE REVISIONS")
     for key, val in committees.iteritems():
-        print key
+        logger.debug(key)
         organisation = Organisation()
         organisation.name = key
         organisation.type = "committee"
@@ -77,17 +78,17 @@ def rebuild_db(db_name):
     db.session.commit()
 
     # populate committee members
-    members = read_data('pmg_committee_member.json')
+    members = read_data('committee_member.json')
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
             version=0
         )
         if member.get('files'):
-            # print json.dumps(member['files'], indent=4)
+            # logger.debug(json.dumps(member['files'], indent=4)
             member_obj.profile_pic_url = STATIC_HOST + strip_filpath(member["files"][-1]['filepath'])
-        print member_obj.name
-        print member_obj.profile_pic_url
+        logger.debug(member_obj.name)
+        logger.debug(member_obj.profile_pic_url)
 
         # extract bio info
         if member['revisions']:
@@ -96,7 +97,7 @@ def rebuild_db(db_name):
                 index = bio.find("Further information will be provided shortly on:")
                 if index and index > 0:
                     bio = bio[0:index].strip()
-                    print bio
+                    logger.debug(bio)
                     member_obj.bio = bio
 
         # set committee relationships
@@ -105,12 +106,12 @@ def rebuild_db(db_name):
                 org_model = committees[term]['model']
                 member_obj.memberships.append(org_model)
             else:
-                print "committee not found: " + term
+                logger.debug("committee not found: " + term)
 
         # set party membership
         party = member['mp_party']
         if party:
-            print party
+            logger.debug(party)
             party_obj = Organisation.query.filter_by(type="party").filter_by(name=party).first()
             if not party_obj:
                 party_obj = Organisation(type="party", name=party, version=0)
@@ -120,7 +121,7 @@ def rebuild_db(db_name):
         # set house membership
         house = member['mp_province']
         if house:
-            print house
+            logger.debug(house)
             house_obj = Organisation.query.filter_by(type="house").filter_by(name=house).first()
             if not house_obj:
                 house_obj = Organisation(type="house", name=house, version=0)
@@ -128,8 +129,33 @@ def rebuild_db(db_name):
             member_obj.memberships.append(house_obj)
 
         db.session.add(member_obj)
-        print ''
+        logger.debug('')
+    db.session.commit()
 
+    # populate committee reports
+    reports = read_data('report.json')
+    i = 0
+    meeting_event_type_obj = EventType(name="committee-meeting")
+    db.session.add(meeting_event_type_obj)
+    db.session.commit()
+    for report in reports:
+        parsed_report = parsers.MeetingReportParser(report)
+
+        report_obj = Content(
+            type="committee-meeting-report",
+            title=parsed_report.title,
+            body=parsed_report.body,
+            version=0
+        )
+        db.session.add(report_obj)
+        event_obj = Event(
+            event_type=meeting_event_type_obj,
+            content=report_obj
+        )
+        db.session.add(event_obj)
+        i += 1
+        if i % 1000 == 0:
+            db.session.commit()
     db.session.commit()
     return
 

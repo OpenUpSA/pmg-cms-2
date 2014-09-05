@@ -143,7 +143,6 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
 
-    type = db.Column(db.String(50), unique=True, nullable=False)
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
     event_type = db.relationship('EventType')
     content_id = db.Column(db.Integer, db.ForeignKey('content.id'))

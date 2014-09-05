@@ -31,7 +31,7 @@ def read_data():
             for line in lines:
                 records.append(json.loads(line))
             example = records[0]
-            data[file[4:-5]] = records
+            data[file[0:-5]] = records
     print str(int(time.time() - start)) + " seconds, ready"
     return data
 

@@ -4,7 +4,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 import sys
 
 app = Flask(__name__, instance_relative_config=True, static_folder="not_static")
-app.config.from_pyfile('config.py', silent=True)
+app.config.from_pyfile('config_drupal.py', silent=True)
 db = SQLAlchemy(app)
 
 # load log level from config
@@ -27,8 +27,6 @@ stream_handler.setLevel(LOG_LEVEL)
 stream_handler.setFormatter(file_formatter)
 logger.addHandler(stream_handler)
 
-# import drupal_models as models
-# model_dict = models.generate_models()
-# import admin
-
-import views
+import models
+model_dict = models.generate_models()
+import admin

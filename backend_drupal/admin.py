@@ -1,4 +1,4 @@
-import drupal_models as models
+import models
 import json
 from flask.ext.admin import Admin
 from flask.ext.admin.contrib.sqla import ModelView

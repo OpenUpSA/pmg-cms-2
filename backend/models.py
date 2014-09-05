@@ -99,8 +99,8 @@ class Bill(db.Model):
     status = db.relationship('BillStatus', backref='bills')
     type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
     type = db.relationship('BillType', backref='bills')
-    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('location.id'))
-    place_of_introduction = db.relationship('Location', backref='bills_introduced')
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    place_of_introduction = db.relationship('Organisation', backref='bills_introduced')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member', backref='bills_introduced')
 
@@ -125,29 +125,33 @@ bill_event_table = db.Table(
 )
 
 
-class Event(db.Model):
+class EventType(db.Model):
 
-    __tablename__ = "event"
+    __tablename__ = "event_type"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    date = db.Column(db.Date)
-
-    content_id = db.Column(db.Integer, db.ForeignKey('content.id'), nullable=False)
-    content = db.relationship('Content', backref='event')
-    location_id = db.Column(db.Integer, db.ForeignKey('location.id'), nullable=False)
-    location = db.relationship('Location', backref='events')
 
     def __unicode__(self):
         return u'%s' % self.name
 
 
-class Location(db.Model):
+class Event(db.Model):
 
-    __tablename__ = "location"
+    __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
+    date = db.Column(db.Date)
+
+    type = db.Column(db.String(50), unique=True, nullable=False)
+    event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
+    event_type = db.relationship('EventType')
+    content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
+    content = db.relationship('Content', backref='event')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member = db.relationship('Member', backref='events')
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship('Organisation', backref='events')
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -219,7 +223,7 @@ class Content(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)
-    title = db.Column(db.String(200), nullable=False)
+    title = db.Column(db.String(200))
     body = db.Column(db.String(20000))
     version = db.Column(db.Integer, nullable=False)
 

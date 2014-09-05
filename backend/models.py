@@ -65,7 +65,7 @@ class BillType(db.Model):
     prefix = db.Column(db.String(10), nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 class BillStatus(db.Model):
@@ -76,7 +76,7 @@ class BillStatus(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 class Bill(db.Model):
@@ -139,7 +139,7 @@ class Event(db.Model):
     location = db.relationship('Location', backref='events')
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 class Location(db.Model):
@@ -150,7 +150,7 @@ class Location(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 # M2M table
@@ -177,7 +177,7 @@ class Member(db.Model):
     )
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 class Organisation(db.Model):
@@ -195,7 +195,7 @@ class Organisation(db.Model):
     parent = db.relationship('Organisation')
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.name
 
 
 class CommitteeInfo(db.Model):
@@ -210,7 +210,7 @@ class CommitteeInfo(db.Model):
     organization = db.relationship('Organisation', backref='info')
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.about
 
 
 class Content(db.Model):
@@ -220,8 +220,8 @@ class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)
     title = db.Column(db.String(200), nullable=False)
-    profile_pic_url = db.Column(db.String(200))
+    body = db.Column(db.String(20000))
     version = db.Column(db.Integer, nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.value
+        return u'%s' % self.title

@@ -1,5 +1,5 @@
 from app import db, logger, app
-import models
+from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
 from functools import wraps
@@ -87,22 +87,22 @@ def send_api_response(data_json):
 # API endpoints:
 #
 
-api_resources = [
-    "committee",
-    "report",
-    "bill",
-]
+api_resources = {
+    "committee": db.session.query(Organisation).filter_by(type='committee'),
+    "committee-meeting-report": db.session.query(Content).filter_by(type='committee-meeting-report'),
+    "bill": db.session.query(Content).filter_by(type='bill'),
+}
 
 @app.route('/<string:resource>/', )
+@app.route('/<string:resource>/<int:resource_id>/', )
 def resource_list(resource, resource_id=None):
     """
     Generic endpoint for lists of resources.
     """
 
-    if not resource in api_resources:
+    if not api_resources.get(resource):
         raise ApiException(400, "The specified resource type does not exist.")
 
-    model = model_dict[resource]
     count, next = None, None
     # validate paging parameters
     page = 0
@@ -112,8 +112,9 @@ def resource_list(resource, resource_id=None):
             page = int(flask.request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-    queryset = db.session.query(model).limit(per_page).offset(page*per_page).all()
-    count = db.session.query(func.count('*')).select_from(model).scalar()
+    base_query = api_resources[resource]
+    queryset = base_query.limit(per_page).offset(page*per_page).all()
+    count = base_query.count()
     next = None
     if count > (page + 1) * per_page:
         next = flask.request.url_root + resource + "/?page=" + str(page+1)

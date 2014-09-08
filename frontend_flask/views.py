@@ -43,7 +43,7 @@ def handle_api_exception(error):
     return redirect(url_for('landing'))
 
 
-def load_from_api(resource_name, resource_id=None, page=None):
+def load_from_api(resource_name, resource_id=None, page=None, return_everything=False):
 
     query_str = resource_name + "/"
     if resource_id:
@@ -58,11 +58,20 @@ def load_from_api(resource_name, resource_id=None, page=None):
     try:
         response = requests.get(API_HOST + query_str, headers=headers)
         out = response.json()
+
         if response.status_code != 200:
             raise ApiException(response.status_code, response.json().get('message', "An unspecified error has occurred."))
-        i = 0
+        if return_everything:
+            next_response_json = out
+            i = 0
+            while next_response_json.get('next') and i < 1000:
+                next_response = requests.get(next_response_json.get('next'), headers=headers)
+                next_response_json = next_response.json()
+                out['results'] += next_response_json['results']
+                i += 1
+            if out.get('next'):
+                out.pop('next')
         return out
-
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')
         pass
@@ -98,7 +107,7 @@ def committees():
     """
 
     logger.debug("committees page called")
-    committee_list = load_from_api('committee')
+    committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
     return render_template('committee_list.html', committees=committees)
 

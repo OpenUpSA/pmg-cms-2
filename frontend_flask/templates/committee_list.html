@@ -19,9 +19,38 @@
   </div>
 
   <div class="col-md-8">
-    {% for committee in committees %}
-    <p><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></p>
-    {% endfor %}
+    <h2>National Assembly</h2>
+    <ul>
+      {% for committee in committees %}
+      {% if committee.parent_id == 3 %}
+      <li>
+        <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+
+    <h2>National Council of Provinces</h2>
+    <ul>
+      {% for committee in committees %}
+      {% if committee.parent_id == 2 %}
+      <li>
+        <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
+
+    <h2>Joint Committees</h2>
+    <ul>
+      {% for committee in committees %}
+      {% if committee.parent_id == 1 %}
+      <li>
+        <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+      </li>
+      {% endif %}
+      {% endfor %}
+    </ul>
 
   </div>
 

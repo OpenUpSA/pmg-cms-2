@@ -176,7 +176,7 @@ class Member(db.Model):
 
     memberships = db.relationship("Organisation",
                     secondary=membership_table,
-                    backref="followed_by"
+                    backref="members"
     )
 
     def __unicode__(self):

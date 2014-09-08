@@ -41,12 +41,13 @@ def model_to_dict(obj, include_related=False):
         relations = obj.__mapper__.relationships.keys()
         for key in relations:
             related_content = getattr(obj, key)
-            try:
-                tmp_dict[key] = model_to_dict(related_content)
-            except AttributeError as e:
-                tmp_dict[key] = []
-                for item in related_content:
-                    tmp_dict[key].append(model_to_dict(item))
+            if related_content:
+                try:
+                    tmp_dict[key] = model_to_dict(related_content)
+                except AttributeError as e:
+                    tmp_dict[key] = []
+                    for item in related_content:
+                        tmp_dict[key].append(model_to_dict(item))
     return tmp_dict
 
 

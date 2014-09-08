@@ -4,7 +4,7 @@ import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
 from functools import wraps
 import json
-from sqlalchemy import func, or_, distinct
+from sqlalchemy import func, or_, distinct, desc
 import datetime
 from operator import itemgetter
 import re
@@ -89,7 +89,7 @@ def send_api_response(data_json):
 
 api_resources = {
     "committee": db.session.query(Organisation).filter_by(type='committee'),
-    "committee-meeting-report": db.session.query(Content).filter_by(type='committee-meeting-report'),
+    "committee-meeting": db.session.query(Event).join(EventType).filter_by(name='committee-meeting').order_by(desc(Event.date)),
     "bill": db.session.query(Content).filter_by(type='bill'),
 }
 

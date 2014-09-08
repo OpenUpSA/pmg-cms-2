@@ -13,7 +13,8 @@ class CustomEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj, datetime):
-            encoded_obj = obj.strftime("%B %d, %Y, %H:%M")
+            # encoded_obj = obj.strftime("%B %d, %Y, %H:%M")
+            encoded_obj = obj.strftime("%Y-%m-%d, %T")
         elif isinstance(obj, date):
             encoded_obj = obj.strftime("%B %d, %Y")
         elif isinstance(obj, db.Model):

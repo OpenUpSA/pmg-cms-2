@@ -88,8 +88,12 @@ def send_api_response(data_json):
 #
 
 api_resources = {
-    "committee": db.session.query(Organisation).filter_by(type='committee'),
-    "committee-meeting": db.session.query(Event).join(EventType).filter_by(name='committee-meeting').order_by(desc(Event.date)),
+    "committee": db.session.query(Organisation) \
+        .filter_by(type='committee'),
+    "committee-meeting": db.session.query(Event) \
+        .join(EventType) \
+        .filter_by(name='committee-meeting') \
+        .order_by(desc(Event.date)),
     "bill": db.session.query(Content).filter_by(type='bill'),
 }
 

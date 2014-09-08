@@ -37,7 +37,7 @@ nosetests.xml
 .idea
 
 env/
-#data/
+data/
 *.db
 *.log
 .boto

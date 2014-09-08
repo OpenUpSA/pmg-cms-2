@@ -1,3 +1,6 @@
+from backend.app import logger
+from datetime import datetime
+
 
 class MyParser():
 
@@ -6,7 +9,7 @@ class MyParser():
 
     def strip_rtf(self, rtf_str):
         if rtf_str:
-            return rtf_str.replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', '')
+            return unicode(rtf_str.replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', ''))
         else:
             return None
 
@@ -22,6 +25,14 @@ class MeetingReportParser(MyParser):
         self.title = None
         self.committee = None
         self.date = None
+        if report_dict.get('meeting_date'):
+            try:
+                timestamp = int(report_dict['meeting_date'].strip('"'))
+                self.date = datetime.fromtimestamp(
+                timestamp
+                )
+            except (TypeError, AttributeError) as e:
+                pass
         self.summary = None
         self.body = None
         self.related_docs = None
@@ -31,14 +42,17 @@ class MeetingReportParser(MyParser):
         else:
             self.minutes_clean = None
         self.extract_title()
+        self.extract_committee()
         self.extract_summary()
         self.extract_body()
 
     def extract_title(self):
-        self.title = self.strip_rtf(self.title)
+        self.title = self.strip_rtf(self.source['title'])
         return
 
     def extract_committee(self):
+        if self.source['terms']:
+            self.committee = self.strip_rtf(self.source['terms'][0])
         return
 
     def extract_summary(self):

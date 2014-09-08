@@ -1,5 +1,6 @@
 from app import app, db, logger
 import serializers
+from sqlalchemy import desc
 from sqlalchemy.orm import backref
 from sqlalchemy import UniqueConstraint
 from random import random
@@ -141,7 +142,7 @@ class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
     event_type = db.relationship('EventType')
@@ -150,7 +151,7 @@ class Event(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    organisation = db.relationship('Organisation', backref='events')
+    organisation = db.relationship('Organisation', backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -176,7 +177,7 @@ class Member(db.Model):
 
     memberships = db.relationship("Organisation",
                     secondary=membership_table,
-                    backref="followed_by"
+                    backref="members"
     )
 
     def __unicode__(self):

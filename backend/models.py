@@ -188,11 +188,10 @@ class Organisation(db.Model):
 
     __tablename__ = "organisation"
 
-    __table_args__ = (db.UniqueConstraint('name', 'type', 'location'), {})
+    __table_args__ = (db.UniqueConstraint('name', 'type'), {})
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(50), nullable=False)
-    location = db.Column(db.String(50), unique=True)
     version = db.Column(db.Integer, nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))

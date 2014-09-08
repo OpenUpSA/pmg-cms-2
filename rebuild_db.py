@@ -81,15 +81,15 @@ def rebuild_db(db_name):
         else:
             organisation.parent_id = na_obj.id
 
-        commitee_info = CommitteeInfo()
+        committee_info = CommitteeInfo()
         if val.get("about"):
-            commitee_info.about = val["about"]
+            committee_info.about = val["about"]
         if val.get("contact"):
-            commitee_info.contact_details = val["contact"]
-        commitee_info.organization = organisation
+            committee_info.contact_details = val["contact"]
+        committee_info.organization = organisation
 
         db.session.add(organisation)
-        db.session.add(commitee_info)
+        db.session.add(committee_info)
         val['model'] = organisation
     db.session.commit()
 
@@ -132,6 +132,7 @@ def rebuild_db(db_name):
             if not party_obj:
                 party_obj = Organisation(type="party", name=party, version=0)
                 db.session.add(party_obj)
+                db.session.commit()
             member_obj.memberships.append(party_obj)
 
         # set house membership

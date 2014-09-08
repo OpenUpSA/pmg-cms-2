@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 
+{% block style %}
+<style>
+  .member-profile-pic{
+    max-width: 50px;
+    max-height: 75px;
+  }
+</style>
+{% endblock %}
+
 {% block page %}
 
 <div class="container-fluid">
@@ -12,7 +21,7 @@
 
 <div class="col-sm-12">
   <h4 class="light-red">Parliamentary committee</h4>
-  <h1>Agriculture, Forestry and Fisheries</h1>
+  <h1>{{ committee.name }}</h1>
 </div>
 
 <div class="col-md-4">
@@ -167,116 +176,51 @@
 
 <div class="col-md-4">
   <h3><span class="glyphicon glyphicon-user"></span> Members</h3>
+  {% if committee.members %}
   <form class="form" role="form">
     <div class="form-group">
       <input type="text" class="form-control " placeholder="Search for members">
     </div>
   </form>
+  {% set break = 0.5 * committee.members | length %}
+  {% set break = break | int %}
   <div class="col-sm-6">
     <ul class="list-unstyled list-spaced">
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member1.jpg" alt="" >
-        <h4>Semenya, Ms MR</h4>
-        <span class="label label-warning">Chairperson</span>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
+
+      {% for member in committee.members[0:break] %}
+      <!--<li class="clearfix">-->
+      <!--<img src="/static/resources/images/members/member1.jpg" alt="" >-->
+      <!--<h4>Semenya, Ms MR</h4>-->
+      <!--<span class="label label-warning">Chairperson</span>-->
+      <!--<a href="#" class="text-danger">National Assembly</a>-->
+      <!--<a href="#" class="text-primary">ANC</a>-->
+      <!--</li>-->
 
       <li class="clearfix">
-        <img src="/static/resources/images/members/member2.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
+        <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
+        <h4>{{ member.name }}</h4>
         <a href="#" class="text-danger">National Assembly</a>
         <a href="#" class="text-primary">ANC</a>
       </li>
+      {% endfor %}
 
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member3.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member4.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member5.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member6.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
     </ul>
   </div>
   <div class="col-sm-6">
     <ul class="list-unstyled list-spaced">
+      {% for member in committee.members[break::] %}
       <li class="clearfix">
-        <img src="/static/resources/images/members/member7.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
+        <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
+        <h4>{{ member.name }}</h4>
         <a href="#" class="text-danger">National Assembly</a>
         <a href="#" class="text-primary">ANC</a>
       </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member8.jpg" alt="" >
-        <h4>Semenya, Ms MR</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member9.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member10.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member11.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member12.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member13.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
-
-      <li class="clearfix">
-        <img src="/static/resources/images/members/member14.jpg" alt="" >
-        <h4>Ntshayisa, Mr LM</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
-      </li>
+      {% endfor %}
     </ul>
   </div>
+  {% else %}
+  <p class="lead">We don't have membership info for this committee.</p>
+  {% endif %}
 </div>  <!-- /Members -->
 </div>
 

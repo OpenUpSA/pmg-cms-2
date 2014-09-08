@@ -98,8 +98,9 @@ def committees():
     """
 
     logger.debug("committees page called")
-
-    return render_template('committee_list.html')
+    committee_list = load_from_api('committee')
+    committees = committee_list['results']
+    return render_template('committee_list.html', committees=committees)
 
 
 @app.route('/committee/<int:committee_id>/')

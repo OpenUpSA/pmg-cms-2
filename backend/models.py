@@ -141,7 +141,7 @@ class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date)
+    date = db.Column(db.DateTime)
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
     event_type = db.relationship('EventType')

@@ -148,8 +148,12 @@ def rebuild_db(db_name):
             version=0
         )
         db.session.add(report_obj)
+
+        committee_obj = Organisation.query.filter_by(type="committee").filter_by(name=parsed_report.committee).first()
         event_obj = Event(
             event_type=meeting_event_type_obj,
+            organisation=committee_obj,
+            date=parsed_report.date,
             content=report_obj
         )
         db.session.add(event_obj)

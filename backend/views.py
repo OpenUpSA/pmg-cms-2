@@ -117,7 +117,10 @@ def resource_list(resource, resource_id=None):
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
     base_query = api_resources[resource]
-    queryset = base_query.limit(per_page).offset(page*per_page).all()
+    if resource_id:
+        queryset = base_query.filter_by(id=resource_id).one()
+    else:
+        queryset = base_query.limit(per_page).offset(page*per_page).all()
     count = base_query.count()
     next = None
     if count > (page + 1) * per_page:

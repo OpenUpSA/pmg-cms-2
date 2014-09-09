@@ -44,6 +44,14 @@ def rebuild_db(db_name):
 
     start = time.time()
 
+    # populate houses of parliament
+    joint_obj = Organisation(name="Joint (NA + NCOP)", type="house", version=0)
+    ncop_obj = Organisation(name="NCOP", type="house", version=0)
+    na_obj = Organisation(name="National Assembly", type="house", version=0)
+    for obj in [joint_obj, ncop_obj, na_obj]:
+        db.session.add(obj)
+    db.session.commit()
+
     # populate committees
     committees = {}
     drupal_recs = read_data('comm_info_page.json')
@@ -57,7 +65,7 @@ def rebuild_db(db_name):
             elif rec['comm_info_type'] == '"About"':
                 committees[name]["about"] = rec["revisions"][0]["body"]
             if len(rec["revisions"]) > 1:
-                logger.debug("MULTIPLE REVISIONS")
+                logger.debug("ERROR: MULTIPLE REVISIONS PRESENT FOR A COMMITTEE")
     for key, val in committees.iteritems():
         logger.debug(key)
         organisation = Organisation()
@@ -65,15 +73,23 @@ def rebuild_db(db_name):
         organisation.type = "committee"
         organisation.version = 0
 
-        commitee_info = CommitteeInfo()
+        # set parent relation
+        if "ncop" in organisation.name.lower():
+            organisation.parent_id = ncop_obj.id
+        elif "joint" in organisation.name.lower():
+            organisation.parent_id = joint_obj.id
+        else:
+            organisation.parent_id = na_obj.id
+
+        committee_info = CommitteeInfo()
         if val.get("about"):
-            commitee_info.about = val["about"]
+            committee_info.about = val["about"]
         if val.get("contact"):
-            commitee_info.contact_details = val["contact"]
-        commitee_info.organization = organisation
+            committee_info.contact_details = val["contact"]
+        committee_info.organization = organisation
 
         db.session.add(organisation)
-        db.session.add(commitee_info)
+        db.session.add(committee_info)
         val['model'] = organisation
     db.session.commit()
 
@@ -116,17 +132,22 @@ def rebuild_db(db_name):
             if not party_obj:
                 party_obj = Organisation(type="party", name=party, version=0)
                 db.session.add(party_obj)
+                db.session.commit()
             member_obj.memberships.append(party_obj)
 
         # set house membership
         house = member['mp_province']
-        if house:
+        if house == "National Assembly":
+            member_obj.memberships.append(na_obj)
+        elif house and "NCOP" in house:
+            member_obj.memberships.append(ncop_obj)
             logger.debug(house)
-            house_obj = Organisation.query.filter_by(type="house").filter_by(name=house).first()
-            if not house_obj:
-                house_obj = Organisation(type="house", name=house, version=0)
-                db.session.add(house_obj)
-            member_obj.memberships.append(house_obj)
+            province_obj = Organisation.query.filter_by(type="province").filter_by(name=house[5::]).first()
+            if not province_obj:
+                province_obj = Organisation(type="province", name=house[5::], version=0)
+                db.session.add(province_obj)
+                db.session.commit()
+            member_obj.memberships.append(province_obj)
 
         db.session.add(member_obj)
         logger.debug('')
@@ -149,7 +170,9 @@ def rebuild_db(db_name):
         )
         db.session.add(report_obj)
 
-        committee_obj = Organisation.query.filter_by(type="committee").filter_by(name=parsed_report.committee).first()
+        committee_obj = committees.get(parsed_report.committee)
+        if committee_obj:
+            committee_obj = committee_obj['model']
         event_obj = Event(
             event_type=meeting_event_type_obj,
             organisation=committee_obj,

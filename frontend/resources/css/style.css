@@ -4630,23 +4630,12 @@ a.label:focus {
   background-attachment: fixed;
   cursor: pointer;
 }
-#news .news-pic:hover .blurb {
-  opacity: 1;
-}
 #news .blurb {
-  -webkit-transition: all 0.6s ease-out;
-  -moz-transition: all 0.6s ease-out;
-  -o-transition: all 0.6s ease-out;
-  transition: all 0.6s ease-out;
-  width: 30%;
-  background-color: rgba(255, 255, 255, 0.8);
+  width: 50%;
+  bottom: 0px;
+  background-color: rgba(255, 255, 255, 0.9);
   padding: 15px;
-  margin: 15px;
-  float: right;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
-  opacity: 0;
+  right: 15px;
 }
 .dateline {
   font-weight: bold;
@@ -4689,4 +4678,10 @@ a.label:focus {
 .list-spaced li img {
   float: left !important;
   margin-right: 5px;
+}
+.justify {
+  text-align: justify;
+}
+.justify-p p {
+  text-align: justify;
 }

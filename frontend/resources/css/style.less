@@ -109,21 +109,23 @@
 		cursor: pointer;
 	}
 
-	.news-pic:hover {
-	 	.blurb {
-			opacity: 1;
-		}
-	}
+	// .news-pic:hover {
+	//  	.blurb {
+	// 		opacity: 1;
+	// 	}
+	// }
 
 	.blurb {
-		.transition(0.6s, ease-out);
-		width: 30%;
-		background-color: rgba(255,255,255,0.8);
+		// .transition(0.6s, ease-out);
+		width: 50%;
+		bottom: 0px;
+		background-color: rgba(255,255,255,0.9);
 		padding: 15px;
-		margin: 15px;
-		float: right;
-		.rounded(4px);
-		opacity: 0;
+		// margin: 15px;
+		// float: right;
+		right: 15px;
+		// .rounded(4px);
+		// opacity: 1;
 	}
 }
 
@@ -183,5 +185,15 @@
 			.pull-left();
 			margin-right: 5px;
 		}
+	}
+}
+
+.justify {
+	text-align: justify;
+}
+
+.justify-p {
+	p {
+		.justify;
 	}
 }

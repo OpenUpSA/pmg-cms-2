@@ -1,0 +1,14 @@
+{
+  "name": "less-elements",
+  "homepage": "https://github.com/dmitryf/elements",
+  "_release": "191754c0ec",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "191754c0ec5fc054bba9117e76f3ee129c1d4bd7"
+  },
+  "_source": "git://github.com/dmitryf/elements.git",
+  "_target": "*",
+  "_originalSource": "less-elements",
+  "_direct": true
+}

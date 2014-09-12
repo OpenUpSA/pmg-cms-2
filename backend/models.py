@@ -197,6 +197,8 @@ class Organisation(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     parent = db.relationship('Organisation')
 
+    to_dict = serializers.organisation_to_dict
+
     def __unicode__(self):
         return u'%s' % self.name
 

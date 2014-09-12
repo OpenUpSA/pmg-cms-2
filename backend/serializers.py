@@ -52,6 +52,16 @@ def model_to_dict(obj, include_related=False):
     return tmp_dict
 
 
+def to_dict(obj, include_related=False):
+    """
+    Check if a custom serializer is defined for the given object, otherwise use the default.
+    """
+    try:
+        return obj.to_dict(obj, include_related=include_related)
+    except:
+        return model_to_dict(obj, include_related=include_related)
+
+
 def queryset_to_json(obj_or_list, count=None, next=None):
     """
     Convert a single model object, or a list of model objects to dicts, before
@@ -60,14 +70,15 @@ def queryset_to_json(obj_or_list, count=None, next=None):
 
     if isinstance(obj_or_list, db.Model):
         logger.debug("single obj")
+        obj = obj_or_list
         # this a single object
-        out = model_to_dict(obj_or_list, include_related=True)
+        out = to_dict(obj, include_related=True)
     else:
         # this is a list of objects
         logger.debug("list of objs")
         results = []
         for obj in obj_or_list:
-            results.append(model_to_dict(obj, include_related=True))
+            results.append(to_dict(obj, include_related=True))
         out = {
             'count': count,
             'next': next,
@@ -75,3 +86,9 @@ def queryset_to_json(obj_or_list, count=None, next=None):
             }
 
     return json.dumps(out, cls=CustomEncoder, indent=4)
+
+
+def organisation_to_dict(obj, include_related=False):
+
+
+    return model_to_dict(obj, include_related=include_related)

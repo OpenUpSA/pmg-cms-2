@@ -1,0 +1,66 @@
+{% extends 'admin/model/list.html' %}
+
+{% macro render_title(model, column) %}
+<div style="min-width: 150px;"><strong>{{ model[column]}}</strong></div>
+{% endmacro %}
+
+{% macro render_json(model, column) %}
+<div style="max-width: 400px; word-wrap: break-word;">
+  {{ model[column] | json | safe }}
+</div>
+{% endmacro %}
+
+{% macro render_html(model, column) %}
+<div style="min-width: 650px;">{{ model[column] | replace('\\"', '') | replace('\\r', '') | replace('\\n', '') | replace('\\t', '') | safe }}</div>
+{% endmacro %}
+
+{% macro render_date(model, column) %}
+{{ model[column] | convert_timestamp | safe }}
+{% endmacro %}
+
+{% macro render_attachments(model, column) %}
+{% set files = model[column] | json_to_list %}
+{% for file in files %}
+
+{% set icon = "fa-file-text-o" %}
+{% if file['filemime'] == "application/pdf" %}
+{% set icon = "fa-file-pdf-o" %}
+{% elif "powerpoint" in file['filemime'] %}
+{% set icon = "fa-file-powerpoint-o" %}
+{% elif "audio" in file['filemime'] %}
+{% set icon = "fa-file-audio-o" %}
+{% endif %}
+
+<div style="max-width: 400px; min-width: 350px; word-wrap: break-word;">
+  <div class="row-fluid">
+    <div class="span10 offset1">
+      <a
+          href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ file['filepath'] | strip_file }}"
+          target="_blank">
+        <div class="well" style="min-height:35px;">
+
+      <span class="fa-stack fa-lg pull-right">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa {{ icon }} fa-stack-1x fa-inverse"></i>
+      </span>
+        <span>
+      {% if column == "files" %}
+      <strong>
+        {% if file['field_document_description'] %}
+        {{ file['field_document_description'] }}
+        {% else %}
+        {{ file['filename'] }}
+        {% endif %}
+      </strong>
+      {% else %}
+      <strong>{{ file['filename'] }}</strong>
+      {% endif %}
+          </span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endfor %}
+<!--{{ render_json(model, column) }}-->
+{% endmacro %}

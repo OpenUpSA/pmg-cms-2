@@ -1,77 +1,230 @@
-import sqlalchemy
-from sqlalchemy import Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-
-engine = create_engine('sqlite:///instance/tmp.db')
-
-Base = declarative_base()
-
-
-def __content_type_repr__(self):
-    return "<Content_type(pk='%s')>" % self.pk
+from app import app, db, logger
+import serializers
+from sqlalchemy import desc
+from sqlalchemy.orm import backref
+from sqlalchemy import UniqueConstraint
+from random import random
+import string
+from passlib.apps import custom_app_context as pwd_context
 
 
-def get_content_type_model(model_name, fields, model=Base):
-    """
-    Meta-class for generating database model classes.
-    Creates models on the fly, using the builtin 'type' metaclass, see
-    http://stackoverflow.com/questions/100003/what-is-a-metaclass-in-python
-    """
+class ApiKey(db.Model):
 
-    field_defs = {
-        '__tablename__': model_name.lower(),
-        '__repr__': __content_type_repr__,
-        'pk': Column(Integer, primary_key=True),
-        }
+    __tablename__ = "api_key"
 
-    for field in fields:
-        field_defs[field] = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(128), unique=True, nullable=False)
 
-    tmp = type(model_name, (model,), field_defs)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+    user = db.relationship('User')
 
-    # create the database table if necessary
-    Base.metadata.create_all(engine)
-    return tmp
+    def generate_key(self):
+        self.key=''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(128))
+        return
 
+    def __unicode__(self):
+        s = u'%s' % self.key
+        return s
 
-def generate_models():
-
-    model_defs = [
-        ('bill', [u'_id', u'audio', u'bill_tracker_link_attributes', u'bill_tracker_link_title', u'bill_tracker_link_url', u'content_type', u'delta', u'effective_date', u'file_bill_data', u'file_bill_description', u'file_bill_fid', u'file_bill_list', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'version', u'vid']),
-        ('billsstatus', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('briefing', [u'_id', u'audio', u'audio_reference_nid', u'briefing_date', u'content_type', u'delta', u'document_other', u'document_other_format', u'files', u'minutes', u'minutes_format', u'nid', u'presentation', u'presentation_format', u'revisions', u'start_date', u'summary', u'summary_format', u'tagline', u'terms', u'title', u'vid']),
-        ('calls_comment_public_hearings', [u'_id', u'audio', u'comment_exp', u'comment_exp2', u'comment_type', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('comm_info_page', [u'_id', u'audio', u'comm_info_type', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('comm_programme', [u'_id', u'audio', u'comm_programme_data', u'comm_programme_fid', u'comm_programme_list', u'content_type', u'delta', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('committee_member', [u'_id', u'audio', u'commem_img_data', u'commem_img_fid', u'commem_img_list', u'content_type', u'delta', u'files', u'mp_adhoc_altmem', u'mp_adhoc_chair', u'mp_adhoc_mem', u'mp_altmember', u'mp_chairperson', u'mp_email_email', u'mp_joint_altmem', u'mp_joint_chair', u'mp_joint_mem', u'mp_link_attributes', u'mp_link_title', u'mp_link_url', u'mp_member', u'mp_ncop_altmem', u'mp_ncop_chair', u'mp_ncop_mem', u'mp_party', u'mp_province', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('daily_schedule', [u'_id', u'audio', u'content_type', u'daily_sched_date', u'embedded_pdf_data', u'embedded_pdf_fid', u'embedded_pdf_list', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('faq', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('gazette', [u'_id', u'audio', u'content_type', u'effective_date', u'file_gazette_data', u'file_gazette_description', u'file_gazette_fid', u'file_gazette_list', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('hansard', [u'_id', u'audio', u'content_type', u'files', u'meeting_date', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('home_image', [u'_id', u'audio', u'content_type', u'files', u'home_image_data', u'home_image_fid', u'home_image_list', u'homeimg_link', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('mp_blog', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('newsletter', [u'_id', u'audio', u'content_type', u'delta', u'embedded_pdf_data', u'embedded_pdf_fid', u'embedded_pdf_list', u'files', u'newsletter_edition', u'newsletter_edition_month', u'newsletter_headline', u'newsletter_image_data', u'newsletter_image_fid', u'newsletter_image_list', u'newsletter_lead', u'newsletter_lead_format', u'newsletter_type', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('page', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('pmg_contact', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('policy_document', [u'_id', u'audio', u'content_type', u'effective_date', u'file_policy_doc_data', u'file_policy_doc_description', u'file_policy_doc_fid', u'file_policy_doc_list', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('programme', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('questions_replies', [u'_id', u'audio', u'content_type', u'files', u'nid', u'question_number', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('report', [u'_id', u'audio', u'chairperson', u'content_type', u'files', u'meeting_date', u'minutes', u'minutes_format', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ('tabled_committee_reports', [u'_id', u'audio', u'content_type', u'files', u'nid', u'revisions', u'start_date', u'terms', u'title', u'vid']),
-        ]
-
-    model_dict = {}
-
-    for name, fields in model_defs:
-        model_dict[name] = get_content_type_model(name, fields)
-
-    return model_dict
+    def to_dict(self, include_related=False):
+        return {'user_id': self.user_id, 'key': self.key}
 
 
-if __name__ == "__main__":
+class User(db.Model):
 
-    model_name = 'bill'
-    fields = [u'files', u'audio', u'terms', u'vid', u'title', u'file_bill_fid', u'file_bill_list', u'nid', u'bill_tracker_link_attributes', u'file_bill_description', u'version', u'bill_tracker_link_title', u'content_type', u'delta', u'effective_date', u'file_bill_data', u'_id', u'start_date', u'bill_tracker_link_url', u'revisions']
+    __tablename__ = "user"
 
-    model = get_content_type_model(model_name, fields)
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    activated = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
+
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)
+
+    def is_active(self):
+        return self.activated
+
+    def __unicode__(self):
+        s = u'%s' % self.email
+        return s
+
+    def to_dict(self, include_related=False):
+        return serializers.user_to_dict(self)
+
+
+class BillType(db.Model):
+
+    __tablename__ = "bill_type"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    prefix = db.Column(db.String(10), nullable=False)
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+class BillStatus(db.Model):
+
+    __tablename__ = "bill_status"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+class Bill(db.Model):
+
+    __tablename__ = "bill"
+
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'name'), {})
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=False)
+    act_name = db.Column(db.String(250))
+    number = db.Column(db.Integer)
+    year = db.Column(db.Integer)
+    date_of_introduction = db.Column(db.Date)
+    date_of_assent = db.Column(db.Date)
+    effective_date = db.Column(db.Date)
+    objective = db.Column(db.String(1000))
+    is_deleted = db.Column(db.Boolean, default=False)
+
+    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'), nullable=False)
+    status = db.relationship('BillStatus', backref='bills')
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
+    type = db.relationship('BillType', backref='bills')
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    place_of_introduction = db.relationship('Organisation', backref='bills_introduced')
+    introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    introduced_by = db.relationship('Member', backref='bills_introduced')
+
+    def code(self):
+        return self.type.prefix + str(self.number) + "-" + str(self.year)
+
+    def delete(self):
+        self.is_deleted = True
+
+    def __str__(self):
+        return str(self.code) + " - " + self.name
+
+    def __repr__(self):
+        return '<Bill: %r>' % str(self)
+
+
+# M2M table
+bill_event_table = db.Table(
+    'bill_event', db.Model.metadata,
+    db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
+    db.Column('bill_id', db.Integer, db.ForeignKey('bill.id'))
+)
+
+
+class EventType(db.Model):
+
+    __tablename__ = "event_type"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+class Event(db.Model):
+
+    __tablename__ = "event"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime)
+
+    event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
+    event_type = db.relationship('EventType')
+    content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
+    content = db.relationship('Content', backref='event')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member = db.relationship('Member', backref='events')
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship('Organisation', backref=backref('events', order_by=desc('Event.date')))
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+# M2M table
+membership_table = db.Table(
+    'member_organisation', db.Model.metadata,
+    db.Column('member_id', db.Integer, db.ForeignKey('member.id'), primary_key=True),
+    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True)
+)
+
+
+class Member(db.Model):
+
+    __tablename__ = "member"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    profile_pic_url = db.Column(db.String(200))
+    bio = db.Column(db.String(1500))
+    version = db.Column(db.Integer, nullable=False)
+
+    memberships = db.relationship("Organisation",
+                    secondary=membership_table,
+                    backref="members"
+    )
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+class Organisation(db.Model):
+
+    __tablename__ = "organisation"
+
+    __table_args__ = (db.UniqueConstraint('name', 'type'), {})
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    type = db.Column(db.String(50), nullable=False)
+    version = db.Column(db.Integer, nullable=False)
+
+    parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    parent = db.relationship('Organisation')
+
+    def __unicode__(self):
+        return u'%s' % self.name
+
+
+class CommitteeInfo(db.Model):
+
+    __tablename__ = "committee_info"
+
+    id = db.Column(db.Integer, primary_key=True)
+    about = db.Column(db.String(1500))
+    contact_details = db.Column(db.String(1500))
+
+    organization_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
+    organization = db.relationship('Organisation', backref='info')
+
+    def __unicode__(self):
+        return u'%s' % self.about
+
+
+class Content(db.Model):
+
+    __tablename__ = "content"
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(200))
+    body = db.Column(db.String(20000))
+    version = db.Column(db.Integer, nullable=False)
+
+    def __unicode__(self):
+        return u'%s' % self.title

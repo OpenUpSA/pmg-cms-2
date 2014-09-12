@@ -1,10 +1,10 @@
 import logging
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
+import sys
 
 app = Flask(__name__, instance_relative_config=True, static_folder="not_static")
 app.config.from_pyfile('config.py', silent=True)
-
 db = SQLAlchemy(app)
 
 # load log level from config
@@ -21,12 +21,14 @@ file_formatter = logging.Formatter(
     '[in %(pathname)s:%(lineno)d]'
 )
 
-# add file handler to application logger
-from logging.handlers import RotatingFileHandler
-log_path = app.instance_path[0:app.instance_path.index('instance')]
-file_handler = RotatingFileHandler(log_path + 'debug.log')
-file_handler.setLevel(LOG_LEVEL)
-file_handler.setFormatter(file_formatter)
-logger.addHandler(file_handler)
+# log to stdout
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setLevel(LOG_LEVEL)
+stream_handler.setFormatter(file_formatter)
+logger.addHandler(stream_handler)
 
-import admin
+# import drupal_models as models
+# model_dict = models.generate_models()
+# import admin
+
+import views

@@ -1,31 +1,30 @@
-project-template
-================
+Parliamentary Monitoring Group website (pmg-cms-2)
+==================================================
 
-Template for code4sa web applications. 
-
+Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa. 
+When live, this will be hosted at http://www.pmg.org.za.
 
 ## What does this project do
 
-This project is an empty template for new code4sa projects.
+Allow citizens and other interested parties to monitor what's going on in the South African parliament. With specific 
+focus on tracking the progress of legislation as it moves through the various phases: from being introduced for the 
+first time to finally being approved and signed into law.
 
-This space should be used for describing a project's intended purpose.
+The purpose of the project is to improve parliamentary oversight, make the parliamentary process more accessible
+and improve transparency surrounding the activities of parliament.
 
 ## How it works
 
-Describe the main user interface, and provide a link if it is already in production.
+The project consists of the following major components:::
 
-If the project implements an API, list the API endpoints.
-
-To start out with this template on a new project:
-
-    1. Create a new empty repo on GitHub, called my-new-project
-    2. Checkout this template to the new project's directory on your local drive
-        git clone git@github.com:Code4SA/project-template.git my-new-project
-    3. Update the project's "origin" remote to point to the new GitHub repo:
-        cd my-new-project
-        git remote set-url origin git@github.com:Code4SA/my-new-project.git
-    4. Push the template to the empty GitHub repo:
-        git push origin master
+  * User-facing website, including free and paid-for content (built using Flask, Jinja2 templates, Bootstrap and jQuery)
+    * http://www.pmg.org.za
+  * Database (PostgreSQL)
+  * Search engine (Elastic Search)
+  * Admin interface (Flask-Admin, integration with MailChimp)
+    * http://admin.pmg.org.za
+  * API (Flask)
+    * http://api.pmg.org.za
 
 ## Contributing to the project
 
@@ -36,13 +35,26 @@ If you want to contribute to the code, please fork the repository, make your cha
 
 ### Local setup
 
-Explain what is needed for setting up a development environment.
+TODO: Explain local setup
 
 ### Deploy instructions
 
-Explain how this project can be deployed, should you be hit by a bus.
+If you have SSH access to the server where the staging/production app is hosted, you can deploy updates. First,
+if you haven't done it yet, install `fabric`:::
+
+  sudo pip install fabric
+  
+Now, deploy the latest code from this project's master branch on GitHub:::
+  
+  fab staging deploy
+  
+If you need to set up a completely new (Ubuntu 14.04 and above) server to host this application:::
+
+  fab staging setup
+  fab staging deploy 
+
 
 ### Maintenance
 
-Add any notes on what might be needed to keep this code running for a long time.
+TODO: Add any notes on what might be needed to keep this code running for a long time.
 

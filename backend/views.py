@@ -128,3 +128,15 @@ def resource_list(resource, resource_id=None):
         next = flask.request.url_root + resource + "/?page=" + str(page+1)
     out = serializers.queryset_to_json(queryset, count=count, next=next)
     return send_api_response(out)
+
+
+@app.route('/', )
+def landing():
+    """
+    List available endpoints.
+    """
+
+    out = {'endpoints': []}
+    for resource in api_resources.keys():
+        out['endpoints'].append(API_HOST + resource)
+    return send_api_response(json.dumps(out, indent=4))

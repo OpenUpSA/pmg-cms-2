@@ -198,7 +198,6 @@ class Organisation(db.Model):
     parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=2)
 
     to_dict = serializers.organisation_to_dict
-    joined_relations = ['parent', 'info']
 
     def __unicode__(self):
         return u'%s' % self.name

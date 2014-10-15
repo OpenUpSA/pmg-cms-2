@@ -101,9 +101,9 @@ class Bill(db.Model):
     type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
     type = db.relationship('BillType', backref='bills')
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    place_of_introduction = db.relationship('Organisation', backref='bills_introduced')
+    place_of_introduction = db.relationship('Organisation')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
-    introduced_by = db.relationship('Member', backref='bills_introduced')
+    introduced_by = db.relationship('Member')
 
     def code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)

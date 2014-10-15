@@ -101,9 +101,9 @@ class Bill(db.Model):
     type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
     type = db.relationship('BillType', backref='bills')
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    place_of_introduction = db.relationship('Organisation', backref='bills_introduced')
+    place_of_introduction = db.relationship('Organisation')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
-    introduced_by = db.relationship('Member', backref='bills_introduced')
+    introduced_by = db.relationship('Member')
 
     def code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
@@ -195,7 +195,7 @@ class Organisation(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    parent = db.relationship('Organisation')
+    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=2)
 
     to_dict = serializers.organisation_to_dict
 
@@ -212,7 +212,7 @@ class CommitteeInfo(db.Model):
     contact_details = db.Column(db.String(1500))
 
     organization_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    organization = db.relationship('Organisation', backref='info')
+    organization = db.relationship('Organisation', backref=backref('info', lazy='joined', uselist=False))
 
     def __unicode__(self):
         return u'%s' % self.about

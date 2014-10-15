@@ -5,6 +5,7 @@ from flask import g, request, abort, redirect, url_for, session, make_response
 from functools import wraps
 import json
 from sqlalchemy import func, or_, distinct, desc
+from sqlalchemy.orm import joinedload
 import datetime
 from operator import itemgetter
 import re
@@ -35,6 +36,7 @@ class ApiException(Exception):
             "message": self.message
         }
         return rv
+
 
 @app.errorhandler(ApiException)
 def handle_api_exception(error):
@@ -90,7 +92,8 @@ def send_api_response(data_json):
 api_resources = {
     "committee": db.session.query(Organisation) \
         .filter_by(type='committee') \
-        .order_by(Organisation.parent_id, Organisation.name),
+        .order_by(Organisation.parent_id, Organisation.name) \
+        .options(joinedload('members')),
     "committee-meeting": db.session.query(Event) \
         .join(EventType) \
         .filter_by(name='committee-meeting') \
@@ -102,7 +105,7 @@ api_resources = {
 @app.route('/<string:resource>/<int:resource_id>/', )
 def resource_list(resource, resource_id=None):
     """
-    Generic endpoint for lists of resources.
+    Generic resource endpoints.
     """
 
     if not api_resources.get(resource):
@@ -128,3 +131,15 @@ def resource_list(resource, resource_id=None):
         next = flask.request.url_root + resource + "/?page=" + str(page+1)
     out = serializers.queryset_to_json(queryset, count=count, next=next)
     return send_api_response(out)
+
+
+@app.route('/', )
+def landing():
+    """
+    List available endpoints.
+    """
+
+    out = {'endpoints': []}
+    for resource in api_resources.keys():
+        out['endpoints'].append(API_HOST + resource)
+    return send_api_response(json.dumps(out, indent=4))

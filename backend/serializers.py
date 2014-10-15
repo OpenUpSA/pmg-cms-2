@@ -2,6 +2,7 @@ import json
 from datetime import datetime, date
 from app import db, logger, app
 from operator import itemgetter
+from sqlalchemy import inspect
 
 API_HOST = app.config["API_HOST"]
 
@@ -37,10 +38,12 @@ def model_to_dict(obj, include_related=False):
     tmp_dict = {
         key: getattr(obj, key) for key in columns
     }
-    # attributes from relations are ignored
-    if include_related:
-        relations = obj.__mapper__.relationships.keys()
-        for key in relations:
+
+    relations = obj.__mapper__.relationships.keys()
+    # 1/0
+    for key in relations:
+        # serialize eagerly loaded related objects, or all related objects if the flag is set
+        if include_related or key not in inspect(obj).unloaded:
             related_content = getattr(obj, key)
             if related_content:
                 try:
@@ -49,6 +52,9 @@ def model_to_dict(obj, include_related=False):
                     tmp_dict[key] = []
                     for item in related_content:
                         tmp_dict[key].append(model_to_dict(item))
+            join_key = obj.__mapper__.relationships['parent'].local_remote_pairs[0][0].name
+            if tmp_dict.get(join_key):
+                tmp_dict.pop(join_key)
     return tmp_dict
 
 
@@ -78,7 +84,7 @@ def queryset_to_json(obj_or_list, count=None, next=None):
         logger.debug("list of objs")
         results = []
         for obj in obj_or_list:
-            results.append(to_dict(obj, include_related=True))
+            results.append(to_dict(obj, include_related=False))
         out = {
             'count': count,
             'next': next,

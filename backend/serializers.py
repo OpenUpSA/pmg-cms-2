@@ -2,6 +2,7 @@ import json
 from datetime import datetime, date
 from app import db, logger, app
 from operator import itemgetter
+from sqlalchemy import inspect
 
 API_HOST = app.config["API_HOST"]
 
@@ -40,7 +41,8 @@ def model_to_dict(obj, include_related=False):
 
     relations = obj.__mapper__.relationships.keys()
     for key in relations:
-        if include_related or (hasattr(obj, 'joined_relations') and key in obj.joined_relations):
+        # serialize eagerly loaded related objects, or all related objects if the flag is set
+        if include_related or key not in inspect(obj).unloaded:
             related_content = getattr(obj, key)
             if related_content:
                 try:

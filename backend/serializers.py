@@ -37,10 +37,10 @@ def model_to_dict(obj, include_related=False):
     tmp_dict = {
         key: getattr(obj, key) for key in columns
     }
-    # attributes from relations are ignored
-    if include_related:
-        relations = obj.__mapper__.relationships.keys()
-        for key in relations:
+
+    relations = obj.__mapper__.relationships.keys()
+    for key in relations:
+        if include_related or (hasattr(obj, 'joined_relations') and key in obj.joined_relations):
             related_content = getattr(obj, key)
             if related_content:
                 try:
@@ -78,7 +78,7 @@ def queryset_to_json(obj_or_list, count=None, next=None):
         logger.debug("list of objs")
         results = []
         for obj in obj_or_list:
-            results.append(to_dict(obj, include_related=True))
+            results.append(to_dict(obj, include_related=False))
         out = {
             'count': count,
             'next': next,

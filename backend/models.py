@@ -195,9 +195,10 @@ class Organisation(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    parent = db.relationship('Organisation')
+    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=2)
 
     to_dict = serializers.organisation_to_dict
+    joined_relations = ['parent', 'info']
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -212,7 +213,7 @@ class CommitteeInfo(db.Model):
     contact_details = db.Column(db.String(1500))
 
     organization_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    organization = db.relationship('Organisation', backref='info')
+    organization = db.relationship('Organisation', backref=backref('info', lazy='joined', uselist=False))
 
     def __unicode__(self):
         return u'%s' % self.about

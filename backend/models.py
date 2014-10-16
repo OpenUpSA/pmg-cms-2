@@ -133,19 +133,23 @@ class EventType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
+    def to_dict(self, include_related=False):
+        # reduce this model to a string
+        return self.name
+
     def __unicode__(self):
         return u'%s' % self.name
 
 
 class Event(db.Model):
-
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
+    title = db.Column(db.String(250))
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
-    event_type = db.relationship('EventType')
+    type = db.relationship('EventType', lazy='joined')
     content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
     content = db.relationship('Content', backref='event')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
@@ -195,7 +199,7 @@ class Organisation(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=2)
+    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=1)
 
     to_dict = serializers.organisation_to_dict
 

@@ -6,7 +6,7 @@ from backend.models import *
 import parsers
 
 STATIC_HOST = app.config['STATIC_HOST']
-
+db.echo = False
 
 def strip_filpath(filepath):
 
@@ -164,7 +164,6 @@ def rebuild_db(db_name):
 
         report_obj = Content(
             type="committee-meeting-report",
-            title=parsed_report.title,
             body=parsed_report.body,
             version=0
         )
@@ -174,10 +173,11 @@ def rebuild_db(db_name):
         if committee_obj:
             committee_obj = committee_obj['model']
         event_obj = Event(
-            event_type=meeting_event_type_obj,
+            type=meeting_event_type_obj,
             organisation=committee_obj,
             date=parsed_report.date,
-            content=report_obj
+            content=report_obj,
+            title=parsed_report.title
         )
         db.session.add(event_obj)
         i += 1

@@ -51,7 +51,6 @@ def model_to_dict(obj, include_related=False):
                 except AttributeError as e:
                     tmp_dict[key] = []
                     for item in related_content:
-                        tmp_dict[key].append(model_to_dict(item))
                         if hasattr(item, 'to_dict'):
                             tmp_dict[key].append(item.to_dict())
                         else:

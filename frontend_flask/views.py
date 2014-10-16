@@ -2,10 +2,19 @@ from flask import request, flash, make_response, url_for, session, render_templa
 from frontend_flask import app, logger
 import requests
 from datetime import datetime, date
+import dateutil.parser
 import urllib
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
+
+
+@app.template_filter('pretty_date')
+def _jinja2_filter_datetime(iso_str):
+
+    format='%d %b %Y'
+    date = dateutil.parser.parse(iso_str)
+    return date.strftime(format)
 
 
 class ApiException(Exception):

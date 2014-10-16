@@ -33,25 +33,40 @@
       </div>
     </form>
 
-    <table class="table table-striped table-bordered">
-      {% for event in committee.events %}
-      {% if event.type == "committee-meeting" %}
-      <tr>
-        <td><nobr>{{ event.date | pretty_date }}</nobr></td>
-        <td>{{ event.title }}</td>
-      </tr>
-      {% endif %}
-      {% endfor %}
-    </table>
+    {%- set per_page = 20 -%}
+    {%- set num_pages = ((committee.events | length) / per_page) | int -%}
+    {%- if (committee.events | length) % per_page != 0 %}
+    {% set num_pages = num_pages + 1 %}
+    {% endif -%}
 
-    <ul class="pagination pagination-sm" style="margin-top: -14px">
-      <li ><a href="#" >&laquo;</a></li>
-      <li class="active"><a href="#">1</a></li>
-      <li><a href="#">2</a></li>
-      <li><a href="#">3</a></li>
-      <li><a href="#">4</a></li>
-      <li><a href="#">5</a></li>
-      <li><a href="#">&raquo;</a></li>
+    <div class="tab-content">
+      {% for i in range(num_pages) %}
+      <div class="tab-pane fade{% if loop.first %} in active{% endif %}" id="page-{{ loop.index }}">
+        <table class="table table-striped table-bordered">
+          {% if loop.last %}
+          {% set event_list = committee.events[loop.index0 * 20::] %}
+          {% else %}
+          {% set event_list = committee.events[loop.index0 * 20:loop.index * 20] %}
+          {% endif %}
+          {% for event in event_list %}
+          {% if event.type == "committee-meeting" %}
+          <tr>
+            <td><nobr>{{ event.date | pretty_date }}</nobr></td>
+            <td>{{ event.title }}</td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </table>
+      </div>
+      {% endfor %}
+    </div>
+
+    <ul class="pagination pagination-sm" role="tablist" style="margin-top: -14px">
+      <li><a href="#page-1" role="tab" data-toggle="tab">&laquo;</a></li>
+      {% for i in range(num_pages) %}
+      <li{% if loop.first %} class="active"{% endif %}><a href="#page-{{ loop.index }}" role="tab" data-toggle="tab">{{ loop.index }}</a></li>
+      {% endfor %}
+      <li><a href="#page-{{ num_pages }}" role="tab" data-toggle="tab">&raquo;</a></li>
     </ul>
   </div> <!-- /Reports -->
 
@@ -70,7 +85,11 @@
 
         {% for member in committee.members[0:break] %}
         <li class="clearfix">
+          {%- if member.profile_pic_url %}
           <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
+          {% else %}
+          <p class="text-muted">No image available</p>
+          {% endif %}
           <h4>{{ member.name }}</h4>
           <a href="#" class="text-danger">National Assembly</a>
           <a href="#" class="text-primary">ANC</a>

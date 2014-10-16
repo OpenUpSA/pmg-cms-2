@@ -9,7 +9,313 @@
 {% block page %}
 
 <div class="container-fluid">
+<div class="col-sm-12">
+  <ul class="list-inline top-links">
+    <li><a href="#">Latest Reports</a></li>
+    <li><a href="#">Labour Reports</a></li>
+    <li><a href="#">National Reports</a></li>
+  </ul>
+</div>
 
+<div class="col-sm-12">
+  <h3 class="red"><span class="glyphicon glyphicon-flash"></span> Report</h3>
+</div>
+
+<div class="col-sm-8 justify-p">
+  <h1>{{ event.title }}</h1>
+
+  <h3>Committee: <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
+  <h3>Date of Meeting: {{ event.date | pretty_date }}</h3>
+  <!--<h3>Chairperson:  <a href="#">Ms L Yengeni (ANC)</a></h3>-->
+
+  {{ event.content.body | safe }}
+
+  <!--<h3>Summary</h3>-->
+  <!--<p>Employer associations and labour unions adopted opposing points of view when the <a href="#">Portfolio Committee on Labour</a> hosted a workshop to discuss the implementation of a national minimum wage.-->
+
+  <!--</p><p>The <a href="#">Free Market Foundation (FMF)</a> said it stood strongly for political and economic freedom and on how to ensure that the market economy was based on supply and demand, with little or no government control.  Although South Africa had political freedom, the majority of its citizens still battled with economic freedom, and this was clear from the level of unemployment and glaring income inequalities.    The Committee was urged to evaluate the national minimum wage not on its good intentions, but precisely on its possible unintended consequences, especially for the most vulnerable workers, like farm and domestic workers.  The introduction of minimum wages in the agricultural sector had totally disrupted farms in the Western Cape and Kwazulu-Natal, where unproductive workers had been laid off in order to save production costs.  It was important for the government to protect businesses from militant trade unions, who had already warned about a ban on labour brokers, the introduction of a minimum wage, and various activities designed to establish workers’ rights.  If the government failed to protect businesses from the militant style of trade unions, as was evident over the past five years, then a loss of jobs and the closing down of factories or businesses was inevitable.-->
+
+  <!--</p><p>In a similar vein, the <a href="#">National Employers Association of South Africa (NEASA)</a> emphasised that a wrong minimum wage approach would certainly destroy jobs, increase unemployment and consequently increase inequality, and by the time it was realised the implementation was inappropriate, it might be impossible to change. What really complicated the discussion on a national minimum wage was the fact that there was no adequate information on what was envisaged.  There were still those who believed that a free market approach was the only answer to the challenges of unemployment, poverty and inequalities. There were others, however, who believed that an unchecked free market was not the answer, and they were growing impatient with the pace of transformation and the inability of the free market to produce the results they desired. It was indeed clear that the labour unions strongly believed that state interference was needed to achieve equality and end the exploitation of the workers.</p><p>-->
+  <!--However, the implementation of unrealistic wages in the metal and engineering industries, the clothing and textiles sector, and in agriculture, had resulted in major job losses and business closures.-->
+
+  <!--</p><p>The union representatives argued that a national minimum wage would ensure that workers were not exploited by the capitalists for self-enrichment, and would also improve the living conditions of the working class.  It was suggested that in order to avoid the unintended consequences of a national minimum wage, there was a need to have a provision for employers who could prove they could not afford the minimum wage, to apply for exemption.-->
+
+  <!--</p><p>The assertion that the only way to raise the income of the employees was to invest heavily in skills development and education, was rejected, as some jobs like cleaning and farm workers required hardly any qualification or experience.  Another unionist said the presentations were silent on an acceptable minimum wage in the country.  Full-time workers in the clothing sector were still earning less than R2 500 a month, and this was morally unacceptable in a country with a racist and exclusionary history like South Africa.-->
+
+  <!--</p><p>In discussion, the employers said there was a need to put more emphasis on labour-intensity of economic production and growth. The promulgation of a minimum wage which was not in line with what the market dictated, would have tragic consequences for the millions of unskilled, unemployed South Africans, whose only hope of regular employment was a more labour-intensive growth approach.-->
+
+  <!--</p><p>The Members questioned whether the loss of jobs in agriculture and the clothing industry was caused by the implementation of minimum wages or other factors.  A representatives of the clothing sector said it was not only minimum wages that had added to the loss of jobs in the industry, but other multifaceted factors. One factor that had led to job losses was the massive import penetration coming from places like China, and the SA Revenue Service (SARS) had already indicated it had lost almost R3 billion in customs duties because of non-compliance from industry.  </p><p>-->
+  <!--A union representative said it was clear from the NEASA presentation that employers were worried only about making a profit at the expense of exploited workers.  Any person who cared about the future of South Africa needed to support deliberate policies that would drastically reduce unemployment, poverty and inequality.  The Committee was warned that if these triple challenges were not adequately addressed, the country would continue to witness daily protests and labour strikes.  By international standards, employers needed to realise that higher wages were more likely to lead to higher productivity and stimulate economic growth.</p>-->
+
+  <!--<h3>Minutes</h3>-->
+  <!--<h4>Chairperson’s opening remarks</h4>-->
+  <!--<p>The Chairperson said the purpose of the meeting was to receive a presentation from the Free Market Foundation (FMF), the National Employers’ Association of South Africa (NEASA) and the South African National Taxi Council (SANTACO) about the implementation of the National Minimum Wage (NMW) in South Africa. She indicated that following President Jacob Zuma’s request in the State of the Nation Address (SONA) that a national minimum wage needed to be investigated, the Committee was hosting workshops in Parliament on the matter. She handed over to the FMF to make its presentation.</p>-->
+
+  <!--<h4>Briefing by Free Market Foundation (FMF)</h4>-->
+  <!--<p>Mr Loane Sharp, Economist, FMF, gave a brief overview of the presentation and said he would focus on both the historical and current labour relations in South Africa, looking mainly at the impact of a national minimum wage on the economy and job creation. The FMF stood strongly for political and economic freedom and on how to ensure that the market economy was based on supply and demand, with little or no government control.  Although South Africa had political freedom, the majority of its citizens still battled with economic freedom, and this was clear in the level of unemployment and glaring income inequalities.</p>-->
+
+  <!--<p>The discovery of gold on the Witwatersrand in 1886 had led to Europeans flocking from countries like Denmark, England and Scotland in an attempt to make their fortunes. It was evident that after the discovery of gold, a lot of capital was needed, and as the number of Europeans invested in mines, the mineral wealth of the county was suddenly concentrated in the hands of a very small group of people. The majority of white miners became workers instead of owners, and the trade unions started getting active in the promotion of workers’ rights.  By 1904, 80% of the white mine workers had unionised and the unions were aggressive and extremely militant, to the extent that they ended up having more power than the mine owners.  In 1922, white mineworkers occupied the towns of Boksburg, Benoni and Germiston and the military was sent to recapture these towns.  This was followed by the Rand Rebellion, where over 200 white mineworkers were killed and other hospitalised.  This reflected the extraordinary power of trade unions in sensitising workers to extreme violence and rebellion.  Mr Sharp compared the Rand Rebellion to the Marikana Massacre, and warned that it was important for the government to protect businesses from militant trade unions, who had already warned about a ban on labour brokers, the introduction of a minimum wage, and various activities designed to establish workers’ rights.  If the government failed to protect businesses from the militant style of trade unions, as was evident over the past five years, then a loss of jobs and the closing down of factories or businesses was inevitable. </p>-->
+
+  <!--<p>Mr Sharp said that when the new government took power in 1994, one of the things that was done was to reverse the privileges of white farm owners, but what was unanticipated was that most of them lost their market subsidies for operating agriculture.  It was also clear that employment in the agricultural sector between the years 1996 to 2014, fell from 2.1 million to 707 000.   This was evidence of good intentions from the government, without considering the unintended consequences. He urged the Members to evaluate the national minimum wage not on its good intentions, but precisely on its possible unintended consequences, especially for the most vulnerable workers, like farm workers and domestic workers.  The introduction of minimum wages in the agricultural sector had totally disrupted farms in the Western Cape and Kwazulu-Natal, where unproductive workers had been laid off in order to save production costs.</p>-->
+
+  <!--<h4>Discussion</h4>-->
+  <!--<p>Mr M Bagraim (DA) indicated that it was important to rely on statistics and studies that had been done.  He believed that the loss of jobs in the agricultural sector might not necessarily have been caused by the implementation of the national minimum wage, but other factors such as an increase in automation and mechanisation in the industry.</p>-->
+
+  <!--<p>Mr Sharp responded that the impact of the implementation of the minimum wage was also evident in the mining sector, where in the past 20 years, employment had fallen from 1.4 million to 450 000. He reiterated that the minimum wage affected the most vulnerable workers -- unskilled labour -- and it was evident that where a minimum wage had been introduced, employment dropped drastically.</p>-->
+
+  <!--<h4>Briefing by National Union of Metalworkers of South Africa (NUMSA)</h4>-->
+  <!--<p>Mr Vuyo Lufele, Regional Secretary, National Union of Metalworkers of South Africa (NUMSA), said he believed a national minimum wage was needed, considering the levels of poverty and inequalities in the country.  A national minimum wage would ensure that workers were not exploited by the capitalists for self-enrichment, and would also improve the living condition of the working class.  He suggested that in order to avoid the unintended consequences of a national minimum wage, there was a need to have a provision for employers who could prove they could not afford the minimum wage, to apply for exemption.</p>-->
+
+  <!--<p>Ms P Mantashe (ANC) asked whether the job losses in the agricultural sectors were the result of the minimum wage, or retaliation against farm workers who had been exploited and paid meagre salaries for a very long time.</p>-->
+
+  <!--<h4>Briefing by Confederation of South African Workers Union (CONSAWU)</h4>-->
+  <!--<p>Mr Llewellyn Domingo, General Secretary, Confederation of South African Workers Union (CONSAWU), said it was absurd that the FMF completely rejected a national minimum wage without offering an alternative policy that would reduce income inequalities and poverty in the country.  It was clear that businesses used retrenchment as a threat to the labour unions that insisted on the protection of vulnerable workers in the country.</p>-->
+
+  <!--<p>Mr Sharp responded that the only alternative to a national minimum wage was to raise the skills of workers, improve the quality of education and provide experience.</p>-->
+
+  <!--<p>The Chairperson interrupted and asked whether skills, qualification and experience were relevant to vulnerable workers.</p>-->
+
+  <!--<p>Mr Sharp responded that skills, qualification and experience were important as the employer had the option to either raise the wages of the employees, or look for alternative employment. Skilled employees with qualifications were likely to look for better paying jobs, compared to those who were vulnerable.  He did not believe that workers were more vulnerable in particular sectors, and gave examples of foremen in agriculture and security companies who had more skills and experience, were able to move to more paying jobs. Young people under the age of 25 were the most vulnerable in the labour market, as they had the lowest skills, experience and qualifications.  The only reason organised labour insisted on a national minimum wage was that trade unions were interested in protecting their members.  He felt that it was a misconception to claim that trade unions spoke for the unemployed. He added that if the national minimum wage was too high, it would exclude competition from young people trying to enter the labour market. </p>-->
+
+  <!--<p>Mr E Nyekemba (ANC) said the presentation seemed to discourage any attempt by South Africa to implement a national minimum wage, as it did not offer any solutions to prevent the unintended consequences of a minimum wage. It was important to consider that South Africa was not an island. It was part of the global community, and there were many countries where a national minimum wage was implemented and managed to reduce income inequalities drastically. He asked the opinion of the FMF on the study that had been done by the International Labour Organisation (ILO) in relation to a national minimum wage. The presentation had failed to take into consideration the sectoral determination that had existed during 1994 in the farming industry.</p>-->
+
+  <!--<p>Mr Domingo also disputed the assertion that the only way to raise the income of the employees was to invest heavily in skills development and education, as some jobs like cleaning and farm workers hardly required any qualification or experience.  It was absurd for Mr Sharp to claim that labour unions were interested only in protecting their members, and showed complete disregard for the high levels of unemployment and racial inequalities in the country.</p>-->
+
+  <!--<p>The Chairperson urged participants to respect each other’s opinions, as everyone was coming from different philosophical backgrounds and organisations.</p>-->
+
+  <!--<h4>Briefing by Congress of South African Trade Unions (COSATU)</h4>-->
+  <!--<p>Mr Neil Coleman: Strategist of the Congress of South African Trade Unions (COSATU) said that the presentation by the FMF was not based on evidence, and was factually incorrect. The FMF was not clear where it wanted the state to intervene.   It was strange that Mr Sharp had admitted that the collapse of the agricultural sector after 1994 was caused by the withdrawal of government subsidies, but the FMF was opposed to any subsidy as they believed it interfered with the operation of the markets.  He said COSATU emphasised that there was no categorical link between the level of wages and levels of employment, as it was clear that in most cases where wages had risen, more job opportunities were created and where wages had stagnated, there was a higher loss of jobs. Mr Coleman emphasised that what was quite clear was that the FMF was opposed to collective bargaining and a national minimum wage.  </p>-->
+
+  <!--<h4>Briefing by National Union of Metalworkers of SA (NUMSA)</h4>-->
+  <!--<p>Mr Mohammed Ismail, Legal Officer, National Union of Metalworkers of SA (NUMSA), said that a national minimum wage was only a part of solving the problem of income inequalities and poverty in the country.  He agreed that skills development and qualification played a central role in the increase of wages, but disputed that this was the case with vulnerable workers who were extremely exploited for benefit of wealthy employers.   In order to avoid another possible Marikana Massacre, workers needed to be given decent wages so that they could be able to support their families and themselves.</p>-->
+
+  <!--<p>Mr Sharp responded that there seemed to be a misconception over what the FMF represented.  He agreed with the Committee that excellent working conditions, good wages and stable jobs were appropriate objectives, but still maintained that a national minimum wage was not a suitable policy to achieve those objectives.</p>-->
+
+  <!--<p>Mr M Plouamma (Agang) said it was quite clear that workers in South Africa were extremely unhappy with income inequalities and poverty, and felt that the income of workers had declined while those of employers had increased drastically. He asked whether the FMF had any strategy in place to deal with the inequalities inherited from the apartheid regime. He viewed the minimum as an appropriate policy to address the poverty and exploitation of workers, as workers were not only given wages for survival, but decent living wages. He gave the example of Henry Ford, who had increased the wages of employees so that they could afford to buy his cars, and also increase productivity. He said Mr Sharp’s comparison between the Rand Rebellion and the Marikana Massacre missed the fact that in the Rand Rebellion, the white mineworkers had been fighting for decent wages that catered only for white people, and excluding black miners.</p>-->
+
+  <!--<p>Mr Sharp responded that racism and income inequalities were still huge problems in South African.   The FMF was against the enslavement and exploitation of other people, and supported economic freedom for the majority of South Africans.  </p>-->
+
+  <!--<h4>Briefing by South African Transport and Allied Workers (SATAWU)</h4>-->
+  <!--<p>Ms Tembela Dakuse, Provincial Treasurer, South African Transport and Allied Workers (SATAWU), said the road to a minimum wage had already begun, and added that whenever there were changes there was always resistance.   It was incorrect for Mr Sharp to say supervisors, whether in the security or farming industry, were not exploited, as some were earning meagre salaries of less than R3 000 a month.  It was misguided to say the labour unions were interested only in protecting their members, as they had made many strides to ensure that workers in the country earned decent wages. She reiterated that South Africans could not afford to be content with the status quo, and needed to find ways to dismantle the apartheid structure that still continued to haunt the majority of people.</p>-->
+
+  <!--<p>Ms F Loliwe (ANC) advised that in future, the FMF needed to make a written presentation to show the value of the invitation to the Parliament.  The presentation had been silent on an alternative policy that could be implemented to reduce income inequalities and poverty in the country.</p>-->
+
+  <!--<p>Mr Sharp responded that he accepted the advice to produce a written presentation when presenting to committee meetings.  He had thought that the presentation was going to be brief.  </p>-->
+
+  <!--<p>Mr Jeremy Gingras, Executive Director, Local Cape Chamber, asked whether there had been a cost-benefit analysis of a national minimum wage, assuming that a targeted amount had been set.</p>-->
+
+  <!--<p>Mr Sharp responded that there were two groups of people who benefited from a minimum wage -- organised labour and large businesses, as they were represented overtly in employment.  He also responded that the National Economic Development and Labour Council (NEDLAC) was supposed to conduct a cost-benefit analysis of the national minimum wage.  </p>-->
+
+  <!--<p>The Chairperson said that the FMF presentation had made emphasis on the need for economic freedom for the majority of South Africans, but seemed to be against policies aimed at supporting vulnerable workers. She said it was important to take the experiences of other countries and apply them to the local context of the country.</p>-->
+  <!--<p>Mr Vusumzi Tyhalwa, Shop Steward, NUMSA, said it was indeed clear that the FMF had distorted the primary purpose of the labour unions in the country, which were clearly opposed to the exploitation of workers.  The Freedom Charter was a cornerstone in dealing precisely with the economic and political liberation of the majority of the people in the country, and NUMSA believed the current situation in South Africa reflected the opposite of the Freedom Charter.   Mr <p>Sharp needed to come up with an evidence-based document that would be against the implementation of a national minimum wage.  </p>-->
+
+  <!--<h4>National Union of Public Service and Allied Workers (NUPSAW)</h4>-->
+  <!--<p>Mr Omar Parker, Provincial Administrator, National Union of Public Service and Allied Workers (NUPSAW), reminded Mr Sharp that labour unions had been supporting the rights of the workers, and it was unacceptable to claim that they were interested only in protecting the interests of their members. He agreed with the FMF that the national minimum wage was not the only appropriate vehicle to achieve economic emancipation in the country, as the labour unions had various other ways to reduce income inequalities, like the abolition of labour brokers.  </p>-->
+
+  <!--<p>Mr Coleman, of Numsa, said there was a need to align the debate on the national minimum wage with how it could address poverty and inequalities, rather than the number of jobs that would be lost.  It was clear that the government had other coherent packages that would reduce poverty, and a national minimum wage was part of that package.  It was a misconception to claim that the implementation of a national minimum wage would destroy small businesses, as it would be difficult to enforce in small businesses. The FMF seemed to be conveniently unaware that the unemployed and employed lived in the same households. and that those employed were obligated to support the unemployed extended families, as had been was the case with the Marikana Massacre. </p><p>-->
+  <!--Mr Sharp responded that Mr Coleman was being inconsistent, as he was calling for evidence-based reasoning but had quoted strings of anecdotes from the local newspaper.  He suggested that the Committee should dismiss what he had offered.</p>-->
+
+  <!--<p>The Chairperson thanked the FMF for the presentation and everyone for their input.  She then handed over to NEASA to make its presentation.</p>-->
+
+  <!--<h4>National Employers’ Association of South Africa (NEASA)</h4>-->
+
+  <!--<p>Mr Gerhard Papenfus, CEO, NEASA, said it was a pleasure to make a presentation about the views of NEASA on the implementation of a national minimum wage in the country. There was nobody today that could be against good wages for employees, as the principle of proper remuneration was an honest reward for an honest day’s work, and also had the potential to improve the standard of living of workers.</p>-->
+
+  <!--<p>However, it was necessary to ensure that the implementation of a national minimum wage did not come at the price of jobs and the exacerbation of inequalities. The ever increasing gap between the wealthy and the poor was a concern to everyone who cared about South Africa and its people, as the country was still grappling to implement  appropriate policies that would put a dent on poverty and unemployment.  People would always differ on the manner in which to address these challenges, and policies had to be found that would be able to balance between protecting vulnerable workers, without the negative consequences of increased unemployment.</p>-->
+
+  <!--<p>Mr Papenfus emphasised that a wrong minimum wage approach would certainly destroy jobs, increase unemployment and consequently increase inequality, and by the time it was realised the implementation was inappropriate, it might be impossible to change. What really complicated the discussion on a national minimum wage was the fact that there was no adequate information on what was envisaged. There was still confusion on whether the minimum should be at a level which was not harmful to employment, so the presentation was based on the premise that a minimum wage would be harmful, or impact negatively on employment.</p>-->
+
+  <!--<p>He emphasised that there were still those who believed that a free market approach was the only answer to the challenges of unemployment, poverty and inequalities. There were others, however, who believed that an unchecked free market was not the answer, and they were growing impatient with the pace of transformation and the inability of the free market to produce the results they desired. It was indeed clear that the labour unions strongly believed that state interference was needed to achieve equality and end the exploitation of the workers. </p>-->
+
+  <!--<p>Mr Papenfus said there were still those who believed in less control and less interference, as they believed that high economic growth would eventually lead to increased employment and levels of earnings.  “A rising tide lifts all ships” by JF Kennedy had clearly illustrated this approach. It was clear that the stronger the economy, the more jobs it created and the more everybody -- the poor, the middle class and even the wealthy -- benefited.  The free market approach was based to a large extent on the premise that personal improvement was the only way to sustain a higher level of individual development. He remarked that the free market usually did not bring immediate results, and was also an approach that tended not to benefit those who failed to develop their own skills.  It was believed to be exploitative towards workers.</p>-->
+
+  <!--<p>Mr Papenfus told Members that state interference in the form of a national minimum wage had certain potential pitfalls. One argument in favour of a high minimum wage was that it would have a knock-on effect, and stimulate demand in the economy.  However, if this happened at all, it would likely take time to take effect.  In the short term, a national minimum wage was likely to increase an employer’s wage bill, as it would not be met by the same increase in demand. There was also no guarantee that the increased pay would be met by increased productivity, and this was likely to drive up costs and would have a negative effect on consumer spending, which ultimately would lead to job losses. This approach relied heavily on the dynamics of the free market to eventually absorb the impact of an unrealistic statutory minimum wage on the market.  There was no guarantee that this would suddenly happen, so the introduction of an unrealistic minimum wage and the potential for increased demand would be too far apart, resulting in jobs being lost during that period.</p>-->
+
+  <!--<p>The question was not whether increased wages, which were not accompanied by increased productivity and an increased demand for products, would destroy jobs, but how many jobs would be destroyed.  One had to weigh up the cost of job destruction and unemployment against the benefits of higher wages for those employed. The moral principle which needed to be addressed was the unacceptability of high wages for those few who were fortunate to be employed versus the alternative of higher employment, but at a lower wage. The consequence of a model of high wages and low employment was that ultimately consumer spending power was limited, because of the dependence of a large number of dependents on the income of a single breadwinner.  Raising the price of anything, while holding other variables constant, always reduced consumption. For instance, a tax on alcohol had been levied to discourage consumption. Similarly, a national minimum wage established at a level unrelated to productivity and demand, would inevitably lead to job losses.</p>-->
+
+  <!--<p>Mr Papenfus remarked that when anyone forced businesses to pay employees more than what they could produce in terms of their skills level and productivity, employers tended to respond by either hiring better skilled employees - which closed the door to the employment market for those insufficiently educated, skilled or experienced - or replacing jobs with automation. The higher the statutory wage, the less accessible the labour market would be for unskilled people and therefore those in need of skills development.  </p>-->
+
+  <!--<p>In order to further illustrate his point, he took the Committee through two very important industries in South Africa.  Over the past three decades, the Metal and Engineering Industries Bargaining Council had established wages for that Industry which were completely unrealistic. In fact, the minimum wage for that Industry was now approximately 40% higher than the minimum wage applicable to the second most expensive industry in South Africa.  As a result the metal industry had shed more jobs than any other industry in South Africa.  Over the last thirty years, it had lost 700 000 jobs.  In the last five years alone, the industry had already lost 250 000 jobs.  Employment in the manufacturing sector, which had lost a further 59 000 jobs in the second quarter of this year, was now at the same level that it was in 1972.  In the meantime, the population had increased from 22 to 53 million people. In this industry, the door to employment for young and less skilled people was literally closed, and was not likely to be opened in future.</p>-->
+
+  <!--<p>The second example was the clothing and textile industry.  Market-unrelated wages in this industry, established by the Bargaining Council for the Clothing Industry, had put a great many employers out of business -- and many more workers out of jobs. When wages were established at a level where it was no longer possible to compete with China, companies simply went out of business. This had caused tremendous hardship, especially for rural communities where no alternative opportunities existed, other than the clothing manufacturing industry. The simple point here was that the 'market' was the only ‘institution’ which could establish a sustainable wage.</p>-->
+
+  <!--<p>Mr Papenfus said if anybody interfered with this market arrangement and prescribed a wage which the market (or employers) could not afford, it would respond in a particular way -- it would reduce staff, mechanise or close down.  Government could prescribe a minimum wage but it completely defeated the purpose if it led to increased unemployment and therefore increased poverty.  He suggested it was impossible to force an employer to employ. Thomas Sowell had made a very important statement when he said that 'there are no solutions; there are only trade-offs'.  A government could establish a minimum wage, but unless the employer got a particular return, both in terms of productivity and a demand for goods, it would result in increased unemployment. In South Africa, where unemployment had to be very high on the national agenda, we must concern ourselves with the labour-intensity of economic production and growth. The promulgation of minimum wages, which was not in line with what the market dictated, would  be tragic for the millions of unskilled, unemployed South Africans, whose only hope of regular employment was through a more labour-intensive growth approach.</p>-->
+
+  <!--<p>Mr Papenfus concluded by indicating that unemployment, poverty and inequality would only be eradicated by the introduction of a new approach, by both employers and employees, in the work environment. The country would have to become internationally competitive and start creating millions of jobs. Cosmetic changes might satisfy immediate popular demand, but in the long term it would not be sustainable, and by the time it proved to be no longer affordable, South Africa would face an increased dilemma -- even larger than what it was currently experiencing.  In addressing unemployment, poverty and inequality, it was important to make sure that one built on rock, and not on sand.</p>-->
+
+  <!--<p>Mr Papenfus appealed to government and the Member that a national minimum wage, if that was indeed the route that government wanted to take, needed to be fixed at a level where new entrants to the labour market could be absorbed at an affordable and sustainable cost, and that a healthy trade-off between a minimum wage and employment be maintained at all times.  Government would need a huge amount of wisdom in addressing this issue.</p>-->
+
+  <!--<h3>Discussion</h3>-->
+
+  <!--<p>Ms S van Schalkwyk (ANC) and remarked that it was clear that the NEASA presentation was only interested in protecting the rights of employers, and not those of vulnerable workers. It was concerning that the presentation rebutted a national minimum wage without coming up with an alternative plan, and mentioned little about international experience with the implementation of a minimum wage.</p>-->
+
+  <!--<p>Mr Papenfus responded that the presentation wanted to represent the side of the employers, as they played a crucial role in hiring people in any country. He reiterated that the implementation of a national minimum wage was likely to lead to closure of businesses, and this needed to be of concern to every South African.  </p>-->
+
+  <!--<p>Mr Domingo indicated that the presentation made it clear that NEASA was in support of the market as a driver in the reduction of unemployment, poverty and inequality.  The presentation showed complete disregard for the exploited workers in the country and was largely interested only in the interests of businesses.</p>-->
+
+  <!--<p>Mr Coleman said it was difficult to engage with the presentation, as it was riddled with contradictory statements.  At one point, it was in support of a minimum wage and then would claim it would lead to job losses and further inequalities. The presentation was also silent on an acceptable minimum wage in the country. He indicated that full-time workers in the clothing sector were still earning less than R2 500 a month, and this was morally unacceptable in a country with a racist and exclusionary history like South Africa.</p>-->
+
+  <!--<p>Mr Papenfus replied that it was true that some of the employees in the clothing industry were getting paid meagre salaries, but this was precisely because the market could not accommodate paying unreasonable salaries.  If the minimum wage was increased to an unreasonable level, the employers would most likely retrench unproductive employees. He expressed his concern that South Africa had become an importer of good instead of a producer, and this was also likely to lead food shortages.    </p>-->
+
+  <!--<p>Mr Ismail stated that the major reason for the loss of jobs in the clothing sector was the reduction of tariffs and the Department of Trade and Industry’s policies. He added that the trade unions needed to reject reliance on the market to tackle the issue of poverty and inequalities in South Africa.</p>-->
+
+  <!--<p>Mr Papenfus responded that there was a need to be careful when comparing the implementation of minimum wages in countries that had high unemployment, like South Africa, with European and Asian countries that had lower unemployment rates of around 5%.  He repeated that interference in the markets was likely to lead to further unemployment and poverty. He controversially suggested that the labour unions needed to establish businesses themselves and pay employees unreasonable wages, as they were against the employers and made them to feel guilty about hiring people and creating jobs. </p>-->
+
+  <!--<p>The Chairperson said the presentation had failed to give statistics and the category of the employers represented by NEASA. The presentation should have focused more on the South African context, as the country presented different challenges.</p>-->
+
+  <!--<p>She announced to the Members that the South African National Taxi Council (SANTACO) would not be able to make presentation today due to time constraints.</p>-->
+
+  <!--<p>Mr Simon Eppel, Researcher, South African Clothing and Textile Workers’ Union (SACTWU), said it was understandable that the topic on the national minimum wage would become an emotional one, and a tussle between employers and the trade unions.  The clothing industry had had tough times in recent years, as some employees had been retrenched or businesses had closed down.  It was not only minimum wages that had added to the loss of jobs in the industry, but other multifaceted factors. One factor that had led to job losses was a massive import penetration coming from places like China, and the SA Revenue Service (SARS) had already indicated it had lost almost R3 billion in customs duties because of non-compliance from the industries.   It was incorrect for people to claim that the closure of the clothing industry in Newcastle was the result of higher wages, as the majority of employees were still earning less R2 500 a month.</p>-->
+
+  <!--<p>Mr Papenfus agreed that imports had caused a major loss of jobs in the clothing industry, but some of the factories had also indicated that they had decided to close down because they were unable to pay minimum wages.</p>-->
+
+  <!--<p>Mr Coleman commented that according to 2013 Statistics South Africa, the median wage for employees in the manufacturing sector was R3 652.   This was a concern, as it meant that about 50% of the employees in the manufacturing industry earned less than R3 652.          </p>-->
+
+  <!--<p>Mr Plouamma said that the purpose of the workshop was to evaluate both the positive and unintended consequences of the national minimum wage. He was happy that NEASA had managed to admit that South Africa was a highly unequal country and this required progressive policies for the inequalities to be addressed. He wanted clarity on how a high minimum wage would have a knock-on effect and stimulate demand in the country.  He urged NEASA to provide figures on the profit that had been made by employers, so it could be compared to that which was made by employees.</p>-->
+
+  <!--<p>Mr Tyhalwa said he also felt that the presentation had failed to link the implementation of a national minimum wage to the context of South Africa, especially when looking at the impact of apartheid and colonisation.  It was unacceptable for Mr Papenfus to become emotional when it came to addressing the issue of exploitation of workers at the hands of the employers and dealing with the ills of the past.  Mr Papenfus’s remark that labour unions needed to open businesses and pay employees unreasonable salaries was another emotional response that failed to come up with pragmatic policies to address the imbalances of the past.</p>-->
+
+  <!--<p>Mr Papenfus said he found it absurd and unfair that when he made two local examples of the impact of the minimum wage, Members said he also needed link this to what was happening in the global context, after which some labour unions claimed that he needed to focus on the local conditions of South Africa.</p>-->
+
+  <!--<p>Mr Sharp said he had observed that the number of Committee Members had declined, while those of COSATU and its affiliates had doubled, which had created an opportunity for them to preach to both the FMF and NEASA about the kind of presentation they were expected to make. He questioned whether the workshop was run by the labour unions or the Chairperson.</p>-->
+
+  <!--<p>The Chairperson interrupted and indicated that Mr Sharp was out of order and was asking irrelevant questions, as it was his responsibility to ask about the way the workshop would be run, even before it commenced. She said the Committee had invited all the federations from different spheres in order to listen to the different views to be considered in the process of reviewing a national minimum wage.</p>-->
+
+  <!--<p>Mr Papenfus responded that there were 500 000 employers in South Africa and this number was likely to dwindle in the future if employers were forced to pay unreasonable wages that would not lead to increased productivity. He reiterated that the labour unions knew nothing about how to run a business  </p>-->
+
+  <!--<p>Mr Thyalwa interrupted and remarked that Mr Papenfus needed to withdraw his statement that labour unions knew nothing about how businesses operated, as it was an insult directed to people who represented the exploited workers in the country.</p>-->
+
+  <!--<p>The Chairperson asked Mr Papensfus to withdraw the statement, as this was not helping in the debate about the national minimum wage.</p>-->
+
+  <!--<p>Mr Papensfus withdrew his statement as requested, and indicated that the conditions of the employees presented by the labour unions in the workshop was different to what was happening on the ground.</p>-->
+
+  <!--<p>The Chairperson said the presentation by NEASA was not clear on whether it rejected or accepted the national minimum wage, while the FMF was clear that it rejected the national minimum wage and preferred skills development and increasing qualification as the main driver of high wages. </p>-->
+
+  <!--<p>Mr Domingo also felt that the presentation needed to come out loudly on its position on the national minimum wage.  However, it was clear from the presentation that the market was preferred as a vehicle to reduce unemployment and poverty in South Africa. </p>-->
+
+  <!--<p>Mr Papenfus responded that the market needed to determine the price, as this was pivotal to ensure that businesses continued to hire more workers. </p>-->
+
+  <!--<p>Mr Vuyo Lufele, Numsa Regional Secretary, asked whether NEASA would endorse a national minimum wage if it had a clause that allowed those employers that were unable to comply, to apply for an exemption and come forward with an audited financial statement.    </p>-->
+
+  <!--<p>Mr Papenfus responded that it was difficult to tell precisely which minimum wage was preferable, as this was different from business to business, and applications for exemption were likely to lead to a disaster, as the process was likely to be delayed and affect productivity.    </p><p>-->
+  <!--</p><p>-->
+  <!--Mr Pascal Mosia, Chief Executive Officer (CEO), Khayalagunya Human Development, said the presentation seemed to take for granted that South Africa had a racist history, from colonialism to the apartheid regime, which had subjugated the majority of people. He asked if NEASA had any measures in place to empower the exploited black workers.</p>-->
+
+  <!--<p>Mr Papenfus said there were measures in place, like Black Economic Empowerment (BEE) that aimed to empower black people and other groups that were previously denied opportunities to earn decent wages.</p>-->
+
+  <!--<p>Ms Dakuse said the purpose of the workshop was not to attack the employers, as they played an essential role in the country, but was rather to discuss a way forward in improving the living conditions of the majority of South Africans.  It was to be expected that there would be resistance from those who were against transformation.  She appealed to the government to implement a national minimum wage.</p>-->
+
+  <!--<p>Mr Coleman said it was clear from the presentation from NEASA that employers were worried only about making a profit at the expense of exploited workers. Any person who cared about the future of South Africa needed to support deliberate policies that would drastically reduce unemployment, poverty and inequality.  He warned that if these triple challenges were not adequately addressed, the country would continue to witness daily protests and labour strikes. He also remarked that by international standards, employers needed to realise that higher wages were more likely to lead to higher productivity and stimulate economic growth.</p>-->
+
+  <!--<p>Mr Papenfus responded that there was a need to engage further on whether higher wages often lead to higher productivity, as in some countries the opposite was the case.</p>-->
+
+  <!--<p>The Chairperson said it was very clear that the issue of a national minimum wage was complex, with different philosophical backgrounds that needed to be taken into consideration. It was critically important to weigh both the positives and the unintended consequences in the implementation of a national minimum wage in the South African context. The debate on a national minimum wage needed to be aligned to a reduction in poverty, unemployment and income inequalities.</p>-->
+
+  <!--<p>The meeting was adjourned.</p>-->
+</div>
+<div class="col-sm-4">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h4>Audio</h4>
+    </div>
+    <div class="panel-body">
+      <ul>
+        <li><a href="#">...</a></li>
+        <li><a href="#">...</a></li>
+        <li><a href="#">...</a></li>
+      </ul>
+      <!--<h5>PC Labour: Workshop on the National Minimum Wage 1</h5>-->
+      <!--<audio controls>-->
+      <!--<source src="resources/audio/140905pclabour1.wav" type="audio/wav">-->
+      <!--<source src="resources/audio/140905pclabour1.mp3" type="audio/mpeg">-->
+      <!--Your browser does not support the audio element.-->
+      <!--</audio>-->
+      <!--<ul class="list-inline top-links">-->
+      <!--<li><a href="resources/audio/140905pclabour1.wav">Download WAV</a></li>-->
+      <!--<li><a href="resources/audio/140905pclabour1.mp3">Download MP3</a></li>-->
+      <!--</ul>-->
+
+      <!--<h5>PC Labour: Workshop on the National Minimum Wage 2</h5>-->
+      <!--<audio controls>-->
+      <!--<source src="resources/audio/140905pclabour2.wav" type="audio/wav">-->
+      <!--<source src="resources/audio/140905pclabour2.mp3" type="audio/mpeg">-->
+      <!--Your browser does not support the audio element.-->
+      <!--</audio>-->
+      <!--<ul class="list-inline top-links">-->
+      <!--<li><a href="resources/audio/140905pclabour1.wav">Download WAV</a></li>-->
+      <!--<li><a href="resources/audio/140905pclabour1.mp3">Download MP3</a></li>-->
+      <!--</ul>-->
+    </div>
+  </div>
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h4>Documents</h4>
+    </div>
+    <div class="panel-body">
+      <ul>
+        <li><a href="#">...</a></li>
+        <li><a href="#">...</a></li>
+        <li><a href="#">...</a></li>
+      </ul>
+      <!--<h5>National Employers’ Association of South Africa (NEASA) on the National Minimum Wage</h5>-->
+      <!--<iframe src="https://docs.google.com/presentation/d/10m4IxGWA3NwRvml_X-uXJY_OYV1rkaCfuCFJygPuoIo/embed?start=false&loop=false&delayms=3000" frameborder="0" width="100%" height="400" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>-->
+      <!--<ul class="list-inline top-links">-->
+      <!--<li><a href="https://docs.google.com/uc?authuser=0&amp;id=0BzfAxk0DLsSobWVMSnFuMWxjd3M&amp;export=download">Download Slideshow</a></li>-->
+      <!--<li><a href="https://docs.google.com/presentation/d/10m4IxGWA3NwRvml_X-uXJY_OYV1rkaCfuCFJygPuoIo/pub?start=false&loop=false&delayms=3000" target="_blank">Open Slideshow</a></li>-->
+      <!--</ul>-->
+    </div>
+  </div>
+  <h4>People mentioned</h4>
+  <ul>
+    <li><a href="#">...</a></li>
+    <li><a href="#">...</a></li>
+    <li><a href="#">...</a></li>
+    <!--<li><a href="#">Gerhard Papenfus</a></li>-->
+    <!--<li><a href="#">Henry Ford</a></li>-->
+    <!--<li><a href="#">Jacob Zuma</a></li>-->
+    <!--<li><a href="#">Jeremy Gingras</a></li>-->
+    <!--<li><a href="#">Llewellyn Domingo</a></li>-->
+    <!--<li><a href="#">Loane Sharp</a></li>-->
+    <!--<li><a href="#">Mohammed Ismail</a></li>-->
+    <!--<li><a href="#">Neil Coleman</a></li>-->
+    <!--<li><a href="#">Omar Parker</a></li>-->
+    <!--<li><a href="#">Pascal Mosia</a></li>-->
+    <!--<li><a href="#">Plouamma</a></li>-->
+    <!--<li><a href="#">Simon Eppel</a></li>-->
+    <!--<li><a href="#">Tembela Dakuse</a></li>-->
+    <!--<li><a href="#">Thomas Sowell</a></li>-->
+    <!--<li><a href="#">Thyalwa</a></li>-->
+    <!--<li><a href="#">van Schalkwyk</a></li>-->
+    <!--<li><a href="#">Vusumzi Tyhalwa</a></li>-->
+    <!--<li><a href="#">Vuyo Lufele</a></li>-->
+  </ul>
+
+  <h4>Organisations mentioned</h4>
+  <ul>
+    <li><a href="#">...</a></li>
+    <li><a href="#">...</a></li>
+    <li><a href="#">...</a></li>
+    <!--<li><a href="#">Allied Workers</a></li>-->
+    <!--<li><a href="#">Association of South Africa</a></li>-->
+    <!--<li><a href="#">Association of South Africa Date</a></li>-->
+    <!--<li><a href="#">Bargaining Council for the Clothing Industry</a></li>-->
+    <!--<li><a href="#">Congress</a></li>-->
+    <!--<li><a href="#">Department of Trade and Industry</a></li>-->
+    <!--<li><a href="#">Free Market Foundation</a></li>-->
+    <!--<li><a href="#">International Labour Organisation</a></li>-->
+    <!--<li><a href="#">Metal and Engineering Industries Bargaining Council</a></li>-->
+    <!--<li><a href="#">National Economic Development and Labour Council</a></li>-->
+    <!--<li><a href="#">National Employers Association of South Africa</a></li>-->
+    <!--<li><a href="#">National Union</a></li>-->
+    <!--<li><a href="#">Portfolio Committee on Labour</a></li>-->
+    <!--<li><a href="#">Public Service</a></li>-->
+    <!--<li><a href="#">SA Revenue Service</a></li>-->
+    <!--<li><a href="#">South African Clothing and Textile Workers’ Union</a></li>-->
+    <!--<li><a href="#">South African National Taxi Council</a></li>-->
+    <!--<li><a href="#">South African Workers Union</a></li>-->
+  </ul>
+</div>
+</div>
 </div>
 
 {% endblock %}

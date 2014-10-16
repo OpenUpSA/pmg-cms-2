@@ -94,8 +94,7 @@ api_resources = {
         .filter_by(type='committee') \
         .order_by(Organisation.parent_id, Organisation.name),
     "committee-meeting": db.session.query(Event) \
-        .join(EventType) \
-        .filter_by(name='committee-meeting') \
+        .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),
     "bill": db.session.query(Content).filter_by(type='bill'),
     }

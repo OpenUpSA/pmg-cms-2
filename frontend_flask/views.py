@@ -122,11 +122,22 @@ def committees():
 
 
 @app.route('/committee/<int:committee_id>/')
-def committee_detail(committee_id=None):
+def committee_detail(committee_id):
     """
-    Display all available detail for ta committee.
+    Display all available detail for the committee.
     """
 
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
     return render_template('committee_detail.html', committee=committee)
+
+
+@app.route('/committee-meeting/<int:event_id>/')
+def committee_meeting(event_id):
+    """
+    Display committee meeting details, including report and any other related content.
+    """
+
+    logger.debug("committee meeting page called")
+    event = load_from_api('committee-meeting', event_id)
+    return render_template('committee_meeting.html', event=event)

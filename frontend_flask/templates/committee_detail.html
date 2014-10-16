@@ -33,18 +33,17 @@
       </div>
     </form>
 
-
     <table class="table table-striped table-bordered">
       {% for event in committee.events %}
       {% if event.type == "committee-meeting" %}
       <tr>
-        <td>{{ event.date }}</td>
+        <td><nobr>{{ event.date | pretty_date }}</nobr></td>
         <td>{{ event.title }}</td>
       </tr>
       {% endif %}
       {% endfor %}
-
     </table>
+
     <ul class="pagination pagination-sm" style="margin-top: -14px">
       <li ><a href="#" >&laquo;</a></li>
       <li class="active"><a href="#">1</a></li>

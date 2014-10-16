@@ -83,7 +83,7 @@ def setup():
     # restart nginx after reboot
     sudo('update-rc.d nginx defaults')
     with settings(warn_only=True):
-        sudo('rm /etc/nginx/sites-enabled')
+        sudo('rm /etc/nginx/sites-enabled/default')
     with settings(warn_only=True):
         sudo('service nginx start')
     return

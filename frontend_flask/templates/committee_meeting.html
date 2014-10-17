@@ -27,7 +27,11 @@
   <h3>Date of Meeting: {{ event.date | pretty_date }}</h3>
   <!--<h3>Chairperson:  <a href="#">Ms L Yengeni (ANC)</a></h3>-->
 
-  {{ event.content.body | safe }}
+  {% for item in event.content %}
+  {% if item.type == "committee-meeting-report" %}
+  {{ item.body | safe }}
+  {% endif %}
+  {% endfor %}
 
   <!--<h3>Summary</h3>-->
   <!--<p>Employer associations and labour unions adopted opposing points of view when the <a href="#">Portfolio Committee on Labour</a> hosted a workshop to discuss the implementation of a national minimum wage.-->

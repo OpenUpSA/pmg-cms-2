@@ -150,8 +150,6 @@ class Event(db.Model):
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
     type = db.relationship('EventType', lazy='joined')
-    content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
-    content = db.relationship('Content', backref='event')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
@@ -231,6 +229,9 @@ class Content(db.Model):
     title = db.Column(db.String(200))
     body = db.Column(db.String(20000))
     version = db.Column(db.Integer, nullable=False)
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    event = db.relationship('Event', backref=backref('content', lazy="joined"))
 
     def __unicode__(self):
         return u'%s' % self.title

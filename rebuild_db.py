@@ -162,13 +162,6 @@ def rebuild_db(db_name):
     for report in reports:
         parsed_report = parsers.MeetingReportParser(report)
 
-        report_obj = Content(
-            type="committee-meeting-report",
-            body=parsed_report.body,
-            version=0
-        )
-        db.session.add(report_obj)
-
         committee_obj = committees.get(parsed_report.committee)
         if committee_obj:
             committee_obj = committee_obj['model']
@@ -176,10 +169,18 @@ def rebuild_db(db_name):
             type=meeting_event_type_obj,
             organisation=committee_obj,
             date=parsed_report.date,
-            content=report_obj,
             title=parsed_report.title
         )
         db.session.add(event_obj)
+
+        report_obj = Content(
+            type="committee-meeting-report",
+            body=parsed_report.body,
+            event=event_obj,
+            version=0
+        )
+        db.session.add(report_obj)
+
         i += 1
         if i % 1000 == 0:
             db.session.commit()

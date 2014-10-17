@@ -1,5 +1,6 @@
 from backend.app import logger
 from datetime import datetime
+import json
 
 
 class MyParser():
@@ -35,8 +36,8 @@ class MeetingReportParser(MyParser):
                 pass
         self.summary = None
         self.body = None
-        self.related_docs = None
-        self.related_bills = None
+        self.related_docs = []
+        self.related_bills = []
         if report_dict.get('minutes'):
             self.minutes_clean = self.strip_rtf(report_dict['minutes'])
         else:
@@ -44,6 +45,7 @@ class MeetingReportParser(MyParser):
         self.extract_title()
         self.extract_committee()
         self.extract_summary()
+        self.extract_related_docs()
         self.extract_body()
 
     def extract_title(self):
@@ -59,6 +61,9 @@ class MeetingReportParser(MyParser):
         return
 
     def extract_related_docs(self):
+        for file in self.source['files']:
+            # logger.debug(json.dumps(self.source['files'], indent=2))
+            self.related_docs.append(file)
         return
 
     def extract_body(self):

@@ -181,6 +181,27 @@ def rebuild_db(db_name):
         )
         db.session.add(report_obj)
 
+        for item in parsed_report.related_docs:
+            doc_obj = Content(
+                event=event_obj,
+                type=item["filemime"],
+                version=0
+            )
+            if item["filepath"].startswith('files/'):
+                doc_obj.file_path=item["filepath"][6::]
+            else:
+                doc_obj.file_path=item["filepath"]
+            # try:
+            if item.get("field_document_description"):
+                doc_obj.title=item["field_document_description"]
+            elif item.get("filename"):
+                doc_obj.title=item["filename"]
+            elif item.get("origname"):
+                doc_obj.title=item["origname"]
+            else:
+                doc_obj.title="Unnamed document"
+            db.session.add(doc_obj)
+
         i += 1
         if i % 1000 == 0:
             db.session.commit()

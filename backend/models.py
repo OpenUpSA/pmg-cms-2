@@ -227,6 +227,7 @@ class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)
     title = db.Column(db.String(200))
+    file_path = db.Column(db.String(200))
     body = db.Column(db.String(20000))
     version = db.Column(db.Integer, nullable=False)
 

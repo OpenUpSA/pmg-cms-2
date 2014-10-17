@@ -140,4 +140,8 @@ def committee_meeting(event_id):
 
     logger.debug("committee meeting page called")
     event = load_from_api('committee-meeting', event_id)
-    return render_template('committee_meeting.html', event=event)
+    related_docs = []
+    for item in event['content']:
+        if item['type'] != "committee-meeting-report":
+            related_docs.append(item)
+    return render_template('committee_meeting.html', event=event, related_docs=related_docs, STATIC_HOST=app.config['STATIC_HOST'])

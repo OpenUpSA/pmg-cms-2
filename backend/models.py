@@ -232,7 +232,7 @@ class Content(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-    event = db.relationship('Event', backref=backref('content', lazy="joined"))
+    event = db.relationship('Event', backref='content')
 
     def __unicode__(self):
         return u'%s' % self.title

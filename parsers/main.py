@@ -18,6 +18,15 @@ class MyParser():
 
         return html_str
 
+    def unpack_field_document_data(self, str_in):
+        out = {}
+        tmp = str_in.split('\"')
+        # logger.debug(tmp)
+        # file description
+        i = tmp.index('description')
+        if i >= 0:
+            out['description'] = tmp[i+2]
+        return out
 
 class MeetingReportParser(MyParser):
 
@@ -63,11 +72,29 @@ class MeetingReportParser(MyParser):
         return
 
     def extract_related_docs(self):
-        tmp = []
+        tmp_list = []
         for file in self.source['files']:
-            if not file["fid"] in tmp:
-                tmp.append(file["fid"])
+            if file["filepath"].startswith('files/'):
+                file["filepath"] = file["filepath"][6::]
+            # duplicate entries exist, but they don't both have all of the detail
+            if not file["fid"] in tmp_list:
+                tmp_list.append(file["fid"])
                 self.related_docs.append(file)
+            # update the document title
+            i = tmp_list.index(file["fid"])
+            doc = self.related_docs[i]
+            if file.get("field_document_data"):
+                tmp_data = self.unpack_field_document_data(file["field_document_data"])
+                if tmp_data.get("description"):
+                    doc["title"] = tmp_data.get("description")
+            if file.get("field_document_description"):
+                doc["title"] = file.get("field_document_description")
+            elif not doc.get("title") and file.get("filename"):
+                doc["title"] = file.get("filename")
+            elif not doc.get("title") and file.get("origname"):
+                doc["title"] = file.get("origname")
+            elif not doc.get("title"):
+                doc["title"] = "Unnamed document"
         return
 
     def extract_audio(self):

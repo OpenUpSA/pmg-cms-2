@@ -204,18 +204,8 @@ def rebuild_db(db_name):
                 type=item["filemime"],
                 version=0
             )
-            if item["filepath"].startswith('files/'):
-                doc_obj.file_path=item["filepath"][6::]
-            else:
-                doc_obj.file_path=item["filepath"]
-            if item.get("field_document_description"):
-                doc_obj.title=item["field_document_description"]
-            elif item.get("filename"):
-                doc_obj.title=item["filename"]
-            elif item.get("origname"):
-                doc_obj.title=item["origname"]
-            else:
-                doc_obj.title="Unnamed document"
+            doc_obj.file_path=item["filepath"]
+            doc_obj.title=item["title"]
             db.session.add(doc_obj)
 
         for item in parsed_report.audio:

@@ -105,10 +105,12 @@ def deploy():
             sudo('mv instance/tmp.db /tmp/tmp.db')
         # first, discard local changes, then pull
         with settings(warn_only=True):
+            # sudo('git stash')
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
         # put db back
         sudo('mv /tmp/tmp.db instance/tmp.db')
+        # sudo('git stash pop')
 
     with cd(env.project_dir):
         # now, set the config files

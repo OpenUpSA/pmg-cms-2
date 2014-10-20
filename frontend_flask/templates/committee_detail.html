@@ -72,18 +72,19 @@
 
 <div class="col-md-4">
   <h3><span class="glyphicon glyphicon-user"></span> Members</h3>
-  {% if committee.members %}
+  {% if committee.memberships %}
   <!--<form class="form" role="form">-->
   <!--<div class="form-group">-->
   <!--<input type="text" class="form-control " placeholder="Search for members">-->
   <!--</div>-->
   <!--</form>-->
-  {% set break = 0.5 * committee.members | length %}
+  {% set break = 0.5 * committee.memberships | length %}
   {% set break = break | int %}
   <div class="col-sm-6">
     <ul class="list-unstyled list-spaced">
 
-      {% for member in committee.members[0:break] %}
+      {% for membership in committee.memberships[0:break] %}
+      {% set member = membership.member %}
       <li class="clearfix">
         {%- if member.profile_pic_url %}
         <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
@@ -100,7 +101,8 @@
   </div>
   <div class="col-sm-6">
     <ul class="list-unstyled list-spaced">
-      {% for member in committee.members[break::] %}
+      {% for membership in committee.memberships[break::] %}
+      {% set member = membership.member %}
       <li class="clearfix">
         <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
         <h4>{{ member.name }}</h4>

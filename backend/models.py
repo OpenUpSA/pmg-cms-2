@@ -159,12 +159,19 @@ class Event(db.Model):
         return u'%s' % self.name
 
 
-# M2M table
-membership_table = db.Table(
-    'member_organisation', db.Model.metadata,
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id'), primary_key=True),
-    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True)
-)
+class MembershipType(db.Model):
+
+    __tablename__ = "membership_type"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self, include_related=False):
+        # reduce this model to a string
+        return self.name
+
+    def __unicode__(self):
+        return u'%s' % self.name
 
 
 class Member(db.Model):
@@ -176,11 +183,6 @@ class Member(db.Model):
     profile_pic_url = db.Column(db.String(200))
     bio = db.Column(db.String(1500))
     version = db.Column(db.Integer, nullable=False)
-
-    memberships = db.relationship("Organisation",
-                    secondary=membership_table,
-                    backref="members"
-    )
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -203,6 +205,19 @@ class Organisation(db.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
+
+
+class Membership(db.Model):
+    __tablename__ = 'organisation_members'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
+    type = db.relationship(MembershipType, lazy='joined')
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship(Organisation, backref="memberships", lazy='joined')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member = db.relationship(Member, backref=backref("memberships", lazy="joined"), lazy='joined')
 
 
 class CommitteeInfo(db.Model):

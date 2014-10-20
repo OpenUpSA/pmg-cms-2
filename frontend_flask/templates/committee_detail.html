@@ -6,6 +6,11 @@
     max-width: 50px;
     max-height: 75px;
   }
+
+  .member-profile-pic.chairperson{
+    max-width: 100px;
+    max-height: 150px;
+  }
 </style>
 {% endblock %}
 
@@ -86,14 +91,15 @@
       {% for membership in committee.memberships[0:break] %}
       {% set member = membership.member %}
       <li class="clearfix">
-        {%- if member.profile_pic_url %}
-        <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
-        {% else %}
-        <p class="text-muted">No image available</p>
-        {% endif %}
-        <h4>{{ member.name }}</h4>
-        <a href="#" class="text-danger">National Assembly</a>
-        <a href="#" class="text-primary">ANC</a>
+      {%- if member.profile_pic_url %}
+      <img class="member-profile-pic{% if membership.type == 'chairperson'%} chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
+      {% else %}
+      <p class="text-muted">No image available</p>
+      {% endif %}
+      <h4>{{ member.name }}</h4>
+      {% if membership.type == "chairperson"%}<div class="label label-success">Chairperson</div>{% endif %}
+      <a href="#" class="text-danger">National Assembly</a>
+      <a href="#" class="text-primary">ANC</a>
       </li>
       {% endfor %}
 

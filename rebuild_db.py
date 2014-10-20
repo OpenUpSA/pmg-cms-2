@@ -217,6 +217,26 @@ def rebuild_db(db_name):
                 doc_obj.title="Unnamed document"
             db.session.add(doc_obj)
 
+        for item in parsed_report.audio:
+            audio_obj = Content(
+                event=event_obj,
+                type=item["filemime"],
+                version=0
+            )
+            if item["filepath"].startswith('files/'):
+                audio_obj.file_path=item["filepath"][6::]
+            else:
+                audio_obj.file_path=item["filepath"]
+            if item.get("title_format"):
+                audio_obj.title=item["title_format"]
+            elif item.get("filename"):
+                audio_obj.title=item["filename"]
+            elif item.get("origname"):
+                audio_obj.title=item["origname"]
+            else:
+                audio_obj.title="Unnamed audio"
+            db.session.add(audio_obj)
+
         i += 1
         if i % 1000 == 0:
             db.session.commit()

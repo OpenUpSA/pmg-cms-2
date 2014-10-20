@@ -52,6 +52,11 @@ def rebuild_db(db_name):
         db.session.add(obj)
     db.session.commit()
 
+    # populate membership_type
+    chairperson = MembershipType(name="chairperson")
+    db.session.add(chairperson)
+    db.session.commit()
+
     # populate committees
     committees = {}
     drupal_recs = read_data('comm_info_page.json')
@@ -155,6 +160,15 @@ def rebuild_db(db_name):
         logger.debug('')
     db.session.commit()
 
+    # select a random chairperson for each committee
+    tmp_committees = Organisation.query.filter_by(type="committee").all()
+    for committee in tmp_committees:
+        if committee.memberships:
+            membership_obj = committee.memberships[0]
+            membership_obj.type_id = 1
+            db.session.add(membership_obj)
+    db.session.commit()
+
     # populate committee reports
     reports = read_data('report.json')
     i = 0
@@ -193,7 +207,6 @@ def rebuild_db(db_name):
                 doc_obj.file_path=item["filepath"][6::]
             else:
                 doc_obj.file_path=item["filepath"]
-            # try:
             if item.get("field_document_description"):
                 doc_obj.title=item["field_document_description"]
             elif item.get("filename"):

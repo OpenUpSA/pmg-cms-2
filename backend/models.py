@@ -245,6 +245,7 @@ class Content(db.Model):
     title = db.Column(db.String(200))
     file_path = db.Column(db.String(200))
     body = db.Column(db.String(20000))
+    summary = db.Column(db.String(5000))
     version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))

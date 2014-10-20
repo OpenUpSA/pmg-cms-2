@@ -39,10 +39,7 @@ class MeetingReportParser(MyParser):
         self.related_docs = []
         self.audio = []
         self.related_bills = []
-        if report_dict.get('minutes'):
-            self.minutes_clean = self.strip_rtf(report_dict['minutes'])
-        else:
-            self.minutes_clean = None
+
         self.extract_title()
         self.extract_committee()
         self.extract_summary()
@@ -60,6 +57,9 @@ class MeetingReportParser(MyParser):
         return
 
     def extract_summary(self):
+        self.summary = None
+        if self.source.get('summary'):
+            self.summary = self.strip_rtf(self.source['summary'])
         return
 
     def extract_related_docs(self):
@@ -79,7 +79,11 @@ class MeetingReportParser(MyParser):
         return
 
     def extract_body(self):
-        self.body = self.minutes_clean
+        if self.source.get('minutes'):
+            minutes_clean = self.strip_rtf(self.source['minutes'])
+        else:
+            minutes_clean = None
+        self.body = minutes_clean
         return
 
 

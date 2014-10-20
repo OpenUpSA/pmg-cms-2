@@ -144,10 +144,12 @@ def committee_meeting(event_id):
     audio = []
     for item in event['content']:
         if item['type'] == "committee-meeting-report":
+            body = item['body']
+            summary = item['summary']
             pass
         elif "audio" in item['type']:
             audio.append(item)
         else:
             related_docs.append(item)
 
-    return render_template('committee_meeting.html', event=event, audio=audio, related_docs=related_docs, STATIC_HOST=app.config['STATIC_HOST'])
+    return render_template('committee_meeting.html', summary=summary, body=body, event=event, audio=audio, related_docs=related_docs, STATIC_HOST=app.config['STATIC_HOST'])

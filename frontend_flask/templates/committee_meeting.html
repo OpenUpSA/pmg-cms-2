@@ -223,11 +223,15 @@
       <h4>Audio</h4>
     </div>
     <div class="panel-body">
-      <ul>
-        <li><a href="#">...</a></li>
-        <li><a href="#">...</a></li>
-        <li><a href="#">...</a></li>
+      {% if audio %}
+      <ul class="list-unstyled">
+        {% for item in audio %}
+        <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="glyphicon glyphicon-headphones"></span> {{ item.title }}</a></li>
+        {% endfor %}
       </ul>
+      {% else %}
+      <p class="lead text-muted">No audio content</p>
+      {% endif %}
       <!--<h5>PC Labour: Workshop on the National Minimum Wage 1</h5>-->
       <!--<audio controls>-->
       <!--<source src="resources/audio/140905pclabour1.wav" type="audio/wav">-->
@@ -257,9 +261,9 @@
     </div>
     <div class="panel-body">
       {% if related_docs %}
-      <ul>
+      <ul class="list-unstyled">
         {% for item in related_docs %}
-        <li><a href="{{ STATIC_HOST }}{{ item.file_path }}"><span class="glyphicon glyphicon-file"></span> {{ item.title }}</a></li>
+        <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{ item.title }}</a></li>
         {% endfor %}
       </ul>
       {% else %}

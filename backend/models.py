@@ -238,6 +238,7 @@ class CommitteeInfo(db.Model):
 class Content(db.Model):
 
     __tablename__ = "content"
+    # __table_args__ = (db.UniqueConstraint('type', 'title', 'file_path', 'event_id', 'version'), {})
 
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)

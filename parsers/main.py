@@ -37,6 +37,7 @@ class MeetingReportParser(MyParser):
         self.summary = None
         self.body = None
         self.related_docs = []
+        self.audio = []
         self.related_bills = []
         if report_dict.get('minutes'):
             self.minutes_clean = self.strip_rtf(report_dict['minutes'])
@@ -46,6 +47,7 @@ class MeetingReportParser(MyParser):
         self.extract_committee()
         self.extract_summary()
         self.extract_related_docs()
+        self.extract_audio()
         self.extract_body()
 
     def extract_title(self):
@@ -61,9 +63,19 @@ class MeetingReportParser(MyParser):
         return
 
     def extract_related_docs(self):
+        tmp = []
         for file in self.source['files']:
-            # logger.debug(json.dumps(self.source['files'], indent=2))
-            self.related_docs.append(file)
+            if not json.dumps(file) in tmp:
+                tmp.append(json.dumps(file))
+                self.related_docs.append(file)
+        return
+
+    def extract_audio(self):
+        tmp = []
+        for file in self.source['audio']:
+            if not json.dumps(file) in tmp:
+                tmp.append(json.dumps(file))
+                self.audio.append(file)
         return
 
     def extract_body(self):

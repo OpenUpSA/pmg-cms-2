@@ -142,7 +142,7 @@ def committee_meeting(event_id):
     event = load_from_api('committee-meeting', event_id)
     related_docs = []
     audio = []
-    for item in event['content']:
+    for item in event.get('content'):
         if item['type'] == "committee-meeting-report":
             body = item['body']
             summary = item['summary']

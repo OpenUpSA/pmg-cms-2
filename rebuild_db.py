@@ -192,6 +192,7 @@ def rebuild_db(db_name):
         report_obj = Content(
             type="committee-meeting-report",
             body=parsed_report.body,
+            summary=parsed_report.summary,
             event=event_obj,
             version=0
         )

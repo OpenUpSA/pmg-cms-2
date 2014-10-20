@@ -65,16 +65,16 @@ class MeetingReportParser(MyParser):
     def extract_related_docs(self):
         tmp = []
         for file in self.source['files']:
-            if not json.dumps(file) in tmp:
-                tmp.append(json.dumps(file))
+            if not file["fid"] in tmp:
+                tmp.append(file["fid"])
                 self.related_docs.append(file)
         return
 
     def extract_audio(self):
         tmp = []
         for file in self.source['audio']:
-            if not json.dumps(file) in tmp:
-                tmp.append(json.dumps(file))
+            if not file["fid"] in tmp:
+                tmp.append(file["fid"])
                 self.audio.append(file)
         return
 

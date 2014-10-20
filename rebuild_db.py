@@ -120,7 +120,8 @@ def rebuild_db(db_name):
         for term in member['terms']:
             if committees.get(term):
                 org_model = committees[term]['model']
-                member_obj.memberships.append(org_model)
+                membership_obj = Membership(organisation=org_model)
+                member_obj.memberships.append(membership_obj)
             else:
                 logger.debug("committee not found: " + term)
 
@@ -133,21 +134,22 @@ def rebuild_db(db_name):
                 party_obj = Organisation(type="party", name=party, version=0)
                 db.session.add(party_obj)
                 db.session.commit()
-            member_obj.memberships.append(party_obj)
+            membership_obj = Membership(organisation=party_obj)
+            member_obj.memberships.append(membership_obj)
 
         # set house membership
         house = member['mp_province']
         if house == "National Assembly":
-            member_obj.memberships.append(na_obj)
+            member_obj.memberships.append(Membership(organisation=na_obj))
         elif house and "NCOP" in house:
-            member_obj.memberships.append(ncop_obj)
+            member_obj.memberships.append(Membership(organisation=ncop_obj))
             logger.debug(house)
             province_obj = Organisation.query.filter_by(type="province").filter_by(name=house[5::]).first()
             if not province_obj:
                 province_obj = Organisation(type="province", name=house[5::], version=0)
                 db.session.add(province_obj)
                 db.session.commit()
-            member_obj.memberships.append(province_obj)
+            member_obj.memberships.append(Membership(organisation=province_obj))
 
         db.session.add(member_obj)
         logger.debug('')

@@ -8,3 +8,5 @@ requests==2.0.1
 WTForms==1.0.5
 passlib==1.6.2
 python-dateutil
+pyelasticsearch
+requests

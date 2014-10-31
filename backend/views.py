@@ -10,6 +10,8 @@ import datetime
 from operator import itemgetter
 import re
 import serializers
+from search import Search
+import math
 
 API_HOST = app.config["API_HOST"]
 
@@ -98,6 +100,34 @@ api_resources = {
         .order_by(desc(Event.date)),
     "bill": db.session.query(Content).filter_by(type='bill'),
     }
+
+@app.route('/search/')
+def search():
+    """
+    Search through ElasticSearch
+    """
+    
+    search = Search()
+    q = request.args.get('q')
+    logger.debug("search called")
+    page = 0
+    if (request.args.get('page')):
+        page = int(request.args.get('page'))
+    per_page = app.config['RESULTS_PER_PAGE']
+    if (request.args.get('per_page')):
+        per_page = int(request.args.get('per_page'))
+    searchresult = search.search(q, per_page, page * per_page)
+    result = {}
+    result["result"] = searchresult["hits"]["hits"]
+    result["count"] = searchresult["hits"]["total"]
+    result["max_score"] = searchresult["hits"]["max_score"]
+    logger.debug("Pages %i", math.ceil(result["count"] / per_page))
+    
+    if result["count"] > (page + 1) * per_page:
+        result["next"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
+        result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
+        result["first"] = flask.request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
+    return json.dumps(result)
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )

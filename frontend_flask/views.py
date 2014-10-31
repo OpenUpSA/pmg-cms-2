@@ -4,6 +4,8 @@ import requests
 from datetime import datetime, date
 import dateutil.parser
 import urllib
+from search import Search
+import math
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -153,3 +155,31 @@ def committee_meeting(event_id):
             related_docs.append(item)
 
     return render_template('committee_meeting.html', summary=summary, body=body, event=event, audio=audio, related_docs=related_docs, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/search/')
+def search():
+    """
+    Display search page
+    """
+    search = Search()
+    q = request.args.get('q')
+    logger.debug("search page called")
+    page = 0
+    if (request.args.get('page')):
+        page = int(request.args.get('page'))
+    per_page = 20
+    if (request.args.get('per_page')):
+        per_page = int(request.args.get('per_page'))
+    searchresult = search.search(q, per_page, page * per_page)
+    result = {}
+    result = searchresult["hits"]["hits"]
+    count = searchresult["hits"]["total"]
+    max_score = searchresult["hits"]["max_score"]
+    logger.debug("Pages %i", math.ceil(count / per_page))
+    search_url = request.url_root + "search/?q=" + q + "&per_page=" + str(per_page)
+    # if count > (page + 1) * per_page:
+        # result["next"] = request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
+        # result["last"] = request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(count / per_page))) + "&per_page=" + str(per_page)
+        # result["first"] = request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, search_url = search_url)

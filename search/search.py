@@ -7,7 +7,7 @@ class Search:
 	# apiserver = "http://localhost:5001"
 	# esserver = "http://localhost:9200"
 	apiserver = "http://pmg-cms.demo4sa.org"
-	esserver = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com"
+	esserver = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 	index_name = "pmg"
 	search_fields = ["name", "title"]
 	es = ElasticSearch(esserver)

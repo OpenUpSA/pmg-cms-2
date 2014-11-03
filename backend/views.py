@@ -99,6 +99,8 @@ api_resources = {
         .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),
     "bill": db.session.query(Content).filter_by(type='bill'),
+    "member": db.session.query(Member)
+        .order_by(Member.name)
     }
 
 @app.route('/search/')

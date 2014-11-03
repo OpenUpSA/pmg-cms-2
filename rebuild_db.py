@@ -251,6 +251,8 @@ def rebuild_db(db_name):
                     # description = f["field_file_bill_data"]["description"],
                     url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
                 )
+                if ("version" in f):
+                    bill.code = f["version"]
                 # if ("field_file_bill_data" in f):
                 #     print docobj
                 #     print f["field_file_bill_data"]

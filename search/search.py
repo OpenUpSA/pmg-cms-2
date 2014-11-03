@@ -22,6 +22,11 @@ class Search:
 			"title": "title",
 			"description": ["content", 0, "summary"],
 			"fulltext": ["content", 0, "body"]
+		},
+		"member": {
+			"id": "id",
+			"title": "name",
+			"description": "bio"
 		}
 	}
 

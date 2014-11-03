@@ -1,6 +1,6 @@
 import os
 import json
-import time
+import time, datetime
 from backend.app import app, db, logger
 from backend.models import *
 import parsers
@@ -231,6 +231,36 @@ def rebuild_db(db_name):
         i += 1
         if i % 1000 == 0:
             db.session.commit()
+
+    # ======= BILLS ======== #
+    bills = read_data("bill.json")
+    for billobj in bills:
+        bill = Bill()
+        if (len(billobj["revisions"]) > 0):
+            # print billobj
+            bill.name = billobj["revisions"][0]["title"]
+        else:
+            bill.name = billobj["title"]
+        if (billobj["effective_date"]):
+            bill.effective_date = datetime.datetime.fromtimestamp(float(billobj["effective_date"]))
+        if (billobj["files"]):
+            for f in billobj["files"]:
+                docobj = BillFile(
+                    filemime=f["filemime"],
+                    origname = f["origname"],
+                    # description = f["field_file_bill_data"]["description"],
+                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+                )
+                # if ("field_file_bill_data" in f):
+                #     print docobj
+                #     print f["field_file_bill_data"]
+                #     field_file_bill_data = f["field_file_bill_data"]
+                    # if ((f["field_file_bill_data"]) and ("description" in  f["field_file_bill_data"])):
+                    #     docobj.description = f["field_file_bill_data"]["description"]
+                # print docobj
+                bill.files.append(docobj)
+        db.session.add(bill)
+
     db.session.commit()
     return
 

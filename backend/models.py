@@ -87,6 +87,7 @@ class Bill(db.Model):
     __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'name'), {})
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
+    code = db.Column(db.String(100))
     act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
     year = db.Column(db.Integer)

@@ -2,33 +2,26 @@ from pyelasticsearch import ElasticSearch
 from datetime import datetime
 import requests
 
+from flask import Flask
+
+import sys
+from transforms import *
+
+import argparse
+
+app = Flask(__name__)
+app.config.from_pyfile('./config.py')
 
 class Search:
 	# apiserver = "http://localhost:5001"
 	# esserver = "http://localhost:9200"
-	apiserver = "http://pmg-cms.demo4sa.org"
-	esserver = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
+	apiserver = app.config['API_HOST']
+	# esserver = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
+	esserver = app.config['ES_SERVER']
 	index_name = "pmg"
 	search_fields = ["name", "title"]
 	es = ElasticSearch(esserver)
-	convert_rules = {
-		"committee": {
-			"id": "id",
-			"title": "name",
-			"description": ["info", "about"]
-		},
-		"committee-meeting": {
-			"id": "id",
-			"title": "title",
-			"description": ["content", 0, "summary"],
-			"fulltext": ["content", 0, "body"]
-		},
-		"member": {
-			"id": "id",
-			"title": "name",
-			"description": "bio"
-		}
-	}
+	
 
 	def _get_all_endpoint_data(self, endpoint, data_type):
 		endpoint = requests.get(endpoint);
@@ -49,7 +42,7 @@ class Search:
 		return reduce(lambda d, k: d[k], mapList, dataDict)
 
 	def _format_data(self, data_type, docs):
-		rules = self.convert_rules[data_type]
+		rules = Transforms.convert_rules[data_type]
 		results = []
 		for doc in docs:
 			tmp = {}
@@ -156,4 +149,17 @@ class Search:
 
 
 if (__name__ == "__main__"):
-	print "ElasticSearch PMG library"
+	# print "ElasticSearch PMG library"
+	parser = argparse.ArgumentParser(description='ElasticSearch PMG library')
+	parser.add_argument('--import',
+		dest='import_data_type',
+		choices = ['committee', 'committee-meeting', 'member', 'bill'],
+		help='Imports the data from a content type to ElasticSearch')
+	parser.add_argument('--test', action="store_true")
+	args = parser.parse_args()
+	search = Search()
+	if (args.test):
+		search.test()
+	if (args.import_data_type):
+		search.import_data(args.import_data_type)
+	# parser.print_help()

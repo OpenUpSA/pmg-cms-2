@@ -19,7 +19,7 @@ class Search:
 	# esserver = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 	esserver = app.config['ES_SERVER']
 	index_name = "pmg"
-	search_fields = ["name", "title"]
+	search_fields = ["title^3", "description^2", "fulltext"]
 	es = ElasticSearch(esserver)
 	
 

@@ -96,14 +96,16 @@ class Bill(db.Model):
     objective = db.Column(db.String(1000))
     is_deleted = db.Column(db.Boolean, default=False)
 
-    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'), nullable=False)
+    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bills')
-    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
     type = db.relationship('BillType', backref='bills')
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     place_of_introduction = db.relationship('Organisation')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
+
+    files = db.relationship('BillFile')
 
     def code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
@@ -117,6 +119,18 @@ class Bill(db.Model):
     def __repr__(self):
         return '<Bill: %r>' % str(self)
 
+class BillFile(db.Model):
+    __tablename__ = "file"
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('bill.id'))
+    filemime = db.Column(db.String(50))
+    origname = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    duration = db.Column(db.Integer, default = 0)
+    url = db.Column(db.String(255))
+
+    def __unicode__(self):
+        return u'%s' % self.url
 
 # M2M table
 bill_event_table = db.Table(
@@ -253,3 +267,4 @@ class Content(db.Model):
 
     def __unicode__(self):
         return u'%s' % self.title
+

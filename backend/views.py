@@ -10,7 +10,8 @@ import datetime
 from operator import itemgetter
 import re
 import serializers
-from search import Search
+import sys
+from search.search import Search
 import math
 
 API_HOST = app.config["API_HOST"]
@@ -98,7 +99,8 @@ api_resources = {
     "committee-meeting": db.session.query(Event) \
         .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),
-    "bill": db.session.query(Content).filter_by(type='bill'),
+    "bill": db.session.query(Bill)
+        .order_by(desc(Bill.effective_date)),
     "member": db.session.query(Member)
         .order_by(Member.name)
     }

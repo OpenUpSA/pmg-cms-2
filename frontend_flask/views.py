@@ -4,7 +4,7 @@ import requests
 from datetime import datetime, date
 import dateutil.parser
 import urllib
-from search import Search
+from search.search import Search
 import math
 
 API_HOST = app.config['API_HOST']
@@ -155,6 +155,30 @@ def committee_meeting(event_id):
             related_docs.append(item)
 
     return render_template('committee_meeting.html', summary=summary, body=body, event=event, audio=audio, related_docs=related_docs, STATIC_HOST=app.config['STATIC_HOST'])
+
+
+@app.route('/bill/<int:bill_id>/')
+def bill(bill_id):
+    """
+    With Bills, we try to send them to BillTracker if it exists. Else we serve the PDF. If that doesn't work, we Kill Bill
+    """
+
+    logger.debug("bill page called")
+    bill =  load_from_api('bill', bill_id)
+    if ("code" in bill):
+        logger.debug("found bill code", bill["code"])
+    else:
+        if ("files" in bill):
+            logger.debug(bill["files"][0])
+            return redirect(bill["files"][0]["url"], code=302)
+    logger.debug(bill)
+    return "Oh dear"
+
+@app.route('/member/<int:member_id>')
+def member(member_id):
+    logger.debug("member page called")
+    member =  load_from_api('member', member_id)
+    return render_template('member_detail.html', member=member, STATIC_HOST=app.config['STATIC_HOST'])
 
 @app.route('/search/')
 def search():

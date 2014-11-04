@@ -171,67 +171,74 @@ def rebuild_db(db_name):
     db.session.commit()
 
     # populate committee reports
-    reports = read_data('report.json')
+    # reports = read_data('report.json')
+
     i = 0
     meeting_event_type_obj = EventType(name="committee-meeting")
     db.session.add(meeting_event_type_obj)
     db.session.commit()
-    for report in reports:
-        parsed_report = parsers.MeetingReportParser(report)
+    logger.debug("reading report.js")
+    with open('data/report.json', 'r') as f:
+        records = []
+        lines = f.readlines()
+        for line in lines:
+            report = json.loads(line)
+            parsed_report = parsers.MeetingReportParser(report)
 
-        committee_obj = committees.get(parsed_report.committee)
-        if committee_obj:
-            committee_obj = committee_obj['model']
-        event_obj = Event(
-            type=meeting_event_type_obj,
-            organisation=committee_obj,
-            date=parsed_report.date,
-            title=parsed_report.title
-        )
-        db.session.add(event_obj)
+            committee_obj = committees.get(parsed_report.committee)
+            if committee_obj:
+                committee_obj = committee_obj['model']
+            event_obj = Event(
+                type=meeting_event_type_obj,
+                organisation=committee_obj,
+                date=parsed_report.date,
+                title=parsed_report.title
+            )
+            db.session.add(event_obj)
 
-        report_obj = Content(
-            type="committee-meeting-report",
-            body=parsed_report.body,
-            summary=parsed_report.summary,
-            event=event_obj,
-            version=0
-        )
-        db.session.add(report_obj)
-
-        for item in parsed_report.related_docs:
-            doc_obj = Content(
+            report_obj = Content(
+                type="committee-meeting-report",
+                body=parsed_report.body,
+                summary=parsed_report.summary,
                 event=event_obj,
-                type=item["filemime"],
                 version=0
             )
-            doc_obj.file_path=item["filepath"]
-            doc_obj.title=item["title"]
-            db.session.add(doc_obj)
+            db.session.add(report_obj)
 
-        for item in parsed_report.audio:
-            audio_obj = Content(
-                event=event_obj,
-                type=item["filemime"],
-                version=0
-            )
-            if item["filepath"].startswith('files/'):
-                audio_obj.file_path=item["filepath"][6::]
-            else:
-                audio_obj.file_path=item["filepath"]
-            if item.get("title_format"):
-                audio_obj.title=item["title_format"]
-            elif item.get("filename"):
-                audio_obj.title=item["filename"]
-            elif item.get("origname"):
-                audio_obj.title=item["origname"]
-            else:
-                audio_obj.title="Unnamed audio"
-            db.session.add(audio_obj)
+            for item in parsed_report.related_docs:
+                doc_obj = Content(
+                    event=event_obj,
+                    type=item["filemime"],
+                    version=0
+                )
+                doc_obj.file_path=item["filepath"]
+                doc_obj.title=item["title"]
+                db.session.add(doc_obj)
 
-        i += 1
-        if i % 1000 == 0:
-            db.session.commit()
+            for item in parsed_report.audio:
+                audio_obj = Content(
+                    event=event_obj,
+                    type=item["filemime"],
+                    version=0
+                )
+                if item["filepath"].startswith('files/'):
+                    audio_obj.file_path=item["filepath"][6::]
+                else:
+                    audio_obj.file_path=item["filepath"]
+                if item.get("title_format"):
+                    audio_obj.title=item["title_format"]
+                elif item.get("filename"):
+                    audio_obj.title=item["filename"]
+                elif item.get("origname"):
+                    audio_obj.title=item["origname"]
+                else:
+                    audio_obj.title="Unnamed audio"
+                db.session.add(audio_obj)
+
+            i += 1
+            if i % 1000 == 0:
+                logger.debug("writing 1000 reports...")
+                db.session.commit()
 
     # ======= BILLS ======== #
     bills = read_data("bill.json")

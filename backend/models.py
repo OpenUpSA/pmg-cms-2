@@ -161,7 +161,7 @@ class Event(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
-    title = db.Column(db.String(250))
+    title = db.Column(db.Text())
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
     type = db.relationship('EventType', lazy='joined')
@@ -209,7 +209,7 @@ class Organisation(db.Model):
 
     __table_args__ = (db.UniqueConstraint('name', 'type'), {})
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(50), nullable=False)
     version = db.Column(db.Integer, nullable=False)
 
@@ -259,8 +259,8 @@ class Content(db.Model):
     type = db.Column(db.String(50), nullable=False)
     title = db.Column(db.String(200))
     file_path = db.Column(db.String(200))
-    body = db.Column(db.String(20000))
-    summary = db.Column(db.String(5000))
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))

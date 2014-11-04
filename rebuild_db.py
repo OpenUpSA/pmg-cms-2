@@ -39,7 +39,8 @@ def rebuild_db(db_name):
     Save json fixtures into a structured database, intended for use in our app.
     """
 
-    dump_db(db_name)
+    # dump_db(db_name)
+    db.drop_all()
     db.create_all()
 
     start = time.time()

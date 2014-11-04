@@ -10,3 +10,4 @@ passlib==1.6.2
 python-dateutil
 pyelasticsearch
 newrelic
+psycopg2

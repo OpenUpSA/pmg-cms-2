@@ -41,3 +41,6 @@ data/
 *.db
 *.log
 .boto
+
+
+.DS_Store

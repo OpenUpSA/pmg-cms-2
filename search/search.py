@@ -153,7 +153,7 @@ if (__name__ == "__main__"):
 	parser = argparse.ArgumentParser(description='ElasticSearch PMG library')
 	parser.add_argument('--import',
 		dest='import_data_type',
-		choices = ['committee', 'committee-meeting', 'member', 'bill'],
+		choices = ['committee', 'committee-meeting', 'member', 'bill', 'hansard'],
 		help='Imports the data from a content type to ElasticSearch')
 	parser.add_argument('--test', action="store_true")
 	args = parser.parse_args()

@@ -126,30 +126,31 @@ def deploy():
         # ensure we are on the target branch
         sudo('git checkout ' + env.git_branch)
         # move db out of the way
-        with settings(warn_only=True):
-            sudo('mv instance/tmp.db /tmp/tmp.db')
+        # with settings(warn_only=True):
+            # sudo('mv instance/tmp.db /tmp/tmp.db')
         # first, discard local changes, then pull
         with settings(warn_only=True):
             # sudo('git stash')
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
         # put db back
-        sudo('mv /tmp/tmp.db instance/tmp.db')
+        # sudo('mv /tmp/tmp.db instance/tmp.db')
         # sudo('git stash pop')
 
-    with cd(env.project_dir):
+    # The following should be in setup
+    # with cd(env.project_dir):
         # now, set the config files
-        sudo('rm -rf instance/*')
-        sudo('cp -r ' + env.config_dir + '/* instance')
+        # sudo('rm -rf instance/*')
+        # sudo('cp -r ' + env.config_dir + '/* instance')
         # move nginx server blocks
-        sudo('mv ' + env.config_dir + '/nginx.conf /etc/nginx/sites-available/pmg.org.za')
+        # sudo('mv ' + env.config_dir + '/nginx.conf /etc/nginx/sites-available/pmg.org.za')
         # link server blocks to Nginx config
-        with settings(warn_only=True):
-            sudo('ln -s /etc/nginx/sites-available/pmg.org.za /etc/nginx/sites-enabled/')
+        # with settings(warn_only=True):
+            # sudo('ln -s /etc/nginx/sites-available/pmg.org.za /etc/nginx/sites-enabled/')
         # move supervisor config
-        sudo('mv ' + env.config_dir + '/supervisor.conf /etc/supervisor/conf.d/supervisor_pmg.conf')
-        sudo('supervisorctl reread')
-        sudo('supervisorctl update')
+        # sudo('mv ' + env.config_dir + '/supervisor.conf /etc/supervisor/conf.d/supervisor_pmg.conf')
+        # sudo('supervisorctl reread')
+        # sudo('supervisorctl update')
 
     set_permissions()
     restart()

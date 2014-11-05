@@ -19,5 +19,10 @@ class Transforms:
 		"bill": {
 			"id": "id",
 			"title": "name"
+		},
+		"hansard": {
+			"id": "id",
+			"title": "title",
+			"fulltext": "body"
 		}
 	}

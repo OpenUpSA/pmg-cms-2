@@ -180,6 +180,12 @@ def member(member_id):
     member =  load_from_api('member', member_id)
     return render_template('member_detail.html', member=member, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/hansard/<int:hansard_id>')
+def hansard(hansard_id):
+    logger.debug("hansard page called")
+    hansard =  load_from_api('hansard', hansard_id)
+    return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
+
 @app.route('/search/')
 def search():
     """

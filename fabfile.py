@@ -37,6 +37,28 @@ def download_db():
         local('mv /tmp/tmp.db instance/tmp.db')
     return
 
+def rebuild_db():
+    with virtualenv():
+        sudo('newrelic-admin run-program python %s/rebuild_db.py' % env.project_dir)
+
+def copy_db():
+    local("pg_dump -dpmg -Upmg > pmg.sql")
+    local("tar cvzf pmg.sql.tar.gz pmg.sql")
+    put('pmg.sql.tar.gz', '/tmp/pmg.sql.tar.gz')
+    sudo('tar xvz /tmp/pmg.sql.tar.gz')
+    sudo('pmg_restore -dpmg -Upmg pmg.sql')
+    local('rm pmg.sql')
+    local('rm pmg.sql.tar.za')
+    sudo('rm /tmp/pmg.sql.tar.gz')
+    sudo('rm pmg.sql')
+
+
+def setup_db():
+    sudo("createuser pmg -S -D -R -e", user="postgres")
+    sudo("createdb --locale=en_US.utf-8 -E utf-8 -O pmg pmg -T template0", user="postgres")
+    rebuild_db()
+    # sudo('echo "grant all privileges on database pmg to pmg;" | psql')
+
 
 def restart():
     sudo("supervisorctl restart pmg_cms")
@@ -60,9 +82,9 @@ def setup():
     sudo('apt-get update')
 
     # install packages
-    sudo('apt-get install git')
-    sudo('apt-get install build-essential python-dev sqlite3 libsqlite3-dev')
-    sudo('apt-get install python-pip supervisor')
+    sudo('apt-get -y install git')
+    sudo('apt-get -y install build-essential python-dev sqlite3 libsqlite3-dev libpq-dev')
+    sudo('apt-get -y install python-pip supervisor')
     sudo('pip install virtualenv')
 
     # create application directory if it doesn't exist yet
@@ -79,13 +101,16 @@ def setup():
         sudo('pip install -r %s/requirements/production.txt' % env.project_dir)
 
     # install nginx
-    sudo('apt-get install nginx')
+    sudo('apt-get -y install nginx')
     # restart nginx after reboot
     sudo('update-rc.d nginx defaults')
     with settings(warn_only=True):
         sudo('rm /etc/nginx/sites-enabled/default')
     with settings(warn_only=True):
         sudo('service nginx start')
+
+    # Database setup
+    sudo('apt-get -y install postgresql')
     return
 
 

@@ -44,3 +44,7 @@ data/
 
 
 .DS_Store
+
+#Local instance config
+instance/config.py
+search/config.py

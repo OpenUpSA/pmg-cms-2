@@ -102,7 +102,9 @@ api_resources = {
     "bill": db.session.query(Bill)
         .order_by(desc(Bill.effective_date)),
     "member": db.session.query(Member)
-        .order_by(Member.name)
+        .order_by(Member.name),
+    "hansard": db.session.query(Hansard)
+        .order_by(Hansard.meeting_date),
     }
 
 @app.route('/search/')

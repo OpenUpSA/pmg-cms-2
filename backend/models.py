@@ -250,6 +250,14 @@ class CommitteeInfo(db.Model):
         return u'%s' % self.about
 
 
+class Hansard(db.Model):
+    __tablename__ = "hansard"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    meeting_date = db.Column(db.Date())
+    body = db.Column(db.Text())
+
 class Content(db.Model):
 
     __tablename__ = "content"

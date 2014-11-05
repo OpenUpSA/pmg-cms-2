@@ -33,13 +33,30 @@ def read_data(filename):
             records.append(json.loads(line))
     return records
 
+def db_date_from_utime(utime):
+    return datetime.datetime.fromtimestamp(float(utime))
 
-def rebuild_db(db_name):
+def construct_obj(obj, mappings):
+    """
+    Returns a result with the properties mapped by mapping, including all revisions
+    """
+    result_obj = {}
+    # print obj
+    for key in mappings.keys():
+        if (obj.has_key(key)):
+            result_obj[key] = obj[key]
+    if (obj.has_key("revisions") and (type(obj["revisions"]) is list) and (len(obj["revisions"]) > 0)):
+        for revision in obj["revisions"]:
+            tmp = construct_obj(revision, mappings)
+            result_obj.update(tmp)
+    return result_obj
+
+
+def rebuild_db():
     """
     Save json fixtures into a structured database, intended for use in our app.
     """
-
-    # dump_db(db_name)
+    
     db.drop_all()
     db.create_all()
 
@@ -242,6 +259,7 @@ def rebuild_db(db_name):
 
     # ======= BILLS ======== #
     bills = read_data("bill.json")
+    logger.debug("Processing Bills")
     for billobj in bills:
         bill = Bill()
         if (len(billobj["revisions"]) > 0):
@@ -270,11 +288,23 @@ def rebuild_db(db_name):
                 # print docobj
                 bill.files.append(docobj)
         db.session.add(bill)
+    bills = ""
 
+    # ======= HANSARDS ======== #
+    hansards = read_data("hansard.json")
+    logger.debug("Processing Hansards")
+    for hansardobj in hansards:
+        newobj = construct_obj(hansardobj, { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+        if (newobj["meeting_date"]):
+            newobj["meeting_date"] = db_date_from_utime(newobj["meeting_date"])
+        hansard = Hansard()
+        for key,val in newobj.iteritems():
+            setattr(hansard,key, val)
+        db.session.add(hansard)
     db.session.commit()
     return
 
 
 if __name__ == '__main__':
 
-    rebuild_db('instance/tmp.db')
+    rebuild_db()

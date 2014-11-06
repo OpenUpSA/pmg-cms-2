@@ -1,4 +1,4 @@
-from backend.app import logger
+from backend.app import logging
 from datetime import datetime
 import json
 

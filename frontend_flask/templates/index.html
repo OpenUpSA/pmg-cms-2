@@ -75,53 +75,18 @@
         </div>
       </form>
       <h3><span class="glyphicon glyphicon-flash"></span> Reports</h3>
-      <p>...</p>
-      <!--<table class="table table-striped table-bordered">-->
-        <!--<tr>-->
-          <!--<td>30 July 2014</td>-->
-          <!--<td>Mineral Resources</td>-->
-          <!--<td>-->
-            <!--<span class="glyphicon glyphicon-headphones"></span> PC Mineral Resurces: Committee Programme &amp; Preparation for strategic session-->
-          <!--</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>29 July 2014</td>-->
-          <!--<td>Agriculture, Forestry and Fisheries</td>-->
-          <!--<td>Minister of Agriculture, Forestry and Fisheries on 3rd &amp; 4th quarter 2014 performance</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>11 July 2014</td>-->
-          <!--<td>Agriculture, Forestry and Fisheries</td>-->
-          <!--<td>Committee Report on Agriculture, Forestry and Fisheries 2014 Budget</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8 July 2014</td>-->
-          <!--<td>Arts and Culture</td>-->
-          <!--<td>-->
-            <!--<span class="glyphicon glyphicon-headphones"></span> Committee Report on Arts and Culture 2014 Budget-->
-          <!--</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>30 July 2014</td>-->
-          <!--<td>Mineral Resources</td>-->
-          <!--<td>PC Mineral Resurces: Committee Programme &amp; Preparation for strategic session</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>29 July 2014</td>-->
-          <!--<td>Agriculture, Forestry and Fisheries</td>-->
-          <!--<td><span class="glyphicon glyphicon-headphones"></span> Minister of Agriculture, Forestry and Fisheries on 3rd &amp; 4th quarter 2014 performance</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>11 July 2014</td>-->
-          <!--<td>Agriculture, Forestry and Fisheries</td>-->
-          <!--<td>Committee Report on Agriculture, Forestry and Fisheries 2014 Budget</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8 July 2014</td>-->
-          <!--<td>Arts and Culture</td>-->
-          <!--<td>Committee Report on Arts and Culture 2014 Budget</td>-->
-        <!--</tr>-->
-      <!--</table>-->
+      
+      <table class="table table-striped table-bordered">
+         {% for committee_meeting in committee_meetings %}
+          <tr>
+            <td>{{ committee_meeting.date }}</td>
+          <td><a href="/committee/{{ committee_meeting.committee.id }}">{{ committee_meeting.committee.name }}</a></td>
+          <td>
+            <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
     </div> <!-- Reports -->
   </div>
 

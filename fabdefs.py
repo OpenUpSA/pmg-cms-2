@@ -12,9 +12,8 @@ def production():
     """
 
     env.host_string = 'ubuntu@54.76.117.251'
-    env.key_filename = '~/.ssh/petrus.pem'
     env.project_dir = '/var/www/pmg-cms'
-    env.config_dir = 'config/production'
+    env.config_dir = env.project_dir + '/config/production'
     env.git_branch = 'master'
     env.activate = 'source %s/env/bin/activate' % env.project_dir
     print("PRODUCTION ENVIRONMENT\n")

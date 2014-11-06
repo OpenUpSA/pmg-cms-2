@@ -156,7 +156,7 @@ def resource_list(resource, resource_id=None):
 
     # validate paging parameters
     page = 0
-    per_page = 999 # app.config['RESULTS_PER_PAGE']
+    per_page = app.config['RESULTS_PER_PAGE']
     if flask.request.args.get('page'):
         try:
             page = int(flask.request.args.get('page'))

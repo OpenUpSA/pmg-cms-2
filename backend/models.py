@@ -56,6 +56,23 @@ class User(db.Model):
     def to_dict(self, include_related=False):
         return serializers.user_to_dict(self)
 
+class House(db.Model):
+    __tablename__ = "house"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+
+class Party(db.Model):
+    __tablename__ = "party"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    version = db.Column(db.Integer, nullable=False, default=0)
+
+class Province(db.Model):
+    __tablename__ = "province"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    version = db.Column(db.Integer, nullable=False, default=0)
 
 class BillType(db.Model):
 
@@ -200,9 +217,17 @@ class Member(db.Model):
     profile_pic_url = db.Column(db.String(200))
     bio = db.Column(db.String(1500))
     version = db.Column(db.Integer, nullable=False)
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house = db.relationship(House)
+    party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
+    party = db.relationship(Party)
+    province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
+    province = db.relationship(Province)
+
 
     def __unicode__(self):
         return u'%s' % self.name
+
 
 
 class Organisation(db.Model):
@@ -215,10 +240,10 @@ class Organisation(db.Model):
     type = db.Column(db.String(50), nullable=False)
     version = db.Column(db.Integer, nullable=False)
 
-    parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=1)
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house = db.relationship('House')
 
-    to_dict = serializers.organisation_to_dict
+    # to_dict = serializers.organisation_to_dict
 
     def __unicode__(self):
         return u'%s' % self.name

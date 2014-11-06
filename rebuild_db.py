@@ -1,9 +1,17 @@
 import os
 import json
 import time, datetime
-from backend.app import app, db, logger
+from backend.app import app, db
+
+from backend import models
 from backend.models import *
 import parsers
+from sqlalchemy import types
+
+import logging
+logger = logging.getLogger(__name__)
+# logger.setLevel(40)
+logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
 STATIC_HOST = app.config['STATIC_HOST']
 db.echo = False
@@ -51,21 +59,73 @@ def construct_obj(obj, mappings):
             result_obj.update(tmp)
     return result_obj
 
+def find_files(obj):
+    files = []
+    if (obj.has_key("files") and (type(obj["files"]) is list) and (len(obj["files"]) > 0)):
+        # print obj["files"]
+        for f in obj["files"]:
+            fobj = File(
+                    filemime=f["filemime"],
+                    origname = f["origname"],
+                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+                )
+            db.session.add(fobj)
+            files.append(fobj)
+        db.session.commit()
+    return files
+
+def prep_table(tablename):
+    Model = getattr(models, tablename.capitalize())
+    print "Deleted rows: ", Model.query.delete()
+    
+
+def rebuild_table(tablename, mappings):
+    logger.debug("Rebuilding %s" % tablename)
+    Model = getattr(models, tablename.capitalize())
+    prep_table(tablename)
+    i = 0
+    with open('data/' + tablename + '.json', 'r') as f:
+        records = []
+        lines = f.readlines()
+        logger.debug("Found %i records" % (len(lines)))
+        for line in lines:
+            obj = json.loads(line)
+            newobj = construct_obj(obj, mappings)
+            # Check for Dates
+            for mapping in mappings.values():
+                row_type = getattr(Model, mapping).property.columns[0].type
+                if (row_type.__str__() == "DATE"):
+                    if (newobj[mapping]):
+                        newobj[mapping] = db_date_from_utime(newobj[mapping])
+            model = Model()
+            files = find_files(obj)
+            if (len(files)):
+                for f in files:
+                    model.file_id = f.id
+            for key,val in newobj.iteritems():
+                setattr(model, key, val)
+            db.session.add(model)
+            i += 1
+            if (i == 100):
+                db.session.commit()
+                i = 0
+                logger.debug("Wrote 100 rows...")        
+        db.session.commit()
 
 def rebuild_db():
     """
     Save json fixtures into a structured database, intended for use in our app.
     """
-    
+
     db.drop_all()
     db.create_all()
 
     start = time.time()
 
     # populate houses of parliament
-    joint_obj = Organisation(name="Joint (NA + NCOP)", type="house", version=0)
-    ncop_obj = Organisation(name="NCOP", type="house", version=0)
-    na_obj = Organisation(name="National Assembly", type="house", version=0)
+    joint_obj = House(name="Joint (NA + NCOP)")
+    ncop_obj = House(name="NCOP")
+    na_obj = House(name="National Assembly")
     for obj in [joint_obj, ncop_obj, na_obj]:
         db.session.add(obj)
     db.session.commit()
@@ -98,11 +158,11 @@ def rebuild_db():
 
         # set parent relation
         if "ncop" in organisation.name.lower():
-            organisation.parent_id = ncop_obj.id
+            organisation.house_id = ncop_obj.id
         elif "joint" in organisation.name.lower():
-            organisation.parent_id = joint_obj.id
+            organisation.house_id = joint_obj.id
         else:
-            organisation.parent_id = na_obj.id
+            organisation.house_id = na_obj.id
 
         committee_info = CommitteeInfo()
         if val.get("about"):
@@ -152,27 +212,26 @@ def rebuild_db():
         party = member['mp_party']
         if party:
             logger.debug(party)
-            party_obj = Organisation.query.filter_by(type="party").filter_by(name=party).first()
+            party_obj = Party.query.filter_by(name=party).first()
             if not party_obj:
-                party_obj = Organisation(type="party", name=party, version=0)
+                party_obj = Party(name=party)
                 db.session.add(party_obj)
                 db.session.commit()
-            membership_obj = Membership(organisation=party_obj)
-            member_obj.memberships.append(membership_obj)
+            member_obj.party_id = party_obj.id
 
         # set house membership
         house = member['mp_province']
         if house == "National Assembly":
-            member_obj.memberships.append(Membership(organisation=na_obj))
+            member_obj.house_id = na_obj.id
         elif house and "NCOP" in house:
-            member_obj.memberships.append(Membership(organisation=ncop_obj))
-            logger.debug(house)
-            province_obj = Organisation.query.filter_by(type="province").filter_by(name=house[5::]).first()
+            member_obj.house_id = ncop_obj.id
+            # logger.debug(house)
+            province_obj = Province.query.filter_by(name=house[5::]).first()
             if not province_obj:
-                province_obj = Organisation(type="province", name=house[5::], version=0)
+                province_obj = Province(name=house[5::])
                 db.session.add(province_obj)
                 db.session.commit()
-            member_obj.memberships.append(Membership(organisation=province_obj))
+            member_obj.province_id = province_obj.id
 
         db.session.add(member_obj)
         logger.debug('')
@@ -258,53 +317,52 @@ def rebuild_db():
                 db.session.commit()
 
     # ======= BILLS ======== #
-    bills = read_data("bill.json")
-    logger.debug("Processing Bills")
-    for billobj in bills:
-        bill = Bill()
-        if (len(billobj["revisions"]) > 0):
-            # print billobj
-            bill.name = billobj["revisions"][0]["title"]
-        else:
-            bill.name = billobj["title"]
-        if (billobj["effective_date"]):
-            bill.effective_date = datetime.datetime.fromtimestamp(float(billobj["effective_date"]))
-        if (billobj["files"]):
-            for f in billobj["files"]:
-                docobj = BillFile(
-                    filemime=f["filemime"],
-                    origname = f["origname"],
-                    # description = f["field_file_bill_data"]["description"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
-                )
-                if ("version" in f):
-                    bill.code = f["version"]
-                # if ("field_file_bill_data" in f):
-                #     print docobj
-                #     print f["field_file_bill_data"]
-                #     field_file_bill_data = f["field_file_bill_data"]
-                    # if ((f["field_file_bill_data"]) and ("description" in  f["field_file_bill_data"])):
-                    #     docobj.description = f["field_file_bill_data"]["description"]
-                # print docobj
-                bill.files.append(docobj)
-        db.session.add(bill)
-    bills = ""
+    # bills = read_data("bill.json")
+    # logger.debug("Processing Bills")
+    # for billobj in bills:
+    #     bill = Bill()
+    #     if (len(billobj["revisions"]) > 0):
+    #         # print billobj
+    #         bill.name = billobj["revisions"][0]["title"]
+    #     else:
+    #         bill.name = billobj["title"]
+    #     if (billobj["effective_date"]):
+    #         bill.effective_date = datetime.datetime.fromtimestamp(float(billobj["effective_date"]))
+    #     if (billobj["files"]):
+    #         for f in billobj["files"]:
+    #             docobj = File(
+    #                 filemime=f["filemime"],
+    #                 origname = f["origname"],
+    #                 # description = f["field_file_bill_data"]["description"],
+    #                 url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+    #             )
+    #             if ("version" in f):
+    #                 bill.code = f["version"]
+    #             # if ("field_file_bill_data" in f):
+    #             #     print docobj
+    #             #     print f["field_file_bill_data"]
+    #             #     field_file_bill_data = f["field_file_bill_data"]
+    #                 # if ((f["field_file_bill_data"]) and ("description" in  f["field_file_bill_data"])):
+    #                 #     docobj.description = f["field_file_bill_data"]["description"]
+    #             # print docobj
+    #             bill.files.append(docobj)
+    #     db.session.add(bill)
+    # bills = ""
 
-    # ======= HANSARDS ======== #
-    hansards = read_data("hansard.json")
-    logger.debug("Processing Hansards")
-    for hansardobj in hansards:
-        newobj = construct_obj(hansardobj, { "title": "title", "meeting_date": "meeting_date", "body": "body" })
-        if (newobj["meeting_date"]):
-            newobj["meeting_date"] = db_date_from_utime(newobj["meeting_date"])
-        hansard = Hansard()
-        for key,val in newobj.iteritems():
-            setattr(hansard,key, val)
-        db.session.add(hansard)
-    db.session.commit()
+    
     return
+
+def clear_db():
+    logger.debug("Dropping all")
+    db.drop_all()
+    logger.debug("Creating all")
+    db.create_all()
 
 
 if __name__ == '__main__':
-
+    clear_db()
+    
+    # rebuild_table("bill", { "title": "title", "effective_date": "effective_date" })
+    # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
     rebuild_db()
+    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })

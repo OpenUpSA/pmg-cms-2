@@ -1,10 +1,13 @@
+import logging
 import json
 from datetime import datetime, date
-from app import db, logger, app
+from app import db, app
 from operator import itemgetter
 from sqlalchemy import inspect
 
 API_HOST = app.config["API_HOST"]
+
+logger = logging.getLogger(__name__)
 
 
 class CustomEncoder(json.JSONEncoder):

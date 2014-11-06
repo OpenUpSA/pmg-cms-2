@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page %}
+<div class="container-fluid">
+
+  <div class="col-sm-12">
+    <h1><i class="fa fa-icon fa-group"></i> Members</h1>
+  </div>
+
+  <div class="col-md-8">
+    <ul>
+      {% for member in members %}
+       <li>
+        <a href="/member/{{ member.id }}">{{ member.name }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+
+  </div>
+
+  <div class="col-md-4">
+
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      {% include 'pagination.html' %}
+    </div>
+  </div>
+{% endblock page %}

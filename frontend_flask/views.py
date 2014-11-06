@@ -72,7 +72,6 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     try:
         response = requests.get(API_HOST + query_str, headers=headers)
         out = response.json()
-
         if response.status_code != 200:
             raise ApiException(response.status_code, response.json().get('message', "An unspecified error has occurred."))
         if return_everything:
@@ -99,8 +98,16 @@ def index():
     """
 
     logger.debug("index page called")
+    committee_meetings_api = load_from_api('committee-meeting')
+    committee_meetings = []
+    for committee_meeting in committee_meetings_api["results"]:
 
-    return render_template('index.html')
+        if (committee_meeting["organisation_id"]):
+            committee = load_from_api('committee/' + (committee_meeting["organisation_id"]).__str__())
+            committee_meeting["committee"] = committee
+            committee_meetings.append(committee_meeting)
+    committee_meetings = committee_meetings[0:10]
+    return render_template('index.html', committee_meetings = committee_meetings)
 
 
 @app.route('/bills/')

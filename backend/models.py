@@ -84,9 +84,9 @@ class Bill(db.Model):
 
     __tablename__ = "bill"
 
-    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'name'), {})
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'title'), {})
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=False)
+    title = db.Column(db.String(250), nullable=False)
     code = db.Column(db.String(100))
     act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
@@ -106,7 +106,8 @@ class Bill(db.Model):
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
 
-    files = db.relationship('BillFile')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
+    files = db.relationship("File")
 
     def code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
@@ -120,10 +121,11 @@ class Bill(db.Model):
     def __repr__(self):
         return '<Bill: %r>' % str(self)
 
-class BillFile(db.Model):
+
+class File(db.Model):
     __tablename__ = "file"
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('bill.id'))
+    # parent_id = db.Column(db.Integer, db.ForeignKey('bill.id'))
     filemime = db.Column(db.String(50))
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
@@ -257,6 +259,15 @@ class Hansard(db.Model):
     title = db.Column(db.String(255))
     meeting_date = db.Column(db.Date())
     body = db.Column(db.Text())
+
+class Policy_document(db.Model):
+    __tablename__ = "policy_document"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    effective_date = db.Column(db.Date())
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
+    files = db.relationship("File")
 
 class Content(db.Model):
 

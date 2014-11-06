@@ -41,7 +41,7 @@ def rebuild_db():
     sudo("supervisorctl stop pmg_cms")
     with virtualenv():
         sudo('newrelic-admin run-program python %s/rebuild_db.py' % env.project_dir)
-        sudo("supervisorctl start pmg_cms")
+    sudo("supervisorctl start pmg_cms")
 
 def copy_db():
     local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")

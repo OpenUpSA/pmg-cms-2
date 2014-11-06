@@ -24,7 +24,15 @@
 <div class="col-sm-8 justify-p">
   <h1>{{ event.title }}</h1>
 
-  <h3>Committee: <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
+  <h3>
+    Committee:
+    {% if event.organisation %}
+      <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
+    {% else %}
+      (unknown)
+    {% endif %}
+  </h3>
+
   <h3>Date of Meeting: {{ event.date | pretty_date }}</h3>
   <!--<h3>Chairperson:  <a href="#">Ms L Yengeni (ANC)</a></h3>-->
 
@@ -33,6 +41,7 @@
   {{ summary | safe }}
   <hr>
   {% endif %}
+
   <h2>Minutes</h2>
   {{ body | safe }}
   <hr>

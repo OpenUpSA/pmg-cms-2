@@ -11,7 +11,7 @@
     <h2>National Assembly</h2>
     <ul>
       {% for committee in committees %}
-      {% if committee.parent.id == 3 %}
+      {% if committee.house_id == 3 %}
       <li>
         <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
       </li>
@@ -22,7 +22,7 @@
     <h2>National Council of Provinces</h2>
     <ul>
       {% for committee in committees %}
-      {% if committee.parent.id == 2 %}
+      {% if committee.house_id == 2 %}
       <li>
         <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
       </li>
@@ -33,7 +33,7 @@
     <h2>Joint Committees</h2>
     <ul>
       {% for committee in committees %}
-      {% if committee.parent.id == 1 %}
+      {% if committee.house_id == 1 %}
       <li>
         <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
       </li>

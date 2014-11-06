@@ -99,7 +99,7 @@ def send_api_response(data_json):
 api_resources = {
     "committee": db.session.query(Organisation) \
         .filter_by(type='committee') \
-        .order_by(Organisation.parent_id, Organisation.name),
+        .order_by(Organisation.house_id, Organisation.name),
     "committee-meeting": db.session.query(Event) \
         .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),

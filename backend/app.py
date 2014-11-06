@@ -7,8 +7,8 @@ import os
 
 env = os.environ.get('FLASK_ENV', 'development')
 
-app = Flask(__name__, instance_relative_config=True, static_folder="not_static")
-app.config.from_pyfile('config.py', silent=True)
+app = Flask(__name__, static_folder="not_static")
+app.config.from_pyfile('../config/%s/config.py' % env)
 db = SQLAlchemy(app)
 
 # setup logging

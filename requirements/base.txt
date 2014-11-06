@@ -11,3 +11,4 @@ python-dateutil
 pyelasticsearch
 newrelic
 psycopg2
+PyYAML==3.11

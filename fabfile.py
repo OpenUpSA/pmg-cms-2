@@ -38,17 +38,19 @@ def download_db():
     return
 
 def rebuild_db():
+     sudo("supervisorctl stop pmg_cms")
     with virtualenv():
         sudo('newrelic-admin run-program python %s/rebuild_db.py' % env.project_dir)
+     sudo("supervisorctl start pmg_cms")
 
 def copy_db():
-    local("pg_dump -dpmg -Upmg > pmg.sql")
+    local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")
     local("tar cvzf pmg.sql.tar.gz pmg.sql")
     put('pmg.sql.tar.gz', '/tmp/pmg.sql.tar.gz')
-    sudo('tar xvz /tmp/pmg.sql.tar.gz')
-    sudo('pmg_restore -dpmg -Upmg pmg.sql')
+    sudo('tar xvzf /tmp/pmg.sql.tar.gz')
+    sudo('psql -dpmg -f pmg.sql', user="postgres")
     local('rm pmg.sql')
-    local('rm pmg.sql.tar.za')
+    # local('rm pmg.sql.tar.gz')
     sudo('rm /tmp/pmg.sql.tar.gz')
     sudo('rm pmg.sql')
 

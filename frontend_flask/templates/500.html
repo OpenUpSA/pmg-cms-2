@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block page %}
+
+<h1>Oops, something went wrong</h1>
+
+<h3>We've been notified and will take a look. Please try again.</h3>
+
+<p>The error is: {{ error.message }} ({{ error.status_code }})</p>
+
+{% endblock page %}

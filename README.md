@@ -35,7 +35,23 @@ If you want to contribute to the code, please fork the repository, make your cha
 
 ### Local setup
 
-TODO: Explain local setup
+Clone this repo, and setup a virtualenv:
+
+    virtualenv --no-site-packages env
+    source env/bin/activate
+
+Install requirements:
+
+    pip install -r requirements/development.txt
+
+Start the backend server:
+
+    python runserver_backend.py
+
+And start the frontend server:
+
+    python runserver_frontend.py
+
 
 ### Deploy instructions
 

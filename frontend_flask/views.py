@@ -45,16 +45,15 @@ def handle_api_exception(error):
     """
     Error handler, used by flask to pass the error on to the user, rather than catching it and throwing a HTTP 500.
     """
-
-    logger.debug(error)
-    logger.debug(request.path)
-    logger.debug(urllib.quote_plus(request.path))
+    logger.error("API error: %s" % error.message)
     flash(error.message + " (" + str(error.status_code) + ")", "danger")
+
     # catch 'Unauthorised' status
     if error.status_code == 401:
         session.clear()
         return redirect(url_for('login') + "?next=" + urllib.quote_plus(request.path))
-    return redirect(url_for('landing'))
+
+    return render_template('500.html', error=error), 500
 
 
 def load_from_api(resource_name, resource_id=None, page=None, return_everything=False):
@@ -71,9 +70,15 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         headers = {'Authorization': 'ApiKey:' + session.get('api_key')}
     try:
         response = requests.get(API_HOST + query_str, headers=headers)
-        out = response.json()
         if response.status_code != 200:
-            raise ApiException(response.status_code, response.json().get('message', "An unspecified error has occurred."))
+            try:
+                msg = response.json().get('message')
+            except Exception:
+                msg = None
+
+            raise ApiException(response.status_code, msg or "An unspecified error has occurred.")
+
+        out = response.json()
         if return_everything:
             next_response_json = out
             i = 0

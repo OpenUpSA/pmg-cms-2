@@ -106,13 +106,14 @@ def index():
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
-
         if (committee_meeting["organisation_id"]):
-            committee = load_from_api('committee/' + (committee_meeting["organisation_id"]).__str__())
+            committee = load_from_api('committee/%s' % committee_meeting["organisation_id"])
             committee_meeting["committee"] = committee
             committee_meetings.append(committee_meeting)
-    committee_meetings = committee_meetings[0:10]
-    return render_template('index.html', committee_meetings = committee_meetings)
+            if len(committee_meetings) == 10:
+                break
+
+    return render_template('index.html', committee_meetings=committee_meetings)
 
 
 @app.route('/bills/')
@@ -175,6 +176,8 @@ def committee_meeting(event_id):
     event = load_from_api('committee-meeting', event_id)
     related_docs = []
     audio = []
+    summary = None
+    body = None
     for item in event.get('content'):
         if item['type'] == "committee-meeting-report":
             body = item['body']

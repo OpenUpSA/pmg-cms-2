@@ -1,4 +1,4 @@
-from app import app, db, logger
+from app import app, db
 import serializers
 from sqlalchemy import desc
 from sqlalchemy.orm import backref

@@ -1,4 +1,6 @@
-from app import db, logger, app
+import logging
+
+from app import db, app
 from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
@@ -21,6 +23,8 @@ app.static_folder = 'static'
 app.add_url_rule('/static/<path:filename>',
                  endpoint='static',
                  view_func=app.send_static_file)
+
+logger = logging.getLogger(__name__)
 
 
 class ApiException(Exception):

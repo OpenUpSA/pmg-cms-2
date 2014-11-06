@@ -1,5 +1,7 @@
+import logging
+
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
-from frontend_flask import app, logger
+from frontend_flask import app
 import requests
 from datetime import datetime, date
 import dateutil.parser
@@ -10,6 +12,7 @@ import math
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
 
+logger = logging.getLogger(__name__)
 
 @app.template_filter('pretty_date')
 def _jinja2_filter_datetime(iso_str):

@@ -170,7 +170,7 @@ class Event(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    organisation = db.relationship('Organisation', backref=backref('events', order_by=desc('Event.date')))
+    organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
         return u'%s' % self.name

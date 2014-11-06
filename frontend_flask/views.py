@@ -106,9 +106,7 @@ def index():
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
-        if (committee_meeting["organisation_id"]):
-            committee = load_from_api('committee/%s' % committee_meeting["organisation_id"])
-            committee_meeting["committee"] = committee
+        if committee_meeting["organisation_id"]:
             committee_meetings.append(committee_meeting)
             if len(committee_meetings) == 10:
                 break
@@ -140,20 +138,20 @@ def committees():
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>')
-def committee_meetings(page = 0):
+def committee_meetings(page=0):
     """
     Page through all available committee meetings.
     """
 
-    logger.debug("committee meetings page called")
-    committee_meetings_list = load_from_api('committee-meeting', page = page)
+    committee_meetings_list = load_from_api('committee-meeting', page=page)
+    committee_meetings = committee_meetings_list['results']
     count = committee_meetings_list["count"]
+
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    # page = 0;
-    committee_meetings = committee_meetings_list['results']
     url = "/committee-meetings"
-    return render_template('committee_meeting_list.html', committee_meetings=committee_meetings, num_pages = num_pages, page = page, url = url)
+
+    return render_template('committee_meeting_list.html', committee_meetings=committee_meetings, num_pages=num_pages, page=page, url=url)
 
 @app.route('/committee/<int:committee_id>/')
 def committee_detail(committee_id):
@@ -172,7 +170,6 @@ def committee_meeting(event_id):
     Display committee meeting details, including report and any other related content.
     """
 
-    logger.debug("committee meeting page called")
     event = load_from_api('committee-meeting', event_id)
     related_docs = []
     audio = []

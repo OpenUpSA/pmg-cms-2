@@ -33,7 +33,14 @@
     {% endif %}
   </h3>
 
-  <h3>Date of Meeting: {{ event.date | pretty_date }}</h3>
+  <h3>
+    Date of Meeting:
+    {% if event.date %}
+      {{ event.date | pretty_date }}
+    {% else %}
+      (unknown)
+    {% endif %}
+  </h3>
   <!--<h3>Chairperson:  <a href="#">Ms L Yengeni (ANC)</a></h3>-->
 
   {% if summary %}

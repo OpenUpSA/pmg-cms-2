@@ -38,10 +38,10 @@ def download_db():
     return
 
 def rebuild_db():
-     sudo("supervisorctl stop pmg_cms")
+    sudo("supervisorctl stop pmg_cms")
     with virtualenv():
         sudo('newrelic-admin run-program python %s/rebuild_db.py' % env.project_dir)
-     sudo("supervisorctl start pmg_cms")
+        sudo("supervisorctl start pmg_cms")
 
 def copy_db():
     local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")
@@ -98,10 +98,6 @@ def setup():
             # create virtualenv
             sudo('virtualenv --no-site-packages %s/env' % env.project_dir)
 
-    # install the necessary Python packages
-    with virtualenv():
-        sudo('pip install -r %s/requirements/production.txt' % env.project_dir)
-
     # install nginx
     sudo('apt-get -y install nginx')
     # restart nginx after reboot
@@ -139,20 +135,19 @@ def deploy():
         # sudo('mv /tmp/tmp.db instance/tmp.db')
         # sudo('git stash pop')
 
-    # The following should be in setup
-    # with cd(env.project_dir):
-        # now, set the config files
-        # sudo('rm -rf instance/*')
-        # sudo('cp -r ' + env.config_dir + '/* instance')
-        # move nginx server blocks
-        # sudo('mv ' + env.config_dir + '/nginx.conf /etc/nginx/sites-available/pmg.org.za')
-        # link server blocks to Nginx config
-        # with settings(warn_only=True):
-            # sudo('ln -s /etc/nginx/sites-available/pmg.org.za /etc/nginx/sites-enabled/')
+    # install dependencies
+    with virtualenv():
+        sudo('pip install -r %s/requirements/production.txt' % env.project_dir)
+
+    with cd(env.project_dir):
+        # nginx
+        sudo('ln -sf ' + env.config_dir + '/nginx.conf /etc/nginx/sites-enabled/pmg.org.za')
+        sudo('service nginx reload')
+
         # move supervisor config
-        # sudo('mv ' + env.config_dir + '/supervisor.conf /etc/supervisor/conf.d/supervisor_pmg.conf')
-        # sudo('supervisorctl reread')
-        # sudo('supervisorctl update')
+        sudo('ln -sf ' + env.config_dir + '/supervisor.conf /etc/supervisor/conf.d/supervisor_pmg.conf')
+        sudo('supervisorctl reread')
+        sudo('supervisorctl update')
 
     set_permissions()
     restart()

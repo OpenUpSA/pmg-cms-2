@@ -8,6 +8,7 @@ from functools import wraps
 import json
 from sqlalchemy import func, or_, distinct, desc
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
 import datetime
 from operator import itemgetter
 import re
@@ -100,13 +101,17 @@ api_resources = {
     "committee": db.session.query(Organisation) \
         .filter_by(type='committee') \
         .order_by(Organisation.parent_id, Organisation.name),
+
     "committee-meeting": db.session.query(Event) \
         .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),
+
     "bill": db.session.query(Bill)
         .order_by(desc(Bill.effective_date)),
+
     "member": db.session.query(Member)
         .order_by(Member.name),
+
     "hansard": db.session.query(Hansard)
         .order_by(Hansard.meeting_date),
     }
@@ -149,20 +154,24 @@ def resource_list(resource, resource_id=None):
     if not api_resources.get(resource):
         raise ApiException(400, "The specified resource type does not exist.")
 
-    count, next = None, None
     # validate paging parameters
     page = 0
-    per_page = app.config['RESULTS_PER_PAGE']
+    per_page = 999 # app.config['RESULTS_PER_PAGE']
     if flask.request.args.get('page'):
         try:
             page = int(flask.request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
+
     base_query = api_resources[resource]
     if resource_id:
-        queryset = base_query.filter_by(id=resource_id).one()
+        try:
+            queryset = base_query.filter_by(id=resource_id).one()
+        except NoResultFound:
+            raise ApiException(404, "Not found")
     else:
         queryset = base_query.limit(per_page).offset(page*per_page).all()
+
     count = base_query.count()
     next = None
     if count > (page + 1) * per_page:

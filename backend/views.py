@@ -97,23 +97,24 @@ def send_api_response(data_json):
 # API endpoints:
 #
 
-api_resources = {
-    "committee": db.session.query(Organisation) \
-        .filter_by(type='committee') \
-        .order_by(Organisation.house_id, Organisation.name),
-    "committee-meeting": db.session.query(Event) \
-        .filter(EventType.name=='committee-meeting') \
-        .order_by(desc(Event.date)),
+def api_resources():
+    return {
+        "committee": db.session.query(Organisation) \
+            .filter_by(type='committee') \
+            .order_by(Organisation.house_id, Organisation.name),
+        "committee-meeting": db.session.query(Event) \
+            .filter(EventType.name=='committee-meeting') \
+            .order_by(desc(Event.date)),
 
-    "bill": db.session.query(Bill)
-        .order_by(desc(Bill.effective_date)),
+        "bill": db.session.query(Bill)
+            .order_by(desc(Bill.effective_date)),
 
-    "member": db.session.query(Member)
-        .order_by(Member.name),
+        "member": db.session.query(Member)
+            .order_by(Member.name),
 
-    "hansard": db.session.query(Hansard)
-        .order_by(Hansard.meeting_date),
-    }
+        "hansard": db.session.query(Hansard)
+            .order_by(Hansard.meeting_date),
+        }
 
 @app.route('/search/')
 def search():
@@ -150,7 +151,8 @@ def resource_list(resource, resource_id=None):
     Generic resource endpoints.
     """
 
-    if not api_resources.get(resource):
+    base_query = api_resources().get(resource)
+    if not base_query:
         raise ApiException(400, "The specified resource type does not exist.")
 
     # validate paging parameters
@@ -162,7 +164,6 @@ def resource_list(resource, resource_id=None):
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
 
-    base_query = api_resources[resource]
     if resource_id:
         try:
             queryset = base_query.filter_by(id=resource_id).one()
@@ -186,6 +187,6 @@ def landing():
     """
 
     out = {'endpoints': []}
-    for resource in api_resources.keys():
+    for resource in api_resources().keys():
         out['endpoints'].append(API_HOST + resource)
     return send_api_response(json.dumps(out, indent=4))

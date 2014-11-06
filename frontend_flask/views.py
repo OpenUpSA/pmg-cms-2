@@ -132,6 +132,22 @@ def committees():
     committees = committee_list['results']
     return render_template('committee_list.html', committees=committees)
 
+@app.route('/committee-meetings/')
+@app.route('/committee-meetings/<int:page>')
+def committee_meetings(page = 0):
+    """
+    Page through all available committee meetings.
+    """
+
+    logger.debug("committee meetings page called")
+    committee_meetings_list = load_from_api('committee-meeting', page = page)
+    count = committee_meetings_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    # page = 0;
+    committee_meetings = committee_meetings_list['results']
+    url = "/committee-meetings"
+    return render_template('committee_meeting_list.html', committee_meetings=committee_meetings, num_pages = num_pages, page = page, url = url)
 
 @app.route('/committee/<int:committee_id>/')
 def committee_detail(committee_id):
@@ -183,6 +199,23 @@ def bill(bill_id):
             return redirect(bill["files"][0]["url"], code=302)
     logger.debug(bill)
     return "Oh dear"
+
+@app.route('/members/')
+@app.route('/members/<int:page>')
+def members(page = 0):
+    """
+    Page through all available members.
+    """
+
+    logger.debug("members page called")
+    members_list = load_from_api('member', page = page)
+    count = members_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    members = members_list['results']
+    url = "/members"
+    return render_template('member_list.html', members=members, num_pages = num_pages, page = page, url = url)
+
 
 @app.route('/member/<int:member_id>')
 def member(member_id):

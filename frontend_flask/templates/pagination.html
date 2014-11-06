@@ -1,0 +1,7 @@
+ <ul class="pagination pagination-sm" >
+    <li><a href="{{url}}/0">&laquo;</a></li>
+    {% for i in range(0, num_pages) %}
+    <li{% if (i == page) %} class="active"{% endif %}><a href="{{url}}/{{ i }}">{{ loop.index }}</a></li>
+    {% endfor %}
+    <li><a href="{{url}}/{{ num_pages - 1 }}">&raquo;</a></li>
+</ul>

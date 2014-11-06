@@ -35,26 +35,32 @@ If you want to contribute to the code, please fork the repository, make your cha
 
 ### Local setup
 
-TODO: Explain local setup
+Clone this repo, and setup a virtualenv:
+
+    virtualenv --no-site-packages env
+    source env/bin/activate
+
+Install requirements:
+
+    pip install -r requirements/development.txt
+
+Start the backend server:
+
+    python runserver_backend.py
+
+And start the frontend server:
+
+    python runserver_frontend.py
+
 
 ### Deploy instructions
 
-If you have SSH access to the server where the staging/production app is hosted, you can deploy updates. First,
-if you haven't done it yet, install `fabric`:::
+Deployment is via fabric from the master branch on GitHub. You need to have an ssh key to access the server.
 
-  sudo pip install fabric
-  
 Now, deploy the latest code from this project's master branch on GitHub:::
-  
-  fab staging deploy
-  
-If you need to set up a completely new (Ubuntu 14.04 and above) server to host this application:::
 
-  fab staging setup
-  fab staging deploy 
+    fab production deploy
 
+To deploy a new instance (requires Ubuntu 14.04), use:
 
-### Maintenance
-
-TODO: Add any notes on what might be needed to keep this code running for a long time.
-
+    fab production setup deploy

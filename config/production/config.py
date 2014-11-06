@@ -1,7 +1,6 @@
-LOG_LEVEL = "DEBUG"
-DEBUG = True
-SQLALCHEMY_DATABASE_URI = 'sqlite:///../instance/tmp.db'
-LOGGER_NAME = "pmg_cms_logger"  # make sure this is not the same as the name of the package to avoid conflicts with Flask's own logger
+SQLALCHEMY_DATABASE_URI = 'postgresql://pmg:pmg@localhost/pmg'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
-API_HOST = "0.0.0.0:5005"
+API_HOST = "http://pmg-cms.demo4sa.org/"
 RESULTS_PER_PAGE = 20
+
+STATIC_HOST = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/"

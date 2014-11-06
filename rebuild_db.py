@@ -1,12 +1,12 @@
 import os
 import json
-import time
+import time, datetime
 from backend.app import app, db, logger
 from backend.models import *
 import parsers
 
 STATIC_HOST = app.config['STATIC_HOST']
-
+db.echo = False
 
 def strip_filpath(filepath):
 
@@ -33,13 +33,31 @@ def read_data(filename):
             records.append(json.loads(line))
     return records
 
+def db_date_from_utime(utime):
+    return datetime.datetime.fromtimestamp(float(utime))
 
-def rebuild_db(db_name):
+def construct_obj(obj, mappings):
+    """
+    Returns a result with the properties mapped by mapping, including all revisions
+    """
+    result_obj = {}
+    # print obj
+    for key in mappings.keys():
+        if (obj.has_key(key)):
+            result_obj[key] = obj[key]
+    if (obj.has_key("revisions") and (type(obj["revisions"]) is list) and (len(obj["revisions"]) > 0)):
+        for revision in obj["revisions"]:
+            tmp = construct_obj(revision, mappings)
+            result_obj.update(tmp)
+    return result_obj
+
+
+def rebuild_db():
     """
     Save json fixtures into a structured database, intended for use in our app.
     """
-
-    dump_db(db_name)
+    
+    db.drop_all()
     db.create_all()
 
     start = time.time()
@@ -50,6 +68,11 @@ def rebuild_db(db_name):
     na_obj = Organisation(name="National Assembly", type="house", version=0)
     for obj in [joint_obj, ncop_obj, na_obj]:
         db.session.add(obj)
+    db.session.commit()
+
+    # populate membership_type
+    chairperson = MembershipType(name="chairperson")
+    db.session.add(chairperson)
     db.session.commit()
 
     # populate committees
@@ -120,7 +143,8 @@ def rebuild_db(db_name):
         for term in member['terms']:
             if committees.get(term):
                 org_model = committees[term]['model']
-                member_obj.memberships.append(org_model)
+                membership_obj = Membership(organisation=org_model)
+                member_obj.memberships.append(membership_obj)
             else:
                 logger.debug("committee not found: " + term)
 
@@ -133,60 +157,154 @@ def rebuild_db(db_name):
                 party_obj = Organisation(type="party", name=party, version=0)
                 db.session.add(party_obj)
                 db.session.commit()
-            member_obj.memberships.append(party_obj)
+            membership_obj = Membership(organisation=party_obj)
+            member_obj.memberships.append(membership_obj)
 
         # set house membership
         house = member['mp_province']
         if house == "National Assembly":
-            member_obj.memberships.append(na_obj)
+            member_obj.memberships.append(Membership(organisation=na_obj))
         elif house and "NCOP" in house:
-            member_obj.memberships.append(ncop_obj)
+            member_obj.memberships.append(Membership(organisation=ncop_obj))
             logger.debug(house)
             province_obj = Organisation.query.filter_by(type="province").filter_by(name=house[5::]).first()
             if not province_obj:
                 province_obj = Organisation(type="province", name=house[5::], version=0)
                 db.session.add(province_obj)
                 db.session.commit()
-            member_obj.memberships.append(province_obj)
+            member_obj.memberships.append(Membership(organisation=province_obj))
 
         db.session.add(member_obj)
         logger.debug('')
     db.session.commit()
 
+    # select a random chairperson for each committee
+    tmp_committees = Organisation.query.filter_by(type="committee").all()
+    for committee in tmp_committees:
+        if committee.memberships:
+            membership_obj = committee.memberships[0]
+            membership_obj.type_id = 1
+            db.session.add(membership_obj)
+    db.session.commit()
+
     # populate committee reports
-    reports = read_data('report.json')
+    # reports = read_data('report.json')
+
     i = 0
     meeting_event_type_obj = EventType(name="committee-meeting")
     db.session.add(meeting_event_type_obj)
     db.session.commit()
-    for report in reports:
-        parsed_report = parsers.MeetingReportParser(report)
+    logger.debug("reading report.js")
+    with open('data/report.json', 'r') as f:
+        records = []
+        lines = f.readlines()
+        for line in lines:
+            report = json.loads(line)
+            parsed_report = parsers.MeetingReportParser(report)
 
-        report_obj = Content(
-            type="committee-meeting-report",
-            title=parsed_report.title,
-            body=parsed_report.body,
-            version=0
-        )
-        db.session.add(report_obj)
+            committee_obj = committees.get(parsed_report.committee)
+            if committee_obj:
+                committee_obj = committee_obj['model']
+            event_obj = Event(
+                type=meeting_event_type_obj,
+                organisation=committee_obj,
+                date=parsed_report.date,
+                title=parsed_report.title
+            )
+            db.session.add(event_obj)
 
-        committee_obj = committees.get(parsed_report.committee)
-        if committee_obj:
-            committee_obj = committee_obj['model']
-        event_obj = Event(
-            event_type=meeting_event_type_obj,
-            organisation=committee_obj,
-            date=parsed_report.date,
-            content=report_obj
-        )
-        db.session.add(event_obj)
-        i += 1
-        if i % 1000 == 0:
-            db.session.commit()
+            report_obj = Content(
+                type="committee-meeting-report",
+                body=parsed_report.body,
+                summary=parsed_report.summary,
+                event=event_obj,
+                version=0
+            )
+            db.session.add(report_obj)
+
+            for item in parsed_report.related_docs:
+                doc_obj = Content(
+                    event=event_obj,
+                    type=item["filemime"],
+                    version=0
+                )
+                doc_obj.file_path=item["filepath"]
+                doc_obj.title=item["title"]
+                db.session.add(doc_obj)
+
+            for item in parsed_report.audio:
+                audio_obj = Content(
+                    event=event_obj,
+                    type=item["filemime"],
+                    version=0
+                )
+                if item["filepath"].startswith('files/'):
+                    audio_obj.file_path=item["filepath"][6::]
+                else:
+                    audio_obj.file_path=item["filepath"]
+                if item.get("title_format"):
+                    audio_obj.title=item["title_format"]
+                elif item.get("filename"):
+                    audio_obj.title=item["filename"]
+                elif item.get("origname"):
+                    audio_obj.title=item["origname"]
+                else:
+                    audio_obj.title="Unnamed audio"
+                db.session.add(audio_obj)
+
+            i += 1
+            if i % 1000 == 0:
+                logger.debug("writing 1000 reports...")
+                db.session.commit()
+
+    # ======= BILLS ======== #
+    bills = read_data("bill.json")
+    logger.debug("Processing Bills")
+    for billobj in bills:
+        bill = Bill()
+        if (len(billobj["revisions"]) > 0):
+            # print billobj
+            bill.name = billobj["revisions"][0]["title"]
+        else:
+            bill.name = billobj["title"]
+        if (billobj["effective_date"]):
+            bill.effective_date = datetime.datetime.fromtimestamp(float(billobj["effective_date"]))
+        if (billobj["files"]):
+            for f in billobj["files"]:
+                docobj = BillFile(
+                    filemime=f["filemime"],
+                    origname = f["origname"],
+                    # description = f["field_file_bill_data"]["description"],
+                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+                )
+                if ("version" in f):
+                    bill.code = f["version"]
+                # if ("field_file_bill_data" in f):
+                #     print docobj
+                #     print f["field_file_bill_data"]
+                #     field_file_bill_data = f["field_file_bill_data"]
+                    # if ((f["field_file_bill_data"]) and ("description" in  f["field_file_bill_data"])):
+                    #     docobj.description = f["field_file_bill_data"]["description"]
+                # print docobj
+                bill.files.append(docobj)
+        db.session.add(bill)
+    bills = ""
+
+    # ======= HANSARDS ======== #
+    hansards = read_data("hansard.json")
+    logger.debug("Processing Hansards")
+    for hansardobj in hansards:
+        newobj = construct_obj(hansardobj, { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+        if (newobj["meeting_date"]):
+            newobj["meeting_date"] = db_date_from_utime(newobj["meeting_date"])
+        hansard = Hansard()
+        for key,val in newobj.iteritems():
+            setattr(hansard,key, val)
+        db.session.add(hansard)
     db.session.commit()
     return
 
 
 if __name__ == '__main__':
 
-    rebuild_db('instance/tmp.db')
+    rebuild_db()

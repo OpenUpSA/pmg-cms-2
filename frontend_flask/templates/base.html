@@ -22,9 +22,9 @@
     <div class="navbar-header">
       <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
     </div>
-    <form class="navbar-form navbar-left" role="search">
+    <form class="navbar-form navbar-left" role="search" action="/search">
       <div class="form-group">
-        <input type="text" class="form-control " placeholder="Search for reports, bills, ministers, schedules and documents">
+        <input type="text" class="form-control " name="q" placeholder="Search for reports, bills, ministers, schedules and documents">
       </div>
       <button type="submit" class="btn btn-success">Search</button>
     </form>
@@ -34,10 +34,27 @@
   </div><!-- /.container-fluid -->
 </nav>
 
-{% block page %}
+<div class="container-fluid">
+  <div class="col-sm-12">
+    {% block top_links %}
+    <ul class="list-inline top-links">
+      <li><a href="/committees/">Committees</a></li>
+      <li><a href="#">...</a></li>
+      <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
+      <!--<li><a href="#">Hansards</a></li>-->
+      <!--<li><a href="#">MPs</a></li>-->
+      <!--<li><a href="#">About Parliament</a></li>-->
+      <!--<li><a href="#">About PMG</a></li>-->
+    </ul>
+    {% endblock %}
+  </div>
+  {% block page %}
 
-{% endblock page %}
+  {% endblock page %}
+</div>
 
 <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="/static/bower_components/bootstrap/js/tab.js"></script>
+<script src="/static/bower_components/bootstrap/js/transition.js"></script>
 </body>
 </html>

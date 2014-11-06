@@ -1,10 +1,13 @@
+import logging
 import json
 from datetime import datetime, date
-from app import db, logger, app
+from app import db, app
 from operator import itemgetter
 from sqlalchemy import inspect
 
 API_HOST = app.config["API_HOST"]
+
+logger = logging.getLogger(__name__)
 
 
 class CustomEncoder(json.JSONEncoder):
@@ -13,11 +16,8 @@ class CustomEncoder(json.JSONEncoder):
     """
 
     def default(self, obj):
-        if isinstance(obj, datetime):
-            # encoded_obj = obj.strftime("%B %d, %Y, %H:%M")
-            encoded_obj = obj.strftime("%Y-%m-%d, %T")
-        elif isinstance(obj, date):
-            encoded_obj = obj.strftime("%B %d, %Y")
+        if isinstance(obj, datetime) or isinstance(obj, date):
+            encoded_obj = obj.isoformat()
         elif isinstance(obj, db.Model):
             try:
                 encoded_obj = json.dumps(obj.to_dict(), cls=CustomEncoder, indent=4)
@@ -47,14 +47,20 @@ def model_to_dict(obj, include_related=False):
             related_content = getattr(obj, key)
             if related_content:
                 try:
-                    tmp_dict[key] = model_to_dict(related_content)
+                    if hasattr(related_content, 'to_dict'):
+                        tmp_dict[key] = related_content.to_dict()
+                    else:
+                        tmp_dict[key] = model_to_dict(related_content)
                 except AttributeError as e:
                     tmp_dict[key] = []
                     for item in related_content:
-                        tmp_dict[key].append(model_to_dict(item))
-            join_key = obj.__mapper__.relationships['parent'].local_remote_pairs[0][0].name
-            if tmp_dict.get(join_key):
-                tmp_dict.pop(join_key)
+                        if hasattr(item, 'to_dict'):
+                            tmp_dict[key].append(item.to_dict())
+                        else:
+                            tmp_dict[key].append(model_to_dict(item))
+            # join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
+            # if tmp_dict.get(join_key):
+            #     tmp_dict.pop(join_key)
     return tmp_dict
 
 

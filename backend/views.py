@@ -1,4 +1,6 @@
-from app import db, logger, app
+import logging
+
+from app import db, app
 from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
@@ -10,6 +12,9 @@ import datetime
 from operator import itemgetter
 import re
 import serializers
+import sys
+from search.search import Search
+import math
 
 API_HOST = app.config["API_HOST"]
 
@@ -18,6 +23,8 @@ app.static_folder = 'static'
 app.add_url_rule('/static/<path:filename>',
                  endpoint='static',
                  view_func=app.send_static_file)
+
+logger = logging.getLogger(__name__)
 
 
 class ApiException(Exception):
@@ -92,14 +99,45 @@ def send_api_response(data_json):
 api_resources = {
     "committee": db.session.query(Organisation) \
         .filter_by(type='committee') \
-        .order_by(Organisation.parent_id, Organisation.name) \
-        .options(joinedload('members')),
+        .order_by(Organisation.parent_id, Organisation.name),
     "committee-meeting": db.session.query(Event) \
-        .join(EventType) \
-        .filter_by(name='committee-meeting') \
+        .filter(EventType.name=='committee-meeting') \
         .order_by(desc(Event.date)),
-    "bill": db.session.query(Content).filter_by(type='bill'),
+    "bill": db.session.query(Bill)
+        .order_by(desc(Bill.effective_date)),
+    "member": db.session.query(Member)
+        .order_by(Member.name),
+    "hansard": db.session.query(Hansard)
+        .order_by(Hansard.meeting_date),
     }
+
+@app.route('/search/')
+def search():
+    """
+    Search through ElasticSearch
+    """
+    
+    search = Search()
+    q = request.args.get('q')
+    logger.debug("search called")
+    page = 0
+    if (request.args.get('page')):
+        page = int(request.args.get('page'))
+    per_page = app.config['RESULTS_PER_PAGE']
+    if (request.args.get('per_page')):
+        per_page = int(request.args.get('per_page'))
+    searchresult = search.search(q, per_page, page * per_page)
+    result = {}
+    result["result"] = searchresult["hits"]["hits"]
+    result["count"] = searchresult["hits"]["total"]
+    result["max_score"] = searchresult["hits"]["max_score"]
+    logger.debug("Pages %i", math.ceil(result["count"] / per_page))
+    
+    if result["count"] > (page + 1) * per_page:
+        result["next"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
+        result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
+        result["first"] = flask.request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
+    return json.dumps(result)
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )

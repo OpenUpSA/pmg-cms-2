@@ -1,4 +1,4 @@
-from app import app, db, logger
+from app import app, db
 import serializers
 from sqlalchemy import desc
 from sqlalchemy.orm import backref
@@ -87,6 +87,7 @@ class Bill(db.Model):
     __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'name'), {})
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=False)
+    code = db.Column(db.String(100))
     act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
     year = db.Column(db.Integer)
@@ -96,14 +97,16 @@ class Bill(db.Model):
     objective = db.Column(db.String(1000))
     is_deleted = db.Column(db.Boolean, default=False)
 
-    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'), nullable=False)
+    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bills')
-    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
     type = db.relationship('BillType', backref='bills')
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     place_of_introduction = db.relationship('Organisation')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
+
+    files = db.relationship('BillFile')
 
     def code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
@@ -117,6 +120,18 @@ class Bill(db.Model):
     def __repr__(self):
         return '<Bill: %r>' % str(self)
 
+class BillFile(db.Model):
+    __tablename__ = "file"
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('bill.id'))
+    filemime = db.Column(db.String(50))
+    origname = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    duration = db.Column(db.Integer, default = 0)
+    url = db.Column(db.String(255))
+
+    def __unicode__(self):
+        return u'%s' % self.url
 
 # M2M table
 bill_event_table = db.Table(
@@ -133,21 +148,23 @@ class EventType(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
 
+    def to_dict(self, include_related=False):
+        # reduce this model to a string
+        return self.name
+
     def __unicode__(self):
         return u'%s' % self.name
 
 
 class Event(db.Model):
-
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
+    title = db.Column(db.Text())
 
     event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
-    event_type = db.relationship('EventType')
-    content_id = db.Column(db.Integer, db.ForeignKey('content.id'))
-    content = db.relationship('Content', backref='event')
+    type = db.relationship('EventType', lazy='joined')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
@@ -157,12 +174,19 @@ class Event(db.Model):
         return u'%s' % self.name
 
 
-# M2M table
-membership_table = db.Table(
-    'member_organisation', db.Model.metadata,
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id'), primary_key=True),
-    db.Column('organisation_id', db.Integer, db.ForeignKey('organisation.id'), primary_key=True)
-)
+class MembershipType(db.Model):
+
+    __tablename__ = "membership_type"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    def to_dict(self, include_related=False):
+        # reduce this model to a string
+        return self.name
+
+    def __unicode__(self):
+        return u'%s' % self.name
 
 
 class Member(db.Model):
@@ -175,11 +199,6 @@ class Member(db.Model):
     bio = db.Column(db.String(1500))
     version = db.Column(db.Integer, nullable=False)
 
-    memberships = db.relationship("Organisation",
-                    secondary=membership_table,
-                    backref="members"
-    )
-
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -190,17 +209,30 @@ class Organisation(db.Model):
 
     __table_args__ = (db.UniqueConstraint('name', 'type'), {})
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(50), nullable=False)
     version = db.Column(db.Integer, nullable=False)
 
     parent_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=2)
+    parent = db.relationship('Organisation', uselist=False, remote_side=[id], lazy='joined', join_depth=1)
 
     to_dict = serializers.organisation_to_dict
 
     def __unicode__(self):
         return u'%s' % self.name
+
+
+class Membership(db.Model):
+    __tablename__ = 'organisation_members'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
+    type = db.relationship(MembershipType, lazy='joined')
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship(Organisation, backref="memberships", lazy='joined')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member = db.relationship(Member, backref=backref("memberships", lazy="joined"), lazy='joined')
 
 
 class CommitteeInfo(db.Model):
@@ -218,15 +250,30 @@ class CommitteeInfo(db.Model):
         return u'%s' % self.about
 
 
+class Hansard(db.Model):
+    __tablename__ = "hansard"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    meeting_date = db.Column(db.Date())
+    body = db.Column(db.Text())
+
 class Content(db.Model):
 
     __tablename__ = "content"
+    # __table_args__ = (db.UniqueConstraint('type', 'title', 'file_path', 'event_id', 'version'), {})
 
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)
     title = db.Column(db.String(200))
-    body = db.Column(db.String(20000))
+    file_path = db.Column(db.String(200))
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    event = db.relationship('Event', backref='content')
 
     def __unicode__(self):
         return u'%s' % self.title
+

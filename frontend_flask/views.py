@@ -24,6 +24,7 @@ def _jinja2_filter_datetime(iso_str):
 @app.context_processor
 def pagination_processor():
     def pagination(page_count, current_page, per_page, url):
+        # Source: https://github.com/jmcclell/django-bootstrap-pagination/blob/master/bootstrap_pagination/templatetags/bootstrap_pagination.py#L154
         range_length = 15
         print "Building pagination"
         if range_length is None:
@@ -52,7 +53,7 @@ def pagination_processor():
             active = ""
             if ((i - 1) == current_page):
                 active = "active"
-            s += "<li class='{0}'><a href='{2}/{1}'>{3}</a></li>".format(active, i - 1, url, i)
+            s += "<li class='{0}'><a href='{1}/{2}'>{3}</a></li>".format(active, url, i - 1, i)
         return s
     return dict(pagination=pagination)
 

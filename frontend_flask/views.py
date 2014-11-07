@@ -21,6 +21,40 @@ def _jinja2_filter_datetime(iso_str):
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
 
+@app.context_processor
+def pagination_processor():
+    def pagination(page_count, current_page, per_page, url):
+        range_length = 15
+        print "Building pagination"
+        if range_length is None:
+            range_min = 1
+            range_max = page_count
+        else:
+            if range_length < 1:
+                raise Exception("Optional argument \"range\" expecting integer greater than 0")
+            elif range_length > page_count:
+                range_length = page_count
+            range_length -= 1
+            range_min = max(current_page - (range_length / 2) + 1, 1)
+            range_max = min(current_page + (range_length / 2) + 1, page_count)
+            print range_min, range_max
+            range_diff = range_max - range_min
+            if range_diff < range_length:
+                shift = range_length - range_diff
+                if range_min - shift > 0:
+                    range_min -= shift
+                else:
+                    range_max += shift
+        page_range = range(range_min, range_max + 1)
+        print page_range
+        s = ""
+        for i in page_range:
+            active = ""
+            if ((i - 1) == current_page):
+                active = "active"
+            s += "<li class='{0}'><a href='{2}/{1}'>{3}</a></li>".format(active, i - 1, url, i)
+        return s
+    return dict(pagination=pagination)
 
 class ApiException(Exception):
     """

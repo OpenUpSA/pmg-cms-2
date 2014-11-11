@@ -8,9 +8,10 @@ from backend.models import *
 import parsers
 from sqlalchemy import types
 
+import requests
+
 import logging
 logger = logging.getLogger(__name__)
-# logger.setLevel(40)
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
 STATIC_HOST = app.config['STATIC_HOST']
@@ -312,45 +313,45 @@ def rebuild_db():
                 db.session.add(audio_obj)
 
             i += 1
-            if i % 1000 == 0:
-                logger.debug("writing 1000 reports...")
+            if i % 500 == 0:
+                logger.debug("writing 500 reports...")
                 db.session.commit()
-
-    # ======= BILLS ======== #
-    # bills = read_data("bill.json")
-    # logger.debug("Processing Bills")
-    # for billobj in bills:
-    #     bill = Bill()
-    #     if (len(billobj["revisions"]) > 0):
-    #         # print billobj
-    #         bill.name = billobj["revisions"][0]["title"]
-    #     else:
-    #         bill.name = billobj["title"]
-    #     if (billobj["effective_date"]):
-    #         bill.effective_date = datetime.datetime.fromtimestamp(float(billobj["effective_date"]))
-    #     if (billobj["files"]):
-    #         for f in billobj["files"]:
-    #             docobj = File(
-    #                 filemime=f["filemime"],
-    #                 origname = f["origname"],
-    #                 # description = f["field_file_bill_data"]["description"],
-    #                 url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
-    #             )
-    #             if ("version" in f):
-    #                 bill.code = f["version"]
-    #             # if ("field_file_bill_data" in f):
-    #             #     print docobj
-    #             #     print f["field_file_bill_data"]
-    #             #     field_file_bill_data = f["field_file_bill_data"]
-    #                 # if ((f["field_file_bill_data"]) and ("description" in  f["field_file_bill_data"])):
-    #                 #     docobj.description = f["field_file_bill_data"]["description"]
-    #             # print docobj
-    #             bill.files.append(docobj)
-    #     db.session.add(bill)
-    # bills = ""
-
-    
     return
+
+def addChild(Child, val):
+    if (val):
+        tmpobj = Child.query.filter_by(name = val).first()
+        if not tmpobj:
+            tmpobj = Child(name=val)
+            db.session.add(tmpobj)
+            db.session.commit()
+        return tmpobj.id
+    return None
+
+def bills():
+    prep_table("bill")
+    r = requests.get('http://billsapi.pmg.org.za/bill/')
+    bills = r.json()
+    for billobj in bills:
+        bill = Bill()
+        bill.title = billobj["name"]
+        bill.bill_code = billobj["code"]
+        # act_name = db.Column(db.String(250))
+        bill.number = billobj["number"]
+        bill.year = billobj["year"]
+        # date_of_introduction = db.Column(db.Date)
+        # date_of_assent = db.Column(db.Date)
+        # effective_date = db.Column(db.Date)
+        bill.objective = billobj["objective"]
+        bill.is_deleted = billobj["is_deleted"]
+        bill.status_id = addChild(BillStatus, billobj["status"])
+        bill.bill_type_id = addChild(BillType, billobj["bill_type"])
+        # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+        # place_of_introduction = db.relationship('Organisation')
+        # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+        # introduced_by = db.relationship('Member')
+        db.session.add(bill)
+    db.session.commit()
 
 def clear_db():
     logger.debug("Dropping all")
@@ -360,9 +361,11 @@ def clear_db():
 
 
 if __name__ == '__main__':
-    clear_db()
+    # clear_db()
     
     # rebuild_table("bill", { "title": "title", "effective_date": "effective_date" })
     # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
-    rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+    # rebuild_db()
+    # rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+    bills()
+

@@ -95,22 +95,26 @@
 
 <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
   <div id="latest_bills">
-    <h3><span class="glyphicon glyphicon-certificate"></span> Billtracker</h3>
-    <p>...</p>
-    <!--<ul class="list-unstyled list">-->
-      <!--<li>-->
-        <!--<h4><a href="http://bills.pmg.org.za/bill/4/">Medicines and Related Substances Amendment Bill (B6-2014)</a></h4>-->
-        <!--<p><span class="label label-success">Introduced</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-warning">National Assembly</span></p>-->
-        <!--<p>-->
-          <!--<strong>February 26, 2014</strong>-->
-          <!--Bill introduced in National Assembly-->
-        <!--</p>-->
-        <!--<p>-->
-          <!--<strong>July 22, 2014</strong>-->
-          <!--Bill lapsed in terms of Rule 298 but had been revived on this date-->
-        <!--</p>-->
-      <!--</li>-->
-
+    <h3><span class="glyphicon glyphicon-certificate"></span> Bills</h3>
+    
+    <ul class="list-unstyled list">
+      {% for bill in bills %}
+      <li>
+        <h4><a href="http://bills.pmg.org.za/bill/{{ bill.bill_code }}/">{{ bill.title }}</a></h4>
+        <p><span class="label label-success">{{ bill.status.name }}</span>
+         Bill  <strong>{{ bill.number}}</strong> of <strong>{{ bill.year }}</strong>
+        </p>
+        
+        <!-- <p>
+          <strong>February 26, 2014</strong>
+          Bill introduced in National Assembly
+        </p>
+        <p>
+          <strong>July 22, 2014</strong>
+          Bill lapsed in terms of Rule 298 but had been revived on this date
+        </p> -->
+      </li>
+      {% endfor %}
       <!--<li>-->
         <!--<h4><a href="http://bills.pmg.org.za/bill/6/">Appropriation Bill (B4-2014)</a></h4>-->
         <!--<p><span class="label label-success">Introduced</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-warning">National Assembly</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-danger">National Council of Provinces</span></p>-->

@@ -145,8 +145,8 @@ def index():
             committee_meetings.append(committee_meeting)
             if len(committee_meetings) == 10:
                 break
-
-    return render_template('index.html', committee_meetings=committee_meetings)
+    bills = load_from_api('bill')["results"][:10]
+    return render_template('index.html', committee_meetings=committee_meetings, bills =bills)
 
 
 @app.route('/bills/')

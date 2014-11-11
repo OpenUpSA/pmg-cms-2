@@ -107,7 +107,7 @@ def api_resources():
             .order_by(desc(Event.date)),
 
         "bill": db.session.query(Bill)
-            .order_by(desc(Bill.effective_date)),
+            .order_by(desc(Bill.year)),
 
         "member": db.session.query(Member)
             .order_by(Member.name),

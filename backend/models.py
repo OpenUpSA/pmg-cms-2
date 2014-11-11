@@ -80,7 +80,7 @@ class BillType(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    prefix = db.Column(db.String(10), nullable=False)
+    # prefix = db.Column(db.String(10), nullable=False)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -100,11 +100,11 @@ class BillStatus(db.Model):
 class Bill(db.Model):
 
     __tablename__ = "bill"
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'bill_type_id', 'title'), {})
 
-    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', 'title'), {})
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
-    code = db.Column(db.String(100))
+    bill_code = db.Column(db.String(100))
     act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
     year = db.Column(db.Integer)
@@ -115,9 +115,9 @@ class Bill(db.Model):
     is_deleted = db.Column(db.Boolean, default=False)
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
-    status = db.relationship('BillStatus', backref='bills')
-    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
-    type = db.relationship('BillType', backref='bills')
+    status = db.relationship('BillStatus', backref='bill', lazy=False)
+    bill_type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
+    bill_type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     place_of_introduction = db.relationship('Organisation')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))

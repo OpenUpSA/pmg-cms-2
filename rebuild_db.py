@@ -361,11 +361,11 @@ def clear_db():
 
 
 if __name__ == '__main__':
-    # clear_db()
+    clear_db()
     
     # rebuild_table("bill", { "title": "title", "effective_date": "effective_date" })
     # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
-    # rebuild_db()
-    # rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+    rebuild_db()
+    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
     bills()
 

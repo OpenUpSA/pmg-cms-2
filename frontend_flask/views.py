@@ -26,7 +26,7 @@ def pagination_processor():
     def pagination(page_count, current_page, per_page, url):
         # Source: https://github.com/jmcclell/django-bootstrap-pagination/blob/master/bootstrap_pagination/templatetags/bootstrap_pagination.py#L154
         range_length = 15
-        print "Building pagination"
+        logger.debug("Building pagination")
         if range_length is None:
             range_min = 1
             range_max = page_count
@@ -38,7 +38,6 @@ def pagination_processor():
             range_length -= 1
             range_min = max(current_page - (range_length / 2) + 1, 1)
             range_max = min(current_page + (range_length / 2) + 1, page_count)
-            print range_min, range_max
             range_diff = range_max - range_min
             if range_diff < range_length:
                 shift = range_length - range_diff
@@ -47,7 +46,6 @@ def pagination_processor():
                 else:
                     range_max += shift
         page_range = range(range_min, range_max + 1)
-        print page_range
         s = ""
         for i in page_range:
             active = ""
@@ -268,17 +266,23 @@ def hansard(hansard_id):
     return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
 
 @app.route('/search/')
-def search():
+@app.route('/search/<string:q>/')
+@app.route('/search/<string:q>/<int:page>/')
+def search(q = False, page = 0):
     """
     Display search page
     """
-    search = Search()
-    q = request.args.get('q')
+    print "Search page called"
     logger.debug("search page called")
-    page = 0
-    if (request.args.get('page')):
-        page = int(request.args.get('page'))
-    per_page = 20
+
+    search = Search()
+    if not q:
+        q = request.args.get('q')
+    
+    # page = 0
+    # if (request.args.get('page')):
+    #     page = int(request.args.get('page'))
+    per_page = app.config['RESULTS_PER_PAGE']
     if (request.args.get('per_page')):
         per_page = int(request.args.get('per_page'))
     searchresult = search.search(q, per_page, page * per_page)
@@ -286,11 +290,10 @@ def search():
     result = searchresult["hits"]["hits"]
     count = searchresult["hits"]["total"]
     max_score = searchresult["hits"]["max_score"]
-    logger.debug("Pages %i", math.ceil(count / per_page))
-    search_url = request.url_root + "search/?q=" + q + "&per_page=" + str(per_page)
+    search_url = request.url_root + "search/" + q
     # if count > (page + 1) * per_page:
         # result["next"] = request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
         # result["last"] = request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(count / per_page))) + "&per_page=" + str(per_page)
         # result["first"] = request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, search_url = search_url)
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url)

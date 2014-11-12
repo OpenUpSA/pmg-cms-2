@@ -26,17 +26,11 @@
 </tr>
   {% endfor %}
   </table>
-
-Num Pages {{num_pages}}<br />
-Num items {{count}}<br>
-Per page {{per_page}}<br>
-  <ul class="pagination pagination-sm" >
-    <li><a href="{{search_url}}&page=0">&laquo;</a></li>
-    {% for i in range(0, num_pages) %}
-    <li{% if (i == page) %} class="active"{% endif %}><a href="{{search_url}}&page={{ i }}">{{ loop.index }}</a></li>
-    {% endfor %}
-    <li><a href="{{search_url}}&page={{ num_pages }}">&raquo;</a></li>
-  </ul>
+  <div class="row">
+    <div class="col-md-8">
+      {% include 'pagination.html' %}
+    </div>
+  </div>
 </div>
 {% endblock %}
 

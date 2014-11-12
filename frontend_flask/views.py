@@ -51,7 +51,7 @@ def pagination_processor():
             active = ""
             if ((i - 1) == current_page):
                 active = "active"
-            s += "<li class='{0}'><a href='{1}/{2}'>{3}</a></li>".format(active, url, i - 1, i)
+            s += "<li class='{0}'><a href='{1}/{2}/?{4}'>{3}</a></li>".format(active, url, i - 1, i, request.query_string)
         return s
     return dict(pagination=pagination)
 
@@ -266,9 +266,8 @@ def hansard(hansard_id):
     return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
 
 @app.route('/search/')
-@app.route('/search/<string:q>/')
-@app.route('/search/<string:q>/<int:page>/')
-def search(q = False, page = 0):
+@app.route('/search/<int:page>/')
+def search(page = 0):
     """
     Display search page
     """
@@ -276,8 +275,12 @@ def search(q = False, page = 0):
     logger.debug("search page called")
 
     search = Search()
-    if not q:
-        q = request.args.get('q')
+    
+    q = request.args.get('q')
+    filters = {}
+    filters["type"] = request.args.get('filter[type]')
+
+    query_string = request.query_string
     
     # page = 0
     # if (request.args.get('page')):
@@ -285,15 +288,16 @@ def search(q = False, page = 0):
     per_page = app.config['RESULTS_PER_PAGE']
     if (request.args.get('per_page')):
         per_page = int(request.args.get('per_page'))
-    searchresult = search.search(q, per_page, page * per_page)
+
+    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"])
     result = {}
     result = searchresult["hits"]["hits"]
     count = searchresult["hits"]["total"]
     max_score = searchresult["hits"]["max_score"]
-    search_url = request.url_root + "search/" + q
+    search_url = request.url_root + "search"
     # if count > (page + 1) * per_page:
         # result["next"] = request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
         # result["last"] = request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(count / per_page))) + "&per_page=" + str(per_page)
         # result["first"] = request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url)
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters)

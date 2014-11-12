@@ -6,11 +6,22 @@
 </style>
 {% endblock %}
 
-{% block top_links %}
-{{ super() }}
-{% endblock %}
-
 {% block page %}
+<div class="col-sm-12">
+  {% block top_links %}
+  <ul class="nav nav-pills" role="tablist">
+    <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}">All</a></li>
+    <li role="presentation" {% if (filters.type == 'committee') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee">Committees</a></li>
+    <li role="presentation" {% if (filters.type == 'committee-meeting') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee-meeting">Committee Meetings</a></li>
+    <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill">Bills</a></li>
+    <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member">MPs</a></li>
+    <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard">Hansards</a></li>
+    <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
+    <!--<li><a href="#">About Parliament</a></li>-->
+    <!--<li><a href="#">About PMG</a></li>-->
+  </ul>
+  {% endblock %}
+</div>
 <div class="col-sm-12">
   <h3 class="red"><span class="glyphicon glyphicon-search"></span> Search</h3>
 </div>

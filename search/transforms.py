@@ -18,7 +18,8 @@ class Transforms:
 		},
 		"bill": {
 			"id": "id",
-			"title": "name"
+			"title": "title",
+			"description": "bill_code"
 		},
 		"hansard": {
 			"id": "id",
@@ -26,3 +27,5 @@ class Transforms:
 			"fulltext": "body"
 		}
 	}
+
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard']

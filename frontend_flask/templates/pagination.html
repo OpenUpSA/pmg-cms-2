@@ -1,5 +1,7 @@
+{% if num_pages > 1 %}
  <ul class="pagination pagination-sm" >
     <li><a href="{{url}}/0">&laquo;</a></li>
     {{ pagination(num_pages, page, per_page, url) | safe }}
     <li><a href="{{url}}/{{ num_pages - 1 }}">&raquo;</a></li>
 </ul>
+{% endif %}

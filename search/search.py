@@ -89,6 +89,7 @@ class Search:
 	# Gets a list of the content, but doesn't go deep
 	def import_data(self, data_type):
 		docs = []
+		self.drop(data_type)
 		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs
 		# docs = self._import_content(data_type, docs)
@@ -153,7 +154,7 @@ if (__name__ == "__main__"):
 	parser = argparse.ArgumentParser(description='ElasticSearch PMG library')
 	parser.add_argument('--import',
 		dest='import_data_type',
-		choices = ['committee', 'committee-meeting', 'member', 'bill', 'hansard'],
+		choices = Transforms.data_types,
 		help='Imports the data from a content type to ElasticSearch')
 	parser.add_argument('--test', action="store_true")
 	args = parser.parse_args()

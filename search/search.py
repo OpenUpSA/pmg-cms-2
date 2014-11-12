@@ -141,7 +141,19 @@ class Search:
 		except:
 			return False
 
-	def search(self, query, size=10, es_from=0):
+	def search(self, query, size=10, es_from=0, filters={}, content_type=False):
+		if (content_type):
+			q = {
+				"from": es_from,
+				"size": size,
+				"query": {
+					"match": {
+						"_all": query,
+					}
+				}
+			}
+
+			return self.es.search(q, index=self.index_name, doc_type = content_type) 
 		q = {
 			"from": es_from,
 			"size": size,

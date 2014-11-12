@@ -89,7 +89,10 @@ class Search:
 	# Gets a list of the content, but doesn't go deep
 	def import_data(self, data_type):
 		docs = []
-		self.drop(data_type)
+		try:
+			self.drop(data_type)
+		except:
+			pass
 		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs
 		# docs = self._import_content(data_type, docs)

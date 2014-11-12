@@ -90,8 +90,11 @@ class Search:
 	def import_data(self, data_type):
 		docs = []
 		try:
+			print "Dropping %s index" % data_type
 			self.drop(data_type)
+			print "Dropped %s index" % data_type
 		except:
+			print "Couldn't find %s index" % data_type
 			pass
 		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs

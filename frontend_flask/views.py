@@ -231,12 +231,10 @@ def bill(bill_id):
 
     logger.debug("bill page called")
     bill =  load_from_api('bill', bill_id)
-    if ("code" in bill):
-        logger.debug("found bill code", bill["code"])
-    else:
-        if ("files" in bill):
-            logger.debug(bill["files"][0])
-            return redirect(bill["files"][0]["url"], code=302)
+    logger.debug(bill)
+    if ("bill_code" in bill):
+        logger.debug("found bill code", bill["bill_code"])
+        return redirect("http://bills.pmg.org.za/bill/%s" % bill["bill_code"], code=302)
     logger.debug(bill)
     return "Oh dear"
 

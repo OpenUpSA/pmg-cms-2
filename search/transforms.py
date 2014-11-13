@@ -25,7 +25,13 @@ class Transforms:
 			"id": "id",
 			"title": "title",
 			"fulltext": "body"
+		},
+		"briefing": {
+			"id": "id",
+			"title": "title",
+			"description": "summary",
+			"fulltext": "minutes"
 		}
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing']

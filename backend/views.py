@@ -114,7 +114,10 @@ def api_resources():
 
         "hansard": db.session.query(Hansard)
             .order_by(Hansard.meeting_date),
-        }
+
+        "briefing": db.session.query(Briefing)
+            .order_by(Briefing.briefing_date),
+    }
 
 @app.route('/search/')
 def search():

@@ -40,7 +40,8 @@ def download_db():
 def rebuild_db():
     sudo("supervisorctl stop pmg_cms")
     with virtualenv():
-        sudo('newrelic-admin run-program python %s/rebuild_db.py' % env.project_dir)
+        with shell_env(FLASK_ENV='production'):
+            sudo('python %s/rebuild_db.py' % env.project_dir)
     sudo("supervisorctl start pmg_cms")
 
 def copy_db():

@@ -117,6 +117,8 @@ def api_resources():
 
         "briefing": db.session.query(Briefing)
             .order_by(Briefing.briefing_date),
+        "question_reply": db.session.query(Questions_replies)
+            .order_by(Questions_replies.start_date)
     }
 
 @app.route('/search/')

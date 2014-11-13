@@ -154,6 +154,13 @@ class Briefing(db.Model):
     presentation = db.Column(db.Text)
     files = db.relationship("File", secondary = briefing_file_table)
 
+class Questions_replies(db.Model):
+    __tablename__ = "questions_replies"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    start_date = db.Column(db.Date)
+    body = db.Column(db.Text)
+    question_number = db.Column(db.String(255))
 
 
 class File(db.Model):

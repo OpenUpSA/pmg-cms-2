@@ -274,6 +274,12 @@ def briefing(briefing_id):
     briefing =  load_from_api('briefing', briefing_id)
     return render_template('briefing_detail.html', briefing=briefing, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/question_reply/<int:question_reply_id>')
+def question_reply(question_reply_id):
+    logger.debug("question_reply page called")
+    question_reply =  load_from_api('question_reply', question_reply_id)
+    return render_template('question_reply_detail.html', question_reply=question_reply, STATIC_HOST=app.config['STATIC_HOST'])
+
 @app.route('/search/')
 @app.route('/search/<int:page>/')
 def search(page = 0):

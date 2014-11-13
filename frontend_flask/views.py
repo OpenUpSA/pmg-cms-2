@@ -147,7 +147,15 @@ def index():
             if len(committee_meetings) == 10:
                 break
     bills = load_from_api('bill')["results"][:10]
-    return render_template('index.html', committee_meetings=committee_meetings, bills =bills)
+    schedule = load_from_api('schedule')["results"]
+    scheduledates = []
+    curdate = False
+    for item in schedule:
+        print item
+        if item["meeting_date"] != curdate:
+            curdate = item["meeting_date"]
+            scheduledates.append(curdate)
+    return render_template('index.html', committee_meetings=committee_meetings, bills =bills, schedule = schedule, scheduledates = scheduledates)
 
 
 @app.route('/bills/')

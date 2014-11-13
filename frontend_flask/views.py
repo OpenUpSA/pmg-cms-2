@@ -51,7 +51,10 @@ def pagination_processor():
             active = ""
             if ((i - 1) == current_page):
                 active = "active"
-            s += "<li class='{0}'><a href='{1}/{2}/?{4}'>{3}</a></li>".format(active, url, i - 1, i, request.query_string)
+            query_string = ""
+            if (request.query_string):
+                query_string = "?" + request.query_string
+            s += "<li class='{0}'><a href='{1}/{2}/{4}'>{3}</a></li>".format(active, url, i - 1, i, query_string)
         return s
     return dict(pagination=pagination)
 
@@ -170,7 +173,7 @@ def committees():
     return render_template('committee_list.html', committees=committees)
 
 @app.route('/committee-meetings/')
-@app.route('/committee-meetings/<int:page>')
+@app.route('/committee-meetings/<int:page>/')
 def committee_meetings(page=0):
     """
     Page through all available committee meetings.
@@ -237,7 +240,7 @@ def bill(bill_id):
     return "Oh dear"
 
 @app.route('/members/')
-@app.route('/members/<int:page>')
+@app.route('/members/<int:page>/')
 def members(page = 0):
     """
     Page through all available members.

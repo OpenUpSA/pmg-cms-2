@@ -319,6 +319,20 @@ class Policy_document(db.Model):
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
     files = db.relationship("File")
 
+schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
+    db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
+    db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
+)
+
+class Schedule(db.Model):
+    __tablename__ = "schedule"
+
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.Text)
+    meeting_date = db.Column(db.Date())
+    meeting_time = db.Column(db.Text())
+    houses = db.relationship("House", secondary = schedule_house_table)
+
 class Content(db.Model):
 
     __tablename__ = "content"

@@ -12,3 +12,5 @@ pyelasticsearch
 newrelic
 psycopg2
 PyYAML==3.11
+lxml
+cssselect

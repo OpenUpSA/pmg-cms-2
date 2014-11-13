@@ -98,6 +98,7 @@ def send_api_response(data_json):
 #
 
 def api_resources():
+    current_time = datetime.datetime.utcnow()
     return {
         "committee": db.session.query(Organisation) \
             .filter_by(type='committee') \
@@ -118,7 +119,10 @@ def api_resources():
         "briefing": db.session.query(Briefing)
             .order_by(Briefing.briefing_date),
         "question_reply": db.session.query(Questions_replies)
-            .order_by(Questions_replies.start_date)
+            .order_by(Questions_replies.start_date),
+        "schedule": db.session.query(Schedule)
+            .order_by(Schedule.meeting_date)
+            .filter(Schedule.meeting_date >= current_time )
     }
 
 @app.route('/search/')

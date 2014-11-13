@@ -16,6 +16,8 @@
     <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill">Bills</a></li>
     <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member">MPs</a></li>
     <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard">Hansards</a></li>
+    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing">Briefings</a></li>
+    <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply">Questions &amp; Replies</a></li>
     <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
     <!--<li><a href="#">About Parliament</a></li>-->
     <!--<li><a href="#">About PMG</a></li>-->

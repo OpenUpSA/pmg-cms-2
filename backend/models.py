@@ -138,6 +138,23 @@ class Bill(db.Model):
     def __repr__(self):
         return '<Bill: %r>' % str(self)
 
+briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
+    db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Briefing(db.Model):
+    __tablename__ = "briefing"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    briefing_date = db.Column(db.Date)
+    summary = db.Column(db.Text)
+    minutes = db.Column(db.Text)
+    presentation = db.Column(db.Text)
+    files = db.relationship("File", secondary = briefing_file_table)
+
+
 
 class File(db.Model):
     __tablename__ = "file"
@@ -147,6 +164,7 @@ class File(db.Model):
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
     duration = db.Column(db.Integer, default = 0)
+    playtime = db.Column(db.String(10))
     url = db.Column(db.String(255))
 
     def __unicode__(self):

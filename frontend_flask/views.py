@@ -265,6 +265,12 @@ def hansard(hansard_id):
     hansard =  load_from_api('hansard', hansard_id)
     return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/briefing/<int:briefing_id>')
+def briefing(briefing_id):
+    logger.debug("briefing page called")
+    briefing =  load_from_api('briefing', briefing_id)
+    return render_template('briefing_detail.html', briefing=briefing, STATIC_HOST=app.config['STATIC_HOST'])
+
 @app.route('/search/')
 @app.route('/search/<int:page>/')
 def search(page = 0):

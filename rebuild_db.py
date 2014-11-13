@@ -73,6 +73,19 @@ def find_files(obj):
             db.session.add(fobj)
             files.append(fobj)
         db.session.commit()
+    if (obj.has_key("audio") and (type(obj["audio"]) is list) and (len(obj["audio"]) > 0)):
+        # print obj["audio"]
+        for f in obj["audio"]:
+            fobj = File(
+                    filemime=f["filemime"],
+                    origname = f["origname"],
+                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/audio/" + f["filename"],
+                    playtime = f["playtime"],
+                    description = f["title_format"]
+                )
+            db.session.add(fobj)
+            files.append(fobj)
+        db.session.commit()
     return files
 
 def prep_table(tablename):
@@ -102,7 +115,7 @@ def rebuild_table(tablename, mappings):
             files = find_files(obj)
             if (len(files)):
                 for f in files:
-                    model.file_id = f.id
+                    model.files.append(f)
             for key,val in newobj.iteritems():
                 setattr(model, key, val)
             db.session.add(model)
@@ -363,9 +376,8 @@ def clear_db():
 if __name__ == '__main__':
     clear_db()
     
-    # rebuild_table("bill", { "title": "title", "effective_date": "effective_date" })
     # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
     rebuild_db()
     rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
-    bills()
-
+    # bills()
+    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})

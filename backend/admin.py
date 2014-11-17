@@ -34,7 +34,11 @@ class MyIndexView(AdminIndexView):
     @expose("/")
     def index(self):
 
-        return self.render('admin/my_index.html')
+        record_counts = {
+            'committee': Organisation.query.filter_by(type="committee").count(),
+            }
+
+        return self.render('admin/my_index.html', record_counts=record_counts)
 
 
 class MyModelView(ModelView):

@@ -49,6 +49,13 @@ class MyModelView(ModelView):
 
 class CommitteeView(MyModelView):
 
+    form_ajax_refs = {
+        'events': {
+            'fields': ('date', 'title', EventType.name),
+            'page_size': 25
+        }
+    }
+
     def get_query(self):
         """
         Add filter to return only non-deleted records.

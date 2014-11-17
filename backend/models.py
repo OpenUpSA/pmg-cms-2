@@ -56,23 +56,32 @@ class User(db.Model):
     def to_dict(self, include_related=False):
         return serializers.user_to_dict(self)
 
+
 class House(db.Model):
+
     __tablename__ = "house"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
+
 class Party(db.Model):
+
     __tablename__ = "party"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     version = db.Column(db.Integer, nullable=False, default=0)
 
+
 class Province(db.Model):
+
     __tablename__ = "province"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     version = db.Column(db.Integer, nullable=False, default=0)
+
 
 class BillType(db.Model):
 
@@ -80,7 +89,6 @@ class BillType(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
-    # prefix = db.Column(db.String(10), nullable=False)
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -143,7 +151,9 @@ briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
     db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
+
 class Briefing(db.Model):
+
     __tablename__ = "briefing"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -152,10 +162,13 @@ class Briefing(db.Model):
     summary = db.Column(db.Text)
     minutes = db.Column(db.Text)
     presentation = db.Column(db.Text)
-    files = db.relationship("File", secondary = briefing_file_table)
+    files = db.relationship("File", secondary=briefing_file_table)
+
 
 class Questions_replies(db.Model):
+
     __tablename__ = "questions_replies"
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
@@ -164,13 +177,14 @@ class Questions_replies(db.Model):
 
 
 class File(db.Model):
+
     __tablename__ = "file"
+
     id = db.Column(db.Integer, primary_key=True)
-    # parent_id = db.Column(db.Integer, db.ForeignKey('bill.id'))
     filemime = db.Column(db.String(50))
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
-    duration = db.Column(db.Integer, default = 0)
+    duration = db.Column(db.Integer, default=0)
     playtime = db.Column(db.String(10))
     url = db.Column(db.String(255))
 
@@ -241,6 +255,7 @@ class Member(db.Model):
     name = db.Column(db.String(100), nullable=False)
     profile_pic_url = db.Column(db.String(200))
     bio = db.Column(db.String(1500))
+
     version = db.Column(db.Integer, nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship(House)
@@ -248,7 +263,6 @@ class Member(db.Model):
     party = db.relationship(Party)
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
     province = db.relationship(Province)
-
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -258,8 +272,8 @@ class Member(db.Model):
 class Organisation(db.Model):
 
     __tablename__ = "organisation"
-
     __table_args__ = (db.UniqueConstraint('name', 'type'), {})
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(50), nullable=False)
@@ -267,8 +281,6 @@ class Organisation(db.Model):
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House')
-
-    # to_dict = serializers.organisation_to_dict
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -303,6 +315,7 @@ class CommitteeInfo(db.Model):
 
 
 class Hansard(db.Model):
+
     __tablename__ = "hansard"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -310,7 +323,9 @@ class Hansard(db.Model):
     meeting_date = db.Column(db.Date())
     body = db.Column(db.Text())
 
+
 class Policy_document(db.Model):
+
     __tablename__ = "policy_document"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -324,7 +339,9 @@ schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
     db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
 )
 
+
 class Schedule(db.Model):
+
     __tablename__ = "schedule"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -333,10 +350,10 @@ class Schedule(db.Model):
     meeting_time = db.Column(db.Text())
     houses = db.relationship("House", secondary = schedule_house_table)
 
+
 class Content(db.Model):
 
     __tablename__ = "content"
-    # __table_args__ = (db.UniqueConstraint('type', 'title', 'file_path', 'event_id', 'version'), {})
 
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.String(50), nullable=False)

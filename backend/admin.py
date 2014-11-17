@@ -69,3 +69,7 @@ admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_vie
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee'))
 
+admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))
+admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))
+admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))
+

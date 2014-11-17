@@ -64,6 +64,9 @@ class House(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
+    def __unicode__(self):
+        return unicode(self.name)
+
 
 class Party(db.Model):
 
@@ -72,6 +75,9 @@ class Party(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     version = db.Column(db.Integer, nullable=False, default=0)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 class Province(db.Model):
@@ -82,6 +88,9 @@ class Province(db.Model):
     name = db.Column(db.String(255), nullable=False)
     version = db.Column(db.Integer, nullable=False, default=0)
 
+    def __unicode__(self):
+        return unicode(self.name)
+
 
 class BillType(db.Model):
 
@@ -91,7 +100,7 @@ class BillType(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return unicode(self.name)
 
 
 class BillStatus(db.Model):
@@ -102,7 +111,7 @@ class BillStatus(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return unicode(self.name)
 
 
 class Bill(db.Model):
@@ -140,11 +149,8 @@ class Bill(db.Model):
     def delete(self):
         self.is_deleted = True
 
-    def __str__(self):
-        return str(self.code) + " - " + self.name
-
-    def __repr__(self):
-        return '<Bill: %r>' % str(self)
+    def __unicode__(self):
+        return unicode(str(self.code) + " - " + self.name)
 
 briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
     db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
@@ -211,7 +217,7 @@ class EventType(db.Model):
         return self.name
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return unicode(self.name)
 
 
 class Event(db.Model):
@@ -249,7 +255,7 @@ class MembershipType(db.Model):
         return self.name
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return unicode(self.name)
 
 
 class Member(db.Model):
@@ -288,7 +294,7 @@ class Organisation(db.Model):
     house = db.relationship('House')
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return unicode(self.name)
 
 
 class Membership(db.Model):
@@ -303,6 +309,10 @@ class Membership(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship(Member, backref=backref("memberships", lazy="joined"), lazy='joined')
 
+    def __unicode__(self):
+        tmp = u" - ".join([unicode(self.type), unicode(self.member), unicode(self.organisation)])
+        return unicode(tmp)
+
 
 class CommitteeInfo(db.Model):
 
@@ -316,7 +326,7 @@ class CommitteeInfo(db.Model):
     organization = db.relationship('Organisation', backref=backref('info', lazy='joined', uselist=False))
 
     def __unicode__(self):
-        return u'%s' % self.about
+        return unicode(self.about)
 
 
 class Hansard(db.Model):
@@ -372,5 +382,5 @@ class Content(db.Model):
     event = db.relationship('Event', backref='content')
 
     def __unicode__(self):
-        return u'%s' % self.title
+        return unicode(self.title)
 

@@ -8,6 +8,7 @@ from datetime import datetime
 import time
 from operator import itemgetter
 import logging
+from sqlalchemy import func
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
@@ -39,9 +40,28 @@ class MyIndexView(AdminIndexView):
 class MyModelView(ModelView):
     can_create = True
     can_edit = True
-    can_delete = False
+    can_delete = True
+
+
+class CommitteeView(MyModelView):
+
+    def get_query(self):
+        """
+        Add filter to return only non-deleted records.
+        """
+
+        return self.session.query(self.model) \
+            .filter(self.model.type == "committee")
+
+    def get_count_query(self):
+        """
+        Add filter to count only non-deleted records.
+        """
+
+        return self.session.query(func.count('*')).select_from(self.model) \
+            .filter(self.model.type == "committee")
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
-admin.add_view(MyModelView(Organisation, db.session, name="Organisation", endpoint='organisation'))
+admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee'))
 

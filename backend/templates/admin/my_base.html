@@ -1,0 +1,18 @@
+{% extends 'admin/base.html' %}
+{% block head_css %}
+{{ super() }}
+<style>
+
+</style>
+{% endblock head_css%}
+
+{% block brand %}
+<a class="navbar-brand" href="{{ FRONTEND_HOST }}">{{ admin_view.admin.name }}</a>
+{% endblock %}
+
+{% block tail_js -%}
+{{ super() }}
+<script>
+
+</script>
+{%- endblock %}

@@ -176,12 +176,12 @@ def resource_list(resource, resource_id=None):
     if resource_id:
         try:
             queryset = base_query.filter_by(id=resource_id).one()
+            count = 1
         except NoResultFound:
             raise ApiException(404, "Not found")
     else:
         queryset = base_query.limit(per_page).offset(page*per_page).all()
-
-    count = base_query.count()
+        count = base_query.count()
     next = None
     if count > (page + 1) * per_page:
         next = flask.request.url_root + resource + "/?page=" + str(page+1)

@@ -55,6 +55,16 @@ class CommitteeView(MyModelView):
             'page_size': 25
         }
     }
+    column_list = ('name', 'house')
+    column_sortable_list = ('name', ('house', 'house.name'))
+    column_searchable_list = ('name', )
+    form_columns = ('name', 'house')
+
+    def on_model_change(self, form, model, is_created):
+        if is_created:
+            # set some default values when creating a new record
+            model.type = "committee"
+            model.version = 0
 
     def get_query(self):
         """
@@ -74,7 +84,8 @@ class CommitteeView(MyModelView):
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
-admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee'))
+admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
+admin.add_view(MyModelView(CommitteeInfo, db.session, name="Committee Info", endpoint='committee-info', category="Committees"))
 
 admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))
 admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))

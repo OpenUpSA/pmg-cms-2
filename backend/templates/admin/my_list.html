@@ -1,0 +1,5 @@
+{% extends 'admin/model/list.html' %}
+
+{% macro render_html(model, column) %}
+{{ model[column] | safe }}
+{% endmacro %}

@@ -21,3 +21,4 @@ with open('config/%s/logging.yaml' % env) as f:
 # import admin
 
 import views
+import admin

@@ -11,32 +11,6 @@ def virtualenv():
             yield
 
 
-def upload_db():
-    # tar the database file
-    local('tar -czf tmp.tar.gz instance/tmp.db', capture=False)
-    put('tmp.tar.gz', '/tmp/tmp.tar.gz')
-
-    # enter application directory
-    with cd(env.project_dir):
-        # and unzip new files
-        sudo('tar xzf /tmp/tmp.tar.gz')
-
-    # now that all is set up, delete the tarballs again
-    sudo('rm /tmp/tmp.tar.gz')
-    local('rm tmp.tar.gz')
-
-    set_permissions()
-    restart()
-    return
-
-
-def download_db():
-    tmp = get('%s/instance/tmp.db' % env.project_dir, '/tmp/tmp.db')
-    if tmp.succeeded:
-        print "Success"
-        local('mv /tmp/tmp.db instance/tmp.db')
-    return
-
 def rebuild_db():
     sudo("supervisorctl stop pmg_cms")
     with virtualenv():

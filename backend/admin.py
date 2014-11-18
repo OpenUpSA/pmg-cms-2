@@ -3,12 +3,15 @@ from models import *
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.model.template import macro
+from wtforms import fields, widgets
 import urllib
 from datetime import datetime
 import time
 from operator import itemgetter
 import logging
 from sqlalchemy import func
+
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
@@ -28,6 +31,17 @@ def jinja2_filter_add_commas(quantity):
         out = "," + tmp + out
         quantity_str = quantity_str[0:-3]
     return quantity_str + out
+
+
+# Define wtforms widget and field
+class CKTextAreaWidget(widgets.TextArea):
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('class_', 'ckeditor')
+        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
+
+
+class CKTextAreaField(fields.TextAreaField):
+    widget = CKTextAreaWidget()
 
 
 class MyIndexView(AdminIndexView):
@@ -84,6 +98,31 @@ class CommitteeView(MyModelView):
 
 
 class ContentView(MyModelView):
+
+    form_overrides = dict(body=CKTextAreaField)
+    edit_template = 'admin/my_edit.html'
+    create_template = 'admin/my_create.html'
+    list_template = 'admin/my_list.html'
+    form_excluded_columns = ('type', 'version')
+    column_exclude_list = ('type', 'version')
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        }
+    }
+    form_ajax_refs = {
+        'event': {
+            'fields': ('date', 'title', EventType.name),
+            'page_size': 25
+        }
+    }
+    column_formatters = dict(
+        body=macro('render_html_snippet'),
+        summary=macro('render_html_snippet'),
+        )
 
     def __init__(self, model, session, **kwargs):
         self.type = kwargs.pop('type')

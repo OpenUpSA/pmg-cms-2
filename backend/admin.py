@@ -82,10 +82,43 @@ class CommitteeView(MyModelView):
         return self.session.query(func.count('*')).select_from(self.model) \
             .filter(self.model.type == "committee")
 
+
+class ContentView(MyModelView):
+
+    def __init__(self, model, session, **kwargs):
+        self.type = kwargs.pop('type')
+        super(ContentView, self).__init__(model, session, **kwargs)
+
+    def on_model_change(self, form, model, is_created):
+        if is_created:
+            # set some default values when creating a new record
+            model.type = self.content_type
+            model.version = 0
+
+    def get_query(self):
+        """
+        Add filter to return only non-deleted records.
+        """
+
+        return self.session.query(self.model) \
+            .filter(self.model.type == self.type)
+
+    def get_count_query(self):
+        """
+        Add filter to count only non-deleted records.
+        """
+
+        return self.session.query(func.count('*')).select_from(self.model) \
+            .filter(self.model.type == self.type)
+
+
+
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
 admin.add_view(MyModelView(CommitteeInfo, db.session, name="Committee Info", endpoint='committee-info', category="Committees"))
+
+admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 
 admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))
 admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))

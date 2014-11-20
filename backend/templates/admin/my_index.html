@@ -10,10 +10,26 @@
     <table class="table table-bordered">
       <tr>
         <th>
+          Members
+        </th>
+        <td class="text-center">
+          {{ record_counts.member | add_commas }}
+        </td>
+      </tr>
+      <tr>
+        <th>
           Committees
         </th>
         <td class="text-center">
-          {{ record_counts.committee }}
+          {{ record_counts.committee | add_commas }}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Meeting reports
+        </th>
+        <td class="text-center">
+          {{ record_counts.get("committee-meeting-report") | add_commas }}
         </td>
       </tr>
     </table>

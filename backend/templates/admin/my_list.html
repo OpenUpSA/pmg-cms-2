@@ -1,5 +1,11 @@
 {% extends 'admin/model/list.html' %}
 
 {% macro render_html(model, column) %}
-{{ model[column] | safe }}
+{{ model[column] }}
+{% endmacro %}
+
+{% macro render_raw_html(model, column) %}
+{% if model[column] %}
+{{ model[column] | truncate(400, True) }}
+{% endif %}
 {% endmacro %}

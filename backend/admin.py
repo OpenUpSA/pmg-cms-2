@@ -122,8 +122,8 @@ class ContentView(MyModelView):
         }
     }
     column_formatters = dict(
-        body=macro('render_html_snippet'),
-        summary=macro('render_html_snippet'),
+        body=macro('render_raw_html'),
+        summary=macro('render_raw_html'),
         )
 
     def __init__(self, model, session, **kwargs):

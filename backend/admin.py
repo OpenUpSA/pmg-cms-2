@@ -49,7 +49,9 @@ class MyIndexView(AdminIndexView):
     def index(self):
 
         record_counts = {
+            'member': Member.query.count(),
             'committee': Organisation.query.filter_by(type="committee").count(),
+            'committee-meeting-report': Content.query.filter_by(type="committee-meeting-report").count(),
             }
 
         return self.render('admin/my_index.html', record_counts=record_counts)

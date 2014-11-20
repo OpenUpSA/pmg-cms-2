@@ -206,30 +206,14 @@ bill_event_table = db.Table(
 )
 
 
-class EventType(db.Model):
-
-    __tablename__ = "event_type"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-
-    def to_dict(self, include_related=False):
-        # reduce this model to a string
-        return self.name
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
 class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
     title = db.Column(db.Text())
-
-    event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
-    type = db.relationship('EventType', lazy='joined')
+    type = db.Column(db.String(50), nullable=False)
+    
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))

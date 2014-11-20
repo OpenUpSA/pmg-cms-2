@@ -8,6 +8,7 @@ import dateutil.parser
 import urllib
 from search.search import Search
 import math
+import random
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -155,7 +156,13 @@ def index():
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
-    return render_template('index.html', committee_meetings=committee_meetings, bills =bills, schedule = schedule, scheduledates = scheduledates)
+    stock_pic = "stock" + str(random.randint(1,18)) + ".jpg"
+    featured = {
+        'title': "LiveMagSA: \"People kill people, guns don't\"",
+        'blurb': "What do 10-year-old Jaylin Scullard, 27-year-old Senzo Meyiwa and 29-year-old Reeva Steenkamp have in common? All of them had their lives cut short due to gun violence. Scullard was playing in front of his house when he was shot dead. He is one of many children often caught in fatal crossfire between gangs in the Cape Flats. Steenkamp had her life ended by bullets blasted at her through a bathroom door and Bafana Bafana captain Meyiwa's death shocked the nation - a senseless death involving a firearm.",
+        'link': "http://www.pa.org.za/blog/livemagsa-people-kill-people-guns-dont",
+    }
+    return render_template('index.html', committee_meetings = committee_meetings, bills = bills, schedule = schedule, scheduledates = scheduledates, stock_pic = stock_pic)
 
 
 @app.route('/bills/')

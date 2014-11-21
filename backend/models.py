@@ -63,6 +63,7 @@ class House(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
+    name_short = db.Column(db.String(20), nullable=False)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -235,6 +236,13 @@ class Event(db.Model):
     organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
+        if self.type.name == "committee-meeting":
+            tmp = self.date.date().isoformat()
+            if self.organisation:
+                tmp += " [" + unicode(self.organisation) + "]"
+            if self.title:
+                tmp += " - " + self.title
+            return unicode(tmp)
         tmp = self.type.name
         if self.date:
             tmp += " - " + self.date.date().isoformat()
@@ -294,7 +302,10 @@ class Organisation(db.Model):
     house = db.relationship('House')
 
     def __unicode__(self):
-        return unicode(self.name)
+        tmp = self.name
+        if self.house:
+            tmp = self.house.name_short + " " + tmp
+        return unicode(tmp)
 
 
 class Membership(db.Model):

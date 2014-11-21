@@ -105,8 +105,8 @@ class ContentView(MyModelView):
     edit_template = 'admin/my_edit.html'
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
-    form_excluded_columns = ('type', 'version')
-    column_exclude_list = ('type', 'version')
+    form_excluded_columns = ('type', 'version', 'title', 'file_path')
+    column_exclude_list = ('type', 'version', 'title', 'file_path')
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
@@ -157,8 +157,6 @@ class ContentView(MyModelView):
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
-admin.add_view(MyModelView(CommitteeInfo, db.session, name="Committee Info", endpoint='committee-info', category="Committees"))
-
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 
 admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))

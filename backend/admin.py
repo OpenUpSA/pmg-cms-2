@@ -49,7 +49,9 @@ class MyIndexView(AdminIndexView):
     def index(self):
 
         record_counts = {
+            'member': Member.query.count(),
             'committee': Organisation.query.filter_by(type="committee").count(),
+            'committee-meeting-report': Content.query.filter_by(type="committee-meeting-report").count(),
             }
 
         return self.render('admin/my_index.html', record_counts=record_counts)
@@ -120,8 +122,8 @@ class ContentView(MyModelView):
         }
     }
     column_formatters = dict(
-        body=macro('render_html_snippet'),
-        summary=macro('render_html_snippet'),
+        body=macro('render_raw_html'),
+        summary=macro('render_raw_html'),
         )
 
     def __init__(self, model, session, **kwargs):

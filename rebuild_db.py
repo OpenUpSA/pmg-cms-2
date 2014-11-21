@@ -137,9 +137,9 @@ def rebuild_db():
     start = time.time()
 
     # populate houses of parliament
-    joint_obj = House(name="Joint (NA + NCOP)")
-    ncop_obj = House(name="NCOP")
-    na_obj = House(name="National Assembly")
+    joint_obj = House(name="Joint (NA + NCOP)", name_short="Joint")
+    ncop_obj = House(name="National Council of Provinces", name_short="NCOP")
+    na_obj = House(name="National Assembly", name_short="NA")
     for obj in [joint_obj, ncop_obj, na_obj]:
         db.session.add(obj)
     db.session.commit()

@@ -3,6 +3,10 @@ from models import *
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.form import RenderTemplateWidget
+from flask.ext.admin.model.form import InlineFormAdmin
+from flask.ext.admin.contrib.sqla.form import InlineModelConverter
+from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.model.template import macro
 from wtforms import fields, widgets
 import urllib
@@ -66,6 +70,22 @@ class MyModelView(ModelView):
     list_template = 'admin/my_list.html'
 
 
+# This widget uses custom template for inline field list
+class InlineMembershipsWidget(RenderTemplateWidget):
+    def __init__(self):
+        super(InlineMembershipsWidget, self).__init__('admin/inline_membership.html')
+
+
+# This InlineModelFormList will use our custom widget, when creating a list of forms
+class MembershipsFormList(InlineModelFormList):
+    widget = InlineMembershipsWidget()
+
+
+# Create custom InlineModelConverter to link the form to its model
+class MembershipModelConverter(InlineModelConverter):
+    inline_field_list_type = MembershipsFormList
+
+
 class CommitteeView(MyModelView):
 
     column_list = (
@@ -73,7 +93,7 @@ class CommitteeView(MyModelView):
         'house',
         'memberships'
     )
-    column_labels = {'memberships': 'members', }
+    column_labels = {'memberships': 'Members', }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -85,7 +105,10 @@ class CommitteeView(MyModelView):
     form_columns = (
         'name',
         'house',
+        'memberships',
     )
+    inline_models = (Membership, )
+    inline_model_form_converter = MembershipModelConverter
 
     def on_model_change(self, form, model, is_created):
         if is_created:

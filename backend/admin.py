@@ -36,6 +36,13 @@ def jinja2_filter_add_commas(quantity):
         quantity_str = quantity_str[0:-3]
     return quantity_str + out
 
+@app.template_filter('dir')
+def jinja2_filter_dir(value):
+    res = []
+    for k in dir(value):
+        res.append('%r %r\n' % (k, getattr(value, k)))
+    return '<br>'.join(res)
+
 
 # Define wtforms widget and field
 class CKTextAreaWidget(widgets.TextArea):
@@ -191,9 +198,11 @@ class MemberView(MyModelView):
         'house',
         'party',
         'province',
+        'memberships',
         'bio',
         'profile_pic_url'
     )
+    column_labels = {'memberships': 'Committees', }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -205,6 +214,7 @@ class MemberView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),
+        memberships=macro('render_committee_membership')
         )
     form_columns = column_list
     form_overrides = dict(bio=fields.TextAreaField)

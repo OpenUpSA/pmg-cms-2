@@ -98,6 +98,14 @@ class Scraper:
 				self.missing_committees.append(committee_name)
 		db.session.commit()
 
+	def _report_exists(self, title, committee_name):
+		committee = Organisation.query.filter_by(name=committee_name).first()
+		if (committee):
+			check = Tabled_committee_report.query.filter_by(title=title, committee_id = committee.id).first()
+			if check:
+				return True
+		return False
+
 	def tabledreports(self):
 
 		# url = "http://pmg.org.za/tabled-committee-reports-2008-2013"
@@ -128,9 +136,10 @@ class Scraper:
 						url = "http://www.pmg.org/" + url.replace("../../../../../../", "")
 					queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
 		for item in queue:
-			page = requests.get(item["link"]).text
-			# page = ""
-			self._save_tabledreport(item["name"], item["committee"], page)
+			if (self._report_exists(item["name"], item["committee"]) == False):
+				print "Processing report %s" % item["name"]
+				page = requests.get(item["link"]).text
+				self._save_tabledreport(item["name"], item["committee"], page)
 		print self.missing_committees
 
 

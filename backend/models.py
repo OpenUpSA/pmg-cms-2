@@ -220,14 +220,14 @@ class Event(db.Model):
     organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
-        if self.type.name == "committee-meeting":
+        if self.type == "committee-meeting":
             tmp = self.date.date().isoformat()
             if self.organisation:
                 tmp += " [" + unicode(self.organisation) + "]"
             if self.title:
                 tmp += " - " + self.title
             return unicode(tmp)
-        tmp = self.type.name
+        tmp = self.type
         if self.date:
             tmp += " - " + self.date.date().isoformat()
         if self.title:

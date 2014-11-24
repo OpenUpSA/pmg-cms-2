@@ -376,6 +376,25 @@ class Schedule(db.Model):
     meeting_time = db.Column(db.Text())
     houses = db.relationship("House", secondary = schedule_house_table)
 
+# === Tabled Committee Report === #
+
+tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join', db.Model.metadata,
+    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Tabled_committee_report(db.Model):
+    __tablename__ = "tabled_committee_report"
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', lazy='joined')
+    title = db.Column(db.String(255))
+    start_date = db.Column(db.Date())
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
+    nid = db.Column(db.Integer())
+    files = db.relationship("File", secondary=tabled_committee_report_file_table)
 
 class Content(db.Model):
 

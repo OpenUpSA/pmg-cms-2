@@ -68,16 +68,24 @@ class MyModelView(ModelView):
 
 class CommitteeView(MyModelView):
 
-    form_ajax_refs = {
-        'events': {
-            'fields': ('date', 'title', 'type'),
-            'page_size': 25
-        }
-    }
-    column_list = ('name', 'house')
-    column_sortable_list = ('name', ('house', 'house.name'))
+    column_list = (
+        'name',
+        'house',
+        'memberships'
+    )
+    column_labels = {'memberships': 'members', }
+    column_sortable_list = (
+        'name',
+        ('house', 'house.name'),
+    )
     column_searchable_list = ('name', )
-    form_columns = ('name', 'house')
+    column_formatters = dict(
+        memberships=macro('render_membership_count'),
+        )
+    form_columns = (
+        'name',
+        'house',
+    )
 
     def on_model_change(self, form, model, is_created):
         if is_created:

@@ -13,3 +13,7 @@
 {% macro render_profile_pic(model, column) %}
 <img style="max-width: 200px;" src="{{ model[column] }}" />
 {% endmacro %}
+
+{% macro render_membership_count(model, column) %}
+<span class="badge{% if not model[column] | length %} alert-danger{% else %} alert-info{% endif %}">{{ model[column] | length }}</span>
+{% endmacro %}

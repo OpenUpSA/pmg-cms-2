@@ -104,7 +104,7 @@ def api_resources():
             .filter_by(type='committee') \
             .order_by(Organisation.house_id, Organisation.name),
         "committee-meeting": db.session.query(Event) \
-            .filter(EventType.name=='committee-meeting') \
+            .filter(Event.type == 'committee-meeting') \
             .order_by(desc(Event.date)),
 
         "bill": db.session.query(Bill)
@@ -132,7 +132,7 @@ def search():
     """
     Search through ElasticSearch
     """
-    
+
     search = Search()
     q = request.args.get('q')
     logger.debug("search called")
@@ -148,7 +148,7 @@ def search():
     result["count"] = searchresult["hits"]["total"]
     result["max_score"] = searchresult["hits"]["max_score"]
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
-    
+
     if result["count"] > (page + 1) * per_page:
         result["next"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
         result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)

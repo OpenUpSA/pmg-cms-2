@@ -221,7 +221,9 @@ class Event(db.Model):
 
     def __unicode__(self):
         if self.type == "committee-meeting":
-            tmp = self.date.date().isoformat()
+            tmp = "unknown date"
+            if self.date:
+                tmp = self.date.date().isoformat()
             if self.organisation:
                 tmp += " [" + unicode(self.organisation) + "]"
             if self.title:

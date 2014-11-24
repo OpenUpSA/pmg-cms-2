@@ -382,3 +382,6 @@ if __name__ == '__main__':
     bills()
     rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
+    rebuild_table("tabled_committee_report", {
+        "title": "title", "start_date": "start_date", "body": "body", "teaser": "summary", "nid": "nid"
+        })

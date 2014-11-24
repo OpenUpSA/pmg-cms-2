@@ -127,7 +127,7 @@ class Scraper:
 					if not re.match("http://", url):
 						url = "http://www.pmg.org/" + url.replace("../../../../../../", "")
 					queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
-		for item in queue[10:20]:
+		for item in queue:
 			page = requests.get(item["link"]).text
 			# page = ""
 			self._save_tabledreport(item["name"], item["committee"], page)

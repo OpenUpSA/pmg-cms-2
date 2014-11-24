@@ -264,8 +264,6 @@ def rebuild_db():
     # reports = read_data('report.json')
 
     i = 0
-    meeting_event_type_obj = EventType(name="committee-meeting")
-    db.session.add(meeting_event_type_obj)
     db.session.commit()
     logger.debug("reading report.js")
     with open('data/report.json', 'r') as f:
@@ -279,7 +277,7 @@ def rebuild_db():
             if committee_obj:
                 committee_obj = committee_obj['model']
             event_obj = Event(
-                type=meeting_event_type_obj,
+                type="committee-meeting",
                 organisation=committee_obj,
                 date=parsed_report.date,
                 title=parsed_report.title

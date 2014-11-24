@@ -21,6 +21,7 @@
 {% macro render_committee_membership(model, column) %}
 {% if model[column] %}
 {% for membership in model[column] %}
+<a href="{{ url_for('committee.edit_view', id=membership.organisation.id) }}">
 <span class="label alert-info">
   {% if membership.organisation.name | length > 45 -%}
     {{ membership.organisation.name[0:45] }}...
@@ -28,6 +29,7 @@
     {{ membership.organisation.name }}
   {% endif %}
   </span>
+</a>
 {% if not loop.last %}<br>{% endif %}
 {% endfor %}
 {% endif %}

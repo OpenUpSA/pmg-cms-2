@@ -185,6 +185,22 @@ class MemberView(MyModelView):
     }
 
 
+class MembershipView(MyModelView):
+
+    column_list = (
+        'member',
+        'organisation',
+        'type',
+    )
+    column_sortable_list = (
+        ('member', 'member.name'),
+        ('organisation', 'organisation.name'),
+        ('type', 'type.name'),
+    )
+    column_searchable_list = (
+        'member.name',
+        'organisation.name',
+    )
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
@@ -192,6 +208,6 @@ admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoin
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 
 admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
-admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))
+admin.add_view(MembershipView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))
 

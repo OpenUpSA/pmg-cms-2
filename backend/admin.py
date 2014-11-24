@@ -67,7 +67,7 @@ class CommitteeView(MyModelView):
 
     form_ajax_refs = {
         'events': {
-            'fields': ('date', 'title', EventType.name),
+            'fields': ('date', 'title', 'type'),
             'page_size': 25
         }
     }
@@ -117,7 +117,7 @@ class ContentView(MyModelView):
     }
     form_ajax_refs = {
         'event': {
-            'fields': ('date', 'title', EventType.name),
+            'fields': ('date', 'title', 'type'),
             'page_size': 25
         }
     }

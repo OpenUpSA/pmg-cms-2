@@ -36,6 +36,11 @@ def setup_db():
     rebuild_db()
     # sudo('echo "grant all privileges on database pmg to pmg;" | psql')
 
+def scrape_tabled_reports():
+    with virtualenv():
+        with shell_env(FLASK_ENV='production'):
+            with cd('/var/www/pmg-cms'):
+                run("python scrapers/scraper.py tabledreports")
 
 def restart():
     sudo("supervisorctl restart pmg_cms")

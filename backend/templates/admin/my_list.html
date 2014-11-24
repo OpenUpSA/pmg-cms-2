@@ -9,3 +9,7 @@
 {{ model[column] | truncate(400, True) }}
 {% endif %}
 {% endmacro %}
+
+{% macro render_profile_pic(model, column) %}
+<img style="max-width: 200px;" src="{{ model[column] }}" />
+{% endmacro %}

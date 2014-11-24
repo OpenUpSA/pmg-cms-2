@@ -61,6 +61,9 @@ class MyModelView(ModelView):
     can_create = True
     can_edit = True
     can_delete = True
+    edit_template = 'admin/my_edit.html'
+    create_template = 'admin/my_create.html'
+    list_template = 'admin/my_list.html'
 
 
 class CommitteeView(MyModelView):
@@ -102,9 +105,6 @@ class CommitteeView(MyModelView):
 class ContentView(MyModelView):
 
     form_overrides = dict(body=CKTextAreaField)
-    edit_template = 'admin/my_edit.html'
-    create_template = 'admin/my_create.html'
-    list_template = 'admin/my_list.html'
     form_excluded_columns = ('type', 'version', 'title', 'file_path')
     column_exclude_list = ('type', 'version', 'title', 'file_path')
     form_widget_args = {
@@ -153,13 +153,45 @@ class ContentView(MyModelView):
             .filter(self.model.type == self.type)
 
 
+class MemberView(MyModelView):
+
+    column_list = (
+        'name',
+        'house',
+        'party',
+        'province',
+        'bio',
+        'profile_pic_url'
+    )
+    column_sortable_list = (
+        'name',
+        ('house', 'house.name'),
+        ('party', 'party.name'),
+        ('province', 'province.name'),
+        'bio',
+        'profile_pic_url',
+    )
+    column_searchable_list = ('name', )
+    column_formatters = dict(
+        profile_pic_url=macro('render_profile_pic'),
+        )
+    form_columns = column_list
+    form_overrides = dict(bio=fields.TextAreaField)
+    form_ajax_refs = {
+        'events': {
+            'fields': ('date', 'title', 'type'),
+            'page_size': 25
+        }
+    }
+
+
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 
-admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))
+admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
 admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))
 

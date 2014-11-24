@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page %}
+<div class="container-fluid">
+
+  <div class="col-sm-12">
+    <h1><i class="fa fa-icon fa-group"></i> Tabled Committee Reports</h1>
+  </div>
+
+  <div class="col-md-8">
+    <ul>
+      {% for tabled_committee_report in tabled_committee_reports %}
+       <li>
+        <a href="/tabled-committee-report/{{ tabled_committee_report.id }}">{{ tabled_committee_report.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+
+  </div>
+
+  <div class="col-md-4">
+
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      {% include 'pagination.html' %}
+    </div>
+  </div>
+{% endblock page %}

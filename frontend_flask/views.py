@@ -254,6 +254,33 @@ def bill(bill_id):
     logger.debug(bill)
     return "Oh dear"
 
+@app.route('/tabled-committee-reports/')
+@app.route('/tabled-committee-reports/<int:page>/')
+def tabled_committee_reports(page = 0):
+    """
+    Page through all available tabled-committee-reports.
+    """
+
+    logger.debug("tabled-committee-reports page called")
+    tabled_committee_reports_list = load_from_api('tabled_committee_report', page = page)
+    count = tabled_committee_reports_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    tabled_committee_reports = tabled_committee_reports_list['results']
+    url = "/tabled-committee-reports"
+    return render_template('tabled_committee_reports_list.html', tabled_committee_reports=tabled_committee_reports, num_pages = num_pages, page = page, url = url)
+
+@app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
+def tabled_committee_report(tabled_committee_report_id):
+    """
+    Tabled Committee Report
+    """
+    logger.debug("tabled-committee-report page called")
+    tabled_committee_report =  load_from_api('tabled_committee_report', tabled_committee_report_id)
+    logger.debug(tabled_committee_report)
+    return render_template('tabled_committee_report_detail.html', tabled_committee_report=tabled_committee_report, STATIC_HOST=app.config['STATIC_HOST'])
+    
+
 @app.route('/members/')
 @app.route('/members/<int:page>/')
 def members(page = 0):

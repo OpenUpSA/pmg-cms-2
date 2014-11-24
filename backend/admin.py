@@ -3,6 +3,10 @@ from models import *
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.form import RenderTemplateWidget
+from flask.ext.admin.model.form import InlineFormAdmin
+from flask.ext.admin.contrib.sqla.form import InlineModelConverter
+from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.model.template import macro
 from wtforms import fields, widgets
 import urllib
@@ -31,6 +35,13 @@ def jinja2_filter_add_commas(quantity):
         out = "," + tmp + out
         quantity_str = quantity_str[0:-3]
     return quantity_str + out
+
+@app.template_filter('dir')
+def jinja2_filter_dir(value):
+    res = []
+    for k in dir(value):
+        res.append('%r %r\n' % (k, getattr(value, k)))
+    return '<br>'.join(res)
 
 
 # Define wtforms widget and field
@@ -61,20 +72,50 @@ class MyModelView(ModelView):
     can_create = True
     can_edit = True
     can_delete = True
+    edit_template = 'admin/my_edit.html'
+    create_template = 'admin/my_create.html'
+    list_template = 'admin/my_list.html'
+
+
+# This widget uses custom template for inline field list
+class InlineMembershipsWidget(RenderTemplateWidget):
+    def __init__(self):
+        super(InlineMembershipsWidget, self).__init__('admin/inline_membership.html')
+
+
+# This InlineModelFormList will use our custom widget, when creating a list of forms
+class MembershipsFormList(InlineModelFormList):
+    widget = InlineMembershipsWidget()
+
+
+# Create custom InlineModelConverter to link the form to its model
+class MembershipModelConverter(InlineModelConverter):
+    inline_field_list_type = MembershipsFormList
 
 
 class CommitteeView(MyModelView):
 
-    form_ajax_refs = {
-        'events': {
-            'fields': ('date', 'title', EventType.name),
-            'page_size': 25
-        }
-    }
-    column_list = ('name', 'house')
-    column_sortable_list = ('name', ('house', 'house.name'))
+    column_list = (
+        'name',
+        'house',
+        'memberships'
+    )
+    column_labels = {'memberships': 'Members', }
+    column_sortable_list = (
+        'name',
+        ('house', 'house.name'),
+    )
     column_searchable_list = ('name', )
-    form_columns = ('name', 'house')
+    column_formatters = dict(
+        memberships=macro('render_membership_count'),
+        )
+    form_columns = (
+        'name',
+        'house',
+        'memberships',
+    )
+    inline_models = (Membership, )
+    inline_model_form_converter = MembershipModelConverter
 
     def on_model_change(self, form, model, is_created):
         if is_created:
@@ -102,9 +143,6 @@ class CommitteeView(MyModelView):
 class ContentView(MyModelView):
 
     form_overrides = dict(body=CKTextAreaField)
-    edit_template = 'admin/my_edit.html'
-    create_template = 'admin/my_create.html'
-    list_template = 'admin/my_list.html'
     form_excluded_columns = ('type', 'version', 'title', 'file_path')
     column_exclude_list = ('type', 'version', 'title', 'file_path')
     form_widget_args = {
@@ -117,7 +155,7 @@ class ContentView(MyModelView):
     }
     form_ajax_refs = {
         'event': {
-            'fields': ('date', 'title', EventType.name),
+            'fields': ('date', 'title', 'type'),
             'page_size': 25
         }
     }
@@ -153,13 +191,46 @@ class ContentView(MyModelView):
             .filter(self.model.type == self.type)
 
 
+class MemberView(MyModelView):
+
+    column_list = (
+        'name',
+        'house',
+        'party',
+        'province',
+        'memberships',
+        'bio',
+        'profile_pic_url'
+    )
+    column_labels = {'memberships': 'Committees', }
+    column_sortable_list = (
+        'name',
+        ('house', 'house.name'),
+        ('party', 'party.name'),
+        ('province', 'province.name'),
+        'bio',
+        'profile_pic_url',
+    )
+    column_searchable_list = ('name', )
+    column_formatters = dict(
+        profile_pic_url=macro('render_profile_pic'),
+        memberships=macro('render_committee_membership')
+        )
+    form_columns = column_list
+    form_overrides = dict(bio=fields.TextAreaField)
+    form_ajax_refs = {
+        'events': {
+            'fields': ('date', 'title', 'type'),
+            'page_size': 25
+        }
+    }
+
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 
-admin.add_view(MyModelView(Member, db.session, name="Member Profile", endpoint='member', category="Members"))
-admin.add_view(MyModelView(Membership, db.session, name="Membership", endpoint='membership', category="Members"))
+admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))
 

@@ -206,44 +206,30 @@ bill_event_table = db.Table(
 )
 
 
-class EventType(db.Model):
-
-    __tablename__ = "event_type"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)
-
-    def to_dict(self, include_related=False):
-        # reduce this model to a string
-        return self.name
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
 class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
     title = db.Column(db.Text())
-
-    event_type_id = db.Column(db.Integer, db.ForeignKey('event_type.id'))
-    type = db.relationship('EventType', lazy='joined')
+    type = db.Column(db.String(50), nullable=False)
+    
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
-        if self.type.name == "committee-meeting":
-            tmp = self.date.date().isoformat()
+        if self.type == "committee-meeting":
+            tmp = "unknown date"
+            if self.date:
+                tmp = self.date.date().isoformat()
             if self.organisation:
                 tmp += " [" + unicode(self.organisation) + "]"
             if self.title:
                 tmp += " - " + self.title
             return unicode(tmp)
-        tmp = self.type.name
+        tmp = self.type
         if self.date:
             tmp += " - " + self.date.date().isoformat()
         if self.title:

@@ -36,7 +36,13 @@ class Transforms:
 			"id": "id",
 			"title": "title",
 			"fulltext": "body"
+		},
+		"tabled_committee_report": {
+			"id": "id",
+			"title": "title",
+			"fulltext": "body",
+			"date": "start_date",
 		}
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report']

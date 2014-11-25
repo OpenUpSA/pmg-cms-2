@@ -19,12 +19,18 @@ from sqlalchemy import func
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
+STATIC_HOST = app.config['STATIC_HOST']
 
 logger = logging.getLogger(__name__)
 
 @app.context_processor
 def inject_paths():
-    return dict(FRONTEND_HOST=FRONTEND_HOST)
+    context_vars = {
+        'FRONTEND_HOST': FRONTEND_HOST,
+        'API_HOST': API_HOST,
+        'STATIC_HOST': STATIC_HOST,
+    }
+    return context_vars
 
 @app.template_filter('add_commas')
 def jinja2_filter_add_commas(quantity):
@@ -233,7 +239,7 @@ class EventView(MyModelView):
 class CommitteeMeetingView(EventView):
 
     form_excluded_columns = ('type', 'member', )
-    column_exclude_list = ('type', 'member', )
+    column_list = ('date', 'organisation', 'title', 'content')
     column_labels = {'organisation': 'Committee', }
     column_sortable_list = (
         'date',
@@ -241,6 +247,9 @@ class CommitteeMeetingView(EventView):
         ('organisation', 'organisation.name'),
     )
     column_searchable_list = ('title', 'organisation.name')
+    column_formatters = dict(
+        content=macro('render_event_content'),
+        )
     inline_models = (Content, )
 
 
@@ -268,7 +277,7 @@ class MemberView(MyModelView):
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership')
-        )
+    )
     form_columns = column_list
     form_overrides = dict(bio=fields.TextAreaField)
     form_ajax_refs = {

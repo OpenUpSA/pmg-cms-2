@@ -124,7 +124,9 @@ def api_resources():
             .order_by(Schedule.meeting_date)
             .filter(Schedule.meeting_date >= current_time ),
         "tabled_committee_report": db.session.query(Tabled_committee_report)
-            .order_by(Tabled_committee_report.start_date)
+            .order_by(Tabled_committee_report.start_date),
+        "calls_for_comment": db.session.query(Calls_for_comment)
+            .order_by(Calls_for_comment.start_date)
     }
 
 @app.route('/search/')

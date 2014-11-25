@@ -172,17 +172,6 @@ class Briefing(db.Model):
     files = db.relationship("File", secondary=briefing_file_table)
 
 
-class Questions_replies(db.Model):
-
-    __tablename__ = "questions_replies"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), nullable=False)
-    start_date = db.Column(db.Date)
-    body = db.Column(db.Text)
-    question_number = db.Column(db.String(255))
-
-
 class File(db.Model):
 
     __tablename__ = "file"
@@ -362,6 +351,24 @@ class Schedule(db.Model):
     meeting_time = db.Column(db.Text())
     houses = db.relationship("House", secondary = schedule_house_table)
 
+# === Questions Replies === #
+
+questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
+    db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
+class Questions_replies(db.Model):
+
+    __tablename__ = "questions_replies"
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee = db.relationship('Organisation', secondary=questions_replies_committee_table)
+    title = db.Column(db.String(255), nullable=False)
+    start_date = db.Column(db.Date)
+    body = db.Column(db.Text)
+    question_number = db.Column(db.String(255))
+
 # === Tabled Committee Report === #
 
 tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join', db.Model.metadata,
@@ -369,18 +376,43 @@ tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join
     db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
+tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
+    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
 class Tabled_committee_report(db.Model):
     __tablename__ = "tabled_committee_report"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', lazy='joined')
+    # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table)
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
     files = db.relationship("File", secondary=tabled_committee_report_file_table)
+
+# === Calls for comment === #
+
+calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
+    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
+class Calls_for_comment(db.Model):
+    __tablename__ = "calls_for_comment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', secondary=calls_for_comment_committee_table)
+    title = db.Column(db.Text())
+    start_date = db.Column(db.Date())
+    end_date = db.Column(db.Date())
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
+    nid = db.Column(db.Integer())
 
 class Content(db.Model):
 

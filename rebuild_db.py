@@ -409,3 +409,4 @@ if __name__ == '__main__':
         })
     rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
     rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
+    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body" })

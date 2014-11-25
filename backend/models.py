@@ -1,6 +1,6 @@
 from app import app, db
 import serializers
-from sqlalchemy import desc
+from sqlalchemy import desc, Index
 from sqlalchemy.orm import backref
 from sqlalchemy import UniqueConstraint
 from random import random
@@ -209,14 +209,14 @@ bill_event_table = db.Table(
 class Event(db.Model):
     __tablename__ = "event"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, index=True, primary_key=True)
     date = db.Column(db.DateTime)
     title = db.Column(db.String(256))
-    type = db.Column(db.String(50), nullable=False)
+    type = db.Column(db.String(50), index=True, nullable=False)
     
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), index=True)
     organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
@@ -235,6 +235,9 @@ class Event(db.Model):
         if self.title:
             tmp += " - " + self.title
         return unicode(tmp)
+
+Index('event_id_member_id_ix', Event.id, Event.member_id)
+Index('event_id_organisation_id_ix', Event.id, Event.organisation_id)
 
 
 class MembershipType(db.Model):
@@ -367,17 +370,18 @@ class Content(db.Model):
 
     __tablename__ = "content"
 
-    id = db.Column(db.Integer, primary_key=True)
-    type = db.Column(db.String(50), nullable=False)
+    id = db.Column(db.Integer, index=True, primary_key=True)
+    type = db.Column(db.String(50), index=True, nullable=False)
     title = db.Column(db.String(200))
     file_path = db.Column(db.String(200))
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)
 
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
     event = db.relationship('Event', backref=backref('content', lazy='joined'))
 
     def __unicode__(self):
         return unicode(self.title)
 
+Index('content_id_event_id_ix', Content.id, Content.event_id)

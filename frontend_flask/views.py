@@ -305,6 +305,32 @@ def calls_for_comment(calls_for_comment_id):
     calls_for_comment =  load_from_api('calls_for_comment', calls_for_comment_id)
     logger.debug(calls_for_comment)
     return render_template('calls_for_comment_detail.html', calls_for_comment=calls_for_comment, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/policy-documents/')
+@app.route('/policy-documents/<int:page>/')
+def policy_documents(page = 0):
+    """
+    Page through all available policy-documents.
+    """
+
+    logger.debug("policy-documents page called")
+    policy_documents_list = load_from_api('policy_document', page = page)
+    count = policy_documents_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    policy_documents = policy_documents_list['results']
+    url = "/policy-documents"
+    return render_template('policy_documents_list.html', policy_documents=policy_documents, num_pages = num_pages, page = page, url = url)
+
+@app.route('/policy-document/<int:policy_document_id>/')
+def policy_document(policy_document_id):
+    """
+    Policy Document
+    """
+    logger.debug("policy-document page called")
+    policy_document =  load_from_api('policy_document', policy_document_id)
+    logger.debug(policy_document)
+    return render_template('policy_document_detail.html', policy_document=policy_document, STATIC_HOST=app.config['STATIC_HOST'])
     
 
 @app.route('/members/')

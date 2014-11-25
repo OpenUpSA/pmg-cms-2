@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block top_links %}
+{{ super() }}
+{% endblock %}
+
+{% block page %}
+<div class="col-sm-12">
+  <h4 class="light-red">Policy Document</h4>
+  <h1>{{ policy_document.title }}</h1>
+  {% if policy_document.end_date %}
+  <h4>Comment expires on {{ policy_document.end_date }}</h4>
+  {% endif %}
+  {% if policy_document.start_date %}
+  <h4>{{ policy_document.start_date }}</h4>
+  {% endif %}
+  {% if policy_document.effective_date %}
+  <h2>Effective Date: {{ policy_document.effective_date }}</h2>
+  {% endif %}
+  
+</div>
+
+<div class="col-md-6">
+  {% for file in policy_document.files %}
+  
+  
+  {% if file.description %}
+  <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
+  {% else %}
+  <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
+  {% endif %}
+  
+  {% endfor %}
+</div>
+
+
+{% endblock %}

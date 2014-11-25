@@ -126,7 +126,9 @@ def api_resources():
         "tabled_committee_report": db.session.query(Tabled_committee_report)
             .order_by(Tabled_committee_report.start_date),
         "calls_for_comment": db.session.query(Calls_for_comment)
-            .order_by(Calls_for_comment.start_date)
+            .order_by(Calls_for_comment.start_date),
+        "policy_document": db.session.query(Policy_document)
+            .order_by(Policy_document.start_date),
     }
 
 @app.route('/search/')

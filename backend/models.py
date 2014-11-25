@@ -327,17 +327,6 @@ class Hansard(db.Model):
     meeting_date = db.Column(db.Date())
     body = db.Column(db.Text())
 
-
-class Policy_document(db.Model):
-
-    __tablename__ = "policy_document"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    effective_date = db.Column(db.Date())
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
-    files = db.relationship("File")
-
 schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
     db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
     db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
@@ -416,6 +405,23 @@ class Calls_for_comment(db.Model):
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
+
+# === Policy document === #
+
+policy_document_file_table = db.Table('policy_document_file_join', db.Model.metadata,
+    db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Policy_document(db.Model):
+
+    __tablename__ = "policy_document"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    effective_date = db.Column(db.Date())
+    files = db.relationship("File", secondary=policy_document_file_table)
+    start_date = db.Column(db.Date())
 
 class Content(db.Model):
 

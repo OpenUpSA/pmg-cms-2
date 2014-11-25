@@ -440,6 +440,24 @@ class Gazette(db.Model):
     files = db.relationship("File", secondary=gazette_file_table)
     start_date = db.Column(db.Date())
 
+# === Book === #
+
+book_file_table = db.Table('book_file_join', db.Model.metadata,
+    db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Book(db.Model):
+
+    __tablename__ = "book"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    summary = db.Column(db.Text())
+    body = db.Column(db.Text())
+    start_date = db.Column(db.Date())
+    files = db.relationship("File", secondary=book_file_table)
+
 class Content(db.Model):
 
     __tablename__ = "content"

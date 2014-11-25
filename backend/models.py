@@ -236,9 +236,6 @@ class Event(db.Model):
             tmp += " - " + self.title
         return unicode(tmp)
 
-Index('event_id_member_id_ix', Event.id, Event.member_id)
-Index('event_id_organisation_id_ix', Event.id, Event.organisation_id)
-
 
 class MembershipType(db.Model):
 
@@ -383,5 +380,3 @@ class Content(db.Model):
 
     def __unicode__(self):
         return unicode(self.title)
-
-Index('content_id_event_id_ix', Content.id, Content.event_id)

@@ -211,7 +211,7 @@ class Event(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime)
-    title = db.Column(db.Text())
+    title = db.Column(db.String(256))
     type = db.Column(db.String(50), nullable=False)
     
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))

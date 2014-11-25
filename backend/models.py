@@ -285,7 +285,7 @@ class Organisation(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
-    house = db.relationship('House')
+    house = db.relationship('House', lazy='joined')
 
     def __unicode__(self):
         tmp = self.name
@@ -376,7 +376,7 @@ class Content(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-    event = db.relationship('Event', backref='content')
+    event = db.relationship('Event', backref=backref('content', lazy='joined'))
 
     def __unicode__(self):
         return unicode(self.title)

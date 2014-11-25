@@ -42,7 +42,13 @@ class Transforms:
 			"title": "title",
 			"fulltext": "body",
 			"date": "start_date",
+		},
+		"calls_for_comment": {
+			"id": "id",
+			"title": "title",
+			"fulltext": "body",
+			"date": "start_date",
 		}
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment']

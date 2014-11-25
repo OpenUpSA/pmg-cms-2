@@ -43,7 +43,13 @@ def read_data(filename):
     return records
 
 def db_date_from_utime(utime):
-    return datetime.datetime.fromtimestamp(float(utime))
+    try:
+        return datetime.datetime.fromtimestamp(float(utime))
+    except:
+        try:
+            datetime.strptime(utime, '%Y-%m-%dT%H:%m:%s')
+        except:
+            return None
 
 def construct_obj(obj, mappings):
     """
@@ -88,6 +94,19 @@ def find_files(obj):
         db.session.commit()
     return files
 
+def find_committee(obj):
+    organisations = []
+    if (obj.has_key("terms") and (type(obj["terms"]) is list) and (len(obj["terms"]) > 0)):
+        # print obj["terms"]
+        for term in obj["terms"]:
+            organisation = Organisation.query.filter_by(name = term).first()
+            # print organisation, term
+            if organisation:
+                organisations.append(organisation)
+            # else:
+            #     print term
+    return organisations
+
 def prep_table(tablename):
     Model = getattr(models, tablename.capitalize())
     print "Deleted rows: ", Model.query.delete()
@@ -106,13 +125,17 @@ def rebuild_table(tablename, mappings):
             obj = json.loads(line)
             newobj = construct_obj(obj, mappings)
             # Check for Dates
-            for mapping in mappings.values():
+            for mapping in mappings.keys():
                 row_type = getattr(Model, mapping).property.columns[0].type
                 if (row_type.__str__() == "DATE"):
-                    if (newobj[mapping]):
-                        newobj[mapping] = db_date_from_utime(newobj[mapping])
+                    if (newobj.has_key(mappings[mapping])):
+                        newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
             model = Model()
             files = find_files(obj)
+            committees = find_committee(obj)
+            if (committees):
+                for committee in committees:
+                    model.committee.append(committee)
             if (len(files)):
                 for f in files:
                     model.files.append(f)
@@ -261,8 +284,6 @@ def rebuild_db():
     db.session.commit()
 
     # populate committee reports
-    # reports = read_data('report.json')
-
     i = 0
     db.session.commit()
     logger.debug("reading report.js")
@@ -377,9 +398,12 @@ if __name__ == '__main__':
     # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
     rebuild_db()
     rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
-    bills()
+    # bills()
     rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
     rebuild_table("tabled_committee_report", {
-        "title": "title", "start_date": "start_date", "body": "body", "teaser": "summary", "nid": "nid"
+        "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid"
+        })
+    rebuild_table("calls_for_comment", {
+        "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid"
         })

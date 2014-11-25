@@ -19,12 +19,18 @@ from sqlalchemy import func
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
+STATIC_HOST = app.config['STATIC_HOST']
 
 logger = logging.getLogger(__name__)
 
 @app.context_processor
 def inject_paths():
-    return dict(FRONTEND_HOST=FRONTEND_HOST)
+    context_vars = {
+        'FRONTEND_HOST': FRONTEND_HOST,
+        'API_HOST': API_HOST,
+        'STATIC_HOST': STATIC_HOST,
+    }
+    return context_vars
 
 @app.template_filter('add_commas')
 def jinja2_filter_add_commas(quantity):
@@ -171,12 +177,12 @@ class ContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
         if is_created:
             # set some default values when creating a new record
-            model.type = self.content_type
+            model.type = self.type
             model.version = 0
 
     def get_query(self):
         """
-        Add filter to return only non-deleted records.
+        Add filter to return only records of the specified type.
         """
 
         return self.session.query(self.model) \
@@ -184,11 +190,67 @@ class ContentView(MyModelView):
 
     def get_count_query(self):
         """
-        Add filter to count only non-deleted records.
+        Add filter to return only records of the specified type.
         """
 
         return self.session.query(func.count('*')).select_from(self.model) \
             .filter(self.model.type == self.type)
+
+
+class EventView(MyModelView):
+
+    form_excluded_columns = ('type', )
+    column_exclude_list = ('type', )
+
+    form_ajax_refs = {
+        'content': {
+            'fields': ('title', 'type'),
+            'page_size': 25
+        }
+    }
+
+    def __init__(self, model, session, **kwargs):
+        self.type = kwargs.pop('type')
+        super(EventView, self).__init__(model, session, **kwargs)
+
+    def on_model_change(self, form, model, is_created):
+        if is_created:
+            # set some default values when creating a new record
+            model.type = self.type
+            model.version = 0
+
+    def get_query(self):
+        """
+        Add filter to return only records of the specified type.
+        """
+
+        return self.session.query(self.model) \
+            .filter(self.model.type == self.type)
+
+    def get_count_query(self):
+        """
+        Add filter to return only records of the specified type.
+        """
+
+        return self.session.query(func.count('*')).select_from(self.model) \
+            .filter(self.model.type == self.type)
+
+
+class CommitteeMeetingView(EventView):
+
+    form_excluded_columns = ('type', 'member', )
+    column_list = ('date', 'organisation', 'title', 'content')
+    column_labels = {'organisation': 'Committee', }
+    column_sortable_list = (
+        'date',
+        'title',
+        ('organisation', 'organisation.name'),
+    )
+    column_searchable_list = ('title', 'organisation.name')
+    column_formatters = dict(
+        content=macro('render_event_content'),
+        )
+    inline_models = (Content, )
 
 
 class MemberView(MyModelView):
@@ -215,7 +277,7 @@ class MemberView(MyModelView):
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership')
-        )
+    )
     form_columns = column_list
     form_overrides = dict(bio=fields.TextAreaField)
     form_ajax_refs = {
@@ -230,6 +292,7 @@ admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_vie
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
+admin.add_view(CommitteeMeetingView(Event, db.session, type="committee-meeting", name="Committee meetings", endpoint='committee-meeting', category="Committees"))
 
 admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))

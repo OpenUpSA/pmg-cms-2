@@ -423,6 +423,23 @@ class Policy_document(db.Model):
     files = db.relationship("File", secondary=policy_document_file_table)
     start_date = db.Column(db.Date())
 
+# === Gazette === #
+
+gazette_file_table = db.Table('gazette_file_join', db.Model.metadata,
+    db.Column('gazette_id', db.Integer, db.ForeignKey('gazette.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Gazette(db.Model):
+
+    __tablename__ = "gazette"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    effective_date = db.Column(db.Date())
+    files = db.relationship("File", secondary=gazette_file_table)
+    start_date = db.Column(db.Date())
+
 class Content(db.Model):
 
     __tablename__ = "content"

@@ -129,6 +129,8 @@ def api_resources():
             .order_by(Calls_for_comment.start_date),
         "policy_document": db.session.query(Policy_document)
             .order_by(Policy_document.start_date),
+        "gazette": db.session.query(Gazette)
+            .order_by(Gazette.start_date),
     }
 
 @app.route('/search/')

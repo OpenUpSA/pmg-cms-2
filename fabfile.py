@@ -42,6 +42,19 @@ def scrape_tabled_reports():
             with cd('/var/www/pmg-cms'):
                 run("python scrapers/scraper.py tabledreports")
 
+def scrape_schedule():
+    with virtualenv():
+        with shell_env(FLASK_ENV='production'):
+            with cd('/var/www/pmg-cms'):
+                run("python scrapers/scraper.py schedule")
+
+def index_search_tabled_committee_report():
+    with virtualenv():
+        with shell_env(FLASK_ENV='production'):
+            with cd('/var/www/pmg-cms'):
+                run('python search/search.py --import tabled_committee_report')
+
+
 def restart():
     sudo("supervisorctl restart pmg_cms")
     sudo("supervisorctl restart pmg_frontend")

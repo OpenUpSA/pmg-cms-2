@@ -331,6 +331,32 @@ def policy_document(policy_document_id):
     policy_document =  load_from_api('policy_document', policy_document_id)
     logger.debug(policy_document)
     return render_template('policy_document_detail.html', policy_document=policy_document, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/gazettes/')
+@app.route('/gazettes/<int:page>/')
+def gazettes(page = 0):
+    """
+    Page through all available gazettes.
+    """
+
+    logger.debug("gazettes page called")
+    gazettes_list = load_from_api('gazette', page = page)
+    count = gazettes_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    gazettes = gazettes_list['results']
+    url = "/gazettes"
+    return render_template('gazettes_list.html', gazettes=gazettes, num_pages = num_pages, page = page, url = url)
+
+@app.route('/gazette/<int:gazette_id>/')
+def gazette(gazette_id):
+    """
+    Policy Document
+    """
+    logger.debug("gazette page called")
+    gazette =  load_from_api('gazette', gazette_id)
+    logger.debug(gazette)
+    return render_template('gazette_detail.html', gazette=gazette, STATIC_HOST=app.config['STATIC_HOST'])
     
 
 @app.route('/members/')

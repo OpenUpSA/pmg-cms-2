@@ -398,7 +398,7 @@ if __name__ == '__main__':
     # rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date" })
     rebuild_db()
     rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
-    # bills()
+    bills()
     rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
     rebuild_table("tabled_committee_report", {

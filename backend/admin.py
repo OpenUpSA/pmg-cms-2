@@ -111,6 +111,7 @@ class CommitteeView(MyModelView):
         'name',
         ('house', 'house.name'),
     )
+    column_default_sort = (Organisation.name, False)
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
@@ -218,6 +219,7 @@ class CommitteeMeetingView(EventView):
         'title',
         ('organisation', 'organisation.name'),
     )
+    column_default_sort = (Event.date, True)
     column_searchable_list = ('title', 'organisation.name')
     column_formatters = dict(
         content=macro('render_event_content'),
@@ -262,6 +264,7 @@ class MemberView(MyModelView):
         'bio',
         'profile_pic_url',
     )
+    column_default_sort = (Member.name, False)
     column_searchable_list = ('name', )
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),

@@ -37,16 +37,16 @@
   </h3>
 
   <h2>Summary</h2>
-  {% if event.committee_meeting_report and event.committee_meeting_report.summary %}
-  {{ event.committee_meeting_report.summary | safe }}
+  {% if event.summary %}
+  {{ event.summary | safe }}
   {% else %}
   <p><em>No summary available for this committee meeting.</em></p>
   {% endif %}
   <hr>
 
   <h2>Minutes</h2>
-  {% if event.committee_meeting_report and event.committee_meeting_report.body %}
-  {{ event.committee_meeting_report.body | safe }}
+  {% if event.body %}
+  {{ event.body | safe }}
   {% else %}
   <p><em>No minutes available for this committee meeting.</em></p>
   {% endif %}

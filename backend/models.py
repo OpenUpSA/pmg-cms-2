@@ -466,7 +466,7 @@ class CommitteeMeetingReport(db.Model):
     version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
-    event = db.relationship('Event', backref=backref('committee_meeting_report'))
+    event = db.relationship('Event', backref=backref('committee_meeting_report', uselist=False))
 
     def __unicode__(self):
         return unicode(self.id)

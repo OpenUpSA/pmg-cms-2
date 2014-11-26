@@ -170,6 +170,7 @@ class Briefing(db.Model):
     minutes = db.Column(db.Text)
     presentation = db.Column(db.Text)
     files = db.relationship("File", secondary=briefing_file_table)
+    start_date = db.Column(db.Date())
 
 
 class File(db.Model):
@@ -263,6 +264,7 @@ class Member(db.Model):
     party = db.relationship(Party)
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
     province = db.relationship(Province)
+    start_date = db.Column(db.Date())
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -328,7 +330,11 @@ class Hansard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     meeting_date = db.Column(db.Date())
+    start_date = db.Column(db.Date())
     body = db.Column(db.Text())
+
+
+# === Schedule === #
 
 schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
                                 db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),

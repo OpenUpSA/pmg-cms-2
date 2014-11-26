@@ -8,12 +8,6 @@
 
 {% block top_links %}
 {{ super() }}
-<!--<ul class="list-inline top-links">-->
-<!--<li><a href="#">...</a></li>-->
-<!--<li><a href="#">Latest Reports</a></li>-->
-<!--<li><a href="#">Labour Reports</a></li>-->
-<!--<li><a href="#">National Reports</a></li>-->
-<!--</ul>-->
 {% endblock %}
 
 {% block page %}
@@ -27,99 +21,37 @@
   <h3>
     Committee:
     {% if event.organisation %}
-      <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
-    {% else %}
-      (unknown)
-    {% endif %}
+    <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
+  {% else %}
+  (unknown)
+  {% endif %}
   </h3>
 
   <h3>
     Date of Meeting:
     {% if event.date %}
-      {{ event.date | pretty_date }}
+    {{ event.date | pretty_date }}
     {% else %}
-      (unknown)
+    (unknown)
     {% endif %}
   </h3>
-  <!--<h3>Chairperson:  <a href="#">Ms L Yengeni (ANC)</a></h3>-->
 
-  {% if summary %}
   <h2>Summary</h2>
-  {{ summary | safe }}
-  <hr>
+  {% if event.summary %}
+  {{ event.summary | safe }}
+  {% else %}
+  <p><em>No summary available for this committee meeting.</em></p>
   {% endif %}
+  <hr>
 
   <h2>Minutes</h2>
-  {{ body | safe }}
+  {% if event.body %}
+  {{ event.body | safe }}
+  {% else %}
+  <p><em>No minutes available for this committee meeting.</em></p>
+  {% endif %}
   <hr>
 
-  <!--<h3>Discussion</h3>-->
-
-  <!--<p>Ms S van Schalkwyk (ANC) and remarked that it was clear that the NEASA presentation was only interested in protecting the rights of employers, and not those of vulnerable workers. It was concerning that the presentation rebutted a national minimum wage without coming up with an alternative plan, and mentioned little about international experience with the implementation of a minimum wage.</p>-->
-
-  <!--<p>Mr Papenfus responded that the presentation wanted to represent the side of the employers, as they played a crucial role in hiring people in any country. He reiterated that the implementation of a national minimum wage was likely to lead to closure of businesses, and this needed to be of concern to every South African.  </p>-->
-
-  <!--<p>Mr Domingo indicated that the presentation made it clear that NEASA was in support of the market as a driver in the reduction of unemployment, poverty and inequality.  The presentation showed complete disregard for the exploited workers in the country and was largely interested only in the interests of businesses.</p>-->
-
-  <!--<p>Mr Coleman said it was difficult to engage with the presentation, as it was riddled with contradictory statements.  At one point, it was in support of a minimum wage and then would claim it would lead to job losses and further inequalities. The presentation was also silent on an acceptable minimum wage in the country. He indicated that full-time workers in the clothing sector were still earning less than R2 500 a month, and this was morally unacceptable in a country with a racist and exclusionary history like South Africa.</p>-->
-
-  <!--<p>Mr Papenfus replied that it was true that some of the employees in the clothing industry were getting paid meagre salaries, but this was precisely because the market could not accommodate paying unreasonable salaries.  If the minimum wage was increased to an unreasonable level, the employers would most likely retrench unproductive employees. He expressed his concern that South Africa had become an importer of good instead of a producer, and this was also likely to lead food shortages.    </p>-->
-
-  <!--<p>Mr Ismail stated that the major reason for the loss of jobs in the clothing sector was the reduction of tariffs and the Department of Trade and Industry’s policies. He added that the trade unions needed to reject reliance on the market to tackle the issue of poverty and inequalities in South Africa.</p>-->
-
-  <!--<p>Mr Papenfus responded that there was a need to be careful when comparing the implementation of minimum wages in countries that had high unemployment, like South Africa, with European and Asian countries that had lower unemployment rates of around 5%.  He repeated that interference in the markets was likely to lead to further unemployment and poverty. He controversially suggested that the labour unions needed to establish businesses themselves and pay employees unreasonable wages, as they were against the employers and made them to feel guilty about hiring people and creating jobs. </p>-->
-
-  <!--<p>The Chairperson said the presentation had failed to give statistics and the category of the employers represented by NEASA. The presentation should have focused more on the South African context, as the country presented different challenges.</p>-->
-
-  <!--<p>She announced to the Members that the South African National Taxi Council (SANTACO) would not be able to make presentation today due to time constraints.</p>-->
-
-  <!--<p>Mr Simon Eppel, Researcher, South African Clothing and Textile Workers’ Union (SACTWU), said it was understandable that the topic on the national minimum wage would become an emotional one, and a tussle between employers and the trade unions.  The clothing industry had had tough times in recent years, as some employees had been retrenched or businesses had closed down.  It was not only minimum wages that had added to the loss of jobs in the industry, but other multifaceted factors. One factor that had led to job losses was a massive import penetration coming from places like China, and the SA Revenue Service (SARS) had already indicated it had lost almost R3 billion in customs duties because of non-compliance from the industries.   It was incorrect for people to claim that the closure of the clothing industry in Newcastle was the result of higher wages, as the majority of employees were still earning less R2 500 a month.</p>-->
-
-  <!--<p>Mr Papenfus agreed that imports had caused a major loss of jobs in the clothing industry, but some of the factories had also indicated that they had decided to close down because they were unable to pay minimum wages.</p>-->
-
-  <!--<p>Mr Coleman commented that according to 2013 Statistics South Africa, the median wage for employees in the manufacturing sector was R3 652.   This was a concern, as it meant that about 50% of the employees in the manufacturing industry earned less than R3 652.          </p>-->
-
-  <!--<p>Mr Plouamma said that the purpose of the workshop was to evaluate both the positive and unintended consequences of the national minimum wage. He was happy that NEASA had managed to admit that South Africa was a highly unequal country and this required progressive policies for the inequalities to be addressed. He wanted clarity on how a high minimum wage would have a knock-on effect and stimulate demand in the country.  He urged NEASA to provide figures on the profit that had been made by employers, so it could be compared to that which was made by employees.</p>-->
-
-  <!--<p>Mr Tyhalwa said he also felt that the presentation had failed to link the implementation of a national minimum wage to the context of South Africa, especially when looking at the impact of apartheid and colonisation.  It was unacceptable for Mr Papenfus to become emotional when it came to addressing the issue of exploitation of workers at the hands of the employers and dealing with the ills of the past.  Mr Papenfus’s remark that labour unions needed to open businesses and pay employees unreasonable salaries was another emotional response that failed to come up with pragmatic policies to address the imbalances of the past.</p>-->
-
-  <!--<p>Mr Papenfus said he found it absurd and unfair that when he made two local examples of the impact of the minimum wage, Members said he also needed link this to what was happening in the global context, after which some labour unions claimed that he needed to focus on the local conditions of South Africa.</p>-->
-
-  <!--<p>Mr Sharp said he had observed that the number of Committee Members had declined, while those of COSATU and its affiliates had doubled, which had created an opportunity for them to preach to both the FMF and NEASA about the kind of presentation they were expected to make. He questioned whether the workshop was run by the labour unions or the Chairperson.</p>-->
-
-  <!--<p>The Chairperson interrupted and indicated that Mr Sharp was out of order and was asking irrelevant questions, as it was his responsibility to ask about the way the workshop would be run, even before it commenced. She said the Committee had invited all the federations from different spheres in order to listen to the different views to be considered in the process of reviewing a national minimum wage.</p>-->
-
-  <!--<p>Mr Papenfus responded that there were 500 000 employers in South Africa and this number was likely to dwindle in the future if employers were forced to pay unreasonable wages that would not lead to increased productivity. He reiterated that the labour unions knew nothing about how to run a business  </p>-->
-
-  <!--<p>Mr Thyalwa interrupted and remarked that Mr Papenfus needed to withdraw his statement that labour unions knew nothing about how businesses operated, as it was an insult directed to people who represented the exploited workers in the country.</p>-->
-
-  <!--<p>The Chairperson asked Mr Papensfus to withdraw the statement, as this was not helping in the debate about the national minimum wage.</p>-->
-
-  <!--<p>Mr Papensfus withdrew his statement as requested, and indicated that the conditions of the employees presented by the labour unions in the workshop was different to what was happening on the ground.</p>-->
-
-  <!--<p>The Chairperson said the presentation by NEASA was not clear on whether it rejected or accepted the national minimum wage, while the FMF was clear that it rejected the national minimum wage and preferred skills development and increasing qualification as the main driver of high wages. </p>-->
-
-  <!--<p>Mr Domingo also felt that the presentation needed to come out loudly on its position on the national minimum wage.  However, it was clear from the presentation that the market was preferred as a vehicle to reduce unemployment and poverty in South Africa. </p>-->
-
-  <!--<p>Mr Papenfus responded that the market needed to determine the price, as this was pivotal to ensure that businesses continued to hire more workers. </p>-->
-
-  <!--<p>Mr Vuyo Lufele, Numsa Regional Secretary, asked whether NEASA would endorse a national minimum wage if it had a clause that allowed those employers that were unable to comply, to apply for an exemption and come forward with an audited financial statement.    </p>-->
-
-  <!--<p>Mr Papenfus responded that it was difficult to tell precisely which minimum wage was preferable, as this was different from business to business, and applications for exemption were likely to lead to a disaster, as the process was likely to be delayed and affect productivity.    </p><p>-->
-  <!--</p><p>-->
-  <!--Mr Pascal Mosia, Chief Executive Officer (CEO), Khayalagunya Human Development, said the presentation seemed to take for granted that South Africa had a racist history, from colonialism to the apartheid regime, which had subjugated the majority of people. He asked if NEASA had any measures in place to empower the exploited black workers.</p>-->
-
-  <!--<p>Mr Papenfus said there were measures in place, like Black Economic Empowerment (BEE) that aimed to empower black people and other groups that were previously denied opportunities to earn decent wages.</p>-->
-
-  <!--<p>Ms Dakuse said the purpose of the workshop was not to attack the employers, as they played an essential role in the country, but was rather to discuss a way forward in improving the living conditions of the majority of South Africans.  It was to be expected that there would be resistance from those who were against transformation.  She appealed to the government to implement a national minimum wage.</p>-->
-
-  <!--<p>Mr Coleman said it was clear from the presentation from NEASA that employers were worried only about making a profit at the expense of exploited workers. Any person who cared about the future of South Africa needed to support deliberate policies that would drastically reduce unemployment, poverty and inequality.  He warned that if these triple challenges were not adequately addressed, the country would continue to witness daily protests and labour strikes. He also remarked that by international standards, employers needed to realise that higher wages were more likely to lead to higher productivity and stimulate economic growth.</p>-->
-
-  <!--<p>Mr Papenfus responded that there was a need to engage further on whether higher wages often lead to higher productivity, as in some countries the opposite was the case.</p>-->
-
-  <!--<p>The Chairperson said it was very clear that the issue of a national minimum wage was complex, with different philosophical backgrounds that needed to be taken into consideration. It was critically important to weigh both the positives and the unintended consequences in the implementation of a national minimum wage in the South African context. The debate on a national minimum wage needed to be aligned to a reduction in poverty, unemployment and income inequalities.</p>-->
-
-  <!--<p>The meeting was adjourned.</p>-->
 </div>
 <div class="col-sm-4">
   <div class="panel panel-primary">
@@ -136,27 +68,6 @@
       {% else %}
       <p class="lead text-muted">No audio content</p>
       {% endif %}
-      <!--<h5>PC Labour: Workshop on the National Minimum Wage 1</h5>-->
-      <!--<audio controls>-->
-      <!--<source src="resources/audio/140905pclabour1.wav" type="audio/wav">-->
-      <!--<source src="resources/audio/140905pclabour1.mp3" type="audio/mpeg">-->
-      <!--Your browser does not support the audio element.-->
-      <!--</audio>-->
-      <!--<ul class="list-inline top-links">-->
-      <!--<li><a href="resources/audio/140905pclabour1.wav">Download WAV</a></li>-->
-      <!--<li><a href="resources/audio/140905pclabour1.mp3">Download MP3</a></li>-->
-      <!--</ul>-->
-
-      <!--<h5>PC Labour: Workshop on the National Minimum Wage 2</h5>-->
-      <!--<audio controls>-->
-      <!--<source src="resources/audio/140905pclabour2.wav" type="audio/wav">-->
-      <!--<source src="resources/audio/140905pclabour2.mp3" type="audio/mpeg">-->
-      <!--Your browser does not support the audio element.-->
-      <!--</audio>-->
-      <!--<ul class="list-inline top-links">-->
-      <!--<li><a href="resources/audio/140905pclabour1.wav">Download WAV</a></li>-->
-      <!--<li><a href="resources/audio/140905pclabour1.mp3">Download MP3</a></li>-->
-      <!--</ul>-->
     </div>
   </div>
   <div class="panel panel-primary">
@@ -173,65 +84,9 @@
       {% else %}
       <p class="lead text-muted">No related documents</p>
       {% endif %}
-      <!--<h5>National Employers’ Association of South Africa (NEASA) on the National Minimum Wage</h5>-->
-      <!--<iframe src="https://docs.google.com/presentation/d/10m4IxGWA3NwRvml_X-uXJY_OYV1rkaCfuCFJygPuoIo/embed?start=false&loop=false&delayms=3000" frameborder="0" width="100%" height="400" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>-->
-      <!--<ul class="list-inline top-links">-->
-      <!--<li><a href="https://docs.google.com/uc?authuser=0&amp;id=0BzfAxk0DLsSobWVMSnFuMWxjd3M&amp;export=download">Download Slideshow</a></li>-->
-      <!--<li><a href="https://docs.google.com/presentation/d/10m4IxGWA3NwRvml_X-uXJY_OYV1rkaCfuCFJygPuoIo/pub?start=false&loop=false&delayms=3000" target="_blank">Open Slideshow</a></li>-->
-      <!--</ul>-->
     </div>
   </div>
-  <h4>People mentioned</h4>
-  <ul>
-    <li><a href="#">...</a></li>
-    <li><a href="#">...</a></li>
-    <li><a href="#">...</a></li>
-    <!--<li><a href="#">Gerhard Papenfus</a></li>-->
-    <!--<li><a href="#">Henry Ford</a></li>-->
-    <!--<li><a href="#">Jacob Zuma</a></li>-->
-    <!--<li><a href="#">Jeremy Gingras</a></li>-->
-    <!--<li><a href="#">Llewellyn Domingo</a></li>-->
-    <!--<li><a href="#">Loane Sharp</a></li>-->
-    <!--<li><a href="#">Mohammed Ismail</a></li>-->
-    <!--<li><a href="#">Neil Coleman</a></li>-->
-    <!--<li><a href="#">Omar Parker</a></li>-->
-    <!--<li><a href="#">Pascal Mosia</a></li>-->
-    <!--<li><a href="#">Plouamma</a></li>-->
-    <!--<li><a href="#">Simon Eppel</a></li>-->
-    <!--<li><a href="#">Tembela Dakuse</a></li>-->
-    <!--<li><a href="#">Thomas Sowell</a></li>-->
-    <!--<li><a href="#">Thyalwa</a></li>-->
-    <!--<li><a href="#">van Schalkwyk</a></li>-->
-    <!--<li><a href="#">Vusumzi Tyhalwa</a></li>-->
-    <!--<li><a href="#">Vuyo Lufele</a></li>-->
-  </ul>
 
-  <h4>Organisations mentioned</h4>
-  <ul>
-    <li><a href="#">...</a></li>
-    <li><a href="#">...</a></li>
-    <li><a href="#">...</a></li>
-    <!--<li><a href="#">Allied Workers</a></li>-->
-    <!--<li><a href="#">Association of South Africa</a></li>-->
-    <!--<li><a href="#">Association of South Africa Date</a></li>-->
-    <!--<li><a href="#">Bargaining Council for the Clothing Industry</a></li>-->
-    <!--<li><a href="#">Congress</a></li>-->
-    <!--<li><a href="#">Department of Trade and Industry</a></li>-->
-    <!--<li><a href="#">Free Market Foundation</a></li>-->
-    <!--<li><a href="#">International Labour Organisation</a></li>-->
-    <!--<li><a href="#">Metal and Engineering Industries Bargaining Council</a></li>-->
-    <!--<li><a href="#">National Economic Development and Labour Council</a></li>-->
-    <!--<li><a href="#">National Employers Association of South Africa</a></li>-->
-    <!--<li><a href="#">National Union</a></li>-->
-    <!--<li><a href="#">Portfolio Committee on Labour</a></li>-->
-    <!--<li><a href="#">Public Service</a></li>-->
-    <!--<li><a href="#">SA Revenue Service</a></li>-->
-    <!--<li><a href="#">South African Clothing and Textile Workers’ Union</a></li>-->
-    <!--<li><a href="#">South African National Taxi Council</a></li>-->
-    <!--<li><a href="#">South African Workers Union</a></li>-->
-  </ul>
-</div>
-</div>
 </div>
 
 {% endblock %}

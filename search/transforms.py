@@ -8,8 +8,8 @@ class Transforms:
 		"committee-meeting": {
 			"id": "id",
 			"title": "title",
-			"description": ["content", 0, "summary"],
-			"fulltext": ["content", 0, "body"],
+			"description": "summary",
+			"fulltext": "body",
 			"date": "date",
 		},
 		"member": {

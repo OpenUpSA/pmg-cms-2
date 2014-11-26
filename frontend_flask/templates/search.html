@@ -10,17 +10,21 @@
 <div class="col-sm-12">
   {% block top_links %}
   <ul class="nav nav-pills" role="tablist">
-    <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}">All</a></li>
-    <li role="presentation" {% if (filters.type == 'committee') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee">Committees</a></li>
-    <li role="presentation" {% if (filters.type == 'committee-meeting') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee-meeting">Committee Meetings</a></li>
-    <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill">Bills</a></li>
-    <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member">MPs</a></li>
-    <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard">Hansards</a></li>
-    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing">Briefings</a></li>
-    <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply">Questions &amp; Replies</a></li>
-    <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
-    <!--<li><a href="#">About Parliament</a></li>-->
-    <!--<li><a href="#">About PMG</a></li>-->
+    <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a></li>
+    <li role="presentation" {% if (filters.type == 'committee') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committees</a></li>
+    <li role="presentation" {% if (filters.type == 'committee-meeting') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee-meeting&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committee Meetings</a></li>
+    <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Bills</a></li>
+    <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">MPs</a></li>
+    <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Hansards</a></li>
+    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Briefings</a></li>
+    <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Questions &amp; Replies</a></li>
+    <li role="presentation" {% if (filters.type == 'tabled_committee_report') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=tabled_committee_report&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Tabled Committee Reports</a></li>
+  </ul>
+  <ul class="nav nav-pills" role="tablist">
+    <li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>
+    {% for year in years %}
+    <li role="presentation" {% if (filters["start_date"] == year|string + "-01-01") %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}&amp;filter[start_date]={{year}}-01-01&amp;filter[end_date]={{year}}-12-31">{{year}}</a></li>
+    {% endfor %}
   </ul>
   {% endblock %}
 </div>

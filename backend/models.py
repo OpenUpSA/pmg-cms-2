@@ -455,6 +455,23 @@ class Book(db.Model):
     start_date = db.Column(db.Date())
     files = db.relationship("File", secondary=book_file_table)
 
+
+class CommitteeMeetingReport(db.Model):
+
+    __tablename__ = "committee_meeting_report"
+
+    id = db.Column(db.Integer, index=True, primary_key=True)
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
+    version = db.Column(db.Integer, nullable=False)
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+    event = db.relationship('Event', backref=backref('committee_meeting_report'))
+
+    def __unicode__(self):
+        return unicode(self.id)
+
+
 class Content(db.Model):
 
     __tablename__ = "content"

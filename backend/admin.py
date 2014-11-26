@@ -111,6 +111,7 @@ class CommitteeView(MyModelView):
         'name',
         ('house', 'house.name'),
     )
+    column_default_sort = (Organisation.name, False)
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
@@ -144,57 +145,6 @@ class CommitteeView(MyModelView):
 
         return self.session.query(func.count('*')).select_from(self.model) \
             .filter(self.model.type == "committee")
-
-
-class ContentView(MyModelView):
-
-    form_overrides = dict(body=CKTextAreaField)
-    form_excluded_columns = ('type', 'version', 'title', 'file_path')
-    column_exclude_list = ('type', 'version', 'title', 'file_path')
-    form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        }
-    }
-    form_ajax_refs = {
-        'event': {
-            'fields': ('date', 'title', 'type'),
-            'page_size': 25
-        }
-    }
-    column_formatters = dict(
-        body=macro('render_raw_html'),
-        summary=macro('render_raw_html'),
-        )
-
-    def __init__(self, model, session, **kwargs):
-        self.type = kwargs.pop('type')
-        super(ContentView, self).__init__(model, session, **kwargs)
-
-    def on_model_change(self, form, model, is_created):
-        if is_created:
-            # set some default values when creating a new record
-            model.type = self.type
-            model.version = 0
-
-    def get_query(self):
-        """
-        Add filter to return only records of the specified type.
-        """
-
-        return self.session.query(self.model) \
-            .filter(self.model.type == self.type)
-
-    def get_count_query(self):
-        """
-        Add filter to return only records of the specified type.
-        """
-
-        return self.session.query(func.count('*')).select_from(self.model) \
-            .filter(self.model.type == self.type)
 
 
 class EventView(MyModelView):
@@ -236,7 +186,30 @@ class EventView(MyModelView):
             .filter(self.model.type == self.type)
 
 
+# This widget uses custom template for inline field list
+class InlineContentWidget(RenderTemplateWidget):
+    def __init__(self):
+        super(InlineContentWidget, self).__init__('admin/inline_content.html')
+
+
+# This InlineModelFormList will use our custom widget, when creating a list of forms
+class ContentFormList(InlineModelFormList):
+    widget = InlineContentWidget()
+
+
+# Create custom InlineModelConverter to link the form to its model
+class ContentModelConverter(InlineModelConverter):
+    inline_field_list_type = ContentFormList
+
+
+class InlineContent(InlineFormAdmin):
+    form_excluded_columns = ('type', 'file_path', )
+
+
 class CommitteeMeetingView(EventView):
+
+    # note: the related committee_meeting is displayed as part of the event model
+    # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
 
     form_excluded_columns = ('type', 'member', )
     column_list = ('date', 'organisation', 'title', 'content')
@@ -246,11 +219,29 @@ class CommitteeMeetingView(EventView):
         'title',
         ('organisation', 'organisation.name'),
     )
+    column_default_sort = (Event.date, True)
     column_searchable_list = ('title', 'organisation.name')
     column_formatters = dict(
         content=macro('render_event_content'),
         )
-    inline_models = (Content, )
+    form_excluded_columns = (
+        'event',
+        'type',
+        'version',
+        'member',
+    )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        }
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
+    inline_model_form_converter = ContentModelConverter
 
 
 class MemberView(MyModelView):
@@ -273,6 +264,7 @@ class MemberView(MyModelView):
         'bio',
         'profile_pic_url',
     )
+    column_default_sort = (Member.name, False)
     column_searchable_list = ('name', )
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),
@@ -290,10 +282,10 @@ class MemberView(MyModelView):
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
-admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
-admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
-admin.add_view(CommitteeMeetingView(Event, db.session, type="committee-meeting", name="Committee meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
 
-admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
-admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))
+admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+
+admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 

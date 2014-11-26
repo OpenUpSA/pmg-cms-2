@@ -154,8 +154,8 @@ class Bill(db.Model):
         return unicode(str(self.code) + " - " + self.name)
 
 briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
-    db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+                               db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
+                               db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 
@@ -202,7 +202,7 @@ class Event(db.Model):
     date = db.Column(db.DateTime)
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
-    
+
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), index=True)
@@ -225,8 +225,11 @@ class Event(db.Model):
             tmp += " - " + self.title
         return unicode(tmp)
 
-Index('event_id_member_id_ix', Event.id, Event.member_id)
-Index('event_id_organisation_id_ix', Event.id, Event.organisation_id)
+    __mapper_args__ = {
+        'polymorphic_identity': 'event',
+        'polymorphic_on': type,
+    }
+
 
 
 class MembershipType(db.Model):
@@ -328,8 +331,8 @@ class Hansard(db.Model):
     body = db.Column(db.Text())
 
 schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
-    db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
-    db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
+                                db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
+                                db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
 )
 
 
@@ -346,8 +349,8 @@ class Schedule(db.Model):
 # === Questions Replies === #
 
 questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
-    db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+                                             db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
+                                             db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
 )
 
 class Questions_replies(db.Model):
@@ -364,13 +367,13 @@ class Questions_replies(db.Model):
 # === Tabled Committee Report === #
 
 tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join', db.Model.metadata,
-    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+                                              db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+                                              db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
-    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+                                                   db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+                                                   db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
 )
 
 class Tabled_committee_report(db.Model):
@@ -389,8 +392,8 @@ class Tabled_committee_report(db.Model):
 # === Calls for comment === #
 
 calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
-    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+                                             db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
+                                             db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
 )
 
 class Calls_for_comment(db.Model):
@@ -409,8 +412,8 @@ class Calls_for_comment(db.Model):
 # === Policy document === #
 
 policy_document_file_table = db.Table('policy_document_file_join', db.Model.metadata,
-    db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+                                      db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
+                                      db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Policy_document(db.Model):
@@ -426,8 +429,8 @@ class Policy_document(db.Model):
 # === Gazette === #
 
 gazette_file_table = db.Table('gazette_file_join', db.Model.metadata,
-    db.Column('gazette_id', db.Integer, db.ForeignKey('gazette.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+                              db.Column('gazette_id', db.Integer, db.ForeignKey('gazette.id')),
+                              db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Gazette(db.Model):
@@ -443,8 +446,8 @@ class Gazette(db.Model):
 # === Book === #
 
 book_file_table = db.Table('book_file_join', db.Model.metadata,
-    db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+                           db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
+                           db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Book(db.Model):
@@ -458,6 +461,26 @@ class Book(db.Model):
     start_date = db.Column(db.Date())
     files = db.relationship("File", secondary=book_file_table)
 
+
+class CommitteeMeeting(Event):
+
+    __tablename__ = "committee_meeting"
+
+    id = db.Column(db.Integer, index=True, primary_key=True)
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
+    version = db.Column(db.Integer, nullable=False)
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+
+    def __unicode__(self):
+        return unicode(self.id)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'committee-meeting',
+    }
+
+
 class Content(db.Model):
 
     __tablename__ = "content"
@@ -466,9 +489,6 @@ class Content(db.Model):
     type = db.Column(db.String(50), index=True, nullable=False)
     title = db.Column(db.String(200))
     file_path = db.Column(db.String(200))
-    body = db.Column(db.Text())
-    summary = db.Column(db.Text())
-    version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
     event = db.relationship('Event', backref=backref('content', lazy='joined'))
@@ -476,4 +496,3 @@ class Content(db.Model):
     def __unicode__(self):
         return unicode(self.title)
 
-Index('content_id_event_id_ix', Content.id, Content.event_id)

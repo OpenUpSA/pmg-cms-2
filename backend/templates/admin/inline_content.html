@@ -1,0 +1,21 @@
+{% import 'admin/model/inline_list_base.html' as base with context %}
+{% import '_macros.html' as macros %}
+
+{% macro render_field(field) %}
+{% set model = field.object_data %}
+<div class="row">
+  <div class="col-md-8">
+    {{ field }}
+  </div>
+  <div class="col-md-2 text-center">
+    <p class="text-center">
+      <a href="{{ STATIC_HOST }}{{ model.file_path }}" target="_blank">
+        {{ macros.file_type_icon(model.type, size="fa-2x") }}<br>
+        {{ model.file_path }}
+      </a>
+    </p>
+  </div>
+</div>
+{% endmacro %}
+
+{{ base.render_inline_fields(field, template, render_field) }}

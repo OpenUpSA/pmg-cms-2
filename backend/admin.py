@@ -236,6 +236,28 @@ class EventView(MyModelView):
             .filter(self.model.type == self.type)
 
 
+# This widget uses custom template for inline field list
+class InlineContentWidget(RenderTemplateWidget):
+    def __init__(self):
+        super(InlineContentWidget, self).__init__('admin/inline_content.html')
+
+
+# This InlineModelFormList will use our custom widget, when creating a list of forms
+class ContentFormList(InlineModelFormList):
+    widget = InlineContentWidget()
+
+
+# Create custom InlineModelConverter to link the form to its model
+class ContentModelConverter(InlineModelConverter):
+    inline_field_list_type = ContentFormList
+    form_excluded_columns = ('title', )
+
+
+class InlineContent(InlineFormAdmin):
+    form_excluded_columns = ('version', )
+
+
+
 class CommitteeMeetingView(EventView):
 
     form_excluded_columns = ('type', 'member', )
@@ -250,7 +272,8 @@ class CommitteeMeetingView(EventView):
     column_formatters = dict(
         content=macro('render_event_content'),
         )
-    inline_models = (Content, )
+    inline_models = (InlineContent(Content), )
+    inline_model_form_converter = ContentModelConverter
 
 
 class MemberView(MyModelView):

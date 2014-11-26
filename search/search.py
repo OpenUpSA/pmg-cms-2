@@ -49,7 +49,7 @@ class Search:
 			# print doc
 			for key, val in rules.iteritems():
 				if (type(val) is list):
-					if doc.has_key(val):
+					if doc[val]:
 						tmp[key] = self.getFromDict(doc, val)
 				else:
 					tmp[key] = doc[val]

@@ -29,7 +29,15 @@
           Meeting reports
         </th>
         <td class="text-center">
-          {{ record_counts.get("committee-meeting-report") | add_commas }}
+          {{ record_counts.get("committee-meeting") | add_commas }}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          Attached files
+        </th>
+        <td class="text-center">
+          {{ record_counts.get("content") | add_commas }}
         </td>
       </tr>
     </table>

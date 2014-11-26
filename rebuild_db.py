@@ -305,8 +305,7 @@ def rebuild_db():
             )
             db.session.add(event_obj)
 
-            report_obj = Content(
-                type="committee-meeting-report",
+            report_obj = CommitteeMeetingReport(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
                 event=event_obj,

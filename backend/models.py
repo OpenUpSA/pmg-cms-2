@@ -8,6 +8,18 @@ import string
 from passlib.apps import custom_app_context as pwd_context
 
 
+# ==== JOINS ==== #
+
+tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
+    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
+questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
+    db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
 class ApiKey(db.Model):
 
     __tablename__ = "api_key"
@@ -284,6 +296,9 @@ class Organisation(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')
 
+    tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table)
+    questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table)
+    
     def __unicode__(self):
         tmp = self.name
         if self.house:
@@ -337,8 +352,8 @@ class Hansard(db.Model):
 # === Schedule === #
 
 schedule_house_table = db.Table('schedule_house_join', db.Model.metadata,
-                                db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
-                                db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
+    db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
+    db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
 )
 
 
@@ -354,11 +369,6 @@ class Schedule(db.Model):
 
 # === Questions Replies === #
 
-questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
-                                             db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
-                                             db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
-)
-
 class Questions_replies(db.Model):
 
     __tablename__ = "questions_replies"
@@ -373,14 +383,11 @@ class Questions_replies(db.Model):
 # === Tabled Committee Report === #
 
 tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join', db.Model.metadata,
-                                              db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-                                              db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
-tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
-                                                   db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-                                                   db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
-)
+
 
 class Tabled_committee_report(db.Model):
     __tablename__ = "tabled_committee_report"
@@ -398,8 +405,8 @@ class Tabled_committee_report(db.Model):
 # === Calls for comment === #
 
 calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
-                                             db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
-                                             db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
 )
 
 class Calls_for_comment(db.Model):
@@ -418,8 +425,8 @@ class Calls_for_comment(db.Model):
 # === Policy document === #
 
 policy_document_file_table = db.Table('policy_document_file_join', db.Model.metadata,
-                                      db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
-                                      db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+    db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Policy_document(db.Model):
@@ -435,8 +442,8 @@ class Policy_document(db.Model):
 # === Gazette === #
 
 gazette_file_table = db.Table('gazette_file_join', db.Model.metadata,
-                              db.Column('gazette_id', db.Integer, db.ForeignKey('gazette.id')),
-                              db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+    db.Column('gazette_id', db.Integer, db.ForeignKey('gazette.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Gazette(db.Model):
@@ -452,8 +459,8 @@ class Gazette(db.Model):
 # === Book === #
 
 book_file_table = db.Table('book_file_join', db.Model.metadata,
-                           db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
-                           db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+    db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Book(db.Model):

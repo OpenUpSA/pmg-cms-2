@@ -1,7 +1,16 @@
+{% if result._source %}
+{% set title = result._source.title %}
+{% set date = result._source.date %}
+{% set id = result._id %}
+{% else %}
+{% set title = result.title %}
+{% set date = result.start_date %}
+{% set id = result.id %}
+{% endif %}
 <div class="calls-for-comment-stub">
 	<div class="title">
 		<span class="label label-success">Calls for Comment</span>
-		<a href="/calls-for-comment/{{ result._id }}">{{ result._source.title }}</a>
+		<a href="/calls-for-comment/{{ id }}">{{ title }}</a>
 	</div>
-	<div class="date">{{ result._source.date|human_date }}</div>
+	<div class="date">{{ date|human_date }}</div>
 </div>

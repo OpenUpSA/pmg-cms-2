@@ -49,7 +49,8 @@ class Search:
 			# print doc
 			for key, val in rules.iteritems():
 				if (type(val) is list):
-					tmp[key] = self.getFromDict(doc, val)
+					if doc.has_key(val):
+						tmp[key] = self.getFromDict(doc, val)
 				else:
 					tmp[key] = doc[val]
 			results.append(tmp)
@@ -161,24 +162,19 @@ class Search:
 		}
 		if (start_date):
 			q["query"] = {
-				# "filter": {
-					"range": {
-						"date": {
-							"gte": start_date,
-						}
+				"range": {
+					"date": {
+						"gte": start_date,
 					}
-				# }
+				}
 			}
 		if (end_date):
 			q["query"] = {
-				# "filter": {
-					"range": {
-						"date": {
-							"lte": end_date,
-						}
+				"range": {
+					"date": {
+						"lte": end_date,
 					}
-
-				# }
+				}
 			}
 
 		if (content_type):

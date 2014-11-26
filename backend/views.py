@@ -103,6 +103,7 @@ def api_resources():
         "committee": db.session.query(Organisation) \
             .filter_by(type='committee') \
             .order_by(Organisation.house_id, Organisation.name),
+            
         "committee-meeting": db.session.query(Event) \
             .filter(Event.type == 'committee-meeting') \
             .order_by(desc(Event.date)),

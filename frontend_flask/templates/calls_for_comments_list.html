@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page %}
+<div class="container-fluid">
+
+  <div class="col-sm-12">
+    <h1><i class="fa fa-icon fa-group"></i> Calls For Comments</h1>
+  </div>
+
+  <div class="col-md-8">
+    <ul>
+      {% for calls_for_comment in calls_for_comments %}
+       <li>
+        <a href="/calls-for-comment/{{ calls_for_comment.id }}">{{ calls_for_comment.title }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+
+  </div>
+
+  <div class="col-md-4">
+
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      {% include 'pagination.html' %}
+    </div>
+  </div>
+{% endblock page %}

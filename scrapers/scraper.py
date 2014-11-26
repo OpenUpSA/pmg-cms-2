@@ -13,12 +13,18 @@ from backend import models
 from backend.models import *
 import parsers
 from sqlalchemy import types
+from bs4 import BeautifulSoup
+import csv
 
 app = Flask(__name__)
+
+import logging
+logger = logging.getLogger()
 
 class Scraper:
 
 	dows = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"]
+	missing_committees = []
 
 	def test(self):
 		print "Test!"
@@ -78,6 +84,64 @@ class Scraper:
 		print result
 		self._save_schedule(result)
 		return
+
+	def _save_tabledreport(self, title, committee_name, body):
+		tabled_committee_report = Tabled_committee_report()
+		committee = Organisation.query.filter_by(name=committee_name).first()
+		if (committee):
+			tabled_committee_report.title = title
+			tabled_committee_report.body = body
+			tabled_committee_report.committee_id = committee.id
+			db.session.add(tabled_committee_report)
+		else:
+			if committee_name not in self.missing_committees:
+				self.missing_committees.append(committee_name)
+		db.session.commit()
+
+	def _report_exists(self, title, committee_name):
+		committee = Organisation.query.filter_by(name=committee_name).first()
+		if (committee):
+			check = Tabled_committee_report.query.filter_by(title=title, committee_id = committee.id).first()
+			if check:
+				return True
+		return False
+
+	def tabledreports(self):
+
+		# url = "http://pmg.org.za/tabled-committee-reports-2008-2013"
+		# print "Fetching", url
+		# page = requests.get(url)
+		# txt = page.text
+		f = open("./scrapers/tabled-committee-reports-2008-2013.html", "r")
+		txt = f.read().decode('utf8')
+		name_boundary_pairs = []
+		startpos = re.search('\<a name', txt).start()
+		current_section = ""
+		with open('./scrapers/committees.csv', 'r') as csvfile:
+			committeesreader = csv.reader(csvfile)
+			for row in committeesreader:
+				for test in re.finditer('\<a name="' + row[0] + '"', txt):
+					if (current_section):
+						name_boundary_pairs.append([startpos, test.start(), current_section])
+					startpos = test.start()
+					current_section = row[1]
+		queue = []
+		for interval in name_boundary_pairs:
+			# print "=== %s ===" % interval[2]
+			soup = BeautifulSoup(txt[interval[0]:interval[1]])
+			for link in soup.find_all("a", href = True):
+				if (link.get_text() != "back to top"):
+					url = link['href']
+					if not re.match("http://", url):
+						url = "http://www.pmg.org/" + url.replace("../../../../../../", "")
+					queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
+		for item in queue:
+			if (self._report_exists(item["name"], item["committee"]) == False):
+				print "Processing report %s" % item["name"]
+				page = requests.get(item["link"]).text
+				self._save_tabledreport(item["name"], item["committee"], page)
+		print self.missing_committees
+
 
 if (__name__ == "__main__"):
 	parser = argparse.ArgumentParser(description='Scrapers for PMG')

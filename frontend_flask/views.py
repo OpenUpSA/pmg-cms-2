@@ -254,6 +254,136 @@ def bill(bill_id):
     logger.debug(bill)
     return "Oh dear"
 
+@app.route('/tabled-committee-reports/')
+@app.route('/tabled-committee-reports/<int:page>/')
+def tabled_committee_reports(page = 0):
+    """
+    Page through all available tabled-committee-reports.
+    """
+
+    logger.debug("tabled-committee-reports page called")
+    tabled_committee_reports_list = load_from_api('tabled_committee_report', page = page)
+    count = tabled_committee_reports_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    tabled_committee_reports = tabled_committee_reports_list['results']
+    url = "/tabled-committee-reports"
+    return render_template('tabled_committee_reports_list.html', tabled_committee_reports=tabled_committee_reports, num_pages = num_pages, page = page, url = url)
+
+@app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
+def tabled_committee_report(tabled_committee_report_id):
+    """
+    Tabled Committee Report
+    """
+    logger.debug("tabled-committee-report page called")
+    tabled_committee_report =  load_from_api('tabled_committee_report', tabled_committee_report_id)
+    logger.debug(tabled_committee_report)
+    return render_template('tabled_committee_report_detail.html', tabled_committee_report=tabled_committee_report, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/calls-for-comments/')
+@app.route('/calls-for-comments/<int:page>/')
+def calls_for_comments(page = 0):
+    """
+    Page through all available calls-for-comments.
+    """
+
+    logger.debug("calls-for-comments page called")
+    calls_for_comments_list = load_from_api('calls_for_comment', page = page)
+    count = calls_for_comments_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    calls_for_comments = calls_for_comments_list['results']
+    url = "/calls-for-comments"
+    return render_template('calls_for_comments_list.html', calls_for_comments=calls_for_comments, num_pages = num_pages, page = page, url = url)
+
+@app.route('/calls-for-comment/<int:calls_for_comment_id>/')
+def calls_for_comment(calls_for_comment_id):
+    """
+    Tabled Committee Report
+    """
+    logger.debug("calls-for-comment page called")
+    calls_for_comment =  load_from_api('calls_for_comment', calls_for_comment_id)
+    logger.debug(calls_for_comment)
+    return render_template('calls_for_comment_detail.html', calls_for_comment=calls_for_comment, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/policy-documents/')
+@app.route('/policy-documents/<int:page>/')
+def policy_documents(page = 0):
+    """
+    Page through all available policy-documents.
+    """
+
+    logger.debug("policy-documents page called")
+    policy_documents_list = load_from_api('policy_document', page = page)
+    count = policy_documents_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    policy_documents = policy_documents_list['results']
+    url = "/policy-documents"
+    return render_template('policy_documents_list.html', policy_documents=policy_documents, num_pages = num_pages, page = page, url = url)
+
+@app.route('/policy-document/<int:policy_document_id>/')
+def policy_document(policy_document_id):
+    """
+    Policy Document
+    """
+    logger.debug("policy-document page called")
+    policy_document =  load_from_api('policy_document', policy_document_id)
+    logger.debug(policy_document)
+    return render_template('policy_document_detail.html', policy_document=policy_document, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/gazettes/')
+@app.route('/gazettes/<int:page>/')
+def gazettes(page = 0):
+    """
+    Page through all available gazettes.
+    """
+
+    logger.debug("gazettes page called")
+    gazettes_list = load_from_api('gazette', page = page)
+    count = gazettes_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    gazettes = gazettes_list['results']
+    url = "/gazettes"
+    return render_template('gazettes_list.html', gazettes=gazettes, num_pages = num_pages, page = page, url = url)
+
+@app.route('/gazette/<int:gazette_id>/')
+def gazette(gazette_id):
+    """
+    Policy Document
+    """
+    logger.debug("gazette page called")
+    gazette =  load_from_api('gazette', gazette_id)
+    logger.debug(gazette)
+    return render_template('gazette_detail.html', gazette=gazette, STATIC_HOST=app.config['STATIC_HOST'])
+    
+@app.route('/books/')
+@app.route('/books/<int:page>/')
+def books(page = 0):
+    """
+    Page through all available books.
+    """
+
+    logger.debug("books page called")
+    books_list = load_from_api('book', page = page)
+    count = books_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    books = books_list['results']
+    url = "/books"
+    return render_template('books_list.html', books=books, num_pages = num_pages, page = page, url = url)
+
+@app.route('/book/<int:book_id>/')
+def book(book_id):
+    """
+    Policy Document
+    """
+    logger.debug("book page called")
+    book =  load_from_api('book', book_id)
+    logger.debug(book)
+    return render_template('book_detail.html', book=book, STATIC_HOST=app.config['STATIC_HOST'])
+
 @app.route('/members/')
 @app.route('/members/<int:page>/')
 def members(page = 0):

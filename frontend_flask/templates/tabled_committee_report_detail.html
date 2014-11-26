@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block style %}
+
+{% endblock %}
+
+{% block top_links %}
+{{ super() }}
+{% endblock %}
+
+{% block page %}
+<div class="col-sm-12">
+  <h4 class="light-red">Tabled Committee Report</h4>
+  <h1>{{ tabled_committee_report.title }}</h1>
+  {% if tabled_committee_report.committee %}
+  <h2><a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a></h2>
+  {% endif %}
+</div>
+
+<div class="col-md-6">
+  {{ tabled_committee_report.body|safe }}  
+</div>
+
+
+{% endblock %}

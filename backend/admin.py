@@ -146,57 +146,6 @@ class CommitteeView(MyModelView):
             .filter(self.model.type == "committee")
 
 
-class ContentView(MyModelView):
-
-    form_overrides = dict(body=CKTextAreaField)
-    form_excluded_columns = ('type', 'version', 'title', 'file_path')
-    column_exclude_list = ('type', 'version', 'title', 'file_path')
-    form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        }
-    }
-    form_ajax_refs = {
-        'event': {
-            'fields': ('date', 'title', 'type'),
-            'page_size': 25
-        }
-    }
-    column_formatters = dict(
-        body=macro('render_raw_html'),
-        summary=macro('render_raw_html'),
-        )
-
-    def __init__(self, model, session, **kwargs):
-        self.type = kwargs.pop('type')
-        super(ContentView, self).__init__(model, session, **kwargs)
-
-    def on_model_change(self, form, model, is_created):
-        if is_created:
-            # set some default values when creating a new record
-            model.type = self.type
-            model.version = 0
-
-    def get_query(self):
-        """
-        Add filter to return only records of the specified type.
-        """
-
-        return self.session.query(self.model) \
-            .filter(self.model.type == self.type)
-
-    def get_count_query(self):
-        """
-        Add filter to return only records of the specified type.
-        """
-
-        return self.session.query(func.count('*')).select_from(self.model) \
-            .filter(self.model.type == self.type)
-
-
 class EventView(MyModelView):
 
     form_excluded_columns = ('type', )
@@ -331,7 +280,6 @@ class MemberView(MyModelView):
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
-admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee meetings", endpoint='committee-meeting', category="Committees"))
 
 admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))

@@ -74,7 +74,7 @@ def find_files(obj):
             fobj = File(
                     filemime=f["filemime"],
                     origname = f["origname"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filepath"],
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -218,7 +218,8 @@ def rebuild_db():
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
-            version=0
+            version=0,
+            start_date = db_date_from_utime(member['start_date'])
         )
         if member.get('files'):
             # logger.debug(json.dumps(member['files'], indent=4)
@@ -386,12 +387,10 @@ def clear_db():
 
 if __name__ == '__main__':
     clear_db()
-    
-    
     rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
+    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
     bills()
-    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})
+    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
     rebuild_table("tabled_committee_report", {
         "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid"

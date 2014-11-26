@@ -141,31 +141,54 @@ class Search:
 		except:
 			return False
 
-	def search(self, query, size=10, es_from=0, filters={}, content_type=False):
-		if (content_type):
-			q = {
-				"from": es_from,
-				"size": size,
-				"query": {
-					"match": {
-						"_all": query,
-					}
-				}
-			}
-
-			return self.es.search(q, index=self.index_name, doc_type = content_type) 
+	def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False):
 		q = {
 			"from": es_from,
 			"size": size,
-			"query": {
-				"multi_match": {
-					"query": query,
-					"fields": self.search_fields
+		}
+		if (content_type):
+			q["query"] = {
+				"match": {
+					"_all": query,
 				}
 			}
+			
+		q["query"] = {
+			"multi_match": {
+				"query": query,
+				"fields": self.search_fields
+			}
 		}
-		return self.es.search(q, index=self.index_name)
+		if (start_date):
+			q["query"] = {
+				# "filter": {
+					"range": {
+						"date": {
+							"gte": start_date,
+						}
+					}
+				# }
+			}
+		if (end_date):
+			q["query"] = {
+				# "filter": {
+					"range": {
+						"date": {
+							"lte": end_date,
+						}
+					}
 
+				# }
+			}
+
+		if (content_type):
+			return self.es.search(q, index=self.index_name, doc_type = content_type)
+		else:
+			return self.es.search(q, index=self.index_name)
+
+	def import_all(self):
+		for data_type in Transforms.data_types:
+			self.import_data(data_type)
 
 if (__name__ == "__main__"):
 	# print "ElasticSearch PMG library"
@@ -175,10 +198,13 @@ if (__name__ == "__main__"):
 		choices = Transforms.data_types,
 		help='Imports the data from a content type to ElasticSearch')
 	parser.add_argument('--test', action="store_true")
+	parser.add_argument('--reindex', action="store_true")
 	args = parser.parse_args()
 	search = Search()
 	if (args.test):
 		search.test()
 	if (args.import_data_type):
 		search.import_data(args.import_data_type)
+	if (args.reindex):
+		search.import_all()
 	# parser.print_help()

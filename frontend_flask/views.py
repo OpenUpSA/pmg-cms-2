@@ -442,22 +442,23 @@ def search(page = 0):
 
     query_string = request.query_string
     
-    # page = 0
-    # if (request.args.get('page')):
-    #     page = int(request.args.get('page'))
     per_page = app.config['RESULTS_PER_PAGE']
     if (request.args.get('per_page')):
         per_page = int(request.args.get('per_page'))
 
-    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"])
+    filters["start_date"] = request.args.get('filter[start_date]')
+    filters["end_date"] = request.args.get('filter[end_date]')
+    for filter_key in filters.keys():
+        if filters[filter_key] == "None":
+            filters[filter_key] = None
+    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"])
     result = {}
     result = searchresult["hits"]["hits"]
     count = searchresult["hits"]["total"]
     max_score = searchresult["hits"]["max_score"]
     search_url = request.url_root + "search"
-    # if count > (page + 1) * per_page:
-        # result["next"] = request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
-        # result["last"] = request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(count / per_page))) + "&per_page=" + str(per_page)
-        # result["first"] = request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
+    years = range(1997, datetime.now().year + 1)
+    years.reverse()
+    
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters)
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years)

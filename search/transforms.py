@@ -9,12 +9,14 @@ class Transforms:
 			"id": "id",
 			"title": "title",
 			"description": ["content", 0, "summary"],
-			"fulltext": ["content", 0, "body"]
+			"fulltext": ["content", 0, "body"],
+			"date": "date",
 		},
 		"member": {
 			"id": "id",
 			"title": "name",
-			"description": "bio"
+			"description": "bio",
+			"date": "start_date",
 		},
 		"bill": {
 			"id": "id",
@@ -24,18 +26,21 @@ class Transforms:
 		"hansard": {
 			"id": "id",
 			"title": "title",
-			"fulltext": "body"
+			"fulltext": "body",
+			"date": "start_date",
 		},
 		"briefing": {
 			"id": "id",
 			"title": "title",
 			"description": "summary",
-			"fulltext": "minutes"
+			"fulltext": "minutes",
+			"date": "start_date",
 		},
 		"question_reply": {
 			"id": "id",
 			"title": "title",
-			"fulltext": "body"
+			"fulltext": "body",
+			"date": "start_date",
 		},
 		"tabled_committee_report": {
 			"id": "id",

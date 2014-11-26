@@ -3,4 +3,5 @@
 		<span class="label label-info">Hansard</span>
 		<a href="/hansard/{{ result._id }}">{{ result._source.title }}</a>
 	</div>
+	<div class="date">{{ result._source.date|human_date }}</div>
 </div>

@@ -9,6 +9,7 @@ import urllib
 from search.search import Search
 import math
 import random
+import arrow
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -21,6 +22,10 @@ def _jinja2_filter_datetime(iso_str):
     format='%d %b %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
+
+@app.template_filter('human_date')
+def _jinja2_filter_humandate(iso_str):
+    return arrow.get(iso_str).humanize()
 
 @app.context_processor
 def pagination_processor():

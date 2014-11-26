@@ -14,4 +14,4 @@ psycopg2
 PyYAML==3.11
 lxml
 cssselect
-
+beautifulsoup4

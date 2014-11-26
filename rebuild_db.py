@@ -312,7 +312,6 @@ def rebuild_db():
                 doc_obj = Content(
                     event=report_obj,
                     type=item["filemime"],
-                    version=0
                 )
                 doc_obj.file_path=item["filepath"]
                 doc_obj.title=item["title"]
@@ -322,7 +321,6 @@ def rebuild_db():
                 audio_obj = Content(
                     event=report_obj,
                     type=item["filemime"],
-                    version=0
                 )
                 if item["filepath"].startswith('files/'):
                     audio_obj.file_path=item["filepath"][6::]

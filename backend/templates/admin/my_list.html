@@ -6,6 +6,7 @@
 </style>
 {% endblock head_css%}
 
+{% import '_macros.html' as macros %}
 
 {% macro render_html(model, column) %}
 {{ model[column] }}
@@ -42,25 +43,11 @@
 {% endif %}
 {% endmacro %}
 
-{% macro file_type_icon(file_type) %}
-{%- if file_type == "application/pdf" -%}
-<i class="fa fa-file-pdf-o"></i>
-{%- elif file_type == "application/msword" -%}
-<i class="fa fa-file-word-o"></i>
-{%- elif "audio" in file_type -%}
-<i class="fa fa-file-audio-o"></i>
-{%- elif "powerpoint" in file_type -%}
-<i class="fa fa-file-powerpoint-o"></i>
-{%- else -%}
-<i class="fa fa-file-o"></i>
-{%- endif -%}
-{% endmacro %}
-
 {% macro render_event_content(model, column) %}
 {% for item in model[column] %}
-{% if item.file_path %}<a href="{{ STATIC_HOST }}{{ item.file_path }}">{% endif %}
+{% if item.file_path %}<a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank">{% endif %}
 <span class="label alert-info">
-  {{ file_type_icon(item.type) }} {% if item.title | length > 55 %}{{ item.title[0:55] }}...{% else %}{{ item.title }}{% endif %}
+  {{ macros.file_type_icon(item.type) }} {% if item.title | length > 55 %}{{ item.title[0:55] }}...{% else %}{{ item.title }}{% endif %}
   </span>
   {% if item.file_path %}</a>{% endif %}
 {% if not loop.last %}<br>{% endif %}

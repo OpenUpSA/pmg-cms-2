@@ -250,16 +250,15 @@ class ContentFormList(InlineModelFormList):
 # Create custom InlineModelConverter to link the form to its model
 class ContentModelConverter(InlineModelConverter):
     inline_field_list_type = ContentFormList
-    form_excluded_columns = ('title', )
 
 
 class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('version', )
+    form_excluded_columns = ('type', 'file_path', )
 
 
 class CommitteeMeetingView(EventView):
 
-    # note: the related committee_meeting_report is displayed as part of the event model
+    # note: the related committee_meeting is displayed as part of the event model
     # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
 
     form_excluded_columns = ('type', 'member', )

@@ -489,9 +489,6 @@ class Content(db.Model):
     type = db.Column(db.String(50), index=True, nullable=False)
     title = db.Column(db.String(200))
     file_path = db.Column(db.String(200))
-    body = db.Column(db.Text())
-    summary = db.Column(db.Text())
-    version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
     event = db.relationship('Event', backref=backref('content', lazy='joined'))

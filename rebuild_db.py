@@ -297,25 +297,20 @@ def rebuild_db():
             committee_obj = committees.get(parsed_report.committee)
             if committee_obj:
                 committee_obj = committee_obj['model']
-            event_obj = Event(
-                type="committee-meeting",
-                organisation=committee_obj,
-                date=parsed_report.date,
-                title=parsed_report.title
-            )
-            db.session.add(event_obj)
 
-            report_obj = CommitteeMeetingReport(
+            report_obj = CommitteeMeeting(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
-                event=event_obj,
+                organisation=committee_obj,
+                date=parsed_report.date,
+                title=parsed_report.title,
                 version=0
             )
             db.session.add(report_obj)
 
             for item in parsed_report.related_docs:
                 doc_obj = Content(
-                    event=event_obj,
+                    event=report_obj,
                     type=item["filemime"],
                     version=0
                 )
@@ -325,7 +320,7 @@ def rebuild_db():
 
             for item in parsed_report.audio:
                 audio_obj = Content(
-                    event=event_obj,
+                    event=report_obj,
                     type=item["filemime"],
                     version=0
                 )

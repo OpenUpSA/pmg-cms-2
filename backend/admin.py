@@ -257,8 +257,10 @@ class InlineContent(InlineFormAdmin):
     form_excluded_columns = ('version', )
 
 
-
 class CommitteeMeetingView(EventView):
+
+    # note: the related committee_meeting_report is displayed as part of the event model
+    # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
 
     form_excluded_columns = ('type', 'member', )
     column_list = ('date', 'organisation', 'title', 'content')
@@ -272,7 +274,23 @@ class CommitteeMeetingView(EventView):
     column_formatters = dict(
         content=macro('render_event_content'),
         )
-    inline_models = (InlineContent(Content), )
+    form_excluded_columns = (
+        'event',
+        'type',
+        'version',
+        'member',
+    )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        }
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
     inline_model_form_converter = ContentModelConverter
 
 
@@ -315,7 +333,7 @@ admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_vie
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committee", endpoint='committee', category="Committees"))
 admin.add_view(ContentView(Content, db.session, type="committee-meeting-report", name="Meeting reports", endpoint='committee-meeting-report', category="Committees"))
-admin.add_view(CommitteeMeetingView(Event, db.session, type="committee-meeting", name="Committee meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee meetings", endpoint='committee-meeting', category="Committees"))
 
 admin.add_view(MemberView(Member, db.session, name="Member", endpoint='member', category="Members"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Members"))

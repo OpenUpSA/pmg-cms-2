@@ -48,12 +48,11 @@ def scrape_schedule():
             with cd('/var/www/pmg-cms'):
                 run("python scrapers/scraper.py schedule")
 
-def index_search_tabled_committee_report():
+def index_search():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run('python search/search.py --import tabled_committee_report')
-
+                run('python search/search.py --reindex')
 
 def restart():
     sudo("supervisorctl restart pmg_cms")

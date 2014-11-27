@@ -274,7 +274,7 @@ class Member(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship(House)
     party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
-    party = db.relationship(Party)
+    party = db.relationship(Party, backref="members", lazy='joined')
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
     province = db.relationship(Province)
     start_date = db.Column(db.Date())

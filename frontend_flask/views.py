@@ -18,13 +18,16 @@ logger = logging.getLogger(__name__)
 
 @app.template_filter('pretty_date')
 def _jinja2_filter_datetime(iso_str):
-
+    if not iso_str:
+        return ""
     format='%d %b %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
 
 @app.template_filter('human_date')
 def _jinja2_filter_humandate(iso_str):
+    if not iso_str:
+        return ""
     return arrow.get(iso_str).humanize()
 
 @app.template_filter('file')

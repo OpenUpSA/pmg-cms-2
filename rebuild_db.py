@@ -403,15 +403,15 @@ if __name__ == '__main__':
     clear_db()
     rebuild_db()
     rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
-    bills()
     rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
     rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
     rebuild_table("calls_for_comment", {
-        "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid"
-        })
-    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
-    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
-    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body" })
+        "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
+    rebuild_table("daily_schedule", { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
+    # bills()
     add_featured()
 

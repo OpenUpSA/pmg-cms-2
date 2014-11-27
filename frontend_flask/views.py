@@ -9,6 +9,7 @@ import urllib
 from search.search import Search
 import math
 import random
+import arrow
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -21,6 +22,10 @@ def _jinja2_filter_datetime(iso_str):
     format='%d %b %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
+
+@app.template_filter('human_date')
+def _jinja2_filter_humandate(iso_str):
+    return arrow.get(iso_str).humanize()
 
 @app.context_processor
 def pagination_processor():
@@ -157,12 +162,9 @@ def index():
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
     stock_pic = "stock" + str(random.randint(1,18)) + ".jpg"
-    featured = {
-        'title': "LiveMagSA: \"People kill people, guns don't\"",
-        'blurb': "What do 10-year-old Jaylin Scullard, 27-year-old Senzo Meyiwa and 29-year-old Reeva Steenkamp have in common? All of them had their lives cut short due to gun violence. Scullard was playing in front of his house when he was shot dead. He is one of many children often caught in fatal crossfire between gangs in the Cape Flats. Steenkamp had her life ended by bullets blasted at her through a bathroom door and Bafana Bafana captain Meyiwa's death shocked the nation - a senseless death involving a firearm.",
-        'link': "http://www.pa.org.za/blog/livemagsa-people-kill-people-guns-dont",
-    }
-    return render_template('index.html', committee_meetings = committee_meetings, bills = bills, schedule = schedule, scheduledates = scheduledates, stock_pic = stock_pic, featured = featured)
+    featured_list = load_from_api('featured')["results"]
+    featured_content = load_from_api('featured', featured_list[0]["id"])
+    return render_template('index.html', committee_meetings = committee_meetings, bills = bills, schedule = schedule, scheduledates = scheduledates, stock_pic = stock_pic, featured_content = featured_content)
 
 
 @app.route('/bills/')

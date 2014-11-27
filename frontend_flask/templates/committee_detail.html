@@ -28,6 +28,11 @@
 <div class="col-sm-12">
   <h4 class="light-red">Parliamentary committee</h4>
   <h1>{{ committee.name }}</h1>
+  {% if committee.contact_details %}
+  <h5>
+    {{ committee.contact_details }}
+  </h5>
+  {% endif %}
 </div>
 
 <div class="col-md-4">
@@ -43,7 +48,7 @@
   {%- if (committee.events | length) % per_page != 0 %}
   {% set num_pages = num_pages + 1 %}
   {% endif -%}
-
+  
   <div class="tab-content">
     {% for i in range(num_pages) %}
     <div class="tab-pane fade{% if loop.first %} in active{% endif %}" id="page-{{ loop.index }}">
@@ -125,7 +130,22 @@
 
 
 <div class="col-md-4">
+  {% if committee.tabled_committee_reports %}
+  <h3><span class="glyphicon glyphicon-bullhorn"></span> Tabled Reports</h3>
+  <ul class="list-unstyled list-spaced">
+  {% for result in committee.tabled_committee_reports %}
+  {% include 'tabled_committee_report_stub.html' %}
+  {% endfor %}
+  </ul>
+  {% endif %}
+  {% if committee.calls_for_comment %}
   <h3><span class="glyphicon glyphicon-bullhorn"></span> Calls for Comment</h3>
+  <ul class="list-unstyled list-spaced">
+  {% for result in committee.calls_for_comment %}
+  {% include 'calls_for_comment_stub.html' %}
+  {% endfor %}
+  </ul>
+  {% endif %}
   <!--<form class="form" role="form">-->
   <!--<div class="form-group">-->
   <!--<input type="text" class="form-control " placeholder="Search for calls for comment">-->

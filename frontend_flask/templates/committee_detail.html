@@ -87,7 +87,9 @@
       {% endif %}
       <h4>{{ member.name }}</h4>
       {% if membership.type == "chairperson"%}<div class="label label-success">Chairperson</div>{% endif %}
+        {% if member.party %}
         <span>{{ member.party.name }}</span>
+        {% endif %}
       </li>
       {% endfor %}
 
@@ -100,7 +102,9 @@
       <li class="clearfix">
         <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
         <h4>{{ member.name }}</h4>
+        {% if member.party %}
         <span>{{ member.party.name }}</span>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>

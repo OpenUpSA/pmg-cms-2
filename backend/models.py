@@ -21,6 +21,11 @@ questions_replies_committee_table = db.Table('questions_replies_committee_join',
     db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
 )
 
+calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
+    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
 class ApiKey(db.Model):
 
     __tablename__ = "api_key"
@@ -299,6 +304,7 @@ class Organisation(db.Model):
 
     tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table)
     questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table)
+    calls_for_comment = db.relationship("Calls_for_comment", secondary=calls_for_comment_committee_table)
 
     def __unicode__(self):
         tmp = self.name
@@ -404,11 +410,6 @@ class Tabled_committee_report(db.Model):
     files = db.relationship("File", secondary=tabled_committee_report_file_table)
 
 # === Calls for comment === #
-
-calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
-    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
-)
 
 class Calls_for_comment(db.Model):
     __tablename__ = "calls_for_comment"

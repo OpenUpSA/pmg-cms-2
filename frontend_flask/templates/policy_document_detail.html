@@ -31,7 +31,7 @@
   {% if file.description %}
   <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
   {% else %}
-  <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
+  <a href="{{file.url|file}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
   {% endif %}
   
   {% endfor %}

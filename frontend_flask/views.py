@@ -27,6 +27,10 @@ def _jinja2_filter_datetime(iso_str):
 def _jinja2_filter_humandate(iso_str):
     return arrow.get(iso_str).humanize()
 
+@app.template_filter('file')
+def _jinja2_filter_file(filename):
+    return app.config['STATIC_HOST'] + filename
+
 @app.context_processor
 def pagination_processor():
     def pagination(page_count, current_page, per_page, url):

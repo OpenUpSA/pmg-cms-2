@@ -452,6 +452,28 @@ def briefings(page = 0):
     url = "/briefings"
     return render_template('briefings_list.html', briefings=briefings, num_pages = num_pages, page = page, url = url)
 
+@app.route('/daily_schedule/<int:daily_schedule_id>')
+def daily_schedule(daily_schedule_id):
+    logger.debug("daily_schedule page called")
+    daily_schedule =  load_from_api('daily_schedule', daily_schedule_id)
+    return render_template('daily_schedule_detail.html', daily_schedule=daily_schedule, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/daily_schedules/')
+@app.route('/daily_schedules/<int:page>/')
+def daily_schedules(page = 0):
+    """
+    Page through all available daily_schedules.
+    """
+
+    logger.debug("daily_schedules page called")
+    daily_schedules_list = load_from_api('daily_schedule', page = page)
+    count = daily_schedules_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    daily_schedules = daily_schedules_list['results']
+    url = "/daily_schedules"
+    return render_template('daily_schedules_list.html', daily_schedules=daily_schedules, num_pages = num_pages, page = page, url = url)
+
 @app.route('/question_reply/<int:question_reply_id>')
 def question_reply(question_reply_id):
     logger.debug("question_reply page called")

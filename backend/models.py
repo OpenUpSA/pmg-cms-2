@@ -6,6 +6,7 @@ from sqlalchemy import UniqueConstraint
 from random import random
 import string
 from passlib.apps import custom_app_context as pwd_context
+import datetime
 
 
 # ==== JOINS ==== #
@@ -298,7 +299,7 @@ class Organisation(db.Model):
 
     tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table)
     questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table)
-    
+
     def __unicode__(self):
         tmp = self.name
         if self.house:
@@ -474,12 +475,36 @@ class Book(db.Model):
     start_date = db.Column(db.Date())
     files = db.relationship("File", secondary=book_file_table)
 
+# === Featured Content === #
+
+featured_committee_meeting_join = db.Table('featured_committee_meeting_join', db.Model.metadata,
+    db.Column('featured_id', db.Integer, db.ForeignKey('featured.id')),
+    db.Column('committee_meeting_id', db.Integer, db.ForeignKey('committee_meeting.id'))
+)
+
+featured_tabled_committee_report_join = db.Table('featured_tabled_committee_report_join', db.Model.metadata,
+    db.Column('featured_id', db.Integer, db.ForeignKey('featured.id')),
+    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id'))
+)
+
+class Featured(db.Model):
+
+    __tablename__ = "featured"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
+    blurb = db.Column(db.Text())
+    link = db.Column(db.String(255))
+    start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    committee_meeting = db.relationship('CommitteeMeeting', secondary=featured_committee_meeting_join)
+    tabled_committee_report = db.relationship('Tabled_committee_report', secondary=featured_tabled_committee_report_join)
 
 class CommitteeMeeting(Event):
 
     __tablename__ = "committee_meeting"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
+    
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)

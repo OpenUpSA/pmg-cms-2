@@ -427,7 +427,7 @@ class Calls_for_comment(db.Model):
 
 policy_document_file_table = db.Table('policy_document_file_join', db.Model.metadata,
     db.Column('policy_document_id', db.Integer, db.ForeignKey('policy_document.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id')),
 )
 
 class Policy_document(db.Model):
@@ -439,6 +439,7 @@ class Policy_document(db.Model):
     effective_date = db.Column(db.Date())
     files = db.relationship("File", secondary=policy_document_file_table)
     start_date = db.Column(db.Date())
+    nid = db.Column('nid', db.Integer())
 
 # === Gazette === #
 
@@ -456,6 +457,7 @@ class Gazette(db.Model):
     effective_date = db.Column(db.Date())
     files = db.relationship("File", secondary=gazette_file_table)
     start_date = db.Column(db.Date())
+    nid = db.Column('nid', db.Integer())
 
 # === Book === #
 
@@ -474,6 +476,7 @@ class Book(db.Model):
     body = db.Column(db.Text())
     start_date = db.Column(db.Date())
     files = db.relationship("File", secondary=book_file_table)
+    nid = db.Column('nid', db.Integer())
 
 # === Featured Content === #
 

@@ -103,6 +103,7 @@ def api_resources():
         "committee": db.session.query(Organisation) \
             .filter_by(type='committee') \
             .order_by(Organisation.house_id, Organisation.name),
+
         "committee-meeting": db.session.query(Event) \
             .filter(Event.type == 'committee-meeting') \
             .order_by(desc(Event.date)),
@@ -133,6 +134,8 @@ def api_resources():
             .order_by(Gazette.start_date),
         "book": db.session.query(Book)
             .order_by(Book.start_date),
+        "featured": db.session.query(Featured)
+            .order_by(desc(Featured.start_date)),
     }
 
 @app.route('/search/')

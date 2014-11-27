@@ -378,6 +378,20 @@ def bills():
         db.session.add(bill)
     db.session.commit()
 
+def add_featured():
+    committeemeetings = CommitteeMeeting.query.limit(5)
+    tabledreports = Tabled_committee_report.query.limit(5)
+    featured = Featured()
+    for committeemeeting in committeemeetings:
+        featured.committee_meeting.append(committeemeeting)
+    for tabledreport in tabledreports:
+        featured.tabled_committee_report.append(tabledreport)
+    featured.title = "LivemagSA Launched Live From Parliament"
+    featured.blurb = "For the next six months, LiveMagSA be teaming up with PMG to report directly from parliament, bringing you the highlights and telling you about the policy decisions that affect you."
+    featured.link = "http://livemag.co.za/welcome-parliament/"
+    db.session.add(featured)
+    db.session.commit()
+
 def clear_db():
     logger.debug("Dropping all")
     db.drop_all()
@@ -392,12 +406,12 @@ if __name__ == '__main__':
     bills()
     rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", {
-        "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid"
-        })
+    rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
     rebuild_table("calls_for_comment", {
         "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid"
         })
     rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
     rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
     rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body" })
+    add_featured()
+

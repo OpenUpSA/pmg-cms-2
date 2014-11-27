@@ -74,7 +74,7 @@ def find_files(obj):
             fobj = File(
                     filemime=f["filemime"],
                     origname = f["origname"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filepath"],
+                    url = f["filepath"].replace("files/", ""),
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -85,7 +85,7 @@ def find_files(obj):
             fobj = File(
                     filemime=f["filemime"],
                     origname = f["origname"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/audio/" + f["filename"],
+                    url = "audio/" + f["filename"].replace("files/", ""),
                     playtime = f["playtime"],
                     description = f["title_format"]
                 )

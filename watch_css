@@ -1,0 +1,2 @@
+#!/bin/sh
+node less-watch-compiler.js frontend_flask/static/resources/css/ frontend_flask/static/resources/css/

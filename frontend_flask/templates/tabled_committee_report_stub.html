@@ -12,5 +12,5 @@
 		<span class="label label-danger">Tabled Committee Report</span>
 		<a href="/tabled-committee-report/{{ id }}">{{ title }}</a>
 	</div>
-	<div class="date">{{ date|human_date }}</div>
+	<div class="date">{{ date|human_date }} - {{ result._source.date|pretty_date }}</div>
 </div>

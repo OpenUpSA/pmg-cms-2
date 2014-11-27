@@ -414,17 +414,65 @@ def hansard(hansard_id):
     hansard =  load_from_api('hansard', hansard_id)
     return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/hansards/')
+@app.route('/hansards/<int:page>/')
+def hansards(page = 0):
+    """
+    Page through all available hansards.
+    """
+
+    logger.debug("hansards page called")
+    hansards_list = load_from_api('briefing', page = page)
+    count = hansards_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    hansards = hansards_list['results']
+    url = "/hansards"
+    return render_template('hansards_list.html', hansards=hansards, num_pages = num_pages, page = page, url = url)
+
 @app.route('/briefing/<int:briefing_id>')
 def briefing(briefing_id):
     logger.debug("briefing page called")
     briefing =  load_from_api('briefing', briefing_id)
     return render_template('briefing_detail.html', briefing=briefing, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/briefings/')
+@app.route('/briefings/<int:page>/')
+def briefings(page = 0):
+    """
+    Page through all available briefings.
+    """
+
+    logger.debug("briefings page called")
+    briefings_list = load_from_api('briefing', page = page)
+    count = briefings_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    briefings = briefings_list['results']
+    url = "/briefings"
+    return render_template('briefings_list.html', briefings=briefings, num_pages = num_pages, page = page, url = url)
+
 @app.route('/question_reply/<int:question_reply_id>')
 def question_reply(question_reply_id):
     logger.debug("question_reply page called")
     question_reply =  load_from_api('question_reply', question_reply_id)
     return render_template('question_reply_detail.html', question_reply=question_reply, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/question_replies/')
+@app.route('/question_replies/<int:page>/')
+def question_replies(page = 0):
+    """
+    Page through all available question_replies.
+    """
+
+    logger.debug("question_replies page called")
+    question_replies_list = load_from_api('briefing', page = page)
+    count = question_replies_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    question_replies = question_replies_list['results']
+    url = "/question_replies"
+    return render_template('question_replies_list.html', question_replies=question_replies, num_pages = num_pages, page = page, url = url)
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')

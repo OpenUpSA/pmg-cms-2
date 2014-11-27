@@ -499,6 +499,24 @@ class Featured(db.Model):
     committee_meeting = db.relationship('CommitteeMeeting', secondary=featured_committee_meeting_join)
     tabled_committee_report = db.relationship('Tabled_committee_report', secondary=featured_tabled_committee_report_join)
 
+# === Daily schedules === #
+
+daily_schedule_file_table = db.Table('daily_schedule_file_join', db.Model.metadata,
+    db.Column('daily_schedule_id', db.Integer, db.ForeignKey('daily_schedule.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+)
+
+class Daily_schedule(db.Model):
+    __tablename__ = "daily_schedule"
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text())
+    start_date = db.Column(db.Date())
+    schedule_date = db.Column(db.Date())
+    body = db.Column(db.Text())
+    nid = db.Column(db.Integer())
+    files = db.relationship("File", secondary=daily_schedule_file_table)
+
 class CommitteeMeeting(Event):
 
     __tablename__ = "committee_meeting"

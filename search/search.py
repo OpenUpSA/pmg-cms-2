@@ -160,23 +160,17 @@ class Search:
 				"fields": self.search_fields
 			}
 		}
-		if (start_date):
+		if start_date and end_date:
 			q["query"] = {
 				"range": {
 					"date": {
 						"gte": start_date,
-					}
-				}
-			}
-		if (end_date):
-			q["query"] = {
-				"range": {
-					"date": {
 						"lte": end_date,
 					}
 				}
 			}
-
+		
+		print "query_statement", q
 		if (content_type):
 			return self.es.search(q, index=self.index_name, doc_type = content_type)
 		else:

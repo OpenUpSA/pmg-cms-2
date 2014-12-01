@@ -401,7 +401,7 @@ class Tabled_committee_report(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table)
+    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table, lazy=False)
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())

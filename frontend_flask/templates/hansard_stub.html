@@ -1,7 +1,20 @@
-<div class="hansard-stub">
-	<div class="title">
-		<span class="label label-info">Hansard</span>
-		<a href="/hansard/{{ result._id }}">{{ result._source.title }}</a>
+{% if result._source %}
+	{% set title = result._source.title %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
+{% else %}
+	{% set title = result.title %}
+	{% set date = result.start_date %}
+	{% set id = result.id %}
+{% endif %}
+<div class="hansard-stub space-bottom-sm">
+	<div class="row">
+		<div class="col-md-2">
+			<span class="label label-primary">Hansard</span>
+		</div>
+		<div class="col-md-8">
+			<a href="/hansard/{{ id }}">{{ title }}</a>
+			{{ date|human_date }} - {{ date|pretty_date }}
+		</div>
 	</div>
-	<div class="date">{{ result._source.date|human_date }} - {{ result._source.date|pretty_date }}</div>
 </div>

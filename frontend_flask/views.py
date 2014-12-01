@@ -274,7 +274,7 @@ def tabled_committee_reports(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     tabled_committee_reports = tabled_committee_reports_list['results']
     url = "/tabled-committee-reports"
-    return render_template('tabled_committee_reports_list.html', tabled_committee_reports=tabled_committee_reports, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=tabled_committee_reports, content_type="tabled_committee_report", title="Tabled Committee Reports", num_pages = num_pages, page = page, url = url, icon="briefcase")
 
 @app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
 def tabled_committee_report(tabled_committee_report_id):

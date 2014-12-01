@@ -22,6 +22,7 @@
     <li role="presentation" {% if (filters.type == 'calls_for_comment') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=calls_for_comment&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Calls For Comments</a></li>
     <li role="presentation" {% if (filters.type == 'policy_document') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=policy_document&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Policy Documents</a></li>
      <li role="presentation" {% if (filters.type == 'gazette') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=gazette&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Gazettes</a></li>
+      <li role="presentation" {% if (filters.type == 'daily_schedule') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=daily_schedule&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Daily Schedules</a></li>
   </ul>
   <ul class="nav nav-pills" role="tablist">
     <li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>

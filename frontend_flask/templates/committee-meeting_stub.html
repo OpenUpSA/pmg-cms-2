@@ -1,7 +1,40 @@
-<div class="committee-stub">
-	<div class="title">
-		<span class="label label-primary">Committee Meeting</span>
-		<a href="/committee-meeting/{{ result._id }}">{{ result._source.title }}</a>
+
+{% if result._source %}
+	{% set title = result._source.title %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
+	{% set house = result._source.house %}
+{% else %}
+	{% set title = result.title %}
+	{% set date = result.date %}
+	{% set id = result.id %}
+	{% if result.organisation %}
+		{% set committee = result.organisation %}
+	{% endif %}
+{% endif %}
+<div class="committee-stub space-bottom-sm">
+	<div class="row">
+		<div class="col-md-2">
+			<span class="label label-primary">Committee Meeting</span>	
+		</div>
+		<div class="col-md-8">
+			<a href="/committee-meeting/{{ result._id }}">{{ title }}</a>
+			{{ date|human_date }} - {{ date|pretty_date }}
+		</div>
+		<div class="col-md-2">
+			{% if result.organisation %}
+		<span class="label label-info"><a href="/committee/{{committee.id}}">{{ committee.name }}</a></span>
+		
+		{% endif %}	
+		{% if result.organisation %}
+			<span class="label label-warning">{{ committee.house.name }}</span>
+		{% endif %}
+		</div>
+		
 	</div>
-	<div class="date">{{ result._source.date|human_date }} - {{ result._source.date|pretty_date }}</div>
+	<div class="row">
+		
+		
+
+	</div>
 </div>

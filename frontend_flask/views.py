@@ -352,7 +352,7 @@ def gazettes(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     gazettes = gazettes_list['results']
     url = "/gazettes"
-    return render_template('gazettes_list.html', gazettes=gazettes, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=gazettes, num_pages = num_pages, page = page, url = url, icon="file-text-o", content_type="gazette", title="Gazettes")
 
 @app.route('/gazette/<int:gazette_id>/')
 def gazette(gazette_id):
@@ -404,7 +404,7 @@ def members(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     members = members_list['results']
     url = "/members"
-    return render_template('member_list.html', members=members, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=members, num_pages = num_pages, page = page, url = url, icon="user", content_type="member", title="Members")
 
 
 @app.route('/member/<int:member_id>')

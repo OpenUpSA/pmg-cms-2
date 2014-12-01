@@ -58,7 +58,12 @@ class Transforms:
 			"id": "id",
 			"title": "title",
 			"date": "start_date",
-		}
+		},
+		"gazette": {
+			"id": "id",
+			"title": "title",
+			"date": "start_date",
+		},
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document', 'gazette']

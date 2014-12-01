@@ -1,0 +1,16 @@
+{% if result._source %}
+{% set title = result._source.title %}
+{% set date = result._source.date %}
+{% set id = result._id %}
+{% else %}
+{% set title = result.title %}
+{% set date = result.start_date %}
+{% set id = result.id %}
+{% endif %}
+<div class="calls-for-comment-stub">
+	<div class="title">
+		<span class="label label-success">Policy Document</span>
+		<a href="/policy-document/{{ id }}">{{ title }}</a>
+	</div>
+	<div class="date">{{ date|human_date }} - {{ date|pretty_date }}</div>
+</div>

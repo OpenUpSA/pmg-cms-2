@@ -326,7 +326,7 @@ def policy_documents(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     policy_documents = policy_documents_list['results']
     url = "/policy-documents"
-    return render_template('policy_documents_list.html', policy_documents=policy_documents, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=policy_documents, num_pages = num_pages, page = page, url = url, icon="", content_type="policy_document", title="Policy Documents")
 
 @app.route('/policy-document/<int:policy_document_id>/')
 def policy_document(policy_document_id):

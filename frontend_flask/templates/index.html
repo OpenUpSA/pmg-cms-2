@@ -9,8 +9,9 @@
       
       <li><a href="/members">MPs</a></li>
       <li><a href="/committee-meetings">Committee Meetings</a></li>
-      <li><a href="/tabled-committee-reports">Tabled Committee Reports</a></li>
       <li><a href="http://bills.pmg.org.za">Bills</a></li>
+      <li><a href="/question_replies">Questions and Replies</a></li>
+      <li><a href="/calls-for-comments">Calls for Comments</a></li>
       <!--<li><a href="#">About Parliament</a></li>-->
       <!--<li><a href="#">About PMG</a></li>-->
     </ul>
@@ -67,12 +68,12 @@
           </select>
         </div>
       </form> -->
-      <h3><span class="fa fa-comment"></span> Committee meetings</h3>
+      <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
       
       <table class="table table-striped table-bordered">
          {% for committee_meeting in committee_meetings %}
           <tr>
-            <td>{{ committee_meeting.date }}</td>
+            <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
           <td><a href="/committee/{{ committee_meeting.organisation.id }}">{{ committee_meeting.organisation.name }}</a></td>
           <td>
             <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
@@ -80,6 +81,7 @@
         </tr>
         {% endfor %}
       </table>
+      <a href="/committee-meetings/" class="btn btn-primary">More Committee Meetings</a>
     </div> <!-- Committee meetings -->
   </div>
 
@@ -89,7 +91,7 @@
 <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
   <div class="space-bottom">
     <!-- <h3><span class="glyphicon glyphicon-certificate"></span> Featured</h3> -->
-    <h4><span class="fa fa-comment"></span> Committee Meetings</h4>
+    <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
     <ul class="list-unstyled list">
       {% for committee_meeting in featured_content.committee_meeting %}
       <li>
@@ -99,7 +101,7 @@
     </ul>
   </div>
   <div class="space-bottom">
-    <h4><span class="fa fa-briefcase"></span> Tabled Committee Reports</h4>
+    <h4><span class="fa fa-briefcase"></span> Featured Tabled Committee Reports</h4>
     <ul class="list-unstyled list">
       {% for tabled_committee_report in featured_content.tabled_committee_report %}
       <li>

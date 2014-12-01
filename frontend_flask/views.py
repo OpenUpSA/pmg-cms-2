@@ -433,7 +433,7 @@ def hansards(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     hansards = hansards_list['results']
     url = "/hansards"
-    return render_template('hansards_list.html', hansards=hansards, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=hansards, num_pages = num_pages, page = page, url = url, icon="archive", title="Hansards", content_type="hansard")
 
 @app.route('/briefing/<int:briefing_id>')
 def briefing(briefing_id):

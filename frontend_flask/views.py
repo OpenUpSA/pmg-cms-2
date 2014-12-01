@@ -455,7 +455,7 @@ def briefings(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     briefings = briefings_list['results']
     url = "/briefings"
-    return render_template('briefings_list.html', briefings=briefings, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=briefings, num_pages = num_pages, page = page, url = url, icon="bullhorn", title="Media Briefings", content_type="briefing",)
 
 @app.route('/daily_schedule/<int:daily_schedule_id>')
 def daily_schedule(daily_schedule_id):

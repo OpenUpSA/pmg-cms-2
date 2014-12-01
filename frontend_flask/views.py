@@ -24,6 +24,10 @@ def _jinja2_filter_datetime(iso_str):
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
 
+@app.template_filter('nbsp')
+def _jinja2_nbsp(str):
+    return str.replace(" ", "&nbsp;")
+
 @app.template_filter('human_date')
 def _jinja2_filter_humandate(iso_str):
     if not iso_str:

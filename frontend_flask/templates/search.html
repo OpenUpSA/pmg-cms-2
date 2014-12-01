@@ -19,6 +19,8 @@
     <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Briefings</a></li>
     <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Questions &amp; Replies</a></li>
     <li role="presentation" {% if (filters.type == 'tabled_committee_report') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=tabled_committee_report&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Tabled Committee Reports</a></li>
+    <li role="presentation" {% if (filters.type == 'calls_for_comment') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=calls_for_comment&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Calls For Comments</a></li>
+    <li role="presentation" {% if (filters.type == 'policy_document') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=policy_document&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Policy Documents</a></li>
   </ul>
   <ul class="nav nav-pills" role="tablist">
     <li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>

@@ -188,6 +188,15 @@ def bills():
 
     return render_template('bill_list.html')
 
+@app.route('/committee/<int:committee_id>/')
+def committee_detail(committee_id):
+    """
+    Display all available detail for the committee.
+    """
+
+    logger.debug("committee detail page called")
+    committee = load_from_api('committee', committee_id)
+    return render_template('committee_detail.html', committee=committee)
 
 @app.route('/committees/')
 def committees():
@@ -198,7 +207,7 @@ def committees():
     logger.debug("committees page called")
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
-    return render_template('committee_list.html', committees=committees)
+    return render_template('committee_list.html', committees=committees, )
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
@@ -215,18 +224,7 @@ def committee_meetings(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/committee-meetings"
 
-    return render_template('committee_meeting_list.html', committee_meetings=committee_meetings, num_pages=num_pages, page=page, url=url)
-
-@app.route('/committee/<int:committee_id>/')
-def committee_detail(committee_id):
-    """
-    Display all available detail for the committee.
-    """
-
-    logger.debug("committee detail page called")
-    committee = load_from_api('committee', committee_id)
-    return render_template('committee_detail.html', committee=committee)
-
+    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment")
 
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):

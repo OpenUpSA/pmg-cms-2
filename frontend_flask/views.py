@@ -477,7 +477,7 @@ def daily_schedules(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']
     url = "/daily_schedules"
-    return render_template('daily_schedules_list.html', daily_schedules=daily_schedules, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=daily_schedules, num_pages = num_pages, page = page, url = url, icon="calendar", title="Daily Schedules", content_type="daily_schedule")
 
 @app.route('/question_reply/<int:question_reply_id>')
 def question_reply(question_reply_id):
@@ -499,7 +499,7 @@ def question_replies(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     question_replies = question_replies_list['results']
     url = "/question_replies"
-    return render_template('question_replies_list.html', question_replies=question_replies, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=question_replies, num_pages = num_pages, page = page, url = url, icon="question", title="Questions and Replies", content_type="question_reply")
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')

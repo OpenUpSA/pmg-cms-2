@@ -7,14 +7,14 @@
 	{% set date = result.start_date %}
 	{% set id = result.id %}
 {% endif %}
-<div class="question_reply-stub space-bottom-sm">
+<div class="daily_schedule-stub space-bottom-sm">
 	<div class="row">
 		<div class="col-md-2">
-			<span class="label label-primary">Questions and Replies</span>
+			<span class="label label-primary">Daily Schedule</span>
 		</div>
 		<div class="col-md-8">
-			<a href="/question_reply/{{ id }}">{{ title }}</a>
-			{{ date|human_date }} - {{ date|pretty_date }}
+			<a href="/daily_schedule/{{ id }}">{{ date|pretty_date }} </a>
+			{{ date|human_date }}
 		</div>
 	</div>
 </div>

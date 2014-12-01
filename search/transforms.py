@@ -64,6 +64,12 @@ class Transforms:
 			"title": "title",
 			"date": "start_date",
 		},
+		"daily_schedule": {
+			"id": "id",
+			"title": "title",
+			"fulltext": "body",
+			"date": "start_date",
+		},
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document', 'gazette']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document', 'gazette', 'daily_schedule']

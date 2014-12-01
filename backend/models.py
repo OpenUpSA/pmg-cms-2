@@ -13,7 +13,7 @@ import datetime
 
 tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
     db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id')),
 )
 
 questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
@@ -172,10 +172,9 @@ class Bill(db.Model):
         return unicode(str(self.code) + " - " + self.name)
 
 briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
-                               db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
-                               db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
+   db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
+   db.Column('file_id', db.Integer, db.ForeignKey('file.id'))  
 )
-
 
 class Briefing(db.Model):
 
@@ -189,7 +188,6 @@ class Briefing(db.Model):
     presentation = db.Column(db.Text)
     files = db.relationship("File", secondary=briefing_file_table)
     start_date = db.Column(db.Date())
-
 
 class File(db.Model):
 
@@ -212,7 +210,6 @@ bill_event_table = db.Table(
     db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
     db.Column('bill_id', db.Integer, db.ForeignKey('bill.id'))
 )
-
 
 class Event(db.Model):
     __tablename__ = "event"
@@ -249,8 +246,6 @@ class Event(db.Model):
         'polymorphic_on': type,
     }
 
-
-
 class MembershipType(db.Model):
 
     __tablename__ = "membership_type"
@@ -264,7 +259,6 @@ class MembershipType(db.Model):
 
     def __unicode__(self):
         return unicode(self.name)
-
 
 class Member(db.Model):
 
@@ -286,8 +280,6 @@ class Member(db.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
-
-
 
 class Organisation(db.Model):
 
@@ -401,7 +393,7 @@ class Tabled_committee_report(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table, lazy=False)
+    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table, backref=db.backref('organisation', lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())

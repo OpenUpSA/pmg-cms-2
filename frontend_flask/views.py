@@ -300,7 +300,7 @@ def calls_for_comments(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = calls_for_comments_list['results']
     url = "/calls-for-comments"
-    return render_template('calls_for_comments_list.html', calls_for_comments=calls_for_comments, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=calls_for_comments, num_pages = num_pages, page = page, url = url, icon="comments", content_type="calls_for_comment", title="Calls for Comments")
 
 @app.route('/calls-for-comment/<int:calls_for_comment_id>/')
 def calls_for_comment(calls_for_comment_id):

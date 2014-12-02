@@ -29,6 +29,9 @@ class Search:
 			print "Error fetching page from api server, http error code", endpoint.status_code
 			return
 		data = endpoint.json()
+		if not data["count"]:
+			print "No results found for %s" % data_type
+			return True
 		docs = data["results"]
 		docs = self._import_content(data_type, docs)
 		docs = self._format_data(data_type, docs)
@@ -97,6 +100,7 @@ class Search:
 		except:
 			print "Couldn't find %s index" % data_type
 			pass
+		self.mapping(data_type)
 		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs
 		# docs = self._import_content(data_type, docs)
@@ -142,39 +146,106 @@ class Search:
 		except:
 			return False
 
+	def mapping(self, data_type):
+		mapping = {
+			"properties": {
+				"title": {
+					"type":          "string",
+					"analyzer":      "english",
+					"index_options": "offsets"
+				},
+				"fulltext": {
+					"type":          "string",
+					"analyzer":      "english",
+					"index_options": "offsets"
+				},
+				"description": {
+					"type":          "string",
+					"analyzer":      "english",
+					"index_options": "offsets"
+				}
+			}
+		}
+		self.es.put_mapping(self.index_name, data_type, mapping)
+
+
 	def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False):
 		q = {
 			"from": es_from,
 			"size": size,
+			"query": {
+				"filtered": {
+					"filter": {},
+					"query": {}
+				},
+			},
 		}
-		if (content_type):
-			q["query"] = {
-				"match": {
-					"_all": query,
+		q["query"]["filtered"]["query"] = {
+			"multi_match": {
+				"query": query,
+				"fields": self.search_fields,
+				"type": "phrase"
+			},
+		}
+		if start_date and end_date:
+			q["query"]["filtered"]["filter"]["range"] = {
+				"date": {
+					"gte": start_date,
+					"lte": end_date,
 				}
 			}
 			
-		q["query"] = {
-			"multi_match": {
-				"query": query,
-				"fields": self.search_fields
+		q["highlight"] = {
+			"pre_tags" : ["**"],
+			"post_tags" : ["/**"],
+			"fields": {
+				"title": {},
+				"description": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"},
+				"fulltext": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"}
 			}
 		}
-		if start_date and end_date:
-			q["query"] = {
-				"range": {
-					"date": {
-						"gte": start_date,
-						"lte": end_date,
-					}
-				}
-			}
-		
 		print "query_statement", q
 		if (content_type):
 			return self.es.search(q, index=self.index_name, doc_type = content_type)
 		else:
 			return self.es.search(q, index=self.index_name)
+
+	def count(self, query, content_type=False, start_date=False, end_date=False):
+		q1 = { 
+			"query": {
+					"multi_match": {
+						"query": query,
+						"fields": self.search_fields,
+						"type": "phrase"
+					},
+				},
+				"aggregations": {
+					"types": {
+						"terms": {
+							"field": "_type"
+						}
+					}
+				}
+			}
+		q2 = { 
+			"query": {
+					"multi_match": {
+						"query": query,
+						"fields": self.search_fields,
+						"type": "phrase"
+					},
+				},
+				"aggregations": {
+					"years": {
+						"date_histogram": {
+							"field": "date",
+							"interval": "year"
+						}
+					}
+				}
+			}
+		return [self.es.search(q1, index=self.index_name, size=0), self.es.search(q2, index=self.index_name, size=0)]
+	
 
 	def import_all(self):
 		for data_type in Transforms.data_types:

@@ -1,5 +1,9 @@
 {% if result._source %}
-	{% set title = result._source.title %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 {% else %}
@@ -11,19 +15,14 @@
 {% endif %}
 <div class="member-stub space-bottom-sm">
 	<div class="row">
-		<div class="col-md-1">
+		<div class="col-md-10">
 			<span class="label label-primary">Member</span>
-		</div>
-		<div class="col-md-1">
 			{% if pic %}
 				<img src="{{ pic }}" alt="{{title}}" style="max-height: 40px">
 			{% endif %}
-		</div>
-		<div class="col-md-8">
-			<a href="/member/{{ id }}">{{ title }}</a>
+		
+			<a href="/member/{{ id }}">{{ title|safe }}</a>
 			{{ date|human_date }} - {{ date|pretty_date }}
-		</div>
-		<div class="col-md-2">
 			{% if party %}
 			<span class="label label-info">{{ party.name }}</span>
 		
@@ -31,4 +30,19 @@
 		</div>
 		
 	</div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% elif result.highlight.fulltext %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% endif %}
+	{% endif %}
 </div>

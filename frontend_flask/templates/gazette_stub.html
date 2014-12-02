@@ -1,16 +1,35 @@
 {% if result._source %}
-{% set title = result._source.title %}
-{% set date = result._source.date %}
-{% set id = result._id %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
 {% else %}
-{% set title = result.title %}
-{% set date = result.start_date %}
-{% set id = result.id %}
+	{% set title = result.title %}
+	{% set date = result.start_date %}
+	{% set id = result.id %}
 {% endif %}
 <div class="calls-for-comment-stub space-bottom-sm">
 	<div class="title">
 		<span class="label label-success">Gazette</span>
-		<a href="/gazette/{{ id }}">{{ title }}</a>
+		<a href="/gazette/{{ id }}">{{ title|safe }}</a>
 	</div>
 	<div class="date">{{ date|human_date }} - {{ date|pretty_date }}</div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% elif result.highlight.fulltext %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% endif %}
+	{% endif %}
 </div>

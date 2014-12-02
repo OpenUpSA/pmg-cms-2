@@ -1,6 +1,10 @@
 
 {% if result._source %}
-	{% set title = result._source.title %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 	{% set house = result._source.house %}
@@ -14,11 +18,9 @@
 {% endif %}
 <div class="committee-stub space-bottom-sm">
 	<div class="row">
-		<div class="col-md-2">
-			<span class="label label-primary">Committee Meeting</span>	
-		</div>
-		<div class="col-md-8">
-			<a href="/committee-meeting/{{ id }}">{{ title }}</a>
+		<div class="col-md-10">
+			<span class="label label-primary">Committee Meeting</span>
+			<a href="/committee-meeting/{{ id }}">{{ title|safe }}</a>
 			{{ date|human_date }} - {{ date|pretty_date }}
 		</div>
 		<div class="col-md-2">
@@ -30,6 +32,20 @@
 			<span class="label label-warning">{{ committee.house.name }}</span>
 		{% endif %}
 		</div>
-		
 	</div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% elif result.highlight.fulltext %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% endif %}
+	{% endif %}
 </div>

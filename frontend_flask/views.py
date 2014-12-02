@@ -10,6 +10,7 @@ from search.search import Search
 import math
 import random
 import arrow
+import re
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -23,6 +24,33 @@ def _jinja2_filter_datetime(iso_str):
     format='%d %b %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
+
+@app.template_filter('search_snippet')
+def _jinja2_filter_search_snippet(snippet):
+    if not snippet:
+        return ""
+    snippet = re.sub('<[^<]+?>', '', snippet)
+    snippet = snippet.strip()
+    if (len(snippet) > 180):
+        pos = re.match("\*\*(.*)/\*\*", snippet)
+        print "query_statement", pos
+        if pos:
+            snippet = snippet.replace("/**", "")
+            snippet = snippet.replace("**", "")
+            words = re.split('\s', snippet)
+            startpos = pos.start() - 75
+            wc = 0
+            tmp = ""
+            while (words and wc < 150):
+                tmp = tmp + words.pop() + " "
+            snippet = str(pos.start()) + tmp[:pos.start()] + "*" + tmp[pos.start():]
+    snippet = snippet.replace("/**", "</strong>")
+    snippet = snippet.replace("**", "<strong>")
+    return snippet
+
+@app.template_filter('ellipse')
+def _jinja2_filter_ellipse(snippet):
+    return "...&nbsp;" + snippet.strip() + "&nbsp;..."
 
 @app.template_filter('nbsp')
 def _jinja2_nbsp(str):
@@ -537,4 +565,13 @@ def search(page = 0):
     years.reverse()
     
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years)
+    bincounts = search.count(q)
+    bincount_array = bincounts[0]["aggregations"]["types"]["buckets"]
+    print "query_statement", bincounts[1]["aggregations"]["years"]["buckets"]
+    bincount = {}
+    for bin in bincount_array:
+        bincount[bin["key"]] = bin["doc_count"]
+    yearcount = {}
+    for year in bincounts[1]["aggregations"]["years"]["buckets"]:
+        yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount)

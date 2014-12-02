@@ -1,5 +1,9 @@
 {% if result._source %}
-	{% set title = result._source.title %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 {% else %}
@@ -14,7 +18,7 @@
 	<div class="row">
 		<div class="col-md-10">
 			<span class="label label-primary">Tabled Committee Report</span>
-			<a href="/committee-meeting/{{ result._id }}">{{ title }}</a>
+			<a href="/committee-meeting/{{ result._id }}">{{ title|safe }}</a>
 			{{ date|human_date }} - {{ date|pretty_date }}
 		</div>
 		<div class="col-md-2">
@@ -25,6 +29,20 @@
 			{% endfor %}
 			{% endif %}
 		</div>
-		
 	</div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% elif result.highlight.fulltext %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% endif %}
+	{% endif %}
 </div>

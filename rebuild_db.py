@@ -11,7 +11,7 @@ from sqlalchemy import types
 import requests
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
 STATIC_HOST = app.config['STATIC_HOST']

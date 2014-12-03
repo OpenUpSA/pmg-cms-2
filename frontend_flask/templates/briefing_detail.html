@@ -43,43 +43,45 @@
       			<h4>Audio</h4>
     		</div>
     		<div class="panel-body">
-      		<ul class="list-unstyled">
-				{% for file in briefing.files %}
-				{% if file.filemime in ["audio/mpeg"] %}
-	  			<li>
-	  				<a href="{{ file.url }}" target="_blank"><span class="glyphicon glyphicon-headphones"></span>
-	  				{% if (file.description) %}
-					{{ file.description }}
-					{% else %}
-					{{ file.origname }}
-					{% endif %}
-					({{ file.playtime }})
-					</a>
-	  			</li>
-	  			{% endif %}
-	  			{% endfor %}
-	  		</ul>
+	      		<ul class="list-unstyled">
+					{% for file in briefing.files %}
+					{% if file.filemime in ["audio/mpeg"] %}
+		  			<li>
+		  				<a href="{{ file.url|file }}" target="_blank"><span class="glyphicon glyphicon-headphones"></span>
+		  				{% if (file.description) %}
+						{{ file.description }}
+						{% else %}
+						{{ file.origname }}
+						{% endif %}
+						({{ file.playtime }})
+						</a>
+		  			</li>
+		  			{% endif %}
+		  			{% endfor %}
+		  		</ul>
+		  	</div>
     	</div>
     	<div class="panel panel-primary">
     		<div class="panel-heading">
       			<h4>Documents</h4>
     		</div>
     		<div class="panel-body">
-      		<ul class="list-unstyled">
-				{% for file in briefing.files %}
-				{% if file.filemime not in ["audio/mpeg"] %}
-	  			<li>
-	  				<a href="{{ file.url }}" target="_blank"><span class="glyphicon glyphicon-file"></span>
-	  				{% if (file.description) %}
-					{{ file.description }}
-					{% else %}
-					{{ file.origname }}
-					{% endif %}
-					</a>
-	  			</li>
-	  			{% endif %}
-	  			{% endfor %}
-	  		</ul>
+	      		<ul class="list-unstyled">
+					{% for file in briefing.files %}
+					{% if file.filemime not in ["audio/mpeg"] %}
+		  			<li>
+		  				<a href="{{ file.url|file }}" target="_blank"><span class="glyphicon glyphicon-file"></span>
+		  				{% if (file.description) %}
+						{{ file.description }}
+						{% else %}
+						{{ file.origname }}
+						{% endif %}
+						</a>
+		  			</li>
+		  			{% endif %}
+		  			{% endfor %}
+		  		</ul>
+		  	</div>
     	</div>
     {% endif %}
 </div>

@@ -74,7 +74,7 @@ def find_files(obj):
             fobj = File(
                     filemime=f["filemime"],
                     origname = f["origname"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/" + f["filename"],
+                    url = f["filepath"].replace("files/", ""),
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -85,7 +85,7 @@ def find_files(obj):
             fobj = File(
                     filemime=f["filemime"],
                     origname = f["origname"],
-                    url = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/audio/" + f["filename"],
+                    url = "audio/" + f["filename"].replace("files/", ""),
                     playtime = f["playtime"],
                     description = f["title_format"]
                 )
@@ -218,7 +218,8 @@ def rebuild_db():
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
-            version=0
+            version=0,
+            start_date = db_date_from_utime(member['start_date'])
         )
         if member.get('files'):
             # logger.debug(json.dumps(member['files'], indent=4)
@@ -377,6 +378,20 @@ def bills():
         db.session.add(bill)
     db.session.commit()
 
+def add_featured():
+    committeemeetings = CommitteeMeeting.query.limit(5)
+    tabledreports = Tabled_committee_report.query.limit(5)
+    featured = Featured()
+    for committeemeeting in committeemeetings:
+        featured.committee_meeting.append(committeemeeting)
+    for tabledreport in tabledreports:
+        featured.tabled_committee_report.append(tabledreport)
+    featured.title = "LivemagSA Launched Live From Parliament"
+    featured.blurb = "For the next six months, LiveMagSA be teaming up with PMG to report directly from parliament, bringing you the highlights and telling you about the policy decisions that affect you."
+    featured.link = "http://livemag.co.za/welcome-parliament/"
+    db.session.add(featured)
+    db.session.commit()
+
 def clear_db():
     logger.debug("Dropping all")
     db.drop_all()
@@ -386,19 +401,16 @@ def clear_db():
 
 if __name__ == '__main__':
     clear_db()
-    
-    
     rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "body": "body" })
-    bills()
-    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation"})
+    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
+    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
     rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", {
-        "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid"
-        })
-    rebuild_table("calls_for_comment", {
-        "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid"
-        })
-    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
-    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date" })
-    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body" })
+    rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("calls_for_comment", { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
+    rebuild_table("daily_schedule", { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
+    # bills()
+    add_featured()
+

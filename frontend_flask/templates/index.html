@@ -6,9 +6,12 @@
     <ul class="list-inline top-links">
       <li><a href="/committees/">Committees</a></li>
       <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
-      <!--<li><a href="#">Hansards</a></li>-->
+      
       <li><a href="/members">MPs</a></li>
       <li><a href="/committee-meetings">Committee Meetings</a></li>
+      <li><a href="http://bills.pmg.org.za">Bills</a></li>
+      <li><a href="/question_replies">Questions and Replies</a></li>
+      <li><a href="/calls-for-comments">Calls for Comments</a></li>
       <!--<li><a href="#">About Parliament</a></li>-->
       <!--<li><a href="#">About PMG</a></li>-->
     </ul>
@@ -20,11 +23,11 @@
 
       <div class="news-pic" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
         <div class="text-background bottom">
-          <h2 class=""><a href="{{ featured.link }}">{{ featured.title }}</a></h2>
+          <h2 class=""><a href="{{ featured_content.link }}">{{ featured_content.title }}</a></h2>
 
         </div>
         <div class="blurb">
-          <p class="">{{ featured.blurb }}</p>
+          <p class="">{{ featured_content.blurb }}</p>
         </div>
       </div>
     </div>
@@ -33,6 +36,9 @@
   <div class="row">
     <div id="schedule" class="col-md-4">
       <h3><span class="glyphicon glyphicon-calendar"></span> Schedule</h3>
+      {% if not scheduledates %}
+      <h4>No meetings currently scheduled</h4>
+      {% endif %}
       {% for date in scheduledates %}
       <h4>{{ date }}</h4>
       <table class="table table-striped table-bordered">
@@ -48,49 +54,11 @@
       {% endfor %}
       </table>
       {% endfor %}
-      <!--<h4>Monday 18 August 2014 </h4>-->
-      <!-- <table class="table table-striped table-bordered"> -->
-        <!-- <tr> -->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-        <!--<tr>-->
-          <!--<td>8:30 am - 10:30am</td>-->
-          <!--<td>Some thing happening</td>-->
-        <!--</tr>-->
-      <!--</table>-->
+      
     </div><!-- Schedule -->
 
     <div class="col-md-8" id="committee-meetings"> <!-- Committee meetings -->
-      <form class="form-inline pull-right" role="form">
+      <!-- <form class="form-inline pull-right" role="form">
         <div class="form-group">
           <select class="form-control">
             <option value="">Agriculture, Forestry and Fisheries</option>
@@ -99,13 +67,13 @@
             <option value="">Communications</option>
           </select>
         </div>
-      </form>
-      <h3><span class="glyphicon glyphicon-flash"></span> Committee meetings</h3>
+      </form> -->
+      <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
       
       <table class="table table-striped table-bordered">
          {% for committee_meeting in committee_meetings %}
           <tr>
-            <td>{{ committee_meeting.date }}</td>
+            <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
           <td><a href="/committee/{{ committee_meeting.organisation.id }}">{{ committee_meeting.organisation.name }}</a></td>
           <td>
             <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
@@ -113,6 +81,7 @@
         </tr>
         {% endfor %}
       </table>
+      <a href="/committee-meetings/" class="btn btn-primary">More Committee Meetings</a>
     </div> <!-- Committee meetings -->
   </div>
 
@@ -120,67 +89,30 @@
 </div> <!-- /Main Section -->
 
 <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
-  <div id="latest_bills">
-    <h3><span class="glyphicon glyphicon-certificate"></span> Bills</h3>
-    
+  <div class="space-bottom">
+    <!-- <h3><span class="glyphicon glyphicon-certificate"></span> Featured</h3> -->
+    <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
     <ul class="list-unstyled list">
-      {% for bill in bills %}
+      {% for committee_meeting in featured_content.committee_meeting %}
       <li>
-        <h4><a href="http://bills.pmg.org.za/bill/{{ bill.bill_code }}/">{{ bill.title }}</a></h4>
-        <p>
-          Bill  <strong>{{ bill.number}}</strong> of <strong>{{ bill.year }}</strong>
-        </p>
-        
-        <!-- <p>
-          <strong>February 26, 2014</strong>
-          Bill introduced in National Assembly
-        </p>
-        <p>
-          <strong>July 22, 2014</strong>
-          Bill lapsed in terms of Rule 298 but had been revived on this date
-        </p> -->
+        <h5><a href="/committee-meeting/{{ committee_meeting.id }}/">{{ committee_meeting.title }}</a></h5>
       </li>
       {% endfor %}
-      <!--<li>-->
-        <!--<h4><a href="http://bills.pmg.org.za/bill/6/">Appropriation Bill (B4-2014)</a></h4>-->
-        <!--<p><span class="label label-success">Introduced</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-warning">National Assembly</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-danger">National Council of Provinces</span></p>-->
-        <!--<p>-->
-          <!--<strong>July 31, 2014</strong>-->
-          <!--Bill passed by the NCOP and sent to the president for assent-->
-        <!--</p>-->
-        <!--<p>-->
-          <!--<strong>July 29, 2014</strong>-->
-          <!--Appropriation Bill: National Treasury briefing &amp; finalisation-->
-        <!--</p>-->
-      <!--</li>-->
-
-      <!--<li>-->
-        <!--<h4><a href="http://bills.pmg.org.za/bill/4/">Medicines and Related Substances Amendment Bill (B6-2014)</a></h4>-->
-        <!--<p><span class="label label-success">Introduced</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-warning">National Assembly</span></p>-->
-        <!--<p>-->
-          <!--<strong>February 26, 2014</strong>-->
-          <!--Bill introduced in National Assembly-->
-        <!--</p>-->
-        <!--<p>-->
-          <!--<strong>July 22, 2014</strong>-->
-          <!--Bill lapsed in terms of Rule 298 but had been revived on this date-->
-        <!--</p>-->
-      <!--</li>-->
-
-      <!--<li>-->
-        <!--<h4><a href="http://bills.pmg.org.za/bill/6/">Appropriation Bill (B4-2014)</a></h4>-->
-        <!--<p><span class="label label-success">Introduced</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-warning">National Assembly</span> <span class="glyphicon glyphicon-chevron-right"></span> <span class="label label-danger">National Council of Provinces</span></p>-->
-        <!--<p>-->
-          <!--<strong>July 31, 2014</strong>-->
-          <!--Bill passed by the NCOP and sent to the president for assent-->
-        <!--</p>-->
-        <!--<p>-->
-          <!--<strong>July 29, 2014</strong>-->
-          <!--Appropriation Bill: National Treasury briefing &amp; finalisation-->
-        <!--</p>-->
-      <!--</li>-->
-    <!--</ul>-->
+    </ul>
   </div>
+  <div class="space-bottom">
+    <h4><span class="fa fa-briefcase"></span> Featured Tabled Committee Reports</h4>
+    <ul class="list-unstyled list">
+      {% for tabled_committee_report in featured_content.tabled_committee_report %}
+      <li>
+        <h5><a href="/tabled-committee-report/{{ tabled_committee_report.id }}/">{{ tabled_committee_report.title }}</a></h5>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <!-- <h4><span class="fa fa-twitter"></span>  Twitter</h4> -->
+  <a class="twitter-timeline" href="https://twitter.com/PMG_SA" data-widget-id="537890271451959296">Tweets by @PMG_SA</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 </div> <!-- /Sidebar -->
 
 {% endblock page %}

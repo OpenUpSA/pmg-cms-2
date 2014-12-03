@@ -68,7 +68,8 @@ class MyIndexView(AdminIndexView):
         record_counts = {
             'member': Member.query.count(),
             'committee': Organisation.query.filter_by(type="committee").count(),
-            'committee-meeting-report': Content.query.filter_by(type="committee-meeting-report").count(),
+            'committee-meeting': CommitteeMeeting.query.count(),
+            'content': Content.query.count(),
             }
 
         return self.render('admin/my_index.html', record_counts=record_counts)
@@ -270,7 +271,14 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership')
     )
-    form_columns = column_list
+    form_columns = (
+        'name',
+        'house',
+        'party',
+        'province',
+        'bio',
+        'profile_pic_url'
+    )
     form_overrides = dict(bio=fields.TextAreaField)
     form_ajax_refs = {
         'events': {

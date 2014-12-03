@@ -8,8 +8,8 @@ class Transforms:
 		"committee-meeting": {
 			"id": "id",
 			"title": "title",
-			"description": ["content", 0, "summary"],
-			"fulltext": ["content", 0, "body"],
+			"description": "summary",
+			"fulltext": "body",
 			"date": "date",
 		},
 		"member": {
@@ -53,7 +53,23 @@ class Transforms:
 			"title": "title",
 			"fulltext": "body",
 			"date": "start_date",
-		}
+		},
+		"policy_document": {
+			"id": "id",
+			"title": "title",
+			"date": "start_date",
+		},
+		"gazette": {
+			"id": "id",
+			"title": "title",
+			"date": "start_date",
+		},
+		"daily_schedule": {
+			"id": "id",
+			"title": "title",
+			"fulltext": "body",
+			"date": "start_date",
+		},
 	}
 
-	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment']
+	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document', 'gazette', 'daily_schedule']

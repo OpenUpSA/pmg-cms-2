@@ -7,18 +7,16 @@
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 {% else %}
-	{% set title = result.title %}
-	{% set date = result.start_date %}
-	{% set id = result.id %}
+{% set title = result.title %}
+{% set date = result.start_date %}
+{% set id = result.id %}
 {% endif %}
-<div class="question_reply-stub space-bottom-sm">
-	<div class="row">
-		<div class="col-md-10">
-			<span class="label label-primary">Questions and Replies</span>
-			<a href="/question_reply/{{ id }}">{{ title|safe }}</a>
-			{{ date|human_date }} - {{ date|pretty_date }}
-		</div>
+<div class="calls-for-comment-stub space-bottom-sm">
+	<div class="title">
+		<span class="label label-success">Policy Document</span>
+		<a href="/policy-document/{{ id }}">{{ title|safe }}</a>
 	</div>
+	<div class="date">{{ date|human_date }} - {{ date|pretty_date }}</div>
 	{% if result.highlight %}
 	{% if result.highlight.description %}
 	<div class="row">

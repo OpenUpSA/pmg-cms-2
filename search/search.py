@@ -25,6 +25,7 @@ class Search:
 	
 
 	def _get_all_endpoint_data(self, endpoint, data_type):
+		print "Getting list %s" % endpoint
 		endpoint = requests.get(endpoint);
 		if (endpoint.status_code != 200):
 			print "Error fetching page from api server, http error code", endpoint.status_code

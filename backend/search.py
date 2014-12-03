@@ -30,10 +30,15 @@ class Search:
 	def _getVal(self, obj, field):
 		if type(field) is list:
 			if (len(field) == 1):
-				return getattr(obj, field[0])
+
+				if hasattr(obj, field[0]):
+					return getattr(obj, field[0])
 			key = field[:1][0]
-			newobj = getattr(obj, key)
-			return self._getVal(newobj, field[1:])
+			if hasattr(obj, key):
+				newobj = getattr(obj, key)
+				return self._getVal(newobj, field[1:])
+			else:
+				return None
 		else:
 			return getattr(obj, field)
 
@@ -45,16 +50,22 @@ class Search:
 		count = len(ids)
 		pages = int(math.ceil(float(count) / float(self.per_batch)))
 		print "Pages", pages, "Count", count
-		for page in range(0, pages):
-			print "Page", page
-			id_subsection = ids[:self.per_batch]
+		while len(ids):
+			print "Items left", len(ids)
+			id_subsection = []
+			for x in range(0, self.per_batch):
+				if ids:
+					id_subsection.append(ids.pop())
 			items = []
 			for row in db.session.query(Model).filter(Model.id.in_(id_subsection)).all():
 				item = {}
 				for key, field in Transforms.convert_rules[data_type].iteritems():
 					val =self._getVal(row, field)
 					if type(val) is unicode:
-						val = val.encode("utf-8")
+						val = BeautifulSoup(val).get_text().strip()
+						# print key, val[:20].encode("utf-8")
+					# else:
+						# print key, val
 					item[key] = val
 				items.append(item)
 			self.es.bulk_index(self.index_name, data_type, items)
@@ -197,8 +208,8 @@ class Search:
 			"post_tags" : ["</strong>"],
 			"fields": {
 				"title": {},
-				"description": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"},
-				"fulltext": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"}
+				"description": {"fragment_size" : 500, "number_of_fragments" : 1, "no_match_size": 250, "tag_schema" : "styled"},
+				"fulltext": {"fragment_size" : 500, "number_of_fragments" : 1, "no_match_size": 250, "tag_schema" : "styled"}
 			}
 		}
 		# print "query_statement", q

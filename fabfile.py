@@ -14,8 +14,8 @@ def virtualenv():
 def rebuild_db():
     sudo("supervisorctl stop pmg_cms")
     with virtualenv():
-        with shell_env(FLASK_ENV='production'):
-            sudo('python %s/rebuild_db.py' % env.project_dir)
+        with cd(env.project_dir):
+            sudo('source production-cms-env.sh; python rebuild_db.py')
     sudo("supervisorctl start pmg_cms")
 
 def copy_db():
@@ -40,19 +40,19 @@ def scrape_tabled_reports():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run("python scrapers/scraper.py tabledreports")
+                run("source production-cms-env.sh; python scrapers/scraper.py tabledreports")
 
 def scrape_schedule():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run("python scrapers/scraper.py schedule")
+                run("source production-cms-env.sh; python scrapers/scraper.py schedule")
 
 def index_search():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run('python search/search.py --reindex')
+                run('source production-cms-env.sh; python search/search.py --reindex')
 
 def restart():
     sudo("supervisorctl restart pmg_cms")

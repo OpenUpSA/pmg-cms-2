@@ -39,6 +39,7 @@ class Search:
 		docs = self._format_data(data_type, docs)
 		print "Indexing", len(docs), "items"
 		self.es.bulk_index(self.index_name, data_type, docs)
+		docs = None
 		if (data["next"]):
 			self._get_all_endpoint_data(data["next"], data_type)
 		return True
@@ -208,7 +209,7 @@ class Search:
 				"fulltext": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"}
 			}
 		}
-		print "query_statement", q
+		# print "query_statement", q
 		if (content_type):
 			return self.es.search(q, index=self.index_name, doc_type = content_type)
 		else:

@@ -1,4 +1,6 @@
-SQLALCHEMY_DATABASE_URI = 'postgresql://pmg:pmg@localhost/pmg'
+from os import environ as env
+
+SQLALCHEMY_DATABASE_URI = env['SQLALCHEMY_DATABASE_URI']
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.org.za/"
 FRONTEND_HOST = "http://new.pmg.org.za/"

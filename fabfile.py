@@ -115,17 +115,10 @@ def deploy():
     with cd(env.project_dir):
         # ensure we are on the target branch
         sudo('git checkout ' + env.git_branch)
-        # move db out of the way
-        # with settings(warn_only=True):
-            # sudo('mv instance/tmp.db /tmp/tmp.db')
         # first, discard local changes, then pull
         with settings(warn_only=True):
-            # sudo('git stash')
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
-        # put db back
-        # sudo('mv /tmp/tmp.db instance/tmp.db')
-        # sudo('git stash pop')
 
     # install dependencies
     with virtualenv():

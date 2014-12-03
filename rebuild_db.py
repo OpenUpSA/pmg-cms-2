@@ -11,13 +11,13 @@ from sqlalchemy import types
 import requests
 
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
 STATIC_HOST = app.config['STATIC_HOST']
 db.echo = False
 
-def strip_filpath(filepath):
+def strip_filepath(filepath):
 
     return "/".join(filepath.split("/")[1::])
 
@@ -154,9 +154,6 @@ def rebuild_db():
     Save json fixtures into a structured database, intended for use in our app.
     """
 
-    db.drop_all()
-    db.create_all()
-
     start = time.time()
 
     # populate houses of parliament
@@ -223,7 +220,7 @@ def rebuild_db():
         )
         if member.get('files'):
             # logger.debug(json.dumps(member['files'], indent=4)
-            member_obj.profile_pic_url = STATIC_HOST + strip_filpath(member["files"][-1]['filepath'])
+            member_obj.profile_pic_url = STATIC_HOST + strip_filepath(member["files"][-1]['filepath'])
         logger.debug(member_obj.name)
         logger.debug(member_obj.profile_pic_url)
 

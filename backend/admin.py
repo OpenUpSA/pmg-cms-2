@@ -210,6 +210,21 @@ class ContentModelConverter(InlineModelConverter):
 class InlineContent(InlineFormAdmin):
     form_excluded_columns = ('type', 'file_path', )
 
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField('File')
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            filename = secure_filename(file_data.filename)
+            model.type = file_data.content_type
+            logger.debug('saving uploaded file: ' + filename)
+            file_data.save(os.path.join(UPLOAD_PATH, filename))
+            model.file_path = filename
+
 
 class CommitteeMeetingView(EventView):
 

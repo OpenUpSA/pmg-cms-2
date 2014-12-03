@@ -6,7 +6,7 @@ import requests
 from datetime import datetime, date
 import dateutil.parser
 import urllib
-from search.search import Search
+# from search.search import Search
 import math
 import random
 import arrow
@@ -137,20 +137,21 @@ def handle_api_exception(error):
     return render_template('500.html', error=error), 500
 
 
-def load_from_api(resource_name, resource_id=None, page=None, return_everything=False):
+def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, params={}):
 
     query_str = resource_name + "/"
     if resource_id:
         query_str += str(resource_id) + "/"
     if page:
-        query_str += "?page=" + str(page)
+        params["page"] = str(page)
+        # query_str += "?page=" + str(page)
 
     headers = {}
     # add auth header
     if session and session.get('api_key'):
         headers = {'Authorization': 'ApiKey:' + session.get('api_key')}
     try:
-        response = requests.get(API_HOST + query_str, headers=headers)
+        response = requests.get(API_HOST + query_str, headers=headers, params=params)
         if response.status_code != 200:
             try:
                 msg = response.json().get('message')
@@ -538,40 +539,46 @@ def search(page = 0):
     print "Search page called"
     logger.debug("search page called")
 
-    search = Search()
     
-    q = request.args.get('q')
+    params = {}
     filters = {}
-    filters["type"] = request.args.get('filter[type]')
+    q = params["q"] = request.args.get('q')
+    
+    filters["type"] = params['filter[type]'] = request.args.get('filter[type]')
+    filters["start_date"] = params['filter[start_date]'] = request.args.get('filter[start_date]')
+    filters["end_date"] = params['filter[end_date]'] = request.args.get('filter[end_date]')
+
+    if (filters["type"] == "None"): 
+        params['filter[type]'] = filters["type"] = None
+    if (filters["start_date"] == "None"): 
+        params['filter[start_date]'] = filters["start_date"] = None
+    if (filters["end_date"] == "None"): 
+        params['filter[end_date]'] = filters["end_date"] = None
 
     query_string = request.query_string
     
     per_page = app.config['RESULTS_PER_PAGE']
     if (request.args.get('per_page')):
         per_page = int(request.args.get('per_page'))
+    print params
+    searchresult = load_from_api('search', params=params)
 
-    filters["start_date"] = request.args.get('filter[start_date]')
-    filters["end_date"] = request.args.get('filter[end_date]')
-    for filter_key in filters.keys():
-        if filters[filter_key] == "None":
-            filters[filter_key] = None
-    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"])
     result = {}
-    result = searchresult["hits"]["hits"]
-    count = searchresult["hits"]["total"]
-    max_score = searchresult["hits"]["max_score"]
+
+    result = searchresult["result"]
+    count = searchresult["count"]
     search_url = request.url_root + "search"
     years = range(1997, datetime.now().year + 1)
     years.reverse()
     
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    bincounts = search.count(q)
-    bincount_array = bincounts[0]["aggregations"]["types"]["buckets"]
-    print "query_statement", bincounts[1]["aggregations"]["years"]["buckets"]
+    # bincounts = search.count(q)
+    # bincount_array = bincounts[0]["aggregations"]["types"]["buckets"]
+    # print "query_statement", bincounts[1]["aggregations"]["years"]["buckets"]
     bincount = {}
-    for bin in bincount_array:
+    for bin in searchresult["bincount"]["types"]:
         bincount[bin["key"]] = bin["doc_count"]
     yearcount = {}
-    for year in bincounts[1]["aggregations"]["years"]["buckets"]:
+    for year in searchresult["bincount"]["years"]:
         yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
     return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount)

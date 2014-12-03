@@ -6,3 +6,4 @@ FRONTEND_HOST = "http://localhost:5000/"
 RESULTS_PER_PAGE = 50
 
 STATIC_HOST = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/"
+UPLOAD_PATH = "/tmp/pmg_upload/"

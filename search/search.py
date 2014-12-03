@@ -8,6 +8,7 @@ import sys
 from transforms import *
 
 import argparse
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 app.config.from_pyfile('./config.py')
@@ -52,10 +53,12 @@ class Search:
 			# print doc
 			for key, val in rules.iteritems():
 				if (type(val) is list):
-					
-					tmp[key] = self.getFromDict(doc, val)
+					formatted_val = self.getFromDict(doc, val)
 				else:
-					tmp[key] = doc[val]
+					formatted_val = doc[val]
+				if (type(formatted_val) is unicode) or (type(formatted_val) is str):
+					formatted_val = BeautifulSoup(formatted_val).get_text().encode('utf-8').strip()
+				tmp[key] = formatted_val	
 			results.append(tmp)
 		return results
 
@@ -100,7 +103,7 @@ class Search:
 		except:
 			print "Couldn't find %s index" % data_type
 			pass
-		self.mapping(data_type)
+		# self.mapping(data_type)
 		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs
 		# docs = self._import_content(data_type, docs)
@@ -196,8 +199,8 @@ class Search:
 			}
 			
 		q["highlight"] = {
-			"pre_tags" : ["**"],
-			"post_tags" : ["/**"],
+			"pre_tags" : ["<strong>"],
+			"post_tags" : ["</strong>"],
 			"fields": {
 				"title": {},
 				"description": {"fragment_size" : 150, "number_of_fragments" : 1, "no_match_size": 150, "tag_schema" : "styled"},

@@ -154,9 +154,6 @@ def rebuild_db():
     Save json fixtures into a structured database, intended for use in our app.
     """
 
-    db.drop_all()
-    db.create_all()
-
     start = time.time()
 
     # populate houses of parliament

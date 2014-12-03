@@ -25,24 +25,27 @@ class Search:
 	
 
 	def _get_all_endpoint_data(self, endpoint, data_type):
-		print "Getting list %s" % endpoint
-		endpoint = requests.get(endpoint);
-		if (endpoint.status_code != 200):
-			print "Error fetching page from api server, http error code", endpoint.status_code
-			return
-		data = endpoint.json()
-		if not data["count"]:
-			print "No results found for %s" % data_type
-			return True
-		docs = data["results"]
-		docs = self._import_content(data_type, docs)
-		docs = self._format_data(data_type, docs)
-		print "Indexing", len(docs), "items"
-		self.es.bulk_index(self.index_name, data_type, docs)
-		docs = None
-		if (data["next"]):
-			self._get_all_endpoint_data(data["next"], data_type)
-		return True
+		while endpoint:
+			print "Getting list %s" % endpoint
+			endpoint = requests.get(endpoint);
+			if (endpoint.status_code != 200):
+				print "Error fetching page from api server, http error code", endpoint.status_code
+				return
+			data = endpoint.json()
+			if not data["count"]:
+				print "No results found for %s" % data_type
+				return False
+			docs = data["results"]
+			docs = self._import_content(data_type, docs)
+			docs = self._format_data(data_type, docs)
+			print "Indexing", len(docs), "items"
+			self.es.bulk_index(self.index_name, data_type, docs)
+			# docs = None
+			endpoint = data["next"]
+			# if (data["next"]):
+			# 	return data["next"]
+				# self._get_all_endpoint_data(data["next"], data_type)
+			# return False
 
 	def getFromDict(self, dataDict, mapList):
 		return reduce(lambda d, k: d[k], mapList, dataDict)
@@ -106,7 +109,7 @@ class Search:
 			print "Couldn't find %s index" % data_type
 			pass
 		# self.mapping(data_type)
-		docs = self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
+		self._get_all_endpoint_data(self.apiserver + "/" + data_type + "/", data_type)
 		# print docs
 		# docs = self._import_content(data_type, docs)
 		# docs = self._format_data(data_type, docs)

@@ -294,9 +294,9 @@ class Organisation(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')
 
-    tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table)
-    questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table)
-    calls_for_comment = db.relationship("Calls_for_comment", secondary=calls_for_comment_committee_table)
+    tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table, lazy=True)
+    questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table, lazy=True)
+    calls_for_comment = db.relationship("Calls_for_comment", secondary=calls_for_comment_committee_table, lazy=True)
 
     def __unicode__(self):
         tmp = self.name

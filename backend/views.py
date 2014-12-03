@@ -14,7 +14,7 @@ from operator import itemgetter
 import re
 import serializers
 import sys
-from search.search import Search
+from search import Search
 import math
 
 API_HOST = app.config["API_HOST"]
@@ -147,6 +147,8 @@ def search():
     """
 
     search = Search()
+    filters = {}
+    print request.args
     q = request.args.get('q')
     logger.debug("search called")
     page = 0
@@ -155,11 +157,20 @@ def search():
     per_page = app.config['RESULTS_PER_PAGE']
     if (request.args.get('per_page')):
         per_page = int(request.args.get('per_page'))
-    searchresult = search.search(q, per_page, page * per_page)
+    filters["start_date"] = request.args.get('filter[start_date]')
+    filters["end_date"] = request.args.get('filter[end_date]')
+    filters["type"] = request.args.get('filter[type]')
+
+    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"])
+    bincounts = search.count(q)
+
     result = {}
     result["result"] = searchresult["hits"]["hits"]
     result["count"] = searchresult["hits"]["total"]
     result["max_score"] = searchresult["hits"]["max_score"]
+    result["bincount"] = {}
+    result["bincount"]["types"] = bincounts[0]["aggregations"]["types"]["buckets"]
+    result["bincount"]["years"] = bincounts[1]["aggregations"]["years"]["buckets"]
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
 
     if result["count"] > (page + 1) * per_page:

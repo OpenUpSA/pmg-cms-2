@@ -26,6 +26,9 @@ API_HOST = app.config['API_HOST']
 STATIC_HOST = app.config['STATIC_HOST']
 UPLOAD_PATH = app.config['UPLOAD_PATH']
 
+if not os.path.isdir(UPLOAD_PATH):
+    os.mkdir(UPLOAD_PATH)
+
 logger = logging.getLogger(__name__)
 
 @app.context_processor

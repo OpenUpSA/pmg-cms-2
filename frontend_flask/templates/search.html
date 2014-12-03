@@ -1,47 +1,73 @@
 {% extends "base.html" %}
 
-{% block style %}
-<style>
-
-</style>
-{% endblock %}
-
 {% block page %}
-<div class="col-sm-12">
-  {% block top_links %}
-  <ul class="nav nav-pills" role="tablist">
-    <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a></li>
-    <li role="presentation" {% if (filters.type == 'committee') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committees</a></li>
-    <li role="presentation" {% if (filters.type == 'committee-meeting') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee-meeting&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committee Meetings</a></li>
-    <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Bills</a></li>
-    <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">MPs</a></li>
-    <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Hansards</a></li>
-    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Briefings</a></li>
-    <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Questions &amp; Replies</a></li>
-    <li role="presentation" {% if (filters.type == 'tabled_committee_report') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=tabled_committee_report&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Tabled Committee Reports</a></li>
-  </ul>
-  <ul class="nav nav-pills" role="tablist">
-    <li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>
-    {% for year in years %}
-    <li role="presentation" {% if (filters["start_date"] == year|string + "-01-01") %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}&amp;filter[start_date]={{year}}-01-01&amp;filter[end_date]={{year}}-12-31">{{year}}</a></li>
-    {% endfor %}
-  </ul>
-  {% endblock %}
-</div>
+
 <div class="col-sm-12">
   <h3 class="red"><span class="glyphicon glyphicon-search"></span> Search</h3>
 </div>
 
+<div class="col-sm-3">
+  {% block top_links %}
+  <ul class="nav nav-pills nav-stacked" role="tablist">
+    <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a></li>
+    {% if bincount["committee"] %}
+    <li role="presentation" {% if (filters.type == 'committee') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committees <span class="bincount">{{ bincount["committee"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["committee-meeting"] %}
+    <li role="presentation" {% if (filters.type == 'committee-meeting') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=committee-meeting&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Committee Meetings <span class="bincount">{{ bincount["committee-meeting"] }}</span></a> </li>
+    {% endif %}
+    {% if bincount["bill"] %}
+    <li role="presentation" {% if (filters.type == 'bill') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=bill&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Bills <span class="bincount">{{ bincount["bill"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["member"] %}
+    <li role="presentation" {% if (filters.type == 'member') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=member&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">MPs <span class="bincount">{{ bincount["member"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["hansard"] %}
+    <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Hansards <span class="bincount">{{ bincount["hansard"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["briefing"] %}
+    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Briefings <span class="bincount">{{ bincount["briefing"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["question_reply"] %}
+    <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Questions &amp; Replies <span class="bincount">{{ bincount["question_reply"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["tabled_committee_report"] %}
+    <li role="presentation" {% if (filters.type == 'tabled_committee_report') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=tabled_committee_report&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Tabled Committee Reports <span class="bincount">{{ bincount["tabled_committee_report"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["calls_for_comment"] %}
+    <li role="presentation" {% if (filters.type == 'calls_for_comment') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=calls_for_comment&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Calls For Comments <span class="bincount">{{ bincount["calls_for_comment"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["policy_document"] %}
+    <li role="presentation" {% if (filters.type == 'policy_document') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=policy_document&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Policy Documents <span class="bincount">{{ bincount["policy_document"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["gazette"] %}
+    <li role="presentation" {% if (filters.type == 'gazette') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=gazette&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Gazettes <span class="bincount">{{ bincount["gazette"] }}</span></a></li>
+    {% endif %}
+    {% if bincount["daily_schedule"] %}
+    <li role="presentation" {% if (filters.type == 'daily_schedule') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=daily_schedule&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Daily Schedules <span class="bincount">{{ bincount["daily_schedule"] }}</span></a></li>
+    {% endif %}
+  </ul>
+  <ul class="nav nav-pills nav-stacked" role="tablist">
+    <li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>
+    {% for year in years %}
+    {% if yearcount[year] %}
+    <li role="presentation" {% if (filters["start_date"] == year|string + "-01-01") %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}&amp;filter[start_date]={{year}}-01-01&amp;filter[end_date]={{year}}-12-31">{{year}} <span class="bincount">{{ yearcount[year] }}</span></a></li>
+    {% endif %}
+    {% endfor %}
+  </ul>
+  {% endblock %}
+</div>
+
 <div class="col-sm-8 justify-p">
   <h5>Total Results: {{ count }}</h5>
-   <table class="table table-striped table-bordered">
-  {% for result in results %}
- <tr>
-  <td>
-    {% include result._type + '_stub.html' %}
-  </td>
-</tr>
-  {% endfor %}
+  <table class="table table-striped table-bordered">
+    {% for result in results %}
+    <tr>
+      <td>
+        {% include result._type + '_stub.html' %}
+      </td>
+    </tr>
+    {% endfor %}
   </table>
   <div class="row">
     <div class="col-md-8">
@@ -49,5 +75,7 @@
     </div>
   </div>
 </div>
+
+
 {% endblock %}
 

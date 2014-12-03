@@ -1,9 +1,5 @@
 {% if result._source %}
-	{% if result.highlight.title %}
-		{% set title = result.highlight.title[0]|search_snippet %}
-	{% else %}	
-		{% set title = result._source.title %}
-	{% endif %}
+	{% set title = result._source.title %}
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 {% else %}
@@ -11,12 +7,12 @@
 	{% set date = result.start_date %}
 	{% set id = result.id %}
 {% endif %}
-<div class="question_reply-stub space-bottom-sm">
+<div class="daily_schedule-stub space-bottom-sm">
 	<div class="row">
 		<div class="col-md-10">
-			<span class="label label-primary">Questions and Replies</span>
-			<a href="/question_reply/{{ id }}">{{ title|safe }}</a>
-			{{ date|human_date }} - {{ date|pretty_date }}
+			<span class="label label-primary">Daily Schedule</span>
+			<a href="/daily_schedule/{{ id }}">{{ date|pretty_date }} </a>
+			{{ date|human_date }}
 		</div>
 	</div>
 	{% if result.highlight %}

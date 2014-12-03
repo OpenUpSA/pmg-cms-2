@@ -9,6 +9,8 @@ import urllib
 from search.search import Search
 import math
 import random
+import arrow
+import re
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -17,10 +19,52 @@ logger = logging.getLogger(__name__)
 
 @app.template_filter('pretty_date')
 def _jinja2_filter_datetime(iso_str):
-
+    if not iso_str:
+        return ""
     format='%d %b %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
+
+@app.template_filter('search_snippet')
+def _jinja2_filter_search_snippet(snippet):
+    if not snippet:
+        return ""
+    # snippet = re.sub('<[^<]+?>', '', snippet)
+    # snippet = snippet.strip()
+    # if (len(snippet) > 180):
+    #     pos = re.match("\*\*(.*)/\*\*", snippet)
+    #     print "query_statement", pos
+    #     if pos:
+    #         snippet = snippet.replace("/**", "")
+    #         snippet = snippet.replace("**", "")
+    #         words = re.split('\s', snippet)
+    #         startpos = pos.start() - 75
+    #         wc = 0
+    #         tmp = ""
+    #         while (words and wc < 150):
+    #             tmp = tmp + words.pop() + " "
+    #         snippet = str(pos.start()) + tmp[:pos.start()] + "*" + tmp[pos.start():]
+    # snippet = snippet.replace("/**", "</strong>")
+    # snippet = snippet.replace("**", "<strong>")
+    return snippet
+
+@app.template_filter('ellipse')
+def _jinja2_filter_ellipse(snippet):
+    return "...&nbsp;" + snippet.strip() + "&nbsp;..."
+
+@app.template_filter('nbsp')
+def _jinja2_nbsp(str):
+    return str.replace(" ", "&nbsp;")
+
+@app.template_filter('human_date')
+def _jinja2_filter_humandate(iso_str):
+    if not iso_str:
+        return ""
+    return arrow.get(iso_str).humanize()
+
+@app.template_filter('file')
+def _jinja2_filter_file(filename):
+    return app.config['STATIC_HOST'] + filename
 
 @app.context_processor
 def pagination_processor():
@@ -157,12 +201,9 @@ def index():
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
     stock_pic = "stock" + str(random.randint(1,18)) + ".jpg"
-    featured = {
-        'title': "LiveMagSA: \"People kill people, guns don't\"",
-        'blurb': "What do 10-year-old Jaylin Scullard, 27-year-old Senzo Meyiwa and 29-year-old Reeva Steenkamp have in common? All of them had their lives cut short due to gun violence. Scullard was playing in front of his house when he was shot dead. He is one of many children often caught in fatal crossfire between gangs in the Cape Flats. Steenkamp had her life ended by bullets blasted at her through a bathroom door and Bafana Bafana captain Meyiwa's death shocked the nation - a senseless death involving a firearm.",
-        'link': "http://www.pa.org.za/blog/livemagsa-people-kill-people-guns-dont",
-    }
-    return render_template('index.html', committee_meetings = committee_meetings, bills = bills, schedule = schedule, scheduledates = scheduledates, stock_pic = stock_pic, featured = featured)
+    featured_list = load_from_api('featured')["results"]
+    featured_content = load_from_api('featured', featured_list[0]["id"])
+    return render_template('index.html', committee_meetings = committee_meetings, bills = bills, schedule = schedule, scheduledates = scheduledates, stock_pic = stock_pic, featured_content = featured_content)
 
 
 @app.route('/bills/')
@@ -175,6 +216,15 @@ def bills():
 
     return render_template('bill_list.html')
 
+@app.route('/committee/<int:committee_id>/')
+def committee_detail(committee_id):
+    """
+    Display all available detail for the committee.
+    """
+
+    logger.debug("committee detail page called")
+    committee = load_from_api('committee', committee_id)
+    return render_template('committee_detail.html', committee=committee)
 
 @app.route('/committees/')
 def committees():
@@ -185,7 +235,7 @@ def committees():
     logger.debug("committees page called")
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
-    return render_template('committee_list.html', committees=committees)
+    return render_template('committee_list.html', committees=committees, )
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
@@ -202,18 +252,7 @@ def committee_meetings(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/committee-meetings"
 
-    return render_template('committee_meeting_list.html', committee_meetings=committee_meetings, num_pages=num_pages, page=page, url=url)
-
-@app.route('/committee/<int:committee_id>/')
-def committee_detail(committee_id):
-    """
-    Display all available detail for the committee.
-    """
-
-    logger.debug("committee detail page called")
-    committee = load_from_api('committee', committee_id)
-    return render_template('committee_detail.html', committee=committee)
-
+    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment")
 
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
@@ -263,7 +302,7 @@ def tabled_committee_reports(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     tabled_committee_reports = tabled_committee_reports_list['results']
     url = "/tabled-committee-reports"
-    return render_template('tabled_committee_reports_list.html', tabled_committee_reports=tabled_committee_reports, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=tabled_committee_reports, content_type="tabled_committee_report", title="Tabled Committee Reports", num_pages = num_pages, page = page, url = url, icon="briefcase")
 
 @app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
 def tabled_committee_report(tabled_committee_report_id):
@@ -289,7 +328,7 @@ def calls_for_comments(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = calls_for_comments_list['results']
     url = "/calls-for-comments"
-    return render_template('calls_for_comments_list.html', calls_for_comments=calls_for_comments, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=calls_for_comments, num_pages = num_pages, page = page, url = url, icon="comments", content_type="calls_for_comment", title="Calls for Comments")
 
 @app.route('/calls-for-comment/<int:calls_for_comment_id>/')
 def calls_for_comment(calls_for_comment_id):
@@ -315,7 +354,7 @@ def policy_documents(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     policy_documents = policy_documents_list['results']
     url = "/policy-documents"
-    return render_template('policy_documents_list.html', policy_documents=policy_documents, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=policy_documents, num_pages = num_pages, page = page, url = url, icon="", content_type="policy_document", title="Policy Documents")
 
 @app.route('/policy-document/<int:policy_document_id>/')
 def policy_document(policy_document_id):
@@ -341,7 +380,7 @@ def gazettes(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     gazettes = gazettes_list['results']
     url = "/gazettes"
-    return render_template('gazettes_list.html', gazettes=gazettes, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=gazettes, num_pages = num_pages, page = page, url = url, icon="file-text-o", content_type="gazette", title="Gazettes")
 
 @app.route('/gazette/<int:gazette_id>/')
 def gazette(gazette_id):
@@ -393,7 +432,7 @@ def members(page = 0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     members = members_list['results']
     url = "/members"
-    return render_template('member_list.html', members=members, num_pages = num_pages, page = page, url = url)
+    return render_template('list.html', results=members, num_pages = num_pages, page = page, url = url, icon="user", content_type="member", title="Members")
 
 
 @app.route('/member/<int:member_id>')
@@ -408,17 +447,87 @@ def hansard(hansard_id):
     hansard =  load_from_api('hansard', hansard_id)
     return render_template('hansard_detail.html', hansard=hansard, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/hansards/')
+@app.route('/hansards/<int:page>/')
+def hansards(page = 0):
+    """
+    Page through all available hansards.
+    """
+
+    logger.debug("hansards page called")
+    hansards_list = load_from_api('briefing', page = page)
+    count = hansards_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    hansards = hansards_list['results']
+    url = "/hansards"
+    return render_template('list.html', results=hansards, num_pages = num_pages, page = page, url = url, icon="archive", title="Hansards", content_type="hansard")
+
 @app.route('/briefing/<int:briefing_id>')
 def briefing(briefing_id):
     logger.debug("briefing page called")
     briefing =  load_from_api('briefing', briefing_id)
     return render_template('briefing_detail.html', briefing=briefing, STATIC_HOST=app.config['STATIC_HOST'])
 
+@app.route('/briefings/')
+@app.route('/briefings/<int:page>/')
+def briefings(page = 0):
+    """
+    Page through all available briefings.
+    """
+
+    logger.debug("briefings page called")
+    briefings_list = load_from_api('briefing', page = page)
+    count = briefings_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    briefings = briefings_list['results']
+    url = "/briefings"
+    return render_template('list.html', results=briefings, num_pages = num_pages, page = page, url = url, icon="bullhorn", title="Media Briefings", content_type="briefing",)
+
+@app.route('/daily_schedule/<int:daily_schedule_id>')
+def daily_schedule(daily_schedule_id):
+    logger.debug("daily_schedule page called")
+    daily_schedule =  load_from_api('daily_schedule', daily_schedule_id)
+    return render_template('daily_schedule_detail.html', daily_schedule=daily_schedule, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/daily_schedules/')
+@app.route('/daily_schedules/<int:page>/')
+def daily_schedules(page = 0):
+    """
+    Page through all available daily_schedules.
+    """
+
+    logger.debug("daily_schedules page called")
+    daily_schedules_list = load_from_api('daily_schedule', page = page)
+    count = daily_schedules_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    daily_schedules = daily_schedules_list['results']
+    url = "/daily_schedules"
+    return render_template('list.html', results=daily_schedules, num_pages = num_pages, page = page, url = url, icon="calendar", title="Daily Schedules", content_type="daily_schedule")
+
 @app.route('/question_reply/<int:question_reply_id>')
 def question_reply(question_reply_id):
     logger.debug("question_reply page called")
     question_reply =  load_from_api('question_reply', question_reply_id)
     return render_template('question_reply_detail.html', question_reply=question_reply, STATIC_HOST=app.config['STATIC_HOST'])
+
+@app.route('/question_replies/')
+@app.route('/question_replies/<int:page>/')
+def question_replies(page = 0):
+    """
+    Page through all available question_replies.
+    """
+
+    logger.debug("question_replies page called")
+    question_replies_list = load_from_api('briefing', page = page)
+    count = question_replies_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    question_replies = question_replies_list['results']
+    url = "/question_replies"
+    return render_template('list.html', results=question_replies, num_pages = num_pages, page = page, url = url, icon="question", title="Questions and Replies", content_type="question_reply")
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')
@@ -456,4 +565,13 @@ def search(page = 0):
     years.reverse()
     
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years)
+    bincounts = search.count(q)
+    bincount_array = bincounts[0]["aggregations"]["types"]["buckets"]
+    print "query_statement", bincounts[1]["aggregations"]["years"]["buckets"]
+    bincount = {}
+    for bin in bincount_array:
+        bincount[bin["key"]] = bin["doc_count"]
+    yearcount = {}
+    for year in bincounts[1]["aggregations"]["years"]["buckets"]:
+        yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount)

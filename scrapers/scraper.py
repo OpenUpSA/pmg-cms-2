@@ -46,7 +46,7 @@ class Scraper:
 
 	def schedule(self):
 		url = "http://www.pmg.org.za/schedule"
-		url = "http://www.pmg.org.za/daily-schedule/" + datetime.now().strftime('%Y/%m/%d') + "/daily-schedule"
+		url = "http://www.pmg.org.za/daily-schedule/" + datetime.datetime.now().strftime('%Y/%m/%d') + "/daily-schedule"
 		print "Fetching ", url
 		page = requests.get(url)
 		tree = html.fromstring(page.text)
@@ -63,7 +63,7 @@ class Scraper:
 			part = part.strip()
 			if part:
 				if part.split(', ', 1)[0] in self.dows:
-					in_date = date_object = datetime.strptime(part, '%A, %d %B %Y')
+					in_date = date_object = datetime.datetime.strptime(part, '%A, %d %B %Y')
 					result[in_date] = {}
 				else:
 					result[in_date]["house"] = []
@@ -91,7 +91,7 @@ class Scraper:
 		if (committee):
 			tabled_committee_report.title = title
 			tabled_committee_report.body = body
-			tabled_committee_report.committee_id = committee.id
+			tabled_committee_report.committee.append(committee)
 			db.session.add(tabled_committee_report)
 		else:
 			if committee_name not in self.missing_committees:
@@ -101,7 +101,7 @@ class Scraper:
 	def _report_exists(self, title, committee_name):
 		committee = Organisation.query.filter_by(name=committee_name).first()
 		if (committee):
-			check = Tabled_committee_report.query.filter_by(title=title, committee_id = committee.id).first()
+			check = Tabled_committee_report.query.filter_by(title=title).first()
 			if check:
 				return True
 		return False
@@ -137,7 +137,7 @@ class Scraper:
 					queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
 		for item in queue:
 			if (self._report_exists(item["name"], item["committee"]) == False):
-				print "Processing report %s" % item["name"]
+				# print "Processing report %s" % item["name"]
 				page = requests.get(item["link"]).text
 				self._save_tabledreport(item["name"], item["committee"], page)
 		print self.missing_committees

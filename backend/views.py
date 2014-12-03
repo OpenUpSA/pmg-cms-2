@@ -103,6 +103,7 @@ def api_resources():
         "committee": db.session.query(Organisation) \
             .filter_by(type='committee') \
             .order_by(Organisation.house_id, Organisation.name),
+
         "committee-meeting": db.session.query(Event) \
             .filter(Event.type == 'committee-meeting') \
             .order_by(desc(Event.date)),
@@ -114,25 +115,29 @@ def api_resources():
             .order_by(Member.name),
 
         "hansard": db.session.query(Hansard)
-            .order_by(Hansard.meeting_date),
+            .order_by(desc(Hansard.meeting_date)),
 
         "briefing": db.session.query(Briefing)
-            .order_by(Briefing.briefing_date),
+            .order_by(desc(Briefing.briefing_date)),
         "question_reply": db.session.query(Questions_replies)
-            .order_by(Questions_replies.start_date),
+            .order_by(desc(Questions_replies.start_date)),
         "schedule": db.session.query(Schedule)
-            .order_by(Schedule.meeting_date)
+            .order_by(desc(Schedule.meeting_date))
             .filter(Schedule.meeting_date >= current_time ),
         "tabled_committee_report": db.session.query(Tabled_committee_report)
-            .order_by(Tabled_committee_report.start_date),
+            .order_by(desc(Tabled_committee_report.start_date)),
         "calls_for_comment": db.session.query(Calls_for_comment)
-            .order_by(Calls_for_comment.start_date),
+            .order_by(desc(Calls_for_comment.start_date)),
         "policy_document": db.session.query(Policy_document)
-            .order_by(Policy_document.start_date),
+            .order_by(desc(Policy_document.start_date)),
         "gazette": db.session.query(Gazette)
-            .order_by(Gazette.start_date),
+            .order_by(desc(Gazette.start_date)),
         "book": db.session.query(Book)
-            .order_by(Book.start_date),
+            .order_by(desc(Book.start_date)),
+        "featured": db.session.query(Featured)
+            .order_by(desc(Featured.start_date)),
+        "daily_schedule": db.session.query(Daily_schedule)
+            .order_by(desc(Daily_schedule.start_date)),
     }
 
 @app.route('/search/')

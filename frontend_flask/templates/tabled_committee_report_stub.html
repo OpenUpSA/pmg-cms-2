@@ -1,6 +1,48 @@
-<div class="tabled-committee-report-stub">
-	<div class="title">
-		<span class="label label-danger">Tabled Committee Report</span>
-		<a href="/tabled-committee-report/{{ result._id }}">{{ result._source.title }}</a>
+{% if result._source %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
+{% else %}
+	{% set title = result.title %}
+	{% set date = result.start_date %}
+	{% set id = result.id %}
+	{% if result.committee %}
+		{% set committees = result.committee %}
+	{% endif %}
+{% endif %}
+<div class="tabled-committee-report-stub space-bottom-sm">
+	<div class="row">
+		<div class="col-md-10">
+			<span class="label label-primary">Tabled Committee Report</span>
+			<a href="/committee-meeting/{{ result._id }}">{{ title|safe }}</a>
+			{{ date|human_date }} - {{ date|pretty_date }}
+		</div>
+		<div class="col-md-2">
+			{% if committees %}
+			{% for committee in committees %}
+			<span class="label label-info"><a href="/committee/{{committee.id}}">{{ committee.name }}</a></span>
+			<span class="label label-warning">{{ committee.house.name }}</span>
+			{% endfor %}
+			{% endif %}
+		</div>
 	</div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% elif result.highlight.fulltext %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+		</div>
+	</div>
+	{% endif %}
+	{% endif %}
 </div>

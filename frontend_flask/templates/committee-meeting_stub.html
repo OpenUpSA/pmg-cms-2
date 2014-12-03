@@ -25,12 +25,11 @@
 		</div>
 		<div class="col-md-2">
 			{% if result.organisation %}
-		<span class="label label-info"><a href="/committee/{{committee.id}}">{{ committee.name }}</a></span>
-		
-		{% endif %}	
-		{% if result.organisation %}
-			<span class="label label-warning">{{ committee.house.name }}</span>
-		{% endif %}
+			<span class="label label-info"><a href="/committee/{{committee.id}}">{{ committee.name }}</a></span>
+			{% endif %}	
+			{% if result.organisation %}
+				<span class="label label-warning">{{ committee.house.name }}</span>
+			{% endif %}
 		</div>
 	</div>
 	{% if result.highlight %}

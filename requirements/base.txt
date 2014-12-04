@@ -16,3 +16,4 @@ lxml
 cssselect
 beautifulsoup4
 arrow
+boto

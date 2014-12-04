@@ -56,16 +56,16 @@ class S3Bucket():
         except Exception as e:
             logger.error("Cannot upload file to S3. Removing file from disc.")
             # remove file from disc
-            os.remove(filename)
+            os.remove(path)
             raise e
 
         # remove file from disc
-        os.remove(filename)
+        os.remove(path)
         return
 
 
 if __name__ == "__main__":
 
-    filename = "/Users/petrus/Desktop/5-elephant.jpg"
+    filename = "5-elephant.jpg"  # a sample file, inside UPLOAD_PATH directory
     tmp = S3Bucket()
     tmp.upload_file(filename)

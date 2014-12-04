@@ -410,3 +410,11 @@ if __name__ == '__main__':
     # bills()
     add_featured()
 
+    # add the 'admin' role
+    admin_role = Role(name="admin")
+    db.session.add(admin_role)
+    # add a default admin user
+    user = User(email="admin@pmg.org.za", password="3o4ukjren3", active=True, confirmed_at=datetime.datetime.now())
+    user.roles.append(admin_role)
+    db.session.add(user)
+    db.session.commit()

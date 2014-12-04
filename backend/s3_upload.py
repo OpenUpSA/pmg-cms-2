@@ -20,46 +20,52 @@ def rounded_megabytes(bytes):
     return megabytes
 
 
-def get_bucket(bucket_name):
+class S3Bucket():
 
-    conn = boto.s3.connect_to_region('eu-west-1')
-    bucket = conn.get_bucket(bucket_name)
-    return bucket
+    def __init__(self):
+        self.bucket = None
+        return
 
+    def get_bucket(self):
 
-def upload_file(filename):
+        conn = boto.s3.connect_to_region('eu-west-1')
+        self.bucket = conn.get_bucket(S3_BUCKET)
+        return
 
-    try:
-        # assemble key
-        path = os.path.join(UPLOAD_PATH, filename)
-        bytes = os.path.getsize(path)
-        megabytes = rounded_megabytes(bytes)
-        logger.debug("uploading: " + path + " (" + str(megabytes) + " MB)")
+    def upload_file(self, filename):
 
-        # test if the key already exists
-        tmp_key = bucket.get_key(filename)
-        if tmp_key is not None:
-            raise ValueError("file already uploaded")
-        else:
-            # only upload if the key doesn't exist yet
-            tmp_key = Key(bucket)
-            tmp_key.key = filename
-            tmp_key.set_contents_from_filename(path)
+        try:
+            if not self.bucket:
+                self.get_bucket()
+            # assemble key
+            path = os.path.join(UPLOAD_PATH, filename)
+            bytes = os.path.getsize(path)
+            megabytes = rounded_megabytes(bytes)
+            logger.debug("uploading: " + path + " (" + str(megabytes) + " MB)")
 
-    except Exception as e:
-        logger.error("Cannot upload file to S3. Removing file from disc.")
+            # test if the key already exists
+            tmp_key = self.bucket.get_key(filename)
+            if tmp_key is not None:
+                raise ValueError("file already uploaded")
+            else:
+                # only upload if the key doesn't exist yet
+                tmp_key = Key(self.bucket)
+                tmp_key.key = filename
+                tmp_key.set_contents_from_filename(path)
+
+        except Exception as e:
+            logger.error("Cannot upload file to S3. Removing file from disc.")
+            # remove file from disc
+            os.remove(filename)
+            raise e
+
         # remove file from disc
         os.remove(filename)
-        raise e
-
-    # remove file from disc
-    os.remove(filename)
-    return
-
-bucket = get_bucket(S3_BUCKET)
+        return
 
 
 if __name__ == "__main__":
 
-    filename = "5-leopard.jpg"
-    upload_file(filename)
+    filename = "/Users/petrus/Desktop/5-elephant.jpg"
+    tmp = S3Bucket()
+    tmp.upload_file(filename)

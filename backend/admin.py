@@ -17,7 +17,7 @@ import logging
 from sqlalchemy import func
 from werkzeug import secure_filename
 import os
-from s3_upload import upload_file
+from s3_upload import S3Bucket
 
 
 
@@ -25,6 +25,8 @@ FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
 STATIC_HOST = app.config['STATIC_HOST']
 UPLOAD_PATH = app.config['UPLOAD_PATH']
+
+s3_bucket = S3Bucket()
 
 if not os.path.isdir(UPLOAD_PATH):
     os.mkdir(UPLOAD_PATH)
@@ -228,7 +230,7 @@ class InlineContent(InlineFormAdmin):
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
             model.file_path = filename
-            upload_file(filename)
+            s3_bucket.upload_file(filename)
 
 
 class CommitteeMeetingView(EventView):
@@ -327,7 +329,7 @@ class MemberView(MyModelView):
             filename = secure_filename(file_data.filename)
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
-            upload_file(filename)
+            s3_bucket.upload_file(filename)
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 

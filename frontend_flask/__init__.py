@@ -2,7 +2,6 @@ import logging
 import logging.config
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-import sys
 import os
 
 env = os.environ.get('FLASK_ENV', 'development')
@@ -17,4 +16,5 @@ with open('config/%s/logging.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
-import views, user_management
+import views
+import user_management

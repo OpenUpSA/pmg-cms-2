@@ -30,10 +30,13 @@ class Search:
 	def _getVal(self, obj, field):
 		if type(field) is list:
 			if (len(field) == 1):
-
 				if hasattr(obj, field[0]):
 					return getattr(obj, field[0])
 			key = field[:1][0]
+			if type(key) is int:
+				if len(obj) > key:
+					return self._getVal(obj[key], field[1:])
+				return None
 			if hasattr(obj, key):
 				newobj = getattr(obj, key)
 				return self._getVal(newobj, field[1:])
@@ -60,13 +63,17 @@ class Search:
 			for row in db.session.query(Model).filter(Model.id.in_(id_subsection)).all():
 				item = {}
 				for key, field in Transforms.convert_rules[data_type].iteritems():
-					val =self._getVal(row, field)
+					val = self._getVal(row, field)
+					# self.logger.debug(key)
+					# self.logger.debug(row.committee[0].name)
+					
 					if type(val) is unicode:
 						val = BeautifulSoup(val).get_text().strip()
 						# print key, val[:20].encode("utf-8")
 					# else:
 						# print key, val
 					item[key] = val
+				# return
 				items.append(item)
 			self.es.bulk_index(self.index_name, data_type, items)
 			# self.insert(data_type, item)
@@ -177,14 +184,14 @@ class Search:
 		self.es.put_mapping(self.index_name, data_type, mapping)
 
 
-	def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False):
+	def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False, committee=False):
 		q = {
 			"from": es_from,
 			"size": size,
 			"query": {
 				"filtered": {
 					"filter": {},
-					"query": {}
+					"query": {},
 				},
 			},
 		}
@@ -202,6 +209,10 @@ class Search:
 					"lte": end_date,
 				}
 			}
+		if committee:
+			q["query"]["filtered"]["filter"]["term"] = {
+				"committee_id": committee
+			}
 			
 		q["highlight"] = {
 			"pre_tags" : ["<strong>"],
@@ -212,7 +223,7 @@ class Search:
 				"fulltext": {"fragment_size" : 500, "number_of_fragments" : 1, "no_match_size": 250, "tag_schema" : "styled"}
 			}
 		}
-		# print "query_statement", q
+		print "query_statement", q
 		if (content_type):
 			return self.es.search(q, index=self.index_name, doc_type = content_type)
 		else:

@@ -7,7 +7,11 @@ from random import random
 import string
 from passlib.apps import custom_app_context as pwd_context
 import datetime
+import logging
 
+STATIC_HOST = app.config['STATIC_HOST']
+
+logger = logging.getLogger(__name__)
 
 # ==== JOINS ==== #
 
@@ -260,6 +264,7 @@ class MembershipType(db.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+
 class Member(db.Model):
 
     __tablename__ = "member"
@@ -280,6 +285,15 @@ class Member(db.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
+
+    def to_dict(self, include_related=False):
+        logger.debug("WOOHOO")
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        if tmp['profile_pic_url']:
+            tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
+        logger.debug(STATIC_HOST)
+        return tmp
+
 
 class Organisation(db.Model):
 

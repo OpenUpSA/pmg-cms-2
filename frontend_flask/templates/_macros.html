@@ -1,0 +1,25 @@
+{% macro render_field_with_errors(field) %}
+  <div class="form-group">
+    {{ field.label(class_='control-label col-sm-3') }}
+    <div class="col-sm-6">
+      {{ field(class_='form-control', **kwargs)|safe }}
+      {% if field.errors %}
+        <ul class="list-unstyled text-warning">
+          {% for error in field.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  </div>
+{% endmacro %}
+
+{% macro render_field(field) %}
+  {% if field.type == 'HiddenField' %}
+    {{ field(**kwargs)|safe }}
+  {% elif field.type == 'SubmitField' %}
+    <div class="col-sm-6 col-sm-offset-3">{{ field(class_='btn btn-default btn-lg', **kwargs)|safe }}</div>
+  {% else %}
+    <div class="form-group">{{ field(class_='form-control', **kwargs)|safe }}</div>
+  {% endif %}
+{% endmacro %}

@@ -330,6 +330,7 @@ class MemberView(MyModelView):
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
             s3_bucket.upload_file(filename)
+            model.profile_pic_url = filename
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 

@@ -10,3 +10,11 @@ ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
 ES_SERVER = "http://localhost:9200"
+
+# Flask-Mail
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = "pmgorg.noreply@gmail.com"
+MAIL_PASSWORD = "agoaiejlagrAIERJaerknj"
+MAIL_DEFAULT_SENDER = "pmgorg.noreply@gmail.com"

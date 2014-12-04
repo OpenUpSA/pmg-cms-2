@@ -6,28 +6,34 @@
 	{% endif %}
 	{% set date = result._source.date %}
 	{% set id = result._id %}
+	{% if  result._source.committee_id %}
+		{% set committee_id = result._source.committee_id %}
+	{% endif %}
+	{% if  result._source.committee_name %}
+		{% set committee_name = result._source.committee_name %}
+	{% endif %}
 {% else %}
 	{% set title = result.title %}
 	{% set date = result.start_date %}
 	{% set id = result.id %}
 	{% if result.committee %}
-		{% set committees = result.committee %}
+		{% set committee_name = result.committee[0].name %}
+		{% set committee_id = result.committee[0].id %}
 	{% endif %}
 {% endif %}
 <div class="tabled-committee-report-stub space-bottom-sm">
 	<div class="row">
 		<div class="col-md-10">
 			<span class="label label-primary">Tabled Committee Report</span>
-			<a href="/committee-meeting/{{ result._id }}">{{ title|safe }}</a>
-			{{ date|human_date }} - {{ date|pretty_date }}
+			{% if committee_name %}
+			<span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
+			{% endif %}	
+			{{ date|pretty_date }} ({{ date|human_date }})
 		</div>
-		<div class="col-md-2">
-			{% if committees %}
-			{% for committee in committees %}
-			<span class="label label-info"><a href="/committee/{{committee.id}}">{{ committee.name }}</a></span>
-			<span class="label label-warning">{{ committee.house.name }}</span>
-			{% endfor %}
-			{% endif %}
+	</div>
+	<div class="row">
+		<div class="col-md-10">
+			<a href="/tabled-committee-report/{{ result._id }}">{{ title|safe }}</a>
 		</div>
 	</div>
 	{% if result.highlight %}

@@ -15,9 +15,12 @@
 	<div class="row">
 		<div class="col-md-10">
 			<span class="label label-primary">Media Briefing</span>
-		
+			{{ date|pretty_date }} ({{ date|human_date }})
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-10">
 			<a href="/briefing/{{ id }}">{{ title|safe }}</a>
-			{{ date|human_date }} - {{ date|pretty_date }}
 		</div>
 	</div>
 	{% if result.highlight %}

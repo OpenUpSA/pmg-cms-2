@@ -15,7 +15,7 @@ def rebuild_db():
     sudo("supervisorctl stop pmg_cms")
     with virtualenv():
         with cd(env.project_dir):
-            sudo('source production-cms-env.sh; python rebuild_db.py')
+            sudo('source production-env.sh && python rebuild_db.py')
     sudo("supervisorctl start pmg_cms")
 
 def copy_db():
@@ -40,19 +40,19 @@ def scrape_tabled_reports():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run("source production-cms-env.sh; python scrapers/scraper.py tabledreports")
+                run("source production-env.sh; python scrapers/scraper.py tabledreports")
 
 def scrape_schedule():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run("source production-cms-env.sh; python scrapers/scraper.py schedule")
+                run("source production-env.sh; python scrapers/scraper.py schedule")
 
 def index_search():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run('source production-cms-env.sh; python backend/search.py --reindex')
+                run('source production-env.sh; python backend/search.py --reindex')
 
 def restart():
     sudo("supervisorctl restart pmg_cms")
@@ -115,17 +115,10 @@ def deploy():
     with cd(env.project_dir):
         # ensure we are on the target branch
         sudo('git checkout ' + env.git_branch)
-        # move db out of the way
-        # with settings(warn_only=True):
-            # sudo('mv instance/tmp.db /tmp/tmp.db')
         # first, discard local changes, then pull
         with settings(warn_only=True):
-            # sudo('git stash')
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
-        # put db back
-        # sudo('mv /tmp/tmp.db instance/tmp.db')
-        # sudo('git stash pop')
 
     # install dependencies
     with virtualenv():

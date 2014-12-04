@@ -16,9 +16,5 @@ with open('config/%s/logging.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
-# import drupal_models as models
-# model_dict = models.generate_models()
-# import admin
-
 import views
 import admin

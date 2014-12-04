@@ -160,8 +160,8 @@ def search():
     filters["start_date"] = request.args.get('filter[start_date]')
     filters["end_date"] = request.args.get('filter[end_date]')
     filters["type"] = request.args.get('filter[type]')
-
-    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"])
+    filters["committee"] = request.args.get('filter[committee]')
+    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"], committee=filters["committee"])
     bincounts = search.count(q)
 
     result = {}

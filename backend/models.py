@@ -5,9 +5,10 @@ from sqlalchemy.orm import backref
 from sqlalchemy import UniqueConstraint
 from random import random
 import string
-from passlib.apps import custom_app_context as pwd_context
 import datetime
 import logging
+from flask.ext.security import UserMixin, RoleMixin, \
+    Security, SQLAlchemyUserDatastore
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -28,6 +29,11 @@ questions_replies_committee_table = db.Table('questions_replies_committee_join',
 calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
     db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
     db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+)
+
+roles_users = db.Table('roles_users',
+    db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
 
 class ApiKey(db.Model):
@@ -52,31 +58,48 @@ class ApiKey(db.Model):
         return {'user_id': self.user_id, 'key': self.key}
 
 
-class User(db.Model):
+class Role(db.Model, RoleMixin):
+
+    __tablename__ = "role"
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
+class User(db.Model, UserMixin):
 
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    activated = db.Column(db.Boolean, default=False)
-    is_admin = db.Column(db.Boolean, default=False)
+    email = db.Column(db.String(255), unique=True, nullable=True)
+    password = db.Column(db.String(255))
+    active = db.Column(db.Boolean())
+    confirmed_at = db.Column(db.DateTime())
+    last_login_at = db.Column(db.DateTime())
+    current_login_at = db.Column(db.DateTime())
+    last_login_ip = db.Column(db.String(100))
+    current_login_ip = db.Column(db.String(100))
+    login_count = db.Column(db.Integer)
 
-    def hash_password(self, password):
-        self.password_hash = pwd_context.encrypt(password)
-
-    def verify_password(self, password):
-        return pwd_context.verify(password, self.password_hash)
-
-    def is_active(self):
-        return self.activated
+    roles = db.relationship('Role', secondary=roles_users,
+                            backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):
-        s = u'%s' % self.email
-        return s
+        return unicode(self.email)
 
     def to_dict(self, include_related=False):
-        return serializers.user_to_dict(self)
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp.pop('password')
+        return tmp
+
+
+# Setup Flask-Security
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security(app, user_datastore)
 
 
 class House(db.Model):
@@ -177,7 +200,7 @@ class Bill(db.Model):
 
 briefing_file_table = db.Table('briefing_file_join', db.Model.metadata,
    db.Column('briefing_id', db.Integer, db.ForeignKey('briefing.id')),
-   db.Column('file_id', db.Integer, db.ForeignKey('file.id'))  
+   db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
 class Briefing(db.Model):
@@ -532,7 +555,7 @@ class CommitteeMeeting(Event):
     __tablename__ = "committee_meeting"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    
+
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)

@@ -1,0 +1,15 @@
+{% extends 'admin/my_edit.html' %}
+{% from '_macros.html' import render_member %}
+
+{% block body %}
+{% set member = model %}
+<div class="row">
+  <div class="col-md-8 col-lg-offset-2">
+    <img style="max-width: 125px;" class="pull-right" src="{{ STATIC_HOST }}{{ member.profile_pic_url }}" />
+    <h1>{{ member.name }}</h1>
+    <p class="lead">{{ member.house.name }}</p>
+    <p class="lead">{{ member.party.name }}</p>
+  </div>
+</div>
+{{ super() }}
+{% endblock %}

@@ -19,7 +19,7 @@
 {% endmacro %}
 
 {% macro render_profile_pic(model, column) %}
-<img style="max-width: 100px;" src="{{ model[column] }}" />
+<img style="max-width: 100px;" src="{{ STATIC_HOST }}{{ model[column] }}" />
 {% endmacro %}
 
 {% macro render_membership_count(model, column) %}

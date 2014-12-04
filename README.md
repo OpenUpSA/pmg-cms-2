@@ -44,6 +44,7 @@ Install requirements:
 
     pip install -r requirements/development.txt
 
+
 Start the backend server:
 
     python runserver_backend.py
@@ -64,3 +65,12 @@ Now, deploy the latest code from this project's master branch on GitHub:::
 To deploy a new instance (requires Ubuntu 14.04), use:
 
     fab production setup deploy
+
+On production, certain private config variables are loaded as environment variables by running
+a shell script `production-env.sh` from the project directory during startup. The script is of
+the following form::
+
+    export SQLALCHEMY_DATABASE_URI=XXX
+    export FLASK_ENV=XXX
+    export AWS_ACCESS_KEY_ID=XXX
+    export AWS_SECRET_ACCESS_KEY=XXX

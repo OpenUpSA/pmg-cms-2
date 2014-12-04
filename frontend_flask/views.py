@@ -103,6 +103,7 @@ def pagination_processor():
         return s
     return dict(pagination=pagination)
 
+
 class ApiException(Exception):
     """
     Class for handling all of our expected API errors.
@@ -171,6 +172,32 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
                 i += 1
             if out.get('next'):
                 out.pop('next')
+        return out
+    except requests.ConnectionError:
+        flash('Error connecting to backend service.', 'danger')
+        pass
+    return
+
+
+def send_to_api(resource_name, resource_id=None, data=None):
+
+    query_str = resource_name + "/"
+    if resource_id:
+        query_str += str(resource_id) + "/"
+
+    headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+    # add auth header
+    if session and session.get('authentication_token'):
+        headers['Authentication-Token'] = session['authentication_token']
+    try:
+        response = requests.post(API_HOST + query_str, headers=headers, data=data)
+        out = response.json()
+
+        if response.status_code != 200:
+            raise ApiException(response.status_code, response.json().get('message', "An unspecified error has occurred."))
         return out
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')

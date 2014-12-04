@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from "_macros.html" import render_field_with_errors, render_field %}
+
+{%- block style %}
+  {{ super() }}
+  <style>
+    .title-heading{
+      padding-top: 25px;
+      padding-bottom: 25px;
+    }
+    .form-container{
+      padding-top: 25px;
+    }
+  </style>
+{%- endblock %}
+
+{% block page %}
+  <div class="text-center title-heading">
+    <h1>Login now to access restricted content</h1>
+    <p class="lead">The bulk of this website is publicly available, except for meeting reports from certain committees.</p>
+  </div>
+  {% include "_messages.html" %}
+  <div class="shaded form-container">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1">
+        <form class="form-horizontal" role="form" action="{{ url_for('register') }}" method="POST" name="register_user_form">
+          {{ form.hidden_tag() }}
+          {{ render_field_with_errors(form.email) }}
+          {{ render_field_with_errors(form.password) }}
+          {% if form.password_confirm %}
+            {{ render_field_with_errors(form.password_confirm) }}
+          {% endif %}
+          {{ render_field(form.next) }}
+          {{ render_field(form.submit) }}
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">
+        <p class="lead pull-right">
+          <a href="{{ url_for('login')}}{% if form.next %}?next={{ form.next.data }}{% endif %}">
+            Already have an account? Log in.
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

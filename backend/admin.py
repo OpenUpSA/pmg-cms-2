@@ -15,11 +15,19 @@ import time
 from operator import itemgetter
 import logging
 from sqlalchemy import func
+from werkzeug import secure_filename
+import os
+from s3_upload import upload_file
+
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
 STATIC_HOST = app.config['STATIC_HOST']
+UPLOAD_PATH = app.config['UPLOAD_PATH']
+
+if not os.path.isdir(UPLOAD_PATH):
+    os.mkdir(UPLOAD_PATH)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +37,7 @@ def inject_paths():
         'FRONTEND_HOST': FRONTEND_HOST,
         'API_HOST': API_HOST,
         'STATIC_HOST': STATIC_HOST,
-    }
+        }
     return context_vars
 
 @app.template_filter('add_commas')
@@ -206,6 +214,22 @@ class ContentModelConverter(InlineModelConverter):
 class InlineContent(InlineFormAdmin):
     form_excluded_columns = ('type', 'file_path', )
 
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField('File')
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            filename = secure_filename(file_data.filename)
+            model.type = file_data.content_type
+            logger.debug('saving uploaded file: ' + filename)
+            file_data.save(os.path.join(UPLOAD_PATH, filename))
+            model.file_path = filename
+            upload_file(filename)
+
 
 class CommitteeMeetingView(EventView):
 
@@ -277,8 +301,11 @@ class MemberView(MyModelView):
         'party',
         'province',
         'bio',
-        'profile_pic_url'
+        'upload',
     )
+    form_extra_fields = {
+        'upload': fields.FileField('Profile pic')
+    }
     form_overrides = dict(bio=fields.TextAreaField)
     form_ajax_refs = {
         'events': {
@@ -286,7 +313,21 @@ class MemberView(MyModelView):
             'page_size': 25
         }
     }
+    form_widget_args = {
+        'bio': {
+            'rows': '10'
+        },
+    }
+    edit_template = "admin/edit_member.html"
 
+    def on_model_change(self, form, model):
+        # save profile pic, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            filename = secure_filename(file_data.filename)
+            logger.debug('saving uploaded file: ' + filename)
+            file_data.save(os.path.join(UPLOAD_PATH, filename))
+            upload_file(filename)
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 

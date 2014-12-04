@@ -81,14 +81,14 @@
       {% set member = membership.member %}
       <li class="clearfix">
       {%- if member.profile_pic_url %}
-      <img class="member-profile-pic{% if membership.type == 'chairperson'%} chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
+      <a href="/member/{{ member.id }}"><img class="member-profile-pic{% if membership.type == 'chairperson'%} chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
       {% else %}
       <p class="text-muted">No image available</p>
       {% endif %}
-      <h4>{{ member.name }}</h4>
+      <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
       {% if membership.type == "chairperson"%}<div class="label label-success">Chairperson</div>{% endif %}
         {% if member.party %}
-        <span>{{ member.party.name }}</span>
+        <span class="label label-warning">{{ member.party.name }}</span>
         {% endif %}
       </li>
       {% endfor %}
@@ -100,10 +100,10 @@
       {% for membership in committee.memberships[break::] %}
       {% set member = membership.member %}
       <li class="clearfix">
-        <img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" >
-        <h4>{{ member.name }}</h4>
+        <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+        <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
         {% if member.party %}
-        <span>{{ member.party.name }}</span>
+        <span class="label label-warning">{{ member.party.name }}</span>
         {% endif %}
       </li>
       {% endfor %}

@@ -12,11 +12,20 @@
 {% set id = result.id %}
 {% endif %}
 <div class="calls-for-comment-stub space-bottom-sm">
-	<div class="title">
-		<span class="label label-success">Policy Document</span>
-		<a href="/policy-document/{{ id }}">{{ title|safe }}</a>
+	<div class="row">
+		<div class="col-md-10">
+			<span class="label label-primary">Policy Document</span>
+			{% if committee_name %}
+			<span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
+			{% endif %}	
+			{{ date|pretty_date }} ({{ date|human_date }})
+		</div>
 	</div>
-	<div class="date">{{ date|human_date }} - {{ date|pretty_date }}</div>
+	<div class="row">
+		<div class="col-md-10">
+			<a href="/policy-document/{{ id }}">{{ title|safe }}</a>
+		</div>
+	</div>
 	{% if result.highlight %}
 	{% if result.highlight.description %}
 	<div class="row">

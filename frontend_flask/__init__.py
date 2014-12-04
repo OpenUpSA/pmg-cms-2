@@ -17,4 +17,4 @@ with open('config/%s/logging.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
-import views
+import views, user_management

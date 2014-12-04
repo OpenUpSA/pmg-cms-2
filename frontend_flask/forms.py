@@ -1,5 +1,5 @@
 from flask import request, current_app, flash, url_for
-from wtforms import Form as BaseForm
+from flask_wtf import Form as BaseForm
 from wtforms import TextField, PasswordField, validators, \
     SubmitField, HiddenField, BooleanField, ValidationError, Field, \
     SelectField

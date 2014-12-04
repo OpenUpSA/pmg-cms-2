@@ -219,8 +219,7 @@ def rebuild_db():
             start_date = db_date_from_utime(member['start_date'])
         )
         if member.get('files'):
-            # logger.debug(json.dumps(member['files'], indent=4)
-            member_obj.profile_pic_url = STATIC_HOST + strip_filepath(member["files"][-1]['filepath'])
+            member_obj.profile_pic_url = strip_filepath(member["files"][-1]['filepath'])
         logger.debug(member_obj.name)
         logger.debug(member_obj.profile_pic_url)
 

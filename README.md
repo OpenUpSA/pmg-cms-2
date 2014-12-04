@@ -44,6 +44,11 @@ Install requirements:
 
     pip install -r requirements/development.txt
 
+Configure boto:
+
+    cp .boto ~/.boto
+
+
 Start the backend server:
 
     python runserver_backend.py

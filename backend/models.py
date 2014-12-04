@@ -373,7 +373,7 @@ class Questions_replies(db.Model):
     __tablename__ = "questions_replies"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee = db.relationship('Organisation', secondary=questions_replies_committee_table)
+    committee = db.relationship('Organisation', secondary=questions_replies_committee_table, backref=db.backref('question_replies_committee', lazy='dynamic'))
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)

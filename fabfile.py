@@ -52,7 +52,7 @@ def index_search():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
-                run('source production-cms-env.sh; python search/search.py --reindex')
+                run('source production-cms-env.sh; python backend/search.py --reindex')
 
 def restart():
     sudo("supervisorctl restart pmg_cms")

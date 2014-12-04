@@ -8,16 +8,14 @@ from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.contrib.sqla.form import InlineModelConverter
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.model.template import macro
+from flask.ext.security import current_user
 from wtforms import fields, widgets
-import urllib
-from datetime import datetime
-import time
-from operator import itemgetter
 import logging
 from sqlalchemy import func
 from werkzeug import secure_filename
 import os
 from s3_upload import S3Bucket
+import urllib
 
 
 
@@ -92,6 +90,20 @@ class MyModelView(ModelView):
     edit_template = 'admin/my_edit.html'
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
+
+    def is_accessible(self):
+        if not current_user.is_active() or not current_user.is_authenticated():
+            return False
+        if not current_user.has_role('admin'):
+            return False
+        return True
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            return redirect('/security/login?next=' + urllib.quote_plus(request.url), code=302)
 
 
 # This widget uses custom template for inline field list

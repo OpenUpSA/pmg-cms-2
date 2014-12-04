@@ -8,6 +8,36 @@
 
 <div class="col-sm-3">
   {% block top_links %}
+  <form>
+    <input type="hidden" name="q" value="{{ q }}">
+    <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
+    <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
+    <input type="hidden" name="filter[type]" value="{{ filters.type }}">
+  <select name="filter[committee]" id="" class="chosen  space-bottom-sm" onchange="form.submit()" >
+      <option value="None" {% if (filters.committee == None) %} selected="selected" {% endif %}>All Committees</option>
+      <optgroup label="National Assembly">
+      {% for committee in committees %}
+      {% if committee.house_id == 3 %}
+        <option value="{{ committee.id }}" {% if filters.committee|int == committee.id|int %} selected="selected" {% endif %}>{{ committee.name }}</option>  
+      {% endif %}
+      {% endfor %}
+      </optgroup>
+      <optgroup label="National Council of Provinces">
+      {% for committee in committees %}
+      {% if committee.house_id == 2 %}
+        <option value="{{ committee.id }}" {% if filters.committee|int == committee.id|int %} selected="selected" {% endif %}>{{ committee.name }}</option>  
+      {% endif %}
+      {% endfor %}
+      </optgroup>
+      <optgroup label="Joint Committees">
+      {% for committee in committees %}
+      {% if committee.house_id == 1 %}
+        <option value="{{ committee.id }}" {% if filters.committee|int == committee.id|int %} selected="selected" {% endif %}>{{ committee.name }}</option>  
+      {% endif %}
+      {% endfor %}
+      </optgroup>
+  </select>
+  </form>
   <ul class="nav nav-pills nav-stacked" role="tablist">
     <li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a></li>
     {% if bincount["committee"] %}

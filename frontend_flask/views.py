@@ -547,6 +547,7 @@ def search(page = 0):
     filters["type"] = params['filter[type]'] = request.args.get('filter[type]')
     filters["start_date"] = params['filter[start_date]'] = request.args.get('filter[start_date]')
     filters["end_date"] = params['filter[end_date]'] = request.args.get('filter[end_date]')
+    filters["committee"] = params['filter[committee]'] = request.args.get('filter[committee]')
 
     if (filters["type"] == "None"): 
         params['filter[type]'] = filters["type"] = None
@@ -554,6 +555,8 @@ def search(page = 0):
         params['filter[start_date]'] = filters["start_date"] = None
     if (filters["end_date"] == "None"): 
         params['filter[end_date]'] = filters["end_date"] = None
+    if (filters["committee"] == "None"): 
+        params['filter[committee]'] = filters["committee"] = None
 
     query_string = request.query_string
     
@@ -581,4 +584,6 @@ def search(page = 0):
     yearcount = {}
     for year in searchresult["bincount"]["years"]:
         yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
-    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount)
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount, committees = committees)

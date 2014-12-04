@@ -16,8 +16,8 @@
 
 {% block page %}
   <div class="text-center title-heading">
-    <h1>{{ _('Login now to access restricted content') }}</h1>
-    <p class="lead">{{ _('The bulk of this website is publicly available, except for meeting reports from certain committees.') }}</p>
+    <h1>Login now to access restricted content</h1>
+    <p class="lead">The bulk of this website is publicly available, except for meeting reports from certain committees.</p>
   </div>
   {% include "_messages.html" %}
   <div class="shaded form-container">
@@ -40,7 +40,7 @@
       <div class="col-sm-6 col-sm-offset-3">
         <p class="lead pull-right">
           <a href="{{ url_for('login')}}{% if form.next %}?next={{ form.next.data }}{% endif %}">
-            {{ _('Already have an account? Log in.') }}
+            Already have an account? Log in.
           </a>
         </p>
       </div>

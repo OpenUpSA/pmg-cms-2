@@ -16,8 +16,8 @@
 
 {% block page %}
   <div class="text-center title-heading">
-    <h1>{{ _('Login now to access restricted content') }}</h1>
-    <p class="lead">{{ _('The bulk of this website is publicly available, except for meeting reports from certain committees.') }}</p>
+    <h1>Login now to access restricted content</h1>
+    <p class="lead">The bulk of this website is publicly available, except for meeting reports from certain committees.</p>
   </div>
   {% include "_messages.html" %}
   <div class="shaded form-container">
@@ -35,9 +35,9 @@
     <div class="row">
       <div class="col-sm-6 col-sm-offset-3">
         <p class="lead pull-right text-right">
-          <a href="{{ url_for('forgot_password') }}">{{ _('Forgot password?') }}</a>
+          <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
           <br>
-          <a href="{{ url_for('register') }}{% if form.next %}?next={{ form.next.data }}{% endif %}">{{ _("Don't have an account? Register.") }}</a>
+          <a href="{{ url_for('register') }}{% if form.next %}?next={{ form.next.data }}{% endif %}">Don't have an account? Register.</a>
         </p>
       </div>
     </div>

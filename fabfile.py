@@ -119,8 +119,6 @@ def deploy():
         with settings(warn_only=True):
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
-        # configure boto
-        sudo('cp .boto ~/.boto')
 
     # install dependencies
     with virtualenv():

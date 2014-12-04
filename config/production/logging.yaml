@@ -10,6 +10,8 @@ formatters:
 loggers:
   sqlalchemy.engine:
     level: WARN
+  rebuild_db:
+    level: DEBUG
 root:
   handlers: [console]
   level: INFO

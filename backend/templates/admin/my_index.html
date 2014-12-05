@@ -4,7 +4,11 @@
 {{ super() }}
 
 <div class="row-fluid">
-
+  {% if not current_user.is_authenticated() %}
+  <div class="col-sm-4 col-sm-offset-4">
+    <a style="margin-top: 100px;" class="btn btn-lg btn-block btn-primary" role="button" href="/security/login?next=/admin/">Log in</a>
+  </div>
+  {% else %}
   <div class="col-sm-10 col-sm-offset-1">
     <h1>Record counts</h1>
     <table class="table table-bordered">
@@ -42,5 +46,7 @@
       </tr>
     </table>
   </div>
+  {% endif %}
+</div>
 
 {% endblock body %}

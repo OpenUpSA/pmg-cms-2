@@ -74,3 +74,5 @@ the following form::
     export FLASK_ENV=XXX
     export AWS_ACCESS_KEY_ID=XXX
     export AWS_SECRET_ACCESS_KEY=XXX
+    export MAIL_PASSWORD=XXX
+    export SECURITY_PASSWORD_SALT=XXX

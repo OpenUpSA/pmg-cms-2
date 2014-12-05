@@ -108,9 +108,6 @@ def deploy():
     # push any local changes to github
     local('git push origin ' + env.git_branch)
 
-    with settings(warn_only=True):
-        sudo('service nginx stop')
-
     # enter application directory and pull latest code from github
     with cd(env.project_dir):
         # ensure we are on the target branch

@@ -122,7 +122,7 @@ def deploy():
 
     # install dependencies
     with virtualenv():
-        sudo('pip install -r %s/requirements/production.txt' % env.project_dir)
+        sudo('pip install -r %s/requirements.txt' % env.project_dir)
 
     with cd(env.project_dir):
         # nginx

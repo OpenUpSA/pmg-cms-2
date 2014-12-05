@@ -18,3 +18,4 @@ beautifulsoup4
 arrow
 boto
 git+http://github.com/petrus-jvrensburg/flask-security.git@dc5edbb205fce6591dd08c850b04be61e0dbf3cb
+Flask-Mail

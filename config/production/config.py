@@ -10,3 +10,28 @@ STATIC_HOST = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/"
 ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
+
+# Flask-Mail
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = "pmgorg.noreply@gmail.com"
+MAIL_PASSWORD = env['MAIL_PASSWORD']
+MAIL_DEFAULT_SENDER = "pmgorg.noreply@gmail.com"
+
+# Flask-Security config
+SECURITY_URL_PREFIX = "/security"
+SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
+SECURITY_PASSWORD_SALT = env['SECURITY_PASSWORD_SALT']
+SECURITY_EMAIL_SENDER = "pmgorg.noreply@gmail.com"
+SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
+
+# Flask-Security features
+SECURITY_CONFIRMABLE = True
+SECURITY_REGISTERABLE = True
+SECURITY_RECOVERABLE = True
+SECURITY_TRACKABLE = True
+SECURITY_CHANGEABLE = True
+
+# disable CSRF so that Flask-Security can be used as an API
+WTF_CSRF_ENABLED = False

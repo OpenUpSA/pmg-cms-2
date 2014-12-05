@@ -43,16 +43,6 @@
       </div><!-- Schedule -->
 
       <div class="col-md-8" id="committee-meetings"> <!-- Committee meetings -->
-        <!-- <form class="form-inline pull-right" role="form">
-          <div class="form-group">
-            <select class="form-control">
-              <option value="">Agriculture, Forestry and Fisheries</option>
-              <option value="">Arts and Culture</option>
-              <option value="">Basic Education</option>
-              <option value="">Communications</option>
-            </select>
-          </div>
-        </form> -->
         <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
         
         <table class="table table-striped table-bordered">
@@ -73,7 +63,6 @@
 
   <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
     <div class="space-bottom">
-      <!-- <h3><span class="glyphicon glyphicon-certificate"></span> Featured</h3> -->
       <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
       <ul class="list-unstyled list">
         {% for committee_meeting in featured_content.committee_meeting %}
@@ -83,6 +72,7 @@
         {% endfor %}
       </ul>
     </div>
+
     <div class="space-bottom">
       <h4><span class="fa fa-briefcase"></span> Featured Tabled Committee Reports</h4>
       <ul class="list-unstyled list">
@@ -93,7 +83,7 @@
         {% endfor %}
       </ul>
     </div>
-    <!-- <h4><span class="fa fa-twitter"></span>  Twitter</h4> -->
+
     <a class="twitter-timeline" href="https://twitter.com/PMG_SA" data-widget-id="537890271451959296">Tweets by @PMG_SA</a>
   <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
   </div> <!-- /Sidebar -->

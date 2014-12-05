@@ -56,7 +56,7 @@
     <li role="presentation" {% if (filters.type == 'hansard') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=hansard&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Hansards <span class="bincount">{{ bincount["hansard"] }}</span></a></li>
     {% endif %}
     {% if bincount["briefing"] %}
-    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Briefings <span class="bincount">{{ bincount["briefing"] }}</span></a></li>
+    <li role="presentation" {% if (filters.type == 'briefing') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=briefing&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Media Briefings <span class="bincount">{{ bincount["briefing"] }}</span></a></li>
     {% endif %}
     {% if bincount["question_reply"] %}
     <li role="presentation" {% if (filters.type == 'question_reply') %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]=question_reply&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">Questions &amp; Replies <span class="bincount">{{ bincount["question_reply"] }}</span></a></li>

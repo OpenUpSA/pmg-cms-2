@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %}Parliamentary Monitoring Group | South Africa{% endblock %}</title>
+
+  {% block head %}{% endblock %}
+
+  {% block style %}
+  <link rel="stylesheet" href="/static/resources/css/style.css">
+  <link rel="stylesheet" href="/static/font-awesome-4.2.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/chosen/chosen.min.css">
+  {% endblock %}
+
+  {% block head_meta %}{% endblock %}
+</head>
+
+<body>
+  <div id="wrapper">
+    {% block content %}
+    {% endblock content %}
+  </div>
+
+  {% block javascript %}
+  <script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="/static/bower_components/bootstrap/js/tab.js"></script>
+  <script src="/static/bower_components/bootstrap/js/transition.js"></script>
+  <script src="/static/bower_components/bootstrap/js/alert.js"></script>
+  <script src="/static/chosen/chosen.jquery.js"></script>
+  <script>
+    $(function() {
+      $(".chosen").chosen({width: "100%"});
+    })
+  </script>
+  {% endblock %}
+  </div>
+</body>
+</html>

@@ -3,7 +3,6 @@
 
 {% block page %}
   <h1>Resend confirmation instructions</h1>
-  {% include "_messages.html" %}
   <hr>
   <form class="form-horizontal" role="form" action="{{ url_for('send_confirmation') }}" method="POST" name="send_confirmation_form">
     {{ send_confirmation_form.hidden_tag() }}

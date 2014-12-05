@@ -116,7 +116,7 @@ class MyRestrictedModelView(MyModelView):
         return True
 
 
-class UserView(MyModelView):
+class UserView(MyRestrictedModelView):
     can_create = False
     can_delete = True
     column_list = [
@@ -128,7 +128,6 @@ class UserView(MyModelView):
         'last_login_ip',
         'current_login_ip',
         'login_count',
-        'twitter_handle',
         ]
     form_excluded_columns = [
         'password',
@@ -381,7 +380,7 @@ class MemberView(MyModelView):
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 admin.add_view(UserView(User, db.session, name="Users Accounts", endpoint='user', category="Users"))
-admin.add_view(MyModelView(Role, db.session, name="Roles", endpoint='role', category="Users"))
+admin.add_view(MyRestrictedModelView(Role, db.session, name="Roles", endpoint='role', category="Users"))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))

@@ -17,5 +17,5 @@ cssselect
 beautifulsoup4
 arrow
 boto
-git+http://github.com/petrus-jvrensburg/flask-security.git@dc5edbb205fce6591dd08c850b04be61e0dbf3cb
+git+http://github.com/petrus-jvrensburg/flask-security.git@78d302bc31c6fe9aa148600e371649e4ca257ccc
 Flask-Mail

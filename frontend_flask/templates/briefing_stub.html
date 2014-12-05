@@ -12,30 +12,22 @@
 	{% set id = result.id %}
 {% endif %}
 <div class="briefing-stub space-bottom-sm">
-	<div class="row">
-		<div class="col-md-10">
-			<span class="label label-primary">Media Briefing</span>
-			{{ date|pretty_date }} ({{ date|human_date }})
-		</div>
+  <div>
+    <span class="label label-primary">Media Briefing</span>
+    {{ date|pretty_date }} ({{ date|human_date }})
 	</div>
-	<div class="row">
-		<div class="col-md-10">
-			<a href="/briefing/{{ id }}">{{ title|safe }}</a>
-		</div>
-	</div>
+  <div>
+    <a href="/briefing/{{ id }}">{{ title|safe }}</a>
+  </div>
 	{% if result.highlight %}
 	{% if result.highlight.description %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
+  <div>
+    {{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+  </div>
 	{% elif result.highlight.fulltext %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
+  <div>
+    {{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+  </div>
 	{% endif %}
 	{% endif %}
 </div>

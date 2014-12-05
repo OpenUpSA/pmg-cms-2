@@ -1,43 +1,32 @@
 {% extends "base.html" %}
 
 {% block page %}
-<div class="container-fluid">
+<h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
 
-  <div class="col-sm-12 space-bottom">
-  	<div class="col-md-12">
-    	<h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
-    </div>
-    <div class="col-md-6">
-	    <form action="/search" method="GET">
-	    	<input type="hidden" name="filter[type]" value="{{content_type}}">
-	    	<div class="col-sm-12">
-		    	<div class="input-group">
-		    		<input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
-		    		<span class="input-group-btn">
-		    			<button type="submit" class="btn btn-success">Search</button>
-		    		</span>
-		    	</div>
-	    	</div>
-	    </form>
-	</div>
-  </div>
-	
-  <div class="col-md-12">
-    <ul>
-      {% for result in results %}
-       {% include content_type + '_stub.html' %}
-      {% endfor %}
-    </ul>
-
-  </div>
-
-  <div class="col-md-4">
-
-  </div>
+<div class="space-bottom">
   <div class="row">
-    <div class="col-md-8">
-      {% include 'pagination.html' %}
+    <div class="col-md-6">
+      <form action="/search" method="GET">
+        <input type="hidden" name="filter[type]" value="{{content_type}}">
+        <div class="input-group">
+          <input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+          </span>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+<ul class="list-unstyled">
+  {% for result in results %}
+  <li>
+    {% include content_type + '_stub.html' %}
+  </li>
+  {% endfor %}
+</ul>
+
+{% include 'pagination.html' %}
+
 {% endblock page %}

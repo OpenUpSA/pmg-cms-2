@@ -1,61 +1,50 @@
-
 {% if result._source %}
-	{% if result.highlight.title %}
-		{% set title = result.highlight.title[0]|search_snippet %}
-	{% else %}	
-		{% set title = result._source.title %}
-	{% endif %}
-	{% if  result._source.committee_id %}
-		{% set committee_id = result._source.committee_id %}
-	{% endif %}
-	{% if  result._source.committee_name %}
-		{% set committee_name = result._source.committee_name %}
-	{% endif %}
-	{% set date = result._source.date %}
-	{% set id = result._id %}
-	{% set house = result._source.house %}
+  {% if result.highlight.title %}
+    {% set title = result.highlight.title[0]|search_snippet %}
+  {% else %}  
+    {% set title = result._source.title %}
+  {% endif %}
+  {% if  result._source.committee_id %}
+    {% set committee_id = result._source.committee_id %}
+  {% endif %}
+  {% if  result._source.committee_name %}
+    {% set committee_name = result._source.committee_name %}
+  {% endif %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
+  {% set house = result._source.house %}
 {% else %}
-	{% set title = result.title %}
-	{% set date = result.date %}
-	{% set id = result.id %}
-	{% if result.organisation %}
-		{% set committee_name = result.organisation.name %}
-		{% set committee_id = result.organisation.id %}
-	{% endif %}
+  {% set title = result.title %}
+  {% set date = result.date %}
+  {% set id = result.id %}
+  {% if result.organisation %}
+    {% set committee_name = result.organisation.name %}
+    {% set committee_id = result.organisation.id %}
+  {% endif %}
 {% endif %}
 <div class="committee-stub space-bottom-sm">
-	<div class="row">
-		<div class="col-md-10">
-			<span class="label label-primary">Committee Meeting</span>
-			{% if committee_name %}
-			<span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
-			{% endif %}	
-			{% if result.organisation %}
-				<span class="label label-warning">{{ result.organisation.house.name }}</span>
-			{% endif %}
-			{{ date|pretty_date }} ({{ date|human_date }})
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-10">
-			<a href="/committee-meeting/{{ id }}">{{ title|safe }}</a>
-			
-			
-		</div>
-	</div>
-	{% if result.highlight %}
-	{% if result.highlight.description %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
-	{% elif result.highlight.fulltext %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
-	{% endif %}
-	{% endif %}
+  <div>
+    <span class="label label-primary">Committee Meeting</span>
+    {% if committee_name %}
+    <span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
+    {% endif %} 
+    {% if result.organisation %}
+      <span class="label label-warning">{{ result.organisation.house.name }}</span>
+    {% endif %}
+    {{ date|pretty_date }} ({{ date|human_date }})
+  </div>
+  <div>
+    <a href="/committee-meeting/{{ id }}">{{ title|safe }}</a>
+  </div>
+  {% if result.highlight %}
+  {% if result.highlight.description %}
+  <div>
+    {{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+  </div>
+  {% elif result.highlight.fulltext %}
+  <div>
+    {{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+  </div>
+  {% endif %}
+  {% endif %}
 </div>

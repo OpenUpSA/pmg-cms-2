@@ -1,38 +1,30 @@
 {% extends "base.html" %}
 
-{% block style %}
-
-{% endblock %}
-
-{% block top_links %}
-{{ super() }}
-{% endblock %}
-
 {% block page %}
-<div class="col-sm-12">
-  <h4 class="light-red">Daily Schedule</h4>
-  <h1>{{ daily_schedule.title }}</h1>
-  {% if daily_schedule.start_date %}
-  <h4>{{ daily_schedule.start_date }}</h4>
-  {% endif %}
+<h4 class="light-red">Daily Schedule</h4>
+<h1>{{ daily_schedule.title }}</h1>
+{% if daily_schedule.start_date %}
+<h4>{{ daily_schedule.start_date }}</h4>
+{% endif %}
   
-</div>
-<div class="col-md-6">
-  {% if daily_schedule.body %}
-  {{ daily_schedule.body|safe }}
-  {% endif %}
-</div>
-<div class="col-md-6">
-  {% for file in daily_schedule.files %}
-  
-  
-  {% if file.description %}
-  <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
-  {% else %}
-  <a href="{{file.url|file}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
-  {% endif %}
-  
-  {% endfor %}
+<div class="row">
+  <div class="col-md-6">
+    {% if daily_schedule.body %}
+    {{ daily_schedule.body|safe }}
+    {% endif %}
+  </div>
+  <div class="col-md-6">
+    {% for file in daily_schedule.files %}
+    
+    
+    {% if file.description %}
+    <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
+    {% else %}
+    <a href="{{file.url|file}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
+    {% endif %}
+    
+    {% endfor %}
+  </div>
 </div>
 
 

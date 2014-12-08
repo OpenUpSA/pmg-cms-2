@@ -2,15 +2,15 @@ import os
 import json
 import time, datetime
 from backend.app import app, db
-
 from backend import models
 from backend.models import *
 import parsers
 from sqlalchemy import types
-
 import requests
-
 import logging
+import csv
+import re
+
 logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
@@ -149,6 +149,21 @@ def rebuild_table(tablename, mappings):
                 logger.debug("Wrote 100 rows...")        
         db.session.commit()
 
+def guess_pa_link(name, names):
+    name_parts = re.split(",", name)
+    first_letter = None
+    surname = name_parts[0]
+    if (len(name_parts) > 1):
+        name_parts = re.split(" ", name_parts[1].strip())
+        if (len(name_parts) > 1 and len(name_parts[1])):
+            first_letter = name_parts[1][0]
+    for pa_name in names:
+        # print pa_name[1], surname
+        if surname in pa_name[1].decode("utf-8"):
+            if first_letter and first_letter is pa_name[1].decode("utf-8")[0]:
+                return pa_name[0]
+    return None
+
 def rebuild_db():
     """
     Save json fixtures into a structured database, intended for use in our app.
@@ -211,12 +226,19 @@ def rebuild_db():
     db.session.commit()
 
     # populate committee members
+    pa_members = []
+    with open('./scrapers/members.csv', 'r') as csvfile:
+        membersreader = csv.reader(csvfile)
+        for row in membersreader:
+            pa_members.append(row)
+
     members = read_data('committee_member.json')
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
             version=0,
-            start_date = db_date_from_utime(member['start_date'])
+            start_date = db_date_from_utime(member['start_date']),
+            pa_link = guess_pa_link(member['title'].strip(), pa_members)
         )
         if member.get('files'):
             member_obj.profile_pic_url = strip_filepath(member["files"][-1]['filepath'])

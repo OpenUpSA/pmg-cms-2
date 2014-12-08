@@ -433,9 +433,9 @@ if __name__ == '__main__':
     add_featured()
 
     # add default roles
-    admin_role = Role(name="admin")
+    admin_role = Role(name="editor")
     db.session.add(admin_role)
-    superuser_role = Role(name="superuser")
+    superuser_role = Role(name="user-admin")
     db.session.add(superuser_role)
     # add a default admin user
     user = User(email="admin@pmg.org.za", password="3o4ukjren3", active=True, confirmed_at=datetime.datetime.now())

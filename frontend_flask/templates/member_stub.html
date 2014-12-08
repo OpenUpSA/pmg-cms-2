@@ -13,6 +13,11 @@
 	{% set party = result.party %}
 	{% set pic = result.profile_pic_url %}
 {% endif %}
+{% if result.pa_link %}
+	{% set link = "http://pa.org.za" + result.pa_link %}
+{% else %}
+	{% set link = "/member/" + id|string %}
+{% endif %}
 <div class="member-stub space-bottom-sm">
 	<div class="row">
 		<div class="col-md-10">
@@ -21,12 +26,11 @@
 				<img src="{{ pic }}" alt="{{title}}" style="max-height: 40px">
 			{% endif %}
 		
-			<a href="/member/{{ id }}">{{ title|safe }}</a>
+			<a href="{{ link }}">{{ title|safe }}</a>
 			{{ date|human_date }} - {{ date|pretty_date }}
 			{% if party %}
-			<span class="label label-info">{{ party.name }}</span>
-		
-		{% endif %}	
+				<span class="label label-info">{{ party.name }}</span>
+			{% endif %}	
 		</div>
 		
 	</div>

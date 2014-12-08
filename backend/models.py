@@ -289,14 +289,11 @@ class MembershipType(db.Model):
 
 
 class Member(db.Model):
-
     __tablename__ = "member"
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    profile_pic_url = db.Column(db.String(200))
-    bio = db.Column(db.String(1500))
-
+    profile_pic_url = db.Column(db.String(255))
+    bio = db.Column(db.Text())
     version = db.Column(db.Integer, nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship(House)
@@ -305,12 +302,12 @@ class Member(db.Model):
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
     province = db.relationship(Province)
     start_date = db.Column(db.Date())
+    pa_link = db.Column(db.String(255))
 
     def __unicode__(self):
         return u'%s' % self.name
 
     def to_dict(self, include_related=False):
-        logger.debug("WOOHOO")
         tmp = serializers.model_to_dict(self, include_related=include_related)
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']

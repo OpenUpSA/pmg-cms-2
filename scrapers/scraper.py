@@ -15,6 +15,7 @@ import parsers
 from sqlalchemy import types
 from bs4 import BeautifulSoup
 import csv
+from urlparse import urljoin
 
 app = Flask(__name__)
 
@@ -142,6 +143,25 @@ class Scraper:
 				self._save_tabledreport(item["name"], item["committee"], page)
 		print self.missing_committees
 
+	def members(self):
+		list_url = "http://www.pa.org.za/organisation/national-assembly/people/"
+		with open('./scrapers/members.csv', 'w') as csvfile:
+			memberswriter = csv.writer(csvfile)
+			memberswriter.writerow(["url", "name"])
+			while True:
+				html = requests.get(list_url).content
+				soup = BeautifulSoup(html)
+				for item in soup.select(".person-list-item a"):
+					url = item["href"]
+					if "person" in url:
+						name = item.select(".name")[0].get_text()
+						member = [ url, name.encode("utf-8") ]
+						memberswriter.writerow(member);
+				next = soup.select("a.next")
+				if next:
+					list_url = urljoin(list_url, next[0]["href"])
+				else:
+					break
 
 if (__name__ == "__main__"):
 	parser = argparse.ArgumentParser(description='Scrapers for PMG')

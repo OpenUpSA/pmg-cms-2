@@ -570,6 +570,7 @@ def search(page = 0):
     params = {}
     filters = {}
     q = params["q"] = request.args.get('q')
+    params["page"] = page
     
     filters["type"] = params['filter[type]'] = request.args.get('filter[type]')
     filters["start_date"] = params['filter[start_date]'] = request.args.get('filter[start_date]')

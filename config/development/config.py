@@ -11,6 +11,20 @@ S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
 ES_SERVER = "http://localhost:9200"
 MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads
+ALLOWED_EXTENSIONS = set(
+    [
+        "doc",
+        "jpg",
+        "jpeg",
+        "mp3",
+        "pdf",
+        "ppt",
+        "rtf",
+        "txt",
+        "wav",
+        "xls",
+    ]
+)
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.gmail.com'

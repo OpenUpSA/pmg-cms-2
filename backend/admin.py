@@ -23,13 +23,21 @@ FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
 STATIC_HOST = app.config['STATIC_HOST']
 UPLOAD_PATH = app.config['UPLOAD_PATH']
+ALLOWED_EXTENSIONS = app.config['ALLOWED_EXTENSIONS']
 
 s3_bucket = S3Bucket()
+logger = logging.getLogger(__name__)
 
 if not os.path.isdir(UPLOAD_PATH):
     os.mkdir(UPLOAD_PATH)
 
-logger = logging.getLogger(__name__)
+
+def allowed_file(filename):
+    logger.debug(filename)
+    tmp = '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    logger.debug(tmp)
+    return tmp
 
 @app.context_processor
 def inject_paths():
@@ -271,6 +279,8 @@ class InlineContent(InlineFormAdmin):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
+            if not allowed_file(file_data.filename):
+                raise Exception("File type not allowed.")
             filename = secure_filename(file_data.filename)
             model.type = file_data.content_type
             logger.debug('saving uploaded file: ' + filename)
@@ -375,11 +385,14 @@ class MemberView(MyModelView):
         # save profile pic, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
+            if not allowed_file(file_data.filename):
+                raise Exception("File type not allowed.")
             filename = secure_filename(file_data.filename)
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
             s3_bucket.upload_file(filename)
             model.profile_pic_url = filename
+
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))

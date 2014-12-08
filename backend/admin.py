@@ -94,7 +94,7 @@ class MyModelView(ModelView):
     def is_accessible(self):
         if not current_user.is_active() or not current_user.is_authenticated():
             return False
-        if not current_user.has_role('admin'):
+        if not current_user.has_role('editor'):
             return False
         return True
 
@@ -111,7 +111,7 @@ class MyRestrictedModelView(MyModelView):
     def is_accessible(self):
         if not current_user.is_active() or not current_user.is_authenticated():
             return False
-        if not current_user.has_role('admin') or not current_user.has_role('superuser'):
+        if not current_user.has_role('editor') or not current_user.has_role('user-admin'):
             return False
         return True
 

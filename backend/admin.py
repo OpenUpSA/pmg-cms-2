@@ -94,7 +94,7 @@ class MyModelView(ModelView):
     def is_accessible(self):
         if not current_user.is_active() or not current_user.is_authenticated():
             return False
-        if not current_user.has_role('admin'):
+        if not current_user.has_role('editor'):
             return False
         return True
 
@@ -111,7 +111,7 @@ class MyRestrictedModelView(MyModelView):
     def is_accessible(self):
         if not current_user.is_active() or not current_user.is_authenticated():
             return False
-        if not current_user.has_role('admin') or not current_user.has_role('superuser'):
+        if not current_user.has_role('editor') or not current_user.has_role('user-admin'):
             return False
         return True
 
@@ -379,8 +379,7 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
-admin.add_view(UserView(User, db.session, name="Users Accounts", endpoint='user', category="Users"))
-admin.add_view(MyRestrictedModelView(Role, db.session, name="Roles", endpoint='role', category="Users"))
+admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))

@@ -42,7 +42,7 @@ Clone this repo, and setup a virtualenv:
 
 Install requirements:
 
-    pip install -r requirements/development.txt
+    pip install -r requirements.txt
 
 
 Start the backend server:

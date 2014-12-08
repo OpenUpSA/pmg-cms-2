@@ -1,107 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>{% block title %}Parliamentary Monitoring Group | South Africa{% endblock %}</title>
-  <link rel="stylesheet" href="/static/resources/css/style.css">
-  <link rel="stylesheet" href="/static/font-awesome-4.2.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/static/chosen/chosen.min.css">
-  {% block head %}
-  {% endblock %}
+{% extends 'layout.html' %}
 
-  {% block style %}
-  <style>
+{% block content %}
 
-  </style>
-  {% endblock %}
-</head>
-
-<body>
-<nav class="navbar navbar-default navbar-pmg" role="navigation">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
-    </div>
-    <form class="navbar-form navbar-left" role="search" action="/search">
-      <div class="form-group">
-        <input type="text" class="form-control " name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
-      </div>
-      <button type="submit" class="btn btn-success">Search</button>
-    </form>
-    <ul class="nav navbar-nav navbar-right">
-      <a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn">Create an account</a>
-    </ul>
-  </div><!-- /.container-fluid -->
-</nav>
+{% include "_header.html" %}
 
 <div class="container-fluid container-body">
   {% include "_messages.html" %}
-  {% block page %}
 
-  {% endblock page %}
+  {% block page %}{% endblock page %}
 </div>
 
-<footer>
-  <div class="col-sm-2">
-    <ul class="list-unstyled">
-      <li><strong>Legal</strong></li>
-      <li><a href="http://pmg.org.za/disclaimer-copyright">Copyright Parliamentary Monitoring Group</a></li>
-      <!-- <li><a href="#">Terms &amp; Conditions</a></li>
-      <li><a href="#">Privacy Policy</a></li> -->
-    </ul>
-  </div>
-  <div class="col-sm-2">
-    <ul class="list-unstyled">
-      <li><strong>PMG</strong></li>
-      <li><a href="http://pmg.org.za/contact-pmg">Contact Us</a></li>
-      <li><a href="http://pmg.org.za/what-is-pmg">About Us</a></li>
-    </ul>
-  </div>
-  <div class="col-sm-2">
-    <ul class="list-unstyled">
-      <li><strong>Links</strong></li>
-      <li><a href="http://www.pa.org.za">People's Assembly</a></li>
-      <li><a href="http://bills.pmg.org.za">Bill Tracker</a></li>
-      <li><a href="http://code4sa.org">Code4SA</a></li>
-    </ul>
-  </div>
-   <div class="col-sm-2">
-    <ul class="list-unstyled">
+{% include "_footer.html" %}
 
-      <li><strong>Content</strong></li>
-      <li><a href="http://bills.pmg.org.za">Bills</a></li>
-      <!-- <li><a href="/books">Books</a></li> -->
-      <li><a href="/calls-for-comments">Calls for Comments</a></li>
-      <li><a href="/committee-meetings">Committee Meetings</a></li>
-      <li><a href="/committees/">Committees</a></li>
-      <li><a href="/daily_schedules">Daily Schedules</a></li>
-      <li><a href="/gazettes">Gazettes</a></li>
-    </ul>
-  </div>
-  <div class="col-sm-2">
-    <ul class="list-unstyled">
-      <li>&nbsp;</li>
-      <li><a href="/hansards">Hansards</a></li>
-      <li><a href="/members/">Members of Parliament</a></li>
-      <li><a href="/briefings">Media Briefings</a></li>
-      <li><a href="/policy-documents">Policy Documents</a></li>
-      <li><a href="/question_replies">Questions and Replies</a></li>
-      <li><a href="/tabled-committee-reports">Tabled Committee Reports</a></li>
-      <!-- <li><a href="#">Audio</a></li> -->
-    </ul>
-  </div>
-  <div class="clearfix"></div>
-</footer>
-<script src="/static/bower_components/jquery/dist/jquery.min.js"></script>
-<script src="/static/bower_components/bootstrap/js/tab.js"></script>
-<script src="/static/bower_components/bootstrap/js/transition.js"></script>
-<script src="/static/bower_components/bootstrap/js/alert.js"></script>
-<script src="/static/chosen/chosen.jquery.js"></script>
-<script>
-  $(function() {
-    $(".chosen").chosen({width: "100%"});
-  })
-</script>
-</body>
-</html>
+{% endblock %}

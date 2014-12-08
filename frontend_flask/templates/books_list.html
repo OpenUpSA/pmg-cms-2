@@ -1,29 +1,16 @@
 {% extends "base.html" %}
 
 {% block page %}
-<div class="container-fluid">
+<h1><i class="fa fa-icon fa-group"></i> Books</h1>
 
-  <div class="col-sm-12">
-    <h1><i class="fa fa-icon fa-group"></i> Books</h1>
-  </div>
+<ul>
+  {% for book in books %}
+   <li>
+    <a href="/book/{{ book.id }}">{{ book.title }}</a>
+  </li>
+  {% endfor %}
+</ul>
 
-  <div class="col-md-8">
-    <ul>
-      {% for book in books %}
-       <li>
-        <a href="/book/{{ book.id }}">{{ book.title }}</a>
-      </li>
-      {% endfor %}
-    </ul>
-    </div>
-  </div>
+{% include 'pagination.html' %}
 
-  <div class="col-md-4">
-
-  </div>
-  <div class="row">
-    <div class="col-md-8">
-      {% include 'pagination.html' %}
-    </div>
-  </div>
 {% endblock page %}

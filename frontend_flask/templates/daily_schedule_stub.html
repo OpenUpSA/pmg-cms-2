@@ -1,33 +1,27 @@
 {% if result._source %}
-	{% set title = result._source.title %}
-	{% set date = result._source.date %}
-	{% set id = result._id %}
+  {% set title = result._source.title %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
 {% else %}
-	{% set title = result.title %}
-	{% set date = result.start_date %}
-	{% set id = result.id %}
+  {% set title = result.title %}
+  {% set date = result.start_date %}
+  {% set id = result.id %}
 {% endif %}
 <div class="daily_schedule-stub space-bottom-sm">
-	<div class="row">
-		<div class="col-md-10">
-			<span class="label label-primary">Daily Schedule</span>
-			<a href="/daily_schedule/{{ id }}">{{ date|pretty_date }} </a>
-			{{ date|human_date }}
-		</div>
-	</div>
-	{% if result.highlight %}
-	{% if result.highlight.description %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
-	{% elif result.highlight.fulltext %}
-	<div class="row">
-		<div class="col-md-12">
-			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
-		</div>
-	</div>
-	{% endif %}
-	{% endif %}
+  <div>
+    <span class="label label-primary">Daily Schedule</span>
+    <a href="/daily_schedule/{{ id }}">{{ date|pretty_date }} </a>
+    {{ date|human_date }}
+  </div>
+  {% if result.highlight %}
+  {% if result.highlight.description %}
+  <div>
+    {{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+  </div>
+  {% elif result.highlight.fulltext %}
+  <div>
+    {{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+  </div>
+  {% endif %}
+  {% endif %}
 </div>

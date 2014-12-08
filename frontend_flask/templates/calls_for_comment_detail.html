@@ -1,29 +1,22 @@
 {% extends "base.html" %}
 
-{% block style %}
-
-{% endblock %}
-
-{% block top_links %}
-{{ super() }}
-{% endblock %}
-
 {% block page %}
-<div class="col-sm-12">
-  <h4 class="light-red">Call for Comment</h4>
-  <h1>{{ calls_for_comment.title }}</h1>
-  {% if calls_for_comment.end_date %}
-  <h4>Comment expires on {{ calls_for_comment.end_date }}</h4>
-  {% endif %}
-  {% if calls_for_comment.start_date %}
-  <h4>{{ calls_for_comment.start_date }}</h4>
-  {% endif %}
-  {% if calls_for_comment.committee %}
-  <h2><a href="/committee/{{calls_for_comment.committee.id}}">{{ calls_for_comment.committee.name }}</a></h2>
-  {% endif %}
-</div>
+<h4 class="light-red">Call for Comment</h4>
+<h1>{{ calls_for_comment.title }}</h1>
 
-<div class="col-md-6">
+{% if calls_for_comment.end_date %}
+<h4>Comment expires on {{ calls_for_comment.end_date }}</h4>
+{% endif %}
+
+{% if calls_for_comment.start_date %}
+<h4>{{ calls_for_comment.start_date }}</h4>
+{% endif %}
+
+{% if calls_for_comment.committee %}
+<h2><a href="/committee/{{calls_for_comment.committee.id}}">{{ calls_for_comment.committee.name }}</a></h2>
+{% endif %}
+
+<div>
   {{ calls_for_comment.body|safe }}  
 </div>
 

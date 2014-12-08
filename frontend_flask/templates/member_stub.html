@@ -1,17 +1,17 @@
 {% if result._source %}
-	{% if result.highlight.title %}
-		{% set title = result.highlight.title[0]|search_snippet %}
-	{% else %}	
-		{% set title = result._source.title %}
-	{% endif %}
-	{% set date = result._source.date %}
-	{% set id = result._id %}
+  {% if result.highlight.title %}
+    {% set title = result.highlight.title[0]|search_snippet %}
+  {% else %}  
+    {% set title = result._source.title %}
+  {% endif %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
 {% else %}
-	{% set title = result.name %}
-	{% set date = result.start_date %}
-	{% set id = result.id %}
-	{% set party = result.party %}
-	{% set pic = result.profile_pic_url %}
+  {% set title = result.name %}
+  {% set date = result.start_date %}
+  {% set id = result.id %}
+  {% set party = result.party %}
+  {% set pic = result.profile_pic_url %}
 {% endif %}
 {% if result.pa_link %}
 	{% set link = "http://pa.org.za" + result.pa_link %}

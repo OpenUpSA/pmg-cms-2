@@ -14,22 +14,18 @@
 </style>
 {% endblock %}
 
-{% block top_links %}
-{{ super() }}
-{% endblock %}
-
 {% block page %}
-<div class="col-sm-12">
-  <h4 class="light-red">Parliamentary member</h4>
-  <h1>{{ member.name }}</h1>
-</div>
-<div class="col-md-1">
-  <img src="{{ member.profile_pic_url }}" alt="{{ member.name }}">
-</div>
-<div class="col-md-4">
-  {{ member.bio|safe }}  
-</div>
+<h4 class="light-red">Parliamentary member</h4>
+<h1>{{ member.name }}</h1>
 
+<div class="row">
+  <div class="col-md-1">
+    <img src="{{ member.profile_pic_url }}" alt="{{ member.name }}">
+  </div>
+  <div class="col-md-4">
+    {{ member.bio|safe }}  
+  </div>
+</div>
 
 {% endblock %}
 

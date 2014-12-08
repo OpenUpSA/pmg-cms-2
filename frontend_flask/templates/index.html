@@ -1,118 +1,93 @@
 {% extends "base.html" %}
 
 {% block page %}
-<div class="col-sm-12">
-    {% block top_links %}
-    <ul class="list-inline top-links">
-      <li><a href="/committees/">Committees</a></li>
-      <!--<li><a class="disabled text-muted" href="/bills/">Bills</a></li>-->
-      
-      <li><a href="/members">MPs</a></li>
-      <li><a href="/committee-meetings">Committee Meetings</a></li>
-      <li><a href="http://bills.pmg.org.za">Bills</a></li>
-      <li><a href="/question_replies">Questions and Replies</a></li>
-      <li><a href="/calls-for-comments">Calls for Comments</a></li>
-      <!--<li><a href="#">About Parliament</a></li>-->
-      <!--<li><a href="#">About PMG</a></li>-->
-    </ul>
-    {% endblock %}
-  </div>
-<div class="col-md-9"> <!-- Main section -->
-  <div class="row">
-    <div id="news" class="jumbotron col-md-12">
+<div class="row">
+  <div class="col-md-9"> <!-- Main section -->
+    <div class="row">
+      <div id="news" class="jumbotron col-md-12">
 
-      <div class="news-pic" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
-        <div class="text-background bottom">
-          <h2 class=""><a href="{{ featured_content.link }}">{{ featured_content.title }}</a></h2>
+        <div class="news-pic" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
+          <div class="text-background bottom">
+            <h2 class=""><a href="{{ featured_content.link }}">{{ featured_content.title }}</a></h2>
 
-        </div>
-        <div class="blurb">
-          <p class="">{{ featured_content.blurb }}</p>
+          </div>
+          <div class="blurb">
+            <p class="">{{ featured_content.blurb }}</p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div id="schedule" class="col-md-4">
-      <h3><span class="glyphicon glyphicon-calendar"></span> Schedule</h3>
-      {% if not scheduledates %}
-      <h4>No meetings currently scheduled</h4>
-      {% endif %}
-      {% for date in scheduledates %}
-      <h4>{{ date }}</h4>
-      <table class="table table-striped table-bordered">
-      {% for item in schedule %}
-      {% if (item.meeting_date==date) %}
-      {% if (item.description) %}
-        <tr>
-          <td>{{item.meeting_time}}</td>
-          <td>{{item.description}}</td>
-        </tr>
-      {% endif %}
-      {% endif %}
-      {% endfor %}
-      </table>
-      {% endfor %}
-      
-    </div><!-- Schedule -->
-
-    <div class="col-md-8" id="committee-meetings"> <!-- Committee meetings -->
-      <!-- <form class="form-inline pull-right" role="form">
-        <div class="form-group">
-          <select class="form-control">
-            <option value="">Agriculture, Forestry and Fisheries</option>
-            <option value="">Arts and Culture</option>
-            <option value="">Basic Education</option>
-            <option value="">Communications</option>
-          </select>
-        </div>
-      </form> -->
-      <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
-      
-      <table class="table table-striped table-bordered">
-         {% for committee_meeting in committee_meetings %}
+    <div class="row">
+      <div id="schedule" class="col-md-4">
+        <h3><span class="glyphicon glyphicon-calendar"></span> Schedule</h3>
+        {% if not scheduledates %}
+        <h4>No meetings currently scheduled</h4>
+        {% endif %}
+        {% for date in scheduledates %}
+        <h4>{{ date }}</h4>
+        <table class="table table-striped table-bordered">
+        {% for item in schedule %}
+        {% if (item.meeting_date==date) %}
+        {% if (item.description) %}
           <tr>
-            <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
-          <td><a href="/committee/{{ committee_meeting.organisation.id }}">{{ committee_meeting.organisation.name }}</a></td>
-          <td>
-            <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
-          </td>
-        </tr>
+            <td>{{item.meeting_time}}</td>
+            <td>{{item.description}}</td>
+          </tr>
+        {% endif %}
+        {% endif %}
         {% endfor %}
-      </table>
-      <a href="/committee-meetings/" class="btn btn-primary">More Committee Meetings</a>
-    </div> <!-- Committee meetings -->
-  </div>
+        </table>
+        {% endfor %}
+        
+      </div><!-- Schedule -->
 
+      <div class="col-md-8" id="committee-meetings"> <!-- Committee meetings -->
+        <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
+        
+        <table class="table table-striped table-bordered">
+           {% for committee_meeting in committee_meetings %}
+            <tr>
+              <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
+            <td><a href="/committee/{{ committee_meeting.organisation.id }}">{{ committee_meeting.organisation.name }}</a></td>
+            <td>
+              <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+        <a href="/committee-meetings/" class="btn btn-primary">More Committee Meetings</a>
+      </div> <!-- Committee meetings -->
+    </div>
+  </div> <!-- /Main Section -->
 
-</div> <!-- /Main Section -->
+  <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
+    <div class="space-bottom">
+      <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
+      <ul class="list-unstyled list">
+        {% for committee_meeting in featured_content.committee_meeting %}
+        <li>
+          <h5><a href="/committee-meeting/{{ committee_meeting.id }}/">{{ committee_meeting.title }}</a></h5>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
 
-<div id="sidebar" class="col-md-3">  <!-- Sidebar -->
-  <div class="space-bottom">
-    <!-- <h3><span class="glyphicon glyphicon-certificate"></span> Featured</h3> -->
-    <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
-    <ul class="list-unstyled list">
-      {% for committee_meeting in featured_content.committee_meeting %}
-      <li>
-        <h5><a href="/committee-meeting/{{ committee_meeting.id }}/">{{ committee_meeting.title }}</a></h5>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  <div class="space-bottom">
-    <h4><span class="fa fa-briefcase"></span> Featured Tabled Committee Reports</h4>
-    <ul class="list-unstyled list">
-      {% for tabled_committee_report in featured_content.tabled_committee_report %}
-      <li>
-        <h5><a href="/tabled-committee-report/{{ tabled_committee_report.id }}/">{{ tabled_committee_report.title }}</a></h5>
-      </li>
-      {% endfor %}
-    </ul>
-  </div>
-  <!-- <h4><span class="fa fa-twitter"></span>  Twitter</h4> -->
-  <a class="twitter-timeline" href="https://twitter.com/PMG_SA" data-widget-id="537890271451959296">Tweets by @PMG_SA</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-</div> <!-- /Sidebar -->
+    <div class="space-bottom">
+      <h4><span class="fa fa-briefcase"></span> Featured Tabled Committee Reports</h4>
+      <ul class="list-unstyled list">
+        {% for tabled_committee_report in featured_content.tabled_committee_report %}
+        <li>
+          <h5><a href="/tabled-committee-report/{{ tabled_committee_report.id }}/">{{ tabled_committee_report.title }}</a></h5>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <a class="twitter-timeline" href="https://twitter.com/PMG_SA" data-widget-id="537890271451959296">Tweets by @PMG_SA</a>
+  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+  </div> <!-- /Sidebar -->
+
+</div>
 
 {% endblock page %}

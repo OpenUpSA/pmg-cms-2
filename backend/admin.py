@@ -326,7 +326,8 @@ class MemberView(MyModelView):
         'province',
         'memberships',
         'bio',
-        'profile_pic_url'
+        'pa_link',
+        'profile_pic_url',
     )
     column_labels = {'memberships': 'Committees', }
     column_sortable_list = (
@@ -341,7 +342,8 @@ class MemberView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         profile_pic_url=macro('render_profile_pic'),
-        memberships=macro('render_committee_membership')
+        memberships=macro('render_committee_membership'),
+        pa_link=macro('render_external_link'),
     )
     form_columns = (
         'name',
@@ -349,6 +351,7 @@ class MemberView(MyModelView):
         'party',
         'province',
         'bio',
+        'pa_link',
         'upload',
     )
     form_extra_fields = {

@@ -10,6 +10,7 @@ ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
 ES_SERVER = "http://localhost:9200"
+MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.gmail.com'

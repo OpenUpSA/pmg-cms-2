@@ -379,8 +379,7 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
-admin.add_view(UserView(User, db.session, name="Users Accounts", endpoint='user', category="Users"))
-admin.add_view(MyRestrictedModelView(Role, db.session, name="Roles", endpoint='role', category="Users"))
+admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))

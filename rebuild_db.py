@@ -133,9 +133,13 @@ def rebuild_table(tablename, mappings):
             model = Model()
             files = find_files(obj)
             committees = find_committee(obj)
-            if (committees):
-                for committee in committees:
-                    model.committee.append(committee)
+            if hasattr(model, 'committee_id'):
+                if len(committees):
+                    model.committee_id = committees[0].id
+            else:
+                if (committees):
+                    for committee in committees:
+                        model.committee.append(committee)
             if (len(files)):
                 for f in files:
                     model.files.append(f)

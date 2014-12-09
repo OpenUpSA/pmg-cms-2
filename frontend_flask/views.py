@@ -271,16 +271,18 @@ def committee_meetings(page=0):
     """
     Page through all available committee meetings.
     """
-
-    committee_meetings_list = load_from_api('committee-meeting', page=page)
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    filters = {}
+    params = {}
+    filters["committee"] = params['filter[organisation_id]'] = request.args.get('filter[committee]')
+    committee_meetings_list = load_from_api('committee-meeting', page=page, params=params)
     committee_meetings = committee_meetings_list['results']
     count = committee_meetings_list["count"]
-
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/committee-meetings"
-
-    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment")
+    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment", committees = committees, filters = filters)
 
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
@@ -324,13 +326,18 @@ def tabled_committee_reports(page = 0):
     """
 
     logger.debug("tabled-committee-reports page called")
-    tabled_committee_reports_list = load_from_api('tabled_committee_report', page = page)
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    filters = {}
+    params = {}
+    filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
+    tabled_committee_reports_list = load_from_api('tabled_committee_report', page = page, params = params)
     count = tabled_committee_reports_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     tabled_committee_reports = tabled_committee_reports_list['results']
     url = "/tabled-committee-reports"
-    return render_template('list.html', results=tabled_committee_reports, content_type="tabled_committee_report", title="Tabled Committee Reports", num_pages = num_pages, page = page, url = url, icon="briefcase")
+    return render_template('list.html', results=tabled_committee_reports, content_type="tabled_committee_report", title="Tabled Committee Reports", num_pages = num_pages, page = page, url = url, icon="briefcase", committees = committees, filters = filters)
 
 @app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
 def tabled_committee_report(tabled_committee_report_id):
@@ -350,13 +357,18 @@ def calls_for_comments(page = 0):
     """
 
     logger.debug("calls-for-comments page called")
-    calls_for_comments_list = load_from_api('calls_for_comment', page = page)
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    filters = {}
+    params = {}
+    filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
+    calls_for_comments_list = load_from_api('calls_for_comment', page = page, params = params)
     count = calls_for_comments_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = calls_for_comments_list['results']
     url = "/calls-for-comments"
-    return render_template('list.html', results=calls_for_comments, num_pages = num_pages, page = page, url = url, icon="comments", content_type="calls_for_comment", title="Calls for Comments")
+    return render_template('list.html', results=calls_for_comments, num_pages = num_pages, page = page, url = url, icon="comments", content_type="calls_for_comment", title="Calls for Comments", committees = committees, filters = filters)
 
 @app.route('/calls-for-comment/<int:calls_for_comment_id>/')
 def calls_for_comment(calls_for_comment_id):
@@ -549,13 +561,18 @@ def question_replies(page = 0):
     """
 
     logger.debug("question_replies page called")
-    question_replies_list = load_from_api('briefing', page = page)
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    filters = {}
+    params = {}
+    filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
+    question_replies_list = load_from_api('question_reply', page = page, params=params)
     count = question_replies_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     question_replies = question_replies_list['results']
     url = "/question_replies"
-    return render_template('list.html', results=question_replies, num_pages = num_pages, page = page, url = url, icon="question", title="Questions and Replies", content_type="question_reply")
+    return render_template('list.html', results=question_replies, num_pages = num_pages, page = page, url = url, icon="question-circle", title="Questions and Replies", content_type="question_reply", committees = committees, filters = filters )
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')

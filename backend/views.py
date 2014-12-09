@@ -179,6 +179,16 @@ def search():
         result["first"] = flask.request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
     return json.dumps(result)
 
+def get_filter():
+    filters = []
+    args = flask.request.args.to_dict()
+    for key in args:
+        if "filter" in key:
+            fieldname = re.search("filter\[(.*)\]", key).group(1)
+            if fieldname:
+                filters.append({ fieldname: args[key] })
+    return filters
+
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )
 def resource_list(resource, resource_id=None):
@@ -198,7 +208,11 @@ def resource_list(resource, resource_id=None):
             page = int(flask.request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-
+    # if flask.request.args.get('filter'):
+    filters = get_filter()
+    if (len(filters)):
+        for f in filters:
+            base_query = base_query.filter_by(**f)
     if resource_id:
         try:
             queryset = base_query.filter_by(id=resource_id).one()

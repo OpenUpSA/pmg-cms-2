@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
 {% block page %}
-<h4 class="light-red">Question &amp; Reply</h4>
-<h1>{{ question_reply.title }}</h1>
-<h5>{{ question_reply.start_date }}</h5>
-
-<div>
- {{ question_reply.body|safe }}  
-</div>
-
+	{% if question_reply.committee %}
+		<a href="/committee/{{question_reply.committee.id}}">{{ question_reply.committee.name }}</a>
+	{% endif %}
+	<h4 class="light-red">Question &amp; Reply</h4>
+	<h1>{{ question_reply.title }}</h1>
+	<h5>{{ question_reply.start_date }}</h5>
+	{{ question_reply.body|safe }}
 {% endblock %}

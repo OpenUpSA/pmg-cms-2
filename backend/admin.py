@@ -412,14 +412,14 @@ admin.add_view(MyModelView(Tabled_committee_report, db.session, name="Tabled Com
 admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
 
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
-admin.add_view(MyModelView(Questions_replies, db.session, name="Questions & Replies", endpoint='question'))
+admin.add_view(MyModelView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
 
-admin.add_view(MyModelView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment'))
-admin.add_view(MyModelView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Publications"))
-admin.add_view(MyModelView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Publications"))
-admin.add_view(MyModelView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Publications"))
-admin.add_view(MyModelView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Publications"))
-admin.add_view(MyModelView(Briefing, db.session, name="Media Briefings", endpoint='briefing'))
+admin.add_view(MyModelView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(MyModelView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
+admin.add_view(MyModelView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(MyModelView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(MyModelView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(MyModelView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
 
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))

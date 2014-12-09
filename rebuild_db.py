@@ -186,20 +186,21 @@ def rebuild_db():
 
     # populate committees
     committees = {}
-    drupal_recs = read_data('comm_info_page.json')
-    for rec in drupal_recs:
-        if rec['terms']:
-            name = rec['terms'][0].strip()
-            if not committees.get('name'):
+    committee_list = read_data('comm_info_page.json')
+    for committee in committee_list:
+        if committee['terms']:
+            name = committee['terms'][0].strip()
+            if name not in committees.keys():
                 committees[name] = {}
-            if rec['comm_info_type'] == '"Contact"':
-                committees[name]["contact"] = rec["revisions"][0]["body"]
-            elif rec['comm_info_type'] == '"About"':
-                committees[name]["about"] = rec["revisions"][0]["body"]
-            if len(rec["revisions"]) > 1:
-                logger.debug("ERROR: MULTIPLE REVISIONS PRESENT FOR A COMMITTEE")
+            committee_obj = construct_obj(committee, { "comm_info_type": "comm_info_type", "body": "body" })
+            # logger.debug(committee_obj)
+            if committee_obj.has_key("comm_info_type"):
+                if committee_obj["comm_info_type"] == 'About':
+                    committees[name]["about"] = committee_obj["body"]
+                elif committee_obj["comm_info_type"] == 'Contact':
+                    committees[name]["contact"] = committee_obj["body"]
     for key, val in committees.iteritems():
-        logger.debug(key)
+        # logger.debug(val)
         organisation = Organisation()
         organisation.name = key
         organisation.type = "committee"
@@ -213,15 +214,13 @@ def rebuild_db():
         else:
             organisation.house_id = na_obj.id
 
-        committee_info = CommitteeInfo()
+        # committee_info = CommitteeInfo()
         if val.get("about"):
-            committee_info.about = val["about"]
+            organisation.about = val["about"]
         if val.get("contact"):
-            committee_info.contact_details = val["contact"]
-        committee_info.organization = organisation
+            organisation.contact_details = val["contact"]
 
         db.session.add(organisation)
-        db.session.add(committee_info)
         val['model'] = organisation
     db.session.commit()
 

@@ -9,6 +9,8 @@ formatters:
   normal:
     format: '%(asctime)s %(process)-6d %(name)-12s %(levelname)-8s %(message)s'
 loggers:
+  backend:
+    level: DEBUG
   requests:
     level: DEBUG
   sqlalchemy.engine:

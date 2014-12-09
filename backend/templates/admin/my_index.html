@@ -15,14 +15,19 @@
 					{% for item in record_counts %}
 						<tr>
 							<th>
-								{{ item[0] }}
+								<a href="{{ url_for(item[1]) }}">{{ item[0] }}</a>
 							</th>
 							<td class="text-center">
-								{{ item[1] | add_commas }}
+								{{ item[2] | add_commas }}
 							</td>
 						</tr>
 					{% endfor %}
 				</table>
+
+				<p class="lead">
+					There are <strong>{{ file_count | add_commas }}</strong> files associated with the
+					records above.
+				</p>
 			</div>
 		{% endif %}
 	</div>

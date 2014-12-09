@@ -4,25 +4,25 @@
 <h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
 
 <div class="space-bottom">
-  <div class="row">
-    <div class="col-md-6">
-      <form action="/search" method="GET">
-        <input type="hidden" name="filter[type]" value="{{content_type}}">
-        <div class="input-group">
-          <input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-success">Search</button>
-          </span>
-        </div>
-      </form>
-    </div>
-  </div>
+	<div class="row">
+		<div class="col-md-6">
+			<form action="/search" method="GET">
+				<input type="hidden" name="filter[type]" value="{{content_type}}">
+				<div class="input-group">
+					<input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-success">Search</button>
+					</span>
+				</form>
+			</div>
+		</div>
+  	</div>
 </div>
 
 <ul class="list-unstyled">
   {% for result in results %}
   <li>
-    {% include content_type + '_stub.html' %}
+	{% include content_type + '_stub.html' %}
   </li>
   {% endfor %}
 </ul>

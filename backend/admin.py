@@ -35,7 +35,7 @@ if not os.path.isdir(UPLOAD_PATH):
 def allowed_file(filename):
     logger.debug(filename)
     tmp = '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+          filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     logger.debug(tmp)
     return tmp
 
@@ -81,12 +81,21 @@ class MyIndexView(AdminIndexView):
     @expose("/")
     def index(self):
 
-        record_counts = {
-            'member': Member.query.count(),
-            'committee': Organisation.query.filter_by(type="committee").count(),
-            'committee-meeting': CommitteeMeeting.query.count(),
-            'content': Content.query.count(),
-            }
+        record_counts = [
+            ('Members', Member.query.count()),
+            ('Committee', Organisation.query.filter_by(type="committee").count()),
+            ('Committee Meetings', CommitteeMeeting.query.count()),
+            ('Attachments', Content.query.count()),
+            ('Bills', Bill.query.count()),
+            ('Questions & Replies', Questions_replies.query.count()),
+            ('Calls for Comment', Calls_for_comment.query.count()),
+            ('Daily Schedules', Daily_schedule.query.count()),
+            ('Gazette', Gazette.query.count()),
+            ('Hansards', Hansard.query.count()),
+            ('Media Briefings', Briefing.query.count()),
+            ('Policy Documents', Policy_document.query.count()),
+            ('Tabled Committee Reports', Tabled_committee_report.query.count()),
+            ]
 
         return self.render('admin/my_index.html', record_counts=record_counts)
 
@@ -354,7 +363,7 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
-    )
+        )
     form_columns = (
         'name',
         'house',
@@ -378,7 +387,7 @@ class MemberView(MyModelView):
         'bio': {
             'rows': '10'
         },
-    }
+        }
     edit_template = "admin/edit_member.html"
 
     def on_model_change(self, form, model):
@@ -399,8 +408,20 @@ admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(MyModelView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
+admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
 
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+admin.add_view(MyModelView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
+
+admin.add_view(MyModelView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(MyModelView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
+admin.add_view(MyModelView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(MyModelView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(MyModelView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(MyModelView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
 
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
+admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
+admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
 

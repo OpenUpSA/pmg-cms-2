@@ -16,20 +16,20 @@ logger = logging.getLogger(__name__)
 
 # ==== JOINS ==== #
 
-tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
-    db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id')),
-)
+# tabled_committee_report_committee_table = db.Table('tabled_committee_report_committee_join', db.Model.metadata,
+#     db.Column('tabled_committee_report_id', db.Integer, db.ForeignKey('tabled_committee_report.id')),
+#     db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id')),
+# )
 
-questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
-    db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
-)
+# questions_replies_committee_table = db.Table('questions_replies_committee_join', db.Model.metadata,
+#     db.Column('questions_replies_id', db.Integer, db.ForeignKey('questions_replies.id')),
+#     db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+# )
 
-calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
-    db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
-    db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
-)
+# calls_for_comment_committee_table = db.Table('calls_for_comment_committee_join', db.Model.metadata,
+#     db.Column('calls_for_comment_id', db.Integer, db.ForeignKey('calls_for_comment.id')),
+#     db.Column('committee_id', db.Integer, db.ForeignKey('organisation.id'))
+# )
 
 roles_users = db.Table('roles_users',
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
@@ -330,9 +330,9 @@ class Organisation(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')
 
-    tabled_committee_reports = db.relationship("Tabled_committee_report", secondary=tabled_committee_report_committee_table, lazy=True)
-    questions_replies = db.relationship("Questions_replies", secondary=questions_replies_committee_table, lazy=True)
-    calls_for_comment = db.relationship("Calls_for_comment", secondary=calls_for_comment_committee_table, lazy=True)
+    tabled_committee_reports = db.relationship("Tabled_committee_report", lazy=True)
+    questions_replies = db.relationship("Questions_replies", lazy=True)
+    calls_for_comment = db.relationship("Calls_for_comment", lazy=True)
 
     def __unicode__(self):
         tmp = self.name
@@ -394,7 +394,9 @@ class Questions_replies(db.Model):
     __tablename__ = "questions_replies"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee = db.relationship('Organisation', secondary=questions_replies_committee_table, backref=db.backref('question_replies_committee', lazy='dynamic'))
+    # committee = db.relationship('Organisation', secondary=questions_replies_committee_table, backref=db.backref('question_replies_committee', lazy='dynamic'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', backref=db.backref('question-replies-organisation', lazy='dynamic'))
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
@@ -407,14 +409,13 @@ tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join
     db.Column('file_id', db.Integer, db.ForeignKey('file.id'))
 )
 
-
-
 class Tabled_committee_report(db.Model):
     __tablename__ = "tabled_committee_report"
 
     id = db.Column(db.Integer, primary_key=True)
-    # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table, backref=db.backref('organisation', lazy='dynamic'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', backref=db.backref('organisation', lazy='dynamic'))
+    # committee = db.relationship('Organisation', secondary=tabled_committee_report_committee_table, backref=db.backref('organisation', lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
@@ -429,7 +430,9 @@ class Calls_for_comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     # committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', secondary=calls_for_comment_committee_table)
+    # committee = db.relationship('Organisation', secondary=calls_for_comment_committee_table)
+    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    committee = db.relationship('Organisation', backref=db.backref('call-for-comment-organisation', lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     end_date = db.Column(db.Date())

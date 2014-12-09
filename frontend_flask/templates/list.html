@@ -16,9 +16,13 @@
 				</div>
 			</form>
 		</div>
+		{% if committees %}
 		<div class="col-md-6">
-			{% include 'committee_select.html' %}
+			<form>
+				{% include 'committee_select.html' %}
+			</form>
 		</div>
+		{% endif %}
   	</div>
 </div>
 

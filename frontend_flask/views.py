@@ -279,8 +279,10 @@ def committee_meetings(page=0):
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/committee-meetings"
-
-    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment")
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    filters = { "committee": None}
+    return render_template('list.html', results=committee_meetings, num_pages=num_pages, page=page, url=url, title="Committee Meeting Reports", content_type="committee-meeting", icon="comment", committees = committees, filters = filters)
 
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):

@@ -324,6 +324,8 @@ class Organisation(db.Model):
     name = db.Column(db.String(255), nullable=False)
     type = db.Column(db.String(50), nullable=False)
     version = db.Column(db.Integer, nullable=False)
+    about = db.Column(db.Text())
+    contact_details = db.Column(db.Text())
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')
@@ -354,21 +356,6 @@ class Membership(db.Model):
     def __unicode__(self):
         tmp = u" - ".join([unicode(self.type), unicode(self.member), unicode(self.organisation)])
         return unicode(tmp)
-
-
-class CommitteeInfo(db.Model):
-
-    __tablename__ = "committee_info"
-
-    id = db.Column(db.Integer, primary_key=True)
-    about = db.Column(db.String(1500))
-    contact_details = db.Column(db.String(1500))
-
-    organization_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), nullable=False)
-    organization = db.relationship('Organisation', backref=backref('info', lazy='joined', uselist=False))
-
-    def __unicode__(self):
-        return unicode(self.about)
 
 
 class Hansard(db.Model):

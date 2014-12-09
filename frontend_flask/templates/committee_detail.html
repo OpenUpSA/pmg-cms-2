@@ -15,20 +15,19 @@
 {% endblock %}
 
 {% block page %}
-<h4 class="light-red">{{ committee.house.name }} committee</h4>
+<h4 class="light-red">{{ committee.house.name }} Committee</h4>
 
 <h1>{{ committee.name }}</h1>
-
-{% if committee.contact_details %}
-<h5>
-  {{ committee.contact_details }}
-</h5>
-{% endif %}
+    {% if committee.about %}
+      <h3 class="collapse-link"><span class="fa fa-caret-right"></span> About</h3>
+      <div class="collapse">
+      {{ committee.about|safe }}
+      </div>
+    {% endif %}
 
 <div class="row">
-  <div class="col-md-4">
-    <h3><span class="glyphicon glyphicon-flash"></span> Committee meetings</h3>
-
+  <div class="col-md-8">
+    <h3><span class="glyphicon glyphicon-flash"></span> Committee Meetings</h3>
     {%- set per_page = 20 -%}
     {%- set num_pages = ((committee.events | length) / per_page) | int -%}
     {%- if (committee.events | length) % per_page != 0 %}
@@ -64,6 +63,24 @@
       {% endfor %}
       <li><a href="#page-{{ num_pages }}" role="tab" data-toggle="tab">&raquo;</a></li>
     </ul>
+    <div class="col-md-12">
+      {% if committee.tabled_committee_reports %}
+      <h3><span class="fa fa-briefcase"></span> Tabled Reports</h3>
+      <ul class="list-unstyled list-spaced">
+      {% for result in committee.tabled_committee_reports[0:5] %}
+      {% include 'tabled_committee_report_stub.html' %}
+      {% endfor %}
+      </ul>
+      {% endif %}
+      {% if committee.calls_for_comment %}
+      <h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
+      <ul class="list-unstyled list-spaced">
+      {% for result in committee.calls_for_comment[0:5] %}
+      {% include 'calls_for_comment_stub.html' %}
+      {% endfor %}
+      </ul>
+      {% endif %}
+    </div> <!-- /Calls for comments -->
   </div> <!-- /Reports -->
 
   <div class="col-md-4">
@@ -111,27 +128,16 @@
     {% else %}
     <p class="lead">We don't have membership info for this committee.</p>
     {% endif %}
+
+    {% if committee.contact_details %}
+      <h3><span class="fa fa-envelope"></span> Contact</h3>
+      {{ committee.contact_details|safe }}
+    {% endif %}
+
   </div>  <!-- /Members -->
 
 
-  <div class="col-md-4">
-    {% if committee.tabled_committee_reports %}
-    <h3><span class="glyphicon glyphicon-bullhorn"></span> Tabled Reports</h3>
-    <ul class="list-unstyled list-spaced">
-    {% for result in committee.tabled_committee_reports[0:5] %}
-    {% include 'tabled_committee_report_stub.html' %}
-    {% endfor %}
-    </ul>
-    {% endif %}
-    {% if committee.calls_for_comment %}
-    <h3><span class="glyphicon glyphicon-bullhorn"></span> Calls for Comment</h3>
-    <ul class="list-unstyled list-spaced">
-    {% for result in committee.calls_for_comment[0:5] %}
-    {% include 'calls_for_comment_stub.html' %}
-    {% endfor %}
-    </ul>
-    {% endif %}
-  </div> <!-- /Calls for comments -->
+  
 </div>
 
 {% endblock %}

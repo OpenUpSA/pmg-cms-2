@@ -16,6 +16,7 @@ from werkzeug import secure_filename
 import os
 from s3_upload import S3Bucket
 import urllib
+from operator import itemgetter
 
 
 
@@ -82,22 +83,22 @@ class MyIndexView(AdminIndexView):
     def index(self):
 
         record_counts = [
-            ('Members', Member.query.count()),
-            ('Committee', Organisation.query.filter_by(type="committee").count()),
-            ('Committee Meetings', CommitteeMeeting.query.count()),
-            ('Attachments', Content.query.count()),
-            ('Bills', Bill.query.count()),
-            ('Questions & Replies', Questions_replies.query.count()),
-            ('Calls for Comment', Calls_for_comment.query.count()),
-            ('Daily Schedules', Daily_schedule.query.count()),
-            ('Gazette', Gazette.query.count()),
-            ('Hansards', Hansard.query.count()),
-            ('Media Briefings', Briefing.query.count()),
-            ('Policy Documents', Policy_document.query.count()),
-            ('Tabled Committee Reports', Tabled_committee_report.query.count()),
+            ('Members', 'member.index_view', Member.query.count()),
+            ('Committee', 'committee.index_view', Organisation.query.filter_by(type="committee").count()),
+            ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
+            ('Questions & Replies', 'question.index_view', Questions_replies.query.count()),
+            ('Calls for Comment', 'call_for_comment.index_view', Calls_for_comment.query.count()),
+            ('Daily Schedules', 'schedule.index_view', Daily_schedule.query.count()),
+            ('Gazette', 'gazette.index_view', Gazette.query.count()),
+            ('Hansards', 'hansard.index_view', Hansard.query.count()),
+            ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
+            ('Policy Documents', 'policy.index_view', Policy_document.query.count()),
+            ('Tabled Committee Reports', 'tabled_report.index_view', Tabled_committee_report.query.count()),
             ]
+        record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
+        file_count = Content.query.count()
 
-        return self.render('admin/my_index.html', record_counts=record_counts)
+        return self.render('admin/my_index.html', record_counts=record_counts, file_count=file_count)
 
 
 class MyModelView(ModelView):
@@ -407,9 +408,9 @@ admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_vie
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
-admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
 admin.add_view(MyModelView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
-admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
+# admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
 
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
 admin.add_view(MyModelView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))

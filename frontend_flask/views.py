@@ -580,10 +580,8 @@ def search(page = 0):
     """
     Display search page
     """
-    print "Search page called"
     logger.debug("search page called")
 
-    
     params = {}
     filters = {}
     q = params["q"] = request.args.get('q')
@@ -632,3 +630,28 @@ def search(page = 0):
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
     return render_template('search.html', STATIC_HOST=app.config['STATIC_HOST'], q = q, results=result, count=count, num_pages=num_pages, page=page,per_page=per_page, url = search_url, query_string = query_string, filters = filters, years = years, bincount = bincount, yearcount = yearcount, committees = committees)
+
+@app.route('/hitlog/')
+@app.route('/hitlog/<string:random>/')
+def hitlog(random = False):
+    """
+    Records a hit from the end-user. Should be called in a non-blocking manner
+    """
+    logger.debug("caught a hit")
+    print "Remote addr", request.remote_addr
+    print "User agent", request.user_agent
+    print "Url", request.url
+    hitlog = {}
+    hitlog["ip_addr"] = request.remote_addr
+    hitlog["user_agent"] = request.user_agent
+    if request.referrer:
+        hitlog["url"] = request.referrer
+    else:
+        hitlog["url"] = request.url
+    headers = {
+        # 'Accept': 'application/json',
+        # 'Content-Type': 'application/json'
+    }
+    url = API_HOST + "hitlog/"
+    response = requests.post(url, headers=headers, data=hitlog)
+    return response.content

@@ -45,6 +45,15 @@ class ApiException(Exception):
         }
         return rv
 
+def get_filter():
+    filters = []
+    args = flask.request.args.to_dict()
+    for key in args:
+        if "filter" in key:
+            fieldname = re.search("filter\[(.*)\]", key).group(1)
+            if fieldname:
+                filters.append({ fieldname: args[key] })
+    return filters
 
 @app.errorhandler(ApiException)
 def handle_api_exception(error):
@@ -179,15 +188,17 @@ def search():
         result["first"] = flask.request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
     return json.dumps(result)
 
-def get_filter():
-    filters = []
-    args = flask.request.args.to_dict()
-    for key in args:
-        if "filter" in key:
-            fieldname = re.search("filter\[(.*)\]", key).group(1)
-            if fieldname:
-                filters.append({ fieldname: args[key] })
-    return filters
+@app.route('/hitlog/', methods=['GET', 'POST'])
+def hitlog():
+    """
+    Records a hit from the end-user. Should be called in a non-blocking manner
+    """
+    logger.debug("caught a hit")
+    hitlog = HitLog( ip_addr = flask.request.form["ip_addr"], user_agent = flask.request.form["user_agent"], url = flask.request.form["url"])
+    db.session.add(hitlog)
+    db.session.commit()
+    
+    return ""
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )

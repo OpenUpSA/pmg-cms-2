@@ -16,6 +16,7 @@ from werkzeug import secure_filename
 import os
 from s3_upload import S3Bucket
 import urllib
+from operator import itemgetter
 
 
 
@@ -82,22 +83,22 @@ class MyIndexView(AdminIndexView):
     def index(self):
 
         record_counts = [
-            ('Members', Member.query.count()),
-            ('Committee', Organisation.query.filter_by(type="committee").count()),
-            ('Committee Meetings', CommitteeMeeting.query.count()),
-            ('Attachments', Content.query.count()),
-            ('Bills', Bill.query.count()),
-            ('Questions & Replies', Questions_replies.query.count()),
-            ('Calls for Comment', Calls_for_comment.query.count()),
-            ('Daily Schedules', Daily_schedule.query.count()),
-            ('Gazette', Gazette.query.count()),
-            ('Hansards', Hansard.query.count()),
-            ('Media Briefings', Briefing.query.count()),
-            ('Policy Documents', Policy_document.query.count()),
-            ('Tabled Committee Reports', Tabled_committee_report.query.count()),
+            ('Members', 'member.index_view', Member.query.count()),
+            ('Committee', 'committee.index_view', Organisation.query.filter_by(type="committee").count()),
+            ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
+            ('Questions & Replies', 'question.index_view', Questions_replies.query.count()),
+            ('Calls for Comment', 'call_for_comment.index_view', Calls_for_comment.query.count()),
+            ('Daily Schedules', 'schedule.index_view', Daily_schedule.query.count()),
+            ('Gazette', 'gazette.index_view', Gazette.query.count()),
+            ('Hansards', 'hansard.index_view', Hansard.query.count()),
+            ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
+            ('Policy Documents', 'policy.index_view', Policy_document.query.count()),
+            ('Tabled Committee Reports', 'tabled_report.index_view', Tabled_committee_report.query.count()),
             ]
+        record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
+        file_count = Content.query.count()
 
-        return self.render('admin/my_index.html', record_counts=record_counts)
+        return self.render('admin/my_index.html', record_counts=record_counts, file_count=file_count)
 
 
 class MyModelView(ModelView):
@@ -303,7 +304,6 @@ class CommitteeMeetingView(EventView):
     # note: the related committee_meeting is displayed as part of the event model
     # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
 
-    form_excluded_columns = ('type', 'member', )
     column_list = ('date', 'organisation', 'title', 'content')
     column_labels = {'organisation': 'Committee', }
     column_sortable_list = (
@@ -403,23 +403,135 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 
+class QuestionView(MyModelView):
+
+    column_exclude_list = (
+        'body',
+    )
+    column_default_sort = ('start_date', True)
+    column_searchable_list = ('title', 'question_number')
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+
+
+class CallForCommentView(MyModelView):
+
+    column_exclude_list = (
+        'body',
+        'summary',
+    )
+    column_default_sort = ('start_date', True)
+    column_searchable_list = ('title', )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        },
+    }
+
+
+class DailyScheduleView(MyModelView):
+
+    column_exclude_list = (
+        'body',
+    )
+    column_default_sort = ('start_date', True)
+    column_searchable_list = ('title', )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+
+
+class GazetteView(MyModelView):
+
+    column_default_sort = ('effective_date', True)
+    column_searchable_list = ('title', )
+
+
+class HansardView(MyModelView):
+
+    column_exclude_list = (
+        'body',
+    )
+    column_default_sort = ('meeting_date', True)
+    column_searchable_list = ('title', )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+
+
+class BriefingView(MyModelView):
+
+    column_exclude_list = (
+        'minutes',
+        'summary',
+        'presentation',
+    )
+    column_default_sort = ('briefing_date', True)
+    column_searchable_list = ('title', )
+    form_widget_args = {
+        'minutes': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        },
+        'presentation': {
+            'class': 'ckeditor'
+        },
+    }
+
+
+class PolicyDocumentView(MyModelView):
+
+    column_default_sort = ('effective_date', True)
+    column_searchable_list = ('title', )
+
+
+class TabledReportView(MyModelView):
+
+    column_exclude_list = (
+        'body',
+        'summary',
+    )
+    column_default_sort = ('start_date', True)
+    column_searchable_list = ('title', )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        },
+    }
+
+
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
-admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
-admin.add_view(MyModelView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
-admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
+admin.add_view(TabledReportView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
+# admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
 
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
-admin.add_view(MyModelView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
+admin.add_view(QuestionView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
 
-admin.add_view(MyModelView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
-admin.add_view(MyModelView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
-admin.add_view(MyModelView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
-admin.add_view(MyModelView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
-admin.add_view(MyModelView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
-admin.add_view(MyModelView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
+admin.add_view(CallForCommentView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
+admin.add_view(HansardView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(PolicyDocumentView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(DailyScheduleView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(BriefingView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
 
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))

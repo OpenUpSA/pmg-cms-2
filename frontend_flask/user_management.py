@@ -71,6 +71,7 @@ def login():
         # save Api Key
         if response and response.get('user') and response['user'].get('authentication_token'):
             session['authentication_token'] = response['user']['authentication_token']
+            session['authenticated'] = True
 
             if request.values.get('next'):
                 return redirect(request.values['next'])

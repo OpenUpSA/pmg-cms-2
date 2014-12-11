@@ -14,6 +14,7 @@ import re
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
+app.session = session
 
 logger = logging.getLogger(__name__)
 

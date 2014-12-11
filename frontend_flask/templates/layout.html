@@ -30,6 +30,10 @@
   <script src="/static/bower_components/bootstrap/js/alert.js"></script>
   <script src="/static/chosen/chosen.jquery.js"></script>
   <script src="/static/resources/javascript/pmg.js"></script>
+  <script>
+    // Hit Logging
+    $.get("/hitlog/" + Math.random().toString(36).substring(7));
+  </script>
   {% endblock %}
   </div>
 </body>

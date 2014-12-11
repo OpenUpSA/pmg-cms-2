@@ -572,3 +572,12 @@ class Content(db.Model):
     def __unicode__(self):
         return unicode(self.title)
 
+class HitLog(db.Model):
+    __tablename__ = "hit_log"
+
+    id = db.Column(db.Integer, index=True, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    ip_addr = db.Column(db.String(40), index=True)
+    user_agent = db.Column(db.String(255))
+    url = db.Column(db.String(255))
+    

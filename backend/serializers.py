@@ -74,7 +74,7 @@ def to_dict(obj, include_related=False):
         return model_to_dict(obj, include_related=include_related)
 
 
-def queryset_to_json(obj_or_list, count=None, next=None):
+def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
     """
     Convert a single model object, or a list of model objects to dicts, before
     serializing the results as a json string.
@@ -96,6 +96,12 @@ def queryset_to_json(obj_or_list, count=None, next=None):
             'next': next,
             'results': results
             }
+        if current_user and current_user.is_active():
+            try:
+                out['current_user'] = to_dict(current_user)
+            except Exception:
+                logger.exception("Error serializing current user.")
+                pass
 
     return json.dumps(out, cls=CustomEncoder, indent=4)
 

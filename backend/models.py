@@ -73,6 +73,12 @@ class User(db.Model, UserMixin):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp.pop('password')
+        tmp.pop('last_login_ip')
+        tmp.pop('current_login_ip')
+        tmp.pop('last_login_at')
+        tmp.pop('current_login_at')
+        tmp.pop('confirmed_at')
+        tmp.pop('login_count')
         return tmp
 
 roles_users = db.Table('roles_users',

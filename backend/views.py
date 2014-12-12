@@ -16,6 +16,7 @@ import serializers
 import sys
 from search import Search
 import math
+from flask_security import current_user
 
 API_HOST = app.config["API_HOST"]
 
@@ -236,7 +237,7 @@ def resource_list(resource, resource_id=None):
     next = None
     if count > (page + 1) * per_page:
         next = flask.request.url_root + resource + "/?page=" + str(page+1)
-    out = serializers.queryset_to_json(queryset, count=count, next=next)
+    out = serializers.queryset_to_json(queryset, count=count, next=next, current_user=current_user)
     return send_api_response(out)
 
 

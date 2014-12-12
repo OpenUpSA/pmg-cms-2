@@ -1,8 +1,8 @@
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'sqlite:///../instance/tmp.db'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
-API_HOST = "http://api.pmg.dev/"
-FRONTEND_HOST = "http://pmg.dev/"
+API_HOST = "http://api.pmg.dev:5001/"
+FRONTEND_HOST = "http://pmg.dev:5000/"
 SESSION_COOKIE_DOMAIN = "pmg.dev"
 RESULTS_PER_PAGE = 50
 SQLALCHEMY_ECHO = False

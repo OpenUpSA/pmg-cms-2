@@ -57,7 +57,7 @@ And start the frontend server:
 
     python runserver_frontend.py
 
-You should now see them running at `http://api.pmg.dev/` and `http://pmg.dev/` respectively.
+You should now see them running at `http://api.pmg.dev:5001/` and `http://pmg.dev:5000/` respectively.
 
 
 ### Deploy instructions

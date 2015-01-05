@@ -17,9 +17,9 @@
   {% set title = result.title %}
   {% set date = result.date %}
   {% set id = result.id %}
-  {% if result.organisation %}
-    {% set committee_name = result.organisation.name %}
-    {% set committee_id = result.organisation.id %}
+  {% if result.committee %}
+    {% set committee_name = result.committee.name %}
+    {% set committee_id = result.committee.id %}
   {% endif %}
 {% endif %}
 <div class="committee-stub space-bottom-sm">
@@ -28,8 +28,8 @@
     {% if committee_name %}
     <span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
     {% endif %} 
-    {% if result.organisation %}
-      <span class="label label-warning">{{ result.organisation.house.name }}</span>
+    {% if result.committee %}
+      <span class="label label-warning">{{ result.committee.house.name }}</span>
     {% endif %}
     {{ date|pretty_date }} ({{ date|human_date }})
   </div>

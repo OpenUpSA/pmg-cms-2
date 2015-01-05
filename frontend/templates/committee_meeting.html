@@ -9,8 +9,8 @@
 
     <h3>
       Committee:
-      {% if event.organisation %}
-      <a href="{{ url_for('committee_detail', committee_id=event.organisation.id) }}">{{ event.organisation.name }}</a></h3>
+      {% if event.committee %}
+      <a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></h3>
     {% else %}
     (unknown)
     {% endif %}

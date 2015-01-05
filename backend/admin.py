@@ -298,6 +298,15 @@ class CommitteeMeetingView(EventView):
         'event',
         'member',
     )
+    form_columns = (
+        'committee',
+        'date',
+        'title',
+        'summary',
+        'body',
+        'content',
+    )
+
     form_widget_args = {
         'body': {
             'class': 'ckeditor'

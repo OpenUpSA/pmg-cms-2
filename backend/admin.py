@@ -84,7 +84,7 @@ class MyIndexView(AdminIndexView):
 
         record_counts = [
             ('Members', 'member.index_view', Member.query.count()),
-            ('Committee', 'committee.index_view', Organisation.query.filter_by(type="committee").count()),
+            ('Committee', 'committee.index_view', Committee.query.count()),
             ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
             ('Questions & Replies', 'question.index_view', Questions_replies.query.count()),
             ('Calls for Comment', 'call_for_comment.index_view', Calls_for_comment.query.count()),
@@ -187,7 +187,7 @@ class CommitteeView(MyModelView):
         'name',
         ('house', 'house.name'),
     )
-    column_default_sort = (Organisation.name, False)
+    column_default_sort = (Committee.name, False)
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
@@ -199,28 +199,6 @@ class CommitteeView(MyModelView):
     )
     inline_models = (Membership, )
     inline_model_form_converter = MembershipModelConverter
-
-    def on_model_change(self, form, model, is_created):
-        if is_created:
-            # set some default values when creating a new record
-            model.type = "committee"
-            model.version = 0
-
-    def get_query(self):
-        """
-        Add filter to return only non-deleted records.
-        """
-
-        return self.session.query(self.model) \
-            .filter(self.model.type == "committee")
-
-    def get_count_query(self):
-        """
-        Add filter to count only non-deleted records.
-        """
-
-        return self.session.query(func.count('*')).select_from(self.model) \
-            .filter(self.model.type == "committee")
 
 
 class EventView(MyModelView):
@@ -243,7 +221,6 @@ class EventView(MyModelView):
         if is_created:
             # set some default values when creating a new record
             model.type = self.type
-            model.version = 0
 
     def get_query(self):
         """
@@ -305,22 +282,20 @@ class CommitteeMeetingView(EventView):
     # note: the related committee_meeting is displayed as part of the event model
     # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
 
-    column_list = ('date', 'organisation', 'title', 'content')
-    column_labels = {'organisation': 'Committee', }
+    column_list = ('date', 'committee', 'title', 'content')
+    column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
         'title',
-        ('organisation', 'organisation.name'),
+        ('committee', 'committee.name'),
     )
     column_default_sort = (Event.date, True)
-    column_searchable_list = ('title', 'organisation.name')
+    column_searchable_list = ('title', 'committee.name')
     column_formatters = dict(
         content=macro('render_event_content'),
         )
     form_excluded_columns = (
         'event',
-        'type',
-        'version',
         'member',
     )
     form_widget_args = {
@@ -519,7 +494,7 @@ class TabledReportView(MyModelView):
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
-admin.add_view(CommitteeView(Organisation, db.session, name="Committees", endpoint='committee', category="Committees"))
+admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
 admin.add_view(TabledReportView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
 # admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))

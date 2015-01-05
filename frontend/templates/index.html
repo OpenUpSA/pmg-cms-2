@@ -49,7 +49,7 @@
            {% for committee_meeting in committee_meetings %}
             <tr>
               <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
-            <td><a href="/committee/{{ committee_meeting.organisation.id }}">{{ committee_meeting.organisation.name }}</a></td>
+            <td><a href="/committee/{{ committee_meeting.committee.id }}">{{ committee_meeting.committee.name }}</a></td>
             <td>
               <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
             </td>

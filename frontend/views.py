@@ -216,7 +216,7 @@ def index():
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
-        if committee_meeting["organisation_id"]:
+        if committee_meeting["committee_id"]:
             committee_meetings.append(committee_meeting)
             if len(committee_meetings) == 10:
                 break
@@ -276,7 +276,7 @@ def committee_meetings(page=0):
     committees = committee_list['results']
     filters = {}
     params = {}
-    filters["committee"] = params['filter[organisation_id]'] = request.args.get('filter[committee]')
+    filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
     committee_meetings_list = load_from_api('committee-meeting', page=page, params=params)
     committee_meetings = committee_meetings_list['results']
     count = committee_meetings_list["count"]

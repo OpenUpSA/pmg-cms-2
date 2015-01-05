@@ -110,9 +110,8 @@ def send_api_response(data_json):
 def api_resources():
     current_time = datetime.datetime.utcnow()
     return {
-        "committee": db.session.query(Organisation) \
-            .filter_by(type='committee') \
-            .order_by(Organisation.house_id, Organisation.name),
+        "committee": db.session.query(Committee) \
+            .order_by(Committee.house_id, Committee.name),
 
         "committee-meeting": db.session.query(Event) \
             .filter(Event.type == 'committee-meeting') \

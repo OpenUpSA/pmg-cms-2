@@ -109,7 +109,6 @@ class Party(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    version = db.Column(db.Integer, nullable=False, default=0)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -121,7 +120,6 @@ class Province(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    version = db.Column(db.Integer, nullable=False, default=0)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -170,8 +168,8 @@ class Bill(db.Model):
     status = db.relationship('BillStatus', backref='bill', lazy=False)
     bill_type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
     bill_type = db.relationship('BillType', backref='bill', lazy=False)
-    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    place_of_introduction = db.relationship('Organisation')
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    place_of_introduction = db.relationship('Committee')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
 
@@ -240,16 +238,16 @@ class Event(db.Model):
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'), index=True)
-    organisation = db.relationship('Organisation', lazy=False, backref=backref('events', order_by=desc('Event.date')))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), index=True)
+    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
 
     def __unicode__(self):
         if self.type == "committee-meeting":
             tmp = "unknown date"
             if self.date:
                 tmp = self.date.date().isoformat()
-            if self.organisation:
-                tmp += " [" + unicode(self.organisation) + "]"
+            if self.committee:
+                tmp += " [" + unicode(self.committee) + "]"
             if self.title:
                 tmp += " - " + self.title
             return unicode(tmp)
@@ -289,7 +287,6 @@ class Member(db.Model):
     name = db.Column(db.String(100), nullable=False)
     profile_pic_url = db.Column(db.String(255))
     bio = db.Column(db.Text())
-    version = db.Column(db.Integer, nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship(House)
     party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
@@ -310,15 +307,12 @@ class Member(db.Model):
         return tmp
 
 
-class Organisation(db.Model):
+class Committee(db.Model):
 
-    __tablename__ = "organisation"
-    __table_args__ = (db.UniqueConstraint('name', 'type'), {})
+    __tablename__ = "committee"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    type = db.Column(db.String(50), nullable=False)
-    version = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.String(255), nullable=False, unique=True)
     about = db.Column(db.Text())
     contact_details = db.Column(db.Text())
 
@@ -338,19 +332,19 @@ class Organisation(db.Model):
 
 class Membership(db.Model):
 
-    __tablename__ = 'organisation_members'
+    __tablename__ = 'committee_members'
 
     id = db.Column(db.Integer, primary_key=True)
 
     type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
     type = db.relationship(MembershipType, lazy='joined')
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    organisation = db.relationship(Organisation, backref="memberships", lazy='joined')
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee = db.relationship(Committee, backref="memberships", lazy='joined')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     member = db.relationship(Member, backref=backref("memberships", lazy="joined"), lazy='joined')
 
     def __unicode__(self):
-        tmp = u" - ".join([unicode(self.type), unicode(self.member), unicode(self.organisation)])
+        tmp = u" - ".join([unicode(self.type), unicode(self.member), unicode(self.committee)])
         return unicode(tmp)
 
 
@@ -391,8 +385,8 @@ class Questions_replies(db.Model):
     __tablename__ = "questions_replies"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', backref=db.backref('question-replies-organisation', lazy='dynamic'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee = db.relationship('Committee', backref=db.backref('question-replies-committee', lazy='dynamic'))
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
@@ -406,8 +400,8 @@ class Tabled_committee_report(db.Model):
     __tablename__ = "tabled_committee_report"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', backref=db.backref('organisation', lazy='dynamic'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee = db.relationship('Committee', backref=db.backref('committee', lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
@@ -428,8 +422,8 @@ class Calls_for_comment(db.Model):
     __tablename__ = "calls_for_comment"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    committee = db.relationship('Organisation', backref=db.backref('call-for-comment-organisation', lazy='dynamic'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee = db.relationship('Committee', backref=db.backref('call-for-comment-committee', lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     end_date = db.Column(db.Date())
@@ -548,7 +542,6 @@ class CommitteeMeeting(Event):
 
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
-    version = db.Column(db.Integer, nullable=False)
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
 

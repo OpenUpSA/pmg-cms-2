@@ -84,4 +84,4 @@ class Transforms:
 
 	data_types = ['committee', 'committee-meeting', 'member', 'bill', 'hansard', 'briefing', 'question_reply', 'tabled_committee_report', 'calls_for_comment', 'policy_document', 'gazette', 'daily_schedule']
 
-	model_model = { 'committee': "Organisation", 'committee-meeting': "CommitteeMeeting", 'member': "Member", 'bill': "Bill", 'hansard': "Hansard", 'briefing': "Briefing", 'question_reply': "Questions_replies", 'tabled_committee_report': "Tabled_committee_report", 'calls_for_comment': "Calls_for_comment", 'policy_document': "Policy_document", 'gazette': "Gazette", 'daily_schedule': "Daily_schedule" }
+	model_model = { 'committee': "Committee", 'committee-meeting': "CommitteeMeeting", 'member': "Member", 'bill': "Bill", 'hansard': "Hansard", 'briefing': "Briefing", 'question_reply': "Questions_replies", 'tabled_committee_report': "Tabled_committee_report", 'calls_for_comment': "Calls_for_comment", 'policy_document': "Policy_document", 'gazette': "Gazette", 'daily_schedule': "Daily_schedule" }

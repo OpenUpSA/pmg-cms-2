@@ -1,5 +1,5 @@
 from flask import render_template, g, request, redirect, session, url_for, abort, flash
-from frontend_flask import app
+from frontend import app
 from views import ApiException
 import os
 import forms

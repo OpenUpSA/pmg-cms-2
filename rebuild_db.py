@@ -107,18 +107,15 @@ def find_committee(obj):
             #     print term
     return committees
 
-def prep_table(tablename):
-    Model = getattr(models, tablename.capitalize())
-    print "Deleted rows: ", Model.query.delete()
+def prep_table(model_class):
+    print "Deleted rows: ", model_class.query.delete()
     
 
-def rebuild_table(tablename, mappings):
-    logger.debug("Rebuilding %s" % tablename)
-    Model = getattr(models, tablename.capitalize())
-    prep_table(tablename)
+def rebuild_table(table_name, model_class, mappings):
+    logger.debug("Rebuilding %s" % table_name)
+    prep_table(model_class)
     i = 0
-    with open('data/' + tablename + '.json', 'r') as f:
-        records = []
+    with open('data/' + table_name + '.json', 'r') as f:
         lines = f.readlines()
         logger.debug("Found %i records" % (len(lines)))
         for line in lines:
@@ -126,26 +123,26 @@ def rebuild_table(tablename, mappings):
             newobj = construct_obj(obj, mappings)
             # Check for Dates
             for mapping in mappings.keys():
-                row_type = getattr(Model, mapping).property.columns[0].type
+                row_type = getattr(model_class, mapping).property.columns[0].type
                 if (row_type.__str__() == "DATE"):
                     if (newobj.has_key(mappings[mapping])):
                         newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
-            model = Model()
+            new_rec = model_class()
             files = find_files(obj)
             committees = find_committee(obj)
-            if hasattr(model, 'committee_id'):
+            if hasattr(new_rec, 'committee_id'):
                 if len(committees):
-                    model.committee_id = committees[0].id
+                    new_rec.committee_id = committees[0].id
             else:
                 if (committees):
                     for committee in committees:
-                        model.committee.append(committee)
+                        new_rec.committee.append(committee)
             if (len(files)):
                 for f in files:
-                    model.files.append(f)
+                    new_rec.files.append(f)
             for key,val in newobj.iteritems():
-                setattr(model, key, val)
-            db.session.add(model)
+                setattr(new_rec, key, val)
+            db.session.add(new_rec)
             i += 1
             if (i == 100):
                 db.session.commit()
@@ -397,7 +394,7 @@ def bills():
 
 def add_featured():
     committeemeetings = CommitteeMeeting.query.limit(5)
-    tabledreports = Tabled_committee_report.query.limit(5)
+    tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
         featured.committee_meeting.append(committeemeeting)
@@ -419,15 +416,15 @@ def clear_db():
 if __name__ == '__main__':
     clear_db()
     rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
-    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
-    rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("calls_for_comment", { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
-    rebuild_table("daily_schedule", { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
+    rebuild_table("hansard", Hansard, { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
+    rebuild_table("briefing", Briefing, {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
+    rebuild_table("questions_replies", QuestionReply, {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
+    rebuild_table("tabled_committee_report", TabledCommitteeReport, { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
+    rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
     # bills()
     add_featured()
 

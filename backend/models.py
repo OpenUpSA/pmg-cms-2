@@ -319,9 +319,9 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')
 
-    tabled_committee_reports = db.relationship("Tabled_committee_report", lazy=True)
-    questions_replies = db.relationship("Questions_replies", lazy=True)
-    calls_for_comment = db.relationship("Calls_for_comment", lazy=True)
+    tabled_committee_reports = db.relationship("TabledCommitteeReport", lazy=True)
+    questions_replies = db.relationship("QuestionReply", lazy=True)
+    calls_for_comment = db.relationship("CallForComment", lazy=True)
 
     def __unicode__(self):
         tmp = self.name
@@ -380,9 +380,9 @@ schedule_house_table = db.Table(
 
 # === Questions Replies === #
 
-class Questions_replies(db.Model):
+class QuestionReply(db.Model):
 
-    __tablename__ = "questions_replies"
+    __tablename__ = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
@@ -395,7 +395,7 @@ class Questions_replies(db.Model):
 
 # === Tabled Committee Report === #
 
-class Tabled_committee_report(db.Model):
+class TabledCommitteeReport(db.Model):
 
     __tablename__ = "tabled_committee_report"
 
@@ -417,9 +417,9 @@ tabled_committee_report_file_table = db.Table('tabled_committee_report_file_join
 
 # === Calls for comment === #
 
-class Calls_for_comment(db.Model):
+class CallForComment(db.Model):
 
-    __tablename__ = "calls_for_comment"
+    __tablename__ = "call_for_comment"
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
@@ -434,7 +434,7 @@ class Calls_for_comment(db.Model):
 
 # === Policy document === #
 
-class Policy_document(db.Model):
+class PolicyDocument(db.Model):
 
     __tablename__ = "policy_document"
 
@@ -502,7 +502,7 @@ class Featured(db.Model):
     link = db.Column(db.String(255))
     start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
     committee_meeting = db.relationship('CommitteeMeeting', secondary='featured_committee_meeting_join')
-    tabled_committee_report = db.relationship('Tabled_committee_report', secondary='featured_tabled_committee_report_join')
+    tabled_committee_report = db.relationship('TabledCommitteeReport', secondary='featured_tabled_committee_report_join')
 
 featured_committee_meeting_join = db.Table('featured_committee_meeting_join', db.Model.metadata,
     db.Column('featured_id', db.Integer, db.ForeignKey('featured.id')),
@@ -516,7 +516,7 @@ featured_tabled_committee_report_join = db.Table('featured_tabled_committee_repo
 
 # === Daily schedules === #
 
-class Daily_schedule(db.Model):
+class DailySchedule(db.Model):
 
     __tablename__ = "daily_schedule"
 

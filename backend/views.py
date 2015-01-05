@@ -128,25 +128,25 @@ def api_resources():
 
         "briefing": db.session.query(Briefing)
             .order_by(desc(Briefing.briefing_date)),
-        "question_reply": db.session.query(Questions_replies)
-            .order_by(desc(Questions_replies.start_date)),
+        "question_reply": db.session.query(QuestionReply)
+            .order_by(desc(QuestionReply.start_date)),
         "schedule": db.session.query(Schedule)
             .order_by(desc(Schedule.meeting_date))
             .filter(Schedule.meeting_date >= current_time ),
-        "tabled_committee_report": db.session.query(Tabled_committee_report)
-            .order_by(desc(Tabled_committee_report.start_date)),
-        "calls_for_comment": db.session.query(Calls_for_comment)
-            .order_by(desc(Calls_for_comment.start_date)),
-        "policy_document": db.session.query(Policy_document)
-            .order_by(desc(Policy_document.start_date)),
+        "tabled_committee_report": db.session.query(TabledCommitteeReport)
+            .order_by(desc(TabledCommitteeReport.start_date)),
+        "calls_for_comment": db.session.query(CallForComment)
+            .order_by(desc(CallForComment.start_date)),
+        "policy_document": db.session.query(PolicyDocument)
+            .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
             .order_by(desc(Gazette.start_date)),
         "book": db.session.query(Book)
             .order_by(desc(Book.start_date)),
         "featured": db.session.query(Featured)
             .order_by(desc(Featured.start_date)),
-        "daily_schedule": db.session.query(Daily_schedule)
-            .order_by(desc(Daily_schedule.start_date)),
+        "daily_schedule": db.session.query(DailySchedule)
+            .order_by(desc(DailySchedule.start_date)),
     }
 
 @app.route('/search/')

@@ -1,7 +1,7 @@
 import logging
 
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
-from frontend_flask import app
+from frontend import app
 import requests
 from datetime import datetime, date
 import dateutil.parser

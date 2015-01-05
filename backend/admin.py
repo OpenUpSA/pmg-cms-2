@@ -86,14 +86,14 @@ class MyIndexView(AdminIndexView):
             ('Members', 'member.index_view', Member.query.count()),
             ('Committee', 'committee.index_view', Committee.query.count()),
             ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
-            ('Questions & Replies', 'question.index_view', Questions_replies.query.count()),
-            ('Calls for Comment', 'call_for_comment.index_view', Calls_for_comment.query.count()),
-            ('Daily Schedules', 'schedule.index_view', Daily_schedule.query.count()),
+            ('Questions & Replies', 'question.index_view', QuestionReply.query.count()),
+            ('Calls for Comment', 'call_for_comment.index_view', CallForComment.query.count()),
+            ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),
             ('Gazette', 'gazette.index_view', Gazette.query.count()),
             ('Hansards', 'hansard.index_view', Hansard.query.count()),
             ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
-            ('Policy Documents', 'policy.index_view', Policy_document.query.count()),
-            ('Tabled Committee Reports', 'tabled_report.index_view', Tabled_committee_report.query.count()),
+            ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
+            ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
             ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
         file_count = Content.query.count()
@@ -496,17 +496,17 @@ admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
 
 admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
-admin.add_view(TabledReportView(Tabled_committee_report, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
+admin.add_view(TabledReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
 # admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
 
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
-admin.add_view(QuestionView(Questions_replies, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
+admin.add_view(QuestionView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
 
-admin.add_view(CallForCommentView(Calls_for_comment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
 admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
 admin.add_view(HansardView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
-admin.add_view(PolicyDocumentView(Policy_document, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
-admin.add_view(DailyScheduleView(Daily_schedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
 admin.add_view(BriefingView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
 
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))

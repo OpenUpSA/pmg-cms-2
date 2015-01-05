@@ -147,6 +147,7 @@ class UserView(MyRestrictedModelView):
         'current_login_ip',
         'login_count',
         ]
+    column_searchable_list = ('email',)
     form_excluded_columns = [
         'password',
         'confirmed_at',

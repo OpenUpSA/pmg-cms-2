@@ -169,7 +169,6 @@ def load_from_api(
         query_str += str(resource_id) + "/"
     if page:
         params["page"] = str(page)
-        # query_str += "?page=" + str(page)
 
     headers = {}
     # add auth header
@@ -204,6 +203,8 @@ def load_from_api(
                 i += 1
             if out.get('next'):
                 out.pop('next')
+        if out.get('current_user'):
+            session['current_user'] = out['current_user']
         return out
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')

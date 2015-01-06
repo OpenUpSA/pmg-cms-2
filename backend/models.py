@@ -1,14 +1,17 @@
-from app import app, db
-import serializers
-from sqlalchemy import desc, Index
-from sqlalchemy.orm import backref
-from sqlalchemy import UniqueConstraint
 from random import random
 import string
 import datetime
 import logging
+
+from sqlalchemy import desc, Index
+from sqlalchemy.orm import backref
+from sqlalchemy import UniqueConstraint
+
 from flask.ext.security import UserMixin, RoleMixin, \
     Security, SQLAlchemyUserDatastore
+
+from app import app, db
+import serializers
 
 STATIC_HOST = app.config['STATIC_HOST']
 

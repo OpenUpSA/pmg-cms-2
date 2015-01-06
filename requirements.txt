@@ -21,6 +21,7 @@ boto==2.34.0
 cssselect==0.9.1
 ecdsa==0.11
 gunicorn==19.1.1
+inflection==0.2.1
 itsdangerous==0.24
 lxml==3.4.1
 newrelic==2.40.0.34

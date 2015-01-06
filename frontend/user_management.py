@@ -52,7 +52,6 @@ def user_management_api(endpoint, data=None):
             logger.debug(json.dumps(out, indent=4))
         except Exception:
             logger.debug("Error logging response from API")
-        update_current_user()
         return out['response']
 
     except ConnectionError:
@@ -74,15 +73,14 @@ def login():
             'email': form.email.data,
             'password': form.password.data
         }
-        session['email'] = form.email.data
-        session['identifier'] = form.email.data
         response = user_management_api('login', json.dumps(data))
 
         # save Api Key
         if response and response.get(
                 'user') and response['user'].get('authentication_token'):
-            session['authentication_token'] = response[
+            session['api_key'] = response[
                 'user']['authentication_token']
+            update_current_user()
 
             if request.values.get('next'):
                 return redirect(request.values['next'])
@@ -185,7 +183,7 @@ def forgot_password():
         forgot_password_form=form)
 
 
-@app.route('/reset/<token>', methods=['GET', 'POST'])
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     """View function that handles a reset password request."""
 
@@ -234,7 +232,7 @@ def change_password():
         change_password_form=form)
 
 
-@app.route('/confirm/<confirmation_key>', methods=['GET', ])
+@app.route('/confirm-email/<confirmation_key>', methods=['GET', ])
 def confirm_email(confirmation_key):
     """View function for confirming an email address."""
 
@@ -250,7 +248,9 @@ def update_current_user():
     Hit the API, and update our session's 'current_user' if necessary.
     """
 
+    logger.debug("UPDATING CURRENT USER")
     tmp = load_from_api("")  # hit the API's index page
+    logger.debug(json.dumps(tmp, indent=4))
     if tmp.get('current_user'):
         session['current_user'] = tmp['current_user']
     return

@@ -21,6 +21,10 @@ class Search:
     per_batch = 50
     logger = logging.getLogger(__name__)
 
+    reindex_changes = app.config['SEARCH_REINDEX_CHANGES']
+    """ Should updates to models be reindexed? """
+
+
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
         try:
@@ -87,7 +91,7 @@ class Search:
 
     def indexable(self, obj):
         """ Should this object be indexed for searching? """
-        return self.data_type_for_obj(obj) in Transforms.convert_rules
+        return self.reindex_changes and (self.data_type_for_obj(obj) in Transforms.convert_rules)
 
     def mapping(self, data_type):
         mapping = {

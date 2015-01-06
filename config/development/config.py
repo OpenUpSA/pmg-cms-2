@@ -36,6 +36,7 @@ MAIL_PASSWORD = "agoaiejlagrAIERJaerknj"
 MAIL_DEFAULT_SENDER = "pmgorg.noreply@gmail.com"
 
 # Flask-Security config
+SECURITY_HOST = FRONTEND_HOST
 SECURITY_URL_PREFIX = "/security"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "ioaefroijaAMELRK#$(aerieuh984akef#$graerj"

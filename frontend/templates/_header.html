@@ -16,12 +16,9 @@
 			</div>
 			<div class="col-md-4">
 				<ul class="nav navbar-nav">
-					{% if session.authenticated %}
+					{% if session.current_user %}
 						<a href="/logout/" class="btn btn-primary navbar-btn btn-sm">Log Out</a>
 					{% else %}
-						{% if session.authentication_token %}
-							<a href="/send-confirmation/" class="btn btn-primary navbar-btn btn-sm">Resend Confirmation</a>
-						{% endif %}
 						<a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="/login/" class="btn btn-primary navbar-btn btn-sm">Log In</a> 
 					{% endif %}
 				</ul>

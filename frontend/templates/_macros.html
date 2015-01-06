@@ -18,7 +18,9 @@
   {% if field.type == 'HiddenField' %}
     {{ field(**kwargs)|safe }}
   {% elif field.type == 'SubmitField' %}
-    <div class="col-sm-6 col-sm-offset-3">{{ field(class_='btn btn-default btn-lg', **kwargs)|safe }}</div>
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">{{ field(class_='btn btn-default btn-lg', **kwargs)|safe }}</div>
+    </div>
   {% else %}
     <div class="form-group">{{ field(class_='form-control', **kwargs)|safe }}</div>
   {% endif %}

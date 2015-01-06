@@ -51,5 +51,6 @@ SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
 
-# disable CSRF so that Flask-Security can be used as an API
-WTF_CSRF_ENABLED = False
+# enable CSRF only for the frontend. The backend must have it disable so that Flask-Security can be used as an API
+import os
+WTF_CSRF_ENABLED = os.environ.get('PMG_LAYER') == 'frontend'

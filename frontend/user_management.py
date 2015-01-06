@@ -24,7 +24,6 @@ def user_management_api(endpoint, data=None):
     if endpoint != 'login' and session and session.get('authentication_token'):
         headers['Authentication-Token'] = session['authentication_token']
     try:
-        logger.debug(json.dumps(headers))
         response = requests.post(
             API_HOST +
             query_str,
@@ -44,7 +43,7 @@ def user_management_api(endpoint, data=None):
                     for message in messages:
                         flash(message, 'danger')
         except ValueError:
-            logger.error("No JSON object could be decoded")
+            logger.error("Error interpreting response from API. No JSON object could be decoded")
             flash(u"Error interpreting response from API.", 'danger')
             logger.debug(response.text)
             return
@@ -248,9 +247,7 @@ def update_current_user():
     Hit the API, and update our session's 'current_user' if necessary.
     """
 
-    logger.debug("UPDATING CURRENT USER")
     tmp = load_from_api("")  # hit the API's index page
-    logger.debug(json.dumps(tmp, indent=4))
     if tmp.get('current_user'):
         session['current_user'] = tmp['current_user']
     return

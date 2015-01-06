@@ -247,8 +247,6 @@ def landing():
     out = {'endpoints': []}
     for resource in api_resources().keys():
         out['endpoints'].append(API_HOST + resource)
-    logger.debug("CURRENT_USER")
-    logger.debug(current_user)
     if current_user and current_user.is_active():
         try:
             out['current_user'] = serializers.to_dict(current_user)

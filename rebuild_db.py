@@ -119,35 +119,38 @@ def rebuild_table(table_name, model_class, mappings):
         lines = f.readlines()
         logger.debug("Found %i records" % (len(lines)))
         for line in lines:
-            obj = json.loads(line)
-            newobj = construct_obj(obj, mappings)
-            # Check for Dates
-            for mapping in mappings.keys():
-                row_type = getattr(model_class, mapping).property.columns[0].type
-                if (row_type.__str__() == "DATE"):
-                    if (newobj.has_key(mappings[mapping])):
-                        newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
-            new_rec = model_class()
-            files = find_files(obj)
-            committees = find_committee(obj)
-            if hasattr(new_rec, 'committee_id'):
-                if len(committees):
-                    new_rec.committee_id = committees[0].id
-            else:
-                if (committees):
-                    for committee in committees:
-                        new_rec.committee.append(committee)
-            if (len(files)):
-                for f in files:
-                    new_rec.files.append(f)
-            for key,val in newobj.iteritems():
-                setattr(new_rec, key, val)
-            db.session.add(new_rec)
-            i += 1
-            if (i == 100):
-                db.session.commit()
-                i = 0
-                logger.debug("Wrote 100 rows...")        
+            try:
+                obj = json.loads(line)
+                newobj = construct_obj(obj, mappings)
+                # Check for Dates
+                for mapping in mappings.keys():
+                    row_type = getattr(model_class, mapping).property.columns[0].type
+                    if (row_type.__str__() == "DATE"):
+                        if (newobj.has_key(mappings[mapping])):
+                            newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
+                new_rec = model_class()
+                files = find_files(obj)
+                committees = find_committee(obj)
+                if hasattr(new_rec, 'committee_id'):
+                    if len(committees):
+                        new_rec.committee_id = committees[0].id
+                else:
+                    if (committees):
+                        for committee in committees:
+                            new_rec.committee.append(committee)
+                if (len(files)):
+                    for f in files:
+                        new_rec.files.append(f)
+                for key,val in newobj.iteritems():
+                    setattr(new_rec, key, val)
+                db.session.add(new_rec)
+                i += 1
+                if (i == 100):
+                    db.session.commit()
+                    i = 0
+                    logger.debug("Wrote 100 rows...")
+            except:
+                logger.warning("Error reading row for " + table_name)
         db.session.commit()
 
 def guess_pa_link(name, names):

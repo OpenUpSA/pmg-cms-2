@@ -1,52 +1,35 @@
 {% extends 'admin/master.html' %}
 
 {% block body %}
-{{ super() }}
+	{{ super() }}
 
-<div class="row-fluid">
-  {% if not current_user.is_authenticated() %}
-  <div class="col-sm-4 col-sm-offset-4">
-    <a style="margin-top: 100px;" class="btn btn-lg btn-block btn-primary" role="button" href="/security/login?next=/admin/">Log in</a>
-  </div>
-  {% else %}
-  <div class="col-sm-10 col-sm-offset-1">
-    <h1>Record counts</h1>
-    <table class="table table-bordered">
-      <tr>
-        <th>
-          Members
-        </th>
-        <td class="text-center">
-          {{ record_counts.member | add_commas }}
-        </td>
-      </tr>
-      <tr>
-        <th>
-          Committees
-        </th>
-        <td class="text-center">
-          {{ record_counts.committee | add_commas }}
-        </td>
-      </tr>
-      <tr>
-        <th>
-          Meeting reports
-        </th>
-        <td class="text-center">
-          {{ record_counts.get("committee-meeting") | add_commas }}
-        </td>
-      </tr>
-      <tr>
-        <th>
-          Attached files
-        </th>
-        <td class="text-center">
-          {{ record_counts.get("content") | add_commas }}
-        </td>
-      </tr>
-    </table>
-  </div>
-  {% endif %}
-</div>
+	<div class="row-fluid">
+		{% if not current_user.is_authenticated() %}
+			<div class="col-sm-4 col-sm-offset-4">
+				<a style="margin-top: 100px;" class="btn btn-lg btn-block btn-primary" role="button" href="/security/login?next=/admin/">Log in</a>
+			</div>
+		{% else %}
+			<div class="col-sm-10 col-sm-offset-1">
+				<h1>Record counts</h1>
+				<table class="table table-bordered">
+					{% for item in record_counts %}
+						<tr>
+							<th>
+								<a href="{{ url_for(item[1]) }}">{{ item[0] }}</a>
+							</th>
+							<td class="text-center">
+								{{ item[2] | add_commas }}
+							</td>
+						</tr>
+					{% endfor %}
+				</table>
+
+				<p class="lead">
+					There are <strong>{{ file_count | add_commas }}</strong> files associated with the
+					records above.
+				</p>
+			</div>
+		{% endif %}
+	</div>
 
 {% endblock body %}

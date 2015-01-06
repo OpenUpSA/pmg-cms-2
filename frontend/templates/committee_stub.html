@@ -1,0 +1,22 @@
+{% if result._source %}
+  {% if result.highlight.title %}
+    {% set title = result.highlight.title[0]|search_snippet %}
+  {% else %}  
+    {% set title = result._source.title %}
+  {% endif %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
+  {% set house = result._source.house %}
+{% else %}
+{% set title = result.name %}
+{% set date = result.start_date %}
+{% set id = result.id %}
+{% set house = result.house.name %}
+{% endif %}
+<div class="committee-stub space-bottom-sm">
+  <div class="title">
+    <span class="label label-success">Committee</span>
+    <a href="/committee/{{ id }}">{{ title|safe }}</a>
+    <span class="label label-info">{{ house }}</span>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+{% if result._source %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
+{% else %}
+	{% set title = result.title %}
+	{% set date = result.start_date %}
+	{% set id = result.id %}
+{% endif %}
+<div class="briefing-stub space-bottom-sm">
+  <div>
+    <span class="label label-primary">Media Briefing</span>
+    {{ date|pretty_date }} ({{ date|human_date }})
+	</div>
+  <div>
+    <a href="/briefing/{{ id }}">{{ title|safe }}</a>
+  </div>
+	{% if result.highlight %}
+	{% if result.highlight.description %}
+  <div>
+    {{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+  </div>
+	{% elif result.highlight.fulltext %}
+  <div>
+    {{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+  </div>
+	{% endif %}
+	{% endif %}
+</div>

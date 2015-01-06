@@ -4,12 +4,28 @@ SQLALCHEMY_DATABASE_URI = env['SQLALCHEMY_DATABASE_URI']
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.org.za/"
 FRONTEND_HOST = "http://new.pmg.org.za/"
+SESSION_COOKIE_DOMAIN = "pmg.org.za"
 RESULTS_PER_PAGE = 20
 
 STATIC_HOST = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/"
 ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
+MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads
+ALLOWED_EXTENSIONS = set(
+    [
+        "doc",
+        "jpg",
+        "jpeg",
+        "mp3",
+        "pdf",
+        "ppt",
+        "rtf",
+        "txt",
+        "wav",
+        "xls",
+    ]
+)
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.gmail.com'
@@ -25,6 +41,8 @@ SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = env['SECURITY_PASSWORD_SALT']
 SECURITY_EMAIL_SENDER = "pmgorg.noreply@gmail.com"
 SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
+SECURITY_POST_LOGIN_VIEW = "/admin"
+SECURITY_POST_LOGOUT_VIEW = "/admin"
 
 # Flask-Security features
 SECURITY_CONFIRMABLE = True

@@ -22,6 +22,12 @@
 <img style="max-width: 100px;" src="{{ STATIC_HOST }}{{ model[column] }}" />
 {% endmacro %}
 
+{% macro render_external_link(model, column) %}
+{% if model['pa_link'] -%}
+<a class="btn btn-default btn-sm" href="http://www.pa.org.za{{ model['pa_link'] }}" target="_blank"><i class="fa fa-chevron-right"></i> view profile on PA</a>
+{% endif %}
+{% endmacro %}
+
 {% macro render_membership_count(model, column) %}
 <span class="badge{% if not model[column] | length %} alert-danger{% else %} alert-info{% endif %}">{{ model[column] | length }}</span>
 {% endmacro %}
@@ -29,12 +35,12 @@
 {% macro render_committee_membership(model, column) %}
 {% if model[column] %}
 {% for membership in model[column] %}
-<a href="{{ url_for('committee.edit_view', id=membership.organisation.id) }}">
+<a href="{{ url_for('committee.edit_view', id=membership.committee.id) }}">
 <span class="label alert-info">
-  {% if membership.organisation.name | length > 45 -%}
-    {{ membership.organisation.name[0:45] }}...
+  {% if membership.committee.name | length > 45 -%}
+    {{ membership.committee.name[0:45] }}...
   {% else -%}
-    {{ membership.organisation.name }}
+    {{ membership.committee.name }}
   {% endif %}
   </span>
 </a>

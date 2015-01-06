@@ -1,0 +1,44 @@
+<nav class="navbar navbar-default navbar-pmg" role="navigation">
+	<div class="container">
+		<div class="row">
+			<div class="col-md- logo-container">
+				<a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
+			</div>
+			<div class="col-md-6">
+				<form class="navbar-form" role="search" action="/search">
+					<div class="input-group">
+						<input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
+						<span class="input-group-btn">
+							<input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
+						</span>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-4">
+				<ul class="nav navbar-nav">
+					{% if session.authenticated %}
+						<a href="/logout/" class="btn btn-primary navbar-btn btn-sm">Log Out</a>
+					{% else %}
+						{% if session.authentication_token %}
+							<a href="/send-confirmation/" class="btn btn-primary navbar-btn btn-sm">Resend Confirmation</a>
+						{% endif %}
+						<a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="/login/" class="btn btn-primary navbar-btn btn-sm">Log In</a> 
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</div><!-- /.container -->
+</nav>
+
+{% block top_links %}
+<div class="container">
+	<ul class="list-inline top-links">
+		<li><a href="/committees/">Committees</a></li>
+		<li><a href="/members">MPs</a></li>
+		<li><a href="/committee-meetings">Committee Meetings</a></li>
+		<li><a href="http://bills.pmg.org.za">Bills</a></li>
+		<li><a href="/question_replies">Questions and Replies</a></li>
+		<li><a href="/calls-for-comments">Calls for Comments</a></li>
+	</ul>
+</div>
+{% endblock %}

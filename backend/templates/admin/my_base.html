@@ -1,19 +1,27 @@
 {% extends 'admin/base.html' %}
 {% block head_css %}
-{{ super() }}
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<style>
+  {{ super() }}
+  <link href="{{ url_for('static', filename='font-awesome-4.2.0/css/font-awesome.min.css') }}" rel="stylesheet">
+  <style>
 
-</style>
+  </style>
 {% endblock head_css%}
 
 {% block brand %}
-<a class="navbar-brand" href="{{ FRONTEND_HOST }}">{{ admin_view.admin.name }}</a>
+  <a class="navbar-brand" href="{{ FRONTEND_HOST }}">{{ admin_view.admin.name }}</a>
+{% endblock %}
+
+{% block access_control %}
+  {% if not current_user.is_anonymous() %}
+  <ul class="nav navbar-nav navbar-right">
+    <li><a class="nav-link" href="{{ url_for_security('logout') }}">Logout</a></li>
+  </ul>
+  {% endif %}
 {% endblock %}
 
 {% block tail_js -%}
-{{ super() }}
-<script>
+  {{ super() }}
+  <script>
 
-</script>
+  </script>
 {%- endblock %}

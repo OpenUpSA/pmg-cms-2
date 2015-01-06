@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% include "_header.html" %}
+
+<div class="container container-body">
+  {% include "_messages.html" %}
+
+  {% block page %}{% endblock page %}
+</div>
+
+{% include "_footer.html" %}
+
+{% endblock %}

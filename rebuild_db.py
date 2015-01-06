@@ -2,15 +2,15 @@ import os
 import json
 import time, datetime
 from backend.app import app, db
-
 from backend import models
 from backend.models import *
 import parsers
 from sqlalchemy import types
-
 import requests
-
 import logging
+import csv
+import re
+
 logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
 
@@ -95,30 +95,27 @@ def find_files(obj):
     return files
 
 def find_committee(obj):
-    organisations = []
+    committees = []
     if (obj.has_key("terms") and (type(obj["terms"]) is list) and (len(obj["terms"]) > 0)):
         # print obj["terms"]
         for term in obj["terms"]:
-            organisation = Organisation.query.filter_by(name = term).first()
-            # print organisation, term
-            if organisation:
-                organisations.append(organisation)
+            committee = Committee.query.filter_by(name = term).first()
+            # print committee, term
+            if committee:
+                committees.append(committee)
             # else:
             #     print term
-    return organisations
+    return committees
 
-def prep_table(tablename):
-    Model = getattr(models, tablename.capitalize())
-    print "Deleted rows: ", Model.query.delete()
+def prep_table(model_class):
+    print "Deleted rows: ", model_class.query.delete()
     
 
-def rebuild_table(tablename, mappings):
-    logger.debug("Rebuilding %s" % tablename)
-    Model = getattr(models, tablename.capitalize())
-    prep_table(tablename)
+def rebuild_table(table_name, model_class, mappings):
+    logger.debug("Rebuilding %s" % table_name)
+    prep_table(model_class)
     i = 0
-    with open('data/' + tablename + '.json', 'r') as f:
-        records = []
+    with open('data/' + table_name + '.json', 'r') as f:
         lines = f.readlines()
         logger.debug("Found %i records" % (len(lines)))
         for line in lines:
@@ -126,28 +123,47 @@ def rebuild_table(tablename, mappings):
             newobj = construct_obj(obj, mappings)
             # Check for Dates
             for mapping in mappings.keys():
-                row_type = getattr(Model, mapping).property.columns[0].type
+                row_type = getattr(model_class, mapping).property.columns[0].type
                 if (row_type.__str__() == "DATE"):
                     if (newobj.has_key(mappings[mapping])):
                         newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
-            model = Model()
+            new_rec = model_class()
             files = find_files(obj)
             committees = find_committee(obj)
-            if (committees):
-                for committee in committees:
-                    model.committee.append(committee)
+            if hasattr(new_rec, 'committee_id'):
+                if len(committees):
+                    new_rec.committee_id = committees[0].id
+            else:
+                if (committees):
+                    for committee in committees:
+                        new_rec.committee.append(committee)
             if (len(files)):
                 for f in files:
-                    model.files.append(f)
+                    new_rec.files.append(f)
             for key,val in newobj.iteritems():
-                setattr(model, key, val)
-            db.session.add(model)
+                setattr(new_rec, key, val)
+            db.session.add(new_rec)
             i += 1
             if (i == 100):
                 db.session.commit()
                 i = 0
                 logger.debug("Wrote 100 rows...")        
         db.session.commit()
+
+def guess_pa_link(name, names):
+    name_parts = re.split(",", name)
+    first_letter = None
+    surname = name_parts[0]
+    if (len(name_parts) > 1):
+        name_parts = re.split(" ", name_parts[1].strip())
+        if (len(name_parts) > 1 and len(name_parts[1])):
+            first_letter = name_parts[1][0]
+    for pa_name in names:
+        # print pa_name[1], surname
+        if surname in pa_name[1].decode("utf-8"):
+            if first_letter and first_letter is pa_name[1].decode("utf-8")[0]:
+                return pa_name[0]
+    return None
 
 def rebuild_db():
     """
@@ -171,52 +187,55 @@ def rebuild_db():
 
     # populate committees
     committees = {}
-    drupal_recs = read_data('comm_info_page.json')
-    for rec in drupal_recs:
-        if rec['terms']:
-            name = rec['terms'][0].strip()
-            if not committees.get('name'):
+    committee_list = read_data('comm_info_page.json')
+    for committee in committee_list:
+        if committee['terms']:
+            name = committee['terms'][0].strip()
+            if name not in committees.keys():
                 committees[name] = {}
-            if rec['comm_info_type'] == '"Contact"':
-                committees[name]["contact"] = rec["revisions"][0]["body"]
-            elif rec['comm_info_type'] == '"About"':
-                committees[name]["about"] = rec["revisions"][0]["body"]
-            if len(rec["revisions"]) > 1:
-                logger.debug("ERROR: MULTIPLE REVISIONS PRESENT FOR A COMMITTEE")
+            committee_obj = construct_obj(committee, { "comm_info_type": "comm_info_type", "body": "body" })
+            # logger.debug(committee_obj)
+            if committee_obj.has_key("comm_info_type"):
+                if committee_obj["comm_info_type"] == 'About':
+                    committees[name]["about"] = committee_obj["body"]
+                elif committee_obj["comm_info_type"] == 'Contact':
+                    committees[name]["contact"] = committee_obj["body"]
     for key, val in committees.iteritems():
-        logger.debug(key)
-        organisation = Organisation()
-        organisation.name = key
-        organisation.type = "committee"
-        organisation.version = 0
+        # logger.debug(val)
+        committee = Committee()
+        committee.name = key
 
         # set parent relation
-        if "ncop" in organisation.name.lower():
-            organisation.house_id = ncop_obj.id
-        elif "joint" in organisation.name.lower():
-            organisation.house_id = joint_obj.id
+        if "ncop" in committee.name.lower():
+            committee.house_id = ncop_obj.id
+        elif "joint" in committee.name.lower():
+            committee.house_id = joint_obj.id
         else:
-            organisation.house_id = na_obj.id
+            committee.house_id = na_obj.id
 
-        committee_info = CommitteeInfo()
+        # committee_info = CommitteeInfo()
         if val.get("about"):
-            committee_info.about = val["about"]
+            committee.about = val["about"]
         if val.get("contact"):
-            committee_info.contact_details = val["contact"]
-        committee_info.organization = organisation
+            committee.contact_details = val["contact"]
 
-        db.session.add(organisation)
-        db.session.add(committee_info)
-        val['model'] = organisation
+        db.session.add(committee)
+        val['model'] = committee
     db.session.commit()
 
     # populate committee members
+    pa_members = []
+    with open('./scrapers/members.csv', 'r') as csvfile:
+        membersreader = csv.reader(csvfile)
+        for row in membersreader:
+            pa_members.append(row)
+
     members = read_data('committee_member.json')
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
-            version=0,
-            start_date = db_date_from_utime(member['start_date'])
+            start_date = db_date_from_utime(member['start_date']),
+            pa_link = guess_pa_link(member['title'].strip(), pa_members)
         )
         if member.get('files'):
             member_obj.profile_pic_url = strip_filepath(member["files"][-1]['filepath'])
@@ -237,7 +256,7 @@ def rebuild_db():
         for term in member['terms']:
             if committees.get(term):
                 org_model = committees[term]['model']
-                membership_obj = Membership(organisation=org_model)
+                membership_obj = Membership(committee=org_model)
                 member_obj.memberships.append(membership_obj)
             else:
                 logger.debug("committee not found: " + term)
@@ -272,7 +291,7 @@ def rebuild_db():
     db.session.commit()
 
     # select a random chairperson for each committee
-    tmp_committees = Organisation.query.filter_by(type="committee").all()
+    tmp_committees = Committee.query.all()
     for committee in tmp_committees:
         if committee.memberships:
             membership_obj = committee.memberships[0]
@@ -298,10 +317,9 @@ def rebuild_db():
             report_obj = CommitteeMeeting(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
-                organisation=committee_obj,
+                committee=committee_obj,
                 date=parsed_report.date,
-                title=parsed_report.title,
-                version=0
+                title=parsed_report.title
             )
             db.session.add(report_obj)
 
@@ -367,8 +385,8 @@ def bills():
         bill.is_deleted = billobj["is_deleted"]
         bill.status_id = addChild(BillStatus, billobj["status"])
         bill.bill_type_id = addChild(BillType, billobj["bill_type"])
-        # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-        # place_of_introduction = db.relationship('Organisation')
+        # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+        # place_of_introduction = db.relationship('Committee')
         # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
         # introduced_by = db.relationship('Member')
         db.session.add(bill)
@@ -376,7 +394,7 @@ def bills():
 
 def add_featured():
     committeemeetings = CommitteeMeeting.query.limit(5)
-    tabledreports = Tabled_committee_report.query.limit(5)
+    tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
         featured.committee_meeting.append(committeemeeting)
@@ -398,23 +416,26 @@ def clear_db():
 if __name__ == '__main__':
     clear_db()
     rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
-    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
-    rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("calls_for_comment", { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
-    rebuild_table("daily_schedule", { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
+    rebuild_table("hansard", Hansard, { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
+    rebuild_table("briefing", Briefing, {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
+    rebuild_table("questions_replies", QuestionReply, {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
+    rebuild_table("tabled_committee_report", TabledCommitteeReport, { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
+    rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
     # bills()
     add_featured()
 
-    # add the 'admin' role
-    admin_role = Role(name="admin")
+    # add default roles
+    admin_role = Role(name="editor")
     db.session.add(admin_role)
+    superuser_role = Role(name="user-admin")
+    db.session.add(superuser_role)
     # add a default admin user
     user = User(email="admin@pmg.org.za", password="3o4ukjren3", active=True, confirmed_at=datetime.datetime.now())
     user.roles.append(admin_role)
+    user.roles.append(superuser_role)
     db.session.add(user)
     db.session.commit()

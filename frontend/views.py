@@ -9,6 +9,7 @@ import math
 import random
 import arrow
 import re
+import json
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -173,7 +174,7 @@ def load_from_api(
     headers = {}
     # add auth header
     if session and session.get('api_key'):
-        headers = {'Authorization': 'ApiKey:' + session.get('api_key')}
+        headers = {'Authentication-Token': session.get('api_key')}
     try:
         response = requests.get(
             API_HOST +

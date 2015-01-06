@@ -239,10 +239,6 @@ if __name__ == "__main__":
     parser.add_argument('--reindex', action="store_true")
     args = parser.parse_args()
 
-    # limit logging
-    logger = logging.getLogger()
-    logger.setLevel(logging.ERROR)
-
     search = Search()
     if (args.test):
         search.test()

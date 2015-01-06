@@ -4,6 +4,8 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
 
+os.environ['PMG_LAYER'] = 'frontend'
+
 env = os.environ.get('FLASK_ENV', 'development')
 
 app = Flask(__name__, static_folder="static")

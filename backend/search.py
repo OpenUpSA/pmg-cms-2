@@ -74,7 +74,10 @@ class Search:
         return getattr(models, camelize(data_type))
 
     def delete(self, data_type, uid):
-        self.es.delete(self.index_name, data_type, uid)
+        try:
+            self.es.delete(self.index_name, data_type, uid)
+        except ElasticHttpNotFoundError:
+            pass
 
     def get(self, data_type, uid):
         try:

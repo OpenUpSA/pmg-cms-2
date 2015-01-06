@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block page %}
+<h4 class="light-red">Book</h4>
+
+<h1>{{ book.title }}</h1>
+{% if book.start_date %}
+<h4>{{ book.start_date }}</h4>
+{% endif %}
+
+<div class="row">
+  <div class="col-md-6">
+    {{ book.body | safe }}
+  </div>
+
+  <div class="col-md-6">
+    {% for file in book.files %}
+    
+    
+    {% if file.description %}
+    <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
+    {% else %}
+    <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
+    {% endif %}
+    
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block page %}
+<h1><i class="fa fa-icon fa-group"></i> Gazettes</h1>
+
+<ul>
+  {% for gazette in gazettes %}
+  <li>
+    <a href="/gazette/{{ gazette.id }}">{{ gazette.title }}</a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% include 'pagination.html' %}
+
+{% endblock page %}

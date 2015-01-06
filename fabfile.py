@@ -70,7 +70,6 @@ def set_permissions():
     return
 
 
-
 def setup():
 
     sudo('apt-get update')
@@ -108,9 +107,6 @@ def deploy():
     # push any local changes to github
     local('git push origin ' + env.git_branch)
 
-    with settings(warn_only=True):
-        sudo('service nginx stop')
-
     # enter application directory and pull latest code from github
     with cd(env.project_dir):
         # ensure we are on the target branch
@@ -122,7 +118,7 @@ def deploy():
 
     # install dependencies
     with virtualenv():
-        sudo('pip install -r %s/requirements/production.txt' % env.project_dir)
+        sudo('pip install -r %s/requirements.txt' % env.project_dir)
 
     with cd(env.project_dir):
         # nginx

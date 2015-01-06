@@ -15,14 +15,14 @@ and improve transparency surrounding the activities of parliament.
 
 ## How it works
 
-The project consists of the following major components:::
+The project consists of the following major components:
 
   * User-facing website, including free and paid-for content (built using Flask, Jinja2 templates, Bootstrap and jQuery)
-    * http://www.pmg.org.za
+    * http://new.pmg.org.za
   * Database (PostgreSQL)
   * Search engine (Elastic Search)
   * Admin interface (Flask-Admin, integration with MailChimp)
-    * http://admin.pmg.org.za
+    * http://api.pmg.org.za/admin
   * API (Flask)
     * http://api.pmg.org.za
 
@@ -42,8 +42,12 @@ Clone this repo, and setup a virtualenv:
 
 Install requirements:
 
-    pip install -r requirements/development.txt
+    pip install -r requirements.txt
 
+Add the following lines to your `.hosts` file:
+
+    127.0.0.1 api.pmg.dev
+    127.0.0.1 pmg.dev
 
 Start the backend server:
 
@@ -52,6 +56,8 @@ Start the backend server:
 And start the frontend server:
 
     python runserver_frontend.py
+
+You should now see them running at `http://api.pmg.dev:5001/` and `http://pmg.dev:5000/` respectively.
 
 
 ### Deploy instructions

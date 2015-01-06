@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block page %}
+<h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
+
+<div class="space-bottom">
+	<div class="row">
+		<div class="col-md-6">
+			<form action="/search">
+				<input type="hidden" name="filter[type]" value="{{content_type}}">
+				<div class="input-group">
+					<input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-success">Search</button>
+					</span>
+				</div>
+			</form>
+		</div>
+		{% if committees %}
+		<div class="col-md-6">
+			<form>
+				{% include 'committee_select.html' %}
+			</form>
+		</div>
+		{% endif %}
+  	</div>
+</div>
+
+<ul class="list-unstyled">
+	{% for result in results %}
+		<li>
+			{% include content_type + '_stub.html' %}
+		</li>
+	{% endfor %}
+</ul>
+
+{% include 'pagination.html' %}
+
+{% endblock page %}

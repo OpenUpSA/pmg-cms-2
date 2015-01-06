@@ -19,7 +19,6 @@ import urllib
 from operator import itemgetter
 
 
-
 FRONTEND_HOST = app.config['FRONTEND_HOST']
 API_HOST = app.config['API_HOST']
 STATIC_HOST = app.config['STATIC_HOST']
@@ -40,14 +39,16 @@ def allowed_file(filename):
     logger.debug(tmp)
     return tmp
 
+
 @app.context_processor
 def inject_paths():
     context_vars = {
         'FRONTEND_HOST': FRONTEND_HOST,
         'API_HOST': API_HOST,
         'STATIC_HOST': STATIC_HOST,
-        }
+    }
     return context_vars
+
 
 @app.template_filter('add_commas')
 def jinja2_filter_add_commas(quantity):
@@ -59,6 +60,7 @@ def jinja2_filter_add_commas(quantity):
         quantity_str = quantity_str[0:-3]
     return quantity_str + out
 
+
 @app.template_filter('dir')
 def jinja2_filter_dir(value):
     res = []
@@ -69,6 +71,7 @@ def jinja2_filter_dir(value):
 
 # Define wtforms widget and field
 class CKTextAreaWidget(widgets.TextArea):
+
     def __call__(self, field, **kwargs):
         kwargs.setdefault('class_', 'ckeditor')
         return super(CKTextAreaWidget, self).__call__(field, **kwargs)
@@ -79,6 +82,7 @@ class CKTextAreaField(fields.TextAreaField):
 
 
 class MyIndexView(AdminIndexView):
+
     @expose("/")
     def index(self):
 
@@ -94,11 +98,14 @@ class MyIndexView(AdminIndexView):
             ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
-            ]
+        ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
         file_count = Content.query.count()
 
-        return self.render('admin/my_index.html', record_counts=record_counts, file_count=file_count)
+        return self.render(
+            'admin/my_index.html',
+            record_counts=record_counts,
+            file_count=file_count)
 
 
 class MyModelView(ModelView):
@@ -121,7 +128,11 @@ class MyModelView(ModelView):
         Override builtin _handle_view in order to redirect users when a view is not accessible.
         """
         if not self.is_accessible():
-            return redirect('/security/login?next=' + urllib.quote_plus(request.url), code=302)
+            return redirect(
+                '/security/login?next=' +
+                urllib.quote_plus(
+                    request.url),
+                code=302)
 
 
 class MyRestrictedModelView(MyModelView):
@@ -129,7 +140,8 @@ class MyRestrictedModelView(MyModelView):
     def is_accessible(self):
         if not current_user.is_active() or not current_user.is_authenticated():
             return False
-        if not current_user.has_role('editor') or not current_user.has_role('user-admin'):
+        if not current_user.has_role(
+                'editor') or not current_user.has_role('user-admin'):
             return False
         return True
 
@@ -146,7 +158,7 @@ class UserView(MyRestrictedModelView):
         'last_login_ip',
         'current_login_ip',
         'login_count',
-        ]
+    ]
     column_searchable_list = ('email',)
     form_excluded_columns = [
         'password',
@@ -156,16 +168,20 @@ class UserView(MyRestrictedModelView):
         'last_login_ip',
         'current_login_ip',
         'login_count',
-        ]
+    ]
 
 
 # This widget uses custom template for inline field list
 class InlineMembershipsWidget(RenderTemplateWidget):
+
     def __init__(self):
-        super(InlineMembershipsWidget, self).__init__('admin/inline_membership.html')
+        super(
+            InlineMembershipsWidget,
+            self).__init__('admin/inline_membership.html')
 
 
-# This InlineModelFormList will use our custom widget, when creating a list of forms
+# This InlineModelFormList will use our custom widget, when creating a
+# list of forms
 class MembershipsFormList(InlineModelFormList):
     widget = InlineMembershipsWidget()
 
@@ -191,7 +207,7 @@ class CommitteeView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
-        )
+    )
     form_columns = (
         'name',
         'house',
@@ -241,11 +257,13 @@ class EventView(MyModelView):
 
 # This widget uses custom template for inline field list
 class InlineContentWidget(RenderTemplateWidget):
+
     def __init__(self):
         super(InlineContentWidget, self).__init__('admin/inline_content.html')
 
 
-# This InlineModelFormList will use our custom widget, when creating a list of forms
+# This InlineModelFormList will use our custom widget, when creating a
+# list of forms
 class ContentFormList(InlineModelFormList):
     widget = InlineContentWidget()
 
@@ -280,7 +298,8 @@ class InlineContent(InlineFormAdmin):
 class CommitteeMeetingView(EventView):
 
     # note: the related committee_meeting is displayed as part of the event model
-    # by using SQLAlchemy joined-table inheritance. See gist: https://gist.github.com/mrjoes/6007994
+    # by using SQLAlchemy joined-table inheritance. See gist:
+    # https://gist.github.com/mrjoes/6007994
 
     column_list = ('date', 'committee', 'title', 'content')
     column_labels = {'committee': 'Committee', }
@@ -293,7 +312,7 @@ class CommitteeMeetingView(EventView):
     column_searchable_list = ('title', 'committee.name')
     column_formatters = dict(
         content=macro('render_event_content'),
-        )
+    )
     form_excluded_columns = (
         'event',
         'member',
@@ -348,7 +367,7 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
-        )
+    )
     form_columns = (
         'name',
         'house',
@@ -372,7 +391,7 @@ class MemberView(MyModelView):
         'bio': {
             'rows': '10'
         },
-        }
+    }
     edit_template = "admin/edit_member.html"
 
     def on_model_change(self, form, model):
@@ -499,26 +518,112 @@ class TabledReportView(MyModelView):
         },
     }
 
+# initialise admin instance
+admin = Admin(
+    app,
+    name='PMG-CMS',
+    base_template='admin/my_base.html',
+    index_view=MyIndexView(
+        name='Home'),
+    template_mode='bootstrap3')
 
-admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
+# add admin views for each model
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
-
-admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
-admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
-admin.add_view(TabledReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
-# admin.add_view(MyModelView(Bill, db.session, name="Bills", endpoint='bill'))
-
-admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
-admin.add_view(QuestionView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
-
-admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
-admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
-admin.add_view(HansardView(Hansard, db.session, name="Hansards", endpoint='hansard', category="Other Content"))
-admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
-admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
-admin.add_view(BriefingView(Briefing, db.session, name="Media Briefings", endpoint='briefing', category="Other Content"))
-
-admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
-admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
-admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
-
+admin.add_view(
+    CommitteeView(
+        Committee,
+        db.session,
+        name="Committees",
+        endpoint='committee',
+        category="Committees"))
+admin.add_view(
+    CommitteeMeetingView(
+        CommitteeMeeting,
+        db.session,
+        type="committee-meeting",
+        name="Committee Meetings",
+        endpoint='committee_meeting',
+        category="Committees"))
+admin.add_view(
+    TabledReportView(
+        TabledCommitteeReport,
+        db.session,
+        name="Tabled Committee Reports",
+        endpoint='tabled_report',
+        category="Committees"))
+admin.add_view(
+    MemberView(
+        Member,
+        db.session,
+        name="Members",
+        endpoint='member'))
+admin.add_view(
+    QuestionView(
+        QuestionReply,
+        db.session,
+        name="Questions & Replies",
+        endpoint='question',
+        category="Other Content"))
+admin.add_view(
+    CallForCommentView(
+        CallForComment,
+        db.session,
+        name="Calls for Comment",
+        endpoint='call_for_comment',
+        category="Other Content"))
+admin.add_view(
+    GazetteView(
+        Gazette,
+        db.session,
+        name="Gazettes",
+        endpoint='gazette',
+        category="Other Content"))
+admin.add_view(
+    HansardView(
+        Hansard,
+        db.session,
+        name="Hansards",
+        endpoint='hansard',
+        category="Other Content"))
+admin.add_view(
+    PolicyDocumentView(
+        PolicyDocument,
+        db.session,
+        name="Policy Document",
+        endpoint='policy',
+        category="Other Content"))
+admin.add_view(
+    DailyScheduleView(
+        DailySchedule,
+        db.session,
+        name="Daily Schedules",
+        endpoint='schedule',
+        category="Other Content"))
+admin.add_view(
+    BriefingView(
+        Briefing,
+        db.session,
+        name="Media Briefings",
+        endpoint='briefing',
+        category="Other Content"))
+admin.add_view(
+    MyModelView(
+        MembershipType,
+        db.session,
+        name="Membership Type",
+        endpoint='membership-type',
+        category="Form Options"))
+admin.add_view(
+    MyModelView(
+        BillStatus,
+        db.session,
+        name="Bill Status",
+        endpoint='bill-status',
+        category="Form Options"))
+admin.add_view(
+    MyModelView(
+        BillType,
+        db.session,
+        name="Bill Type",
+        endpoint='bill-type',
+        category="Form Options"))

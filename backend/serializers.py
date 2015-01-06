@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class CustomEncoder(json.JSONEncoder):
+
     """
     Define encoding rules for fields that are not readily serializable.
     """
@@ -20,7 +21,10 @@ class CustomEncoder(json.JSONEncoder):
             encoded_obj = obj.isoformat()
         elif isinstance(obj, db.Model):
             try:
-                encoded_obj = json.dumps(obj.to_dict(), cls=CustomEncoder, indent=4)
+                encoded_obj = json.dumps(
+                    obj.to_dict(),
+                    cls=CustomEncoder,
+                    indent=4)
             except Exception:
                 encoded_obj = str(obj)
         else:
@@ -42,7 +46,8 @@ def model_to_dict(obj, include_related=False):
     relations = obj.__mapper__.relationships.keys()
     # 1/0
     for key in relations:
-        # serialize eagerly loaded related objects, or all related objects if the flag is set
+        # serialize eagerly loaded related objects, or all related objects if
+        # the flag is set
         if include_related or key not in inspect(obj).unloaded:
             related_content = getattr(obj, key)
             if related_content:
@@ -95,7 +100,7 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
             'count': count,
             'next': next,
             'results': results
-            }
+        }
         if current_user and current_user.is_active():
             try:
                 out['current_user'] = to_dict(current_user)
@@ -104,9 +109,3 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
                 pass
 
     return json.dumps(out, cls=CustomEncoder, indent=4)
-
-
-def organisation_to_dict(obj, include_related=False):
-
-
-    return model_to_dict(obj, include_related=include_related)

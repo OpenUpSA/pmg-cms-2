@@ -95,30 +95,27 @@ def find_files(obj):
     return files
 
 def find_committee(obj):
-    organisations = []
+    committees = []
     if (obj.has_key("terms") and (type(obj["terms"]) is list) and (len(obj["terms"]) > 0)):
         # print obj["terms"]
         for term in obj["terms"]:
-            organisation = Organisation.query.filter_by(name = term).first()
-            # print organisation, term
-            if organisation:
-                organisations.append(organisation)
+            committee = Committee.query.filter_by(name = term).first()
+            # print committee, term
+            if committee:
+                committees.append(committee)
             # else:
             #     print term
-    return organisations
+    return committees
 
-def prep_table(tablename):
-    Model = getattr(models, tablename.capitalize())
-    print "Deleted rows: ", Model.query.delete()
+def prep_table(model_class):
+    print "Deleted rows: ", model_class.query.delete()
     
 
-def rebuild_table(tablename, mappings):
-    logger.debug("Rebuilding %s" % tablename)
-    Model = getattr(models, tablename.capitalize())
-    prep_table(tablename)
+def rebuild_table(table_name, model_class, mappings):
+    logger.debug("Rebuilding %s" % table_name)
+    prep_table(model_class)
     i = 0
-    with open('data/' + tablename + '.json', 'r') as f:
-        records = []
+    with open('data/' + table_name + '.json', 'r') as f:
         lines = f.readlines()
         logger.debug("Found %i records" % (len(lines)))
         for line in lines:
@@ -208,27 +205,25 @@ def rebuild_db():
                     committees[name]["contact"] = committee_obj["body"]
     for key, val in committees.iteritems():
         # logger.debug(val)
-        organisation = Organisation()
-        organisation.name = key
-        organisation.type = "committee"
-        organisation.version = 0
+        committee = Committee()
+        committee.name = key
 
         # set parent relation
-        if "ncop" in organisation.name.lower():
-            organisation.house_id = ncop_obj.id
-        elif "joint" in organisation.name.lower():
-            organisation.house_id = joint_obj.id
+        if "ncop" in committee.name.lower():
+            committee.house_id = ncop_obj.id
+        elif "joint" in committee.name.lower():
+            committee.house_id = joint_obj.id
         else:
-            organisation.house_id = na_obj.id
+            committee.house_id = na_obj.id
 
         # committee_info = CommitteeInfo()
         if val.get("about"):
-            organisation.about = val["about"]
+            committee.about = val["about"]
         if val.get("contact"):
-            organisation.contact_details = val["contact"]
+            committee.contact_details = val["contact"]
 
-        db.session.add(organisation)
-        val['model'] = organisation
+        db.session.add(committee)
+        val['model'] = committee
     db.session.commit()
 
     # populate committee members
@@ -242,7 +237,6 @@ def rebuild_db():
     for member in members:
         member_obj = Member(
             name=member['title'].strip(),
-            version=0,
             start_date = db_date_from_utime(member['start_date']),
             pa_link = guess_pa_link(member['title'].strip(), pa_members)
         )
@@ -265,7 +259,7 @@ def rebuild_db():
         for term in member['terms']:
             if committees.get(term):
                 org_model = committees[term]['model']
-                membership_obj = Membership(organisation=org_model)
+                membership_obj = Membership(committee=org_model)
                 member_obj.memberships.append(membership_obj)
             else:
                 logger.debug("committee not found: " + term)
@@ -300,7 +294,7 @@ def rebuild_db():
     db.session.commit()
 
     # select a random chairperson for each committee
-    tmp_committees = Organisation.query.filter_by(type="committee").all()
+    tmp_committees = Committee.query.all()
     for committee in tmp_committees:
         if committee.memberships:
             membership_obj = committee.memberships[0]
@@ -326,10 +320,9 @@ def rebuild_db():
             report_obj = CommitteeMeeting(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
-                organisation=committee_obj,
+                committee=committee_obj,
                 date=parsed_report.date,
-                title=parsed_report.title,
-                version=0
+                title=parsed_report.title
             )
             db.session.add(report_obj)
 
@@ -395,8 +388,8 @@ def bills():
         bill.is_deleted = billobj["is_deleted"]
         bill.status_id = addChild(BillStatus, billobj["status"])
         bill.bill_type_id = addChild(BillType, billobj["bill_type"])
-        # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-        # place_of_introduction = db.relationship('Organisation')
+        # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+        # place_of_introduction = db.relationship('Committee')
         # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
         # introduced_by = db.relationship('Member')
         db.session.add(bill)
@@ -404,7 +397,7 @@ def bills():
 
 def add_featured():
     committeemeetings = CommitteeMeeting.query.limit(5)
-    tabledreports = Tabled_committee_report.query.limit(5)
+    tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
         featured.committee_meeting.append(committeemeeting)
@@ -426,15 +419,15 @@ def clear_db():
 if __name__ == '__main__':
     clear_db()
     rebuild_db()
-    rebuild_table("hansard", { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
-    rebuild_table("briefing", {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
-    rebuild_table("questions_replies", {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("calls_for_comment", { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("policy_document", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("gazette", { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
-    rebuild_table("daily_schedule", { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
+    rebuild_table("hansard", Hansard, { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
+    rebuild_table("briefing", Briefing, {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
+    rebuild_table("questions_replies", QuestionReply, {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
+    rebuild_table("tabled_committee_report", TabledCommitteeReport, { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
+    rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
+    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
+    rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
     # bills()
     add_featured()
 

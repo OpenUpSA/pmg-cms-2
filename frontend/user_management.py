@@ -1,6 +1,6 @@
 from flask import render_template, g, request, redirect, session, url_for, abort, flash
 from frontend import app
-from views import ApiException
+from views import ApiException, load_from_api
 import os
 import forms
 import requests
@@ -52,6 +52,7 @@ def user_management_api(endpoint, data=None):
             logger.debug(json.dumps(out, indent=4))
         except Exception:
             logger.debug("Error logging response from API")
+        update_current_user()
         return out['response']
 
     except ConnectionError:
@@ -82,9 +83,6 @@ def login():
                 'user') and response['user'].get('authentication_token'):
             session['authentication_token'] = response[
                 'user']['authentication_token']
-            session['authenticated'] = True
-            session['_fresh'] = True
-            session['user_id'] = response['user'].get('id')
 
             if request.values.get('next'):
                 return redirect(request.values['next'])
@@ -245,3 +243,14 @@ def confirm_email(confirmation_key):
     if response and not response.get('errors'):
         flash(u'Thanks. Your email address has been confirmed.', 'success')
     return redirect(url_for('index'))
+
+
+def update_current_user():
+    """
+    Hit the API, and update our session's 'current_user' if necessary.
+    """
+
+    tmp = load_from_api("")  # hit the API's index page
+    if tmp.get('current_user'):
+        session['current_user'] = tmp['current_user']
+    return

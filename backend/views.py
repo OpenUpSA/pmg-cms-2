@@ -273,4 +273,10 @@ def landing():
     out = {'endpoints': []}
     for resource in api_resources().keys():
         out['endpoints'].append(API_HOST + resource)
+    if current_user and current_user.is_active():
+        try:
+            out['current_user'] = serializers.to_dict(current_user)
+        except Exception:
+            logger.exception("Error serializing current user.")
+            pass
     return send_api_response(json.dumps(out, indent=4))

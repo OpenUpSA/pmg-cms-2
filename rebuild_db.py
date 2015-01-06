@@ -150,7 +150,7 @@ def rebuild_table(table_name, model_class, mappings):
                     i = 0
                     logger.debug("Wrote 100 rows...")
             except:
-                logger.warning("Error loading record from " + tablename)
+                logger.warning("Error loading record from " + table_name)
         db.session.commit()
 
 def guess_pa_link(name, names):

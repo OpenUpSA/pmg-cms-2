@@ -1,15 +1,17 @@
 import os
 import json
 import time, datetime
-from backend.app import app, db
-from backend import models
-from backend.models import *
 import parsers
-from sqlalchemy import types
-import requests
 import logging
 import csv
 import re
+
+import requests
+from sqlalchemy import types
+
+from backend.app import app, db
+from backend.models import *
+from backend.search import Search
 
 logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
@@ -415,8 +417,11 @@ def clear_db():
     logger.debug("Creating all")
     db.create_all()
 
+def disable_reindexing():
+    Search.reindex_changes = False
 
 if __name__ == '__main__':
+    disable_reindexing()
     clear_db()
     rebuild_db()
     rebuild_table("hansard", Hansard, { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })

@@ -1,5 +1,4 @@
 import logging
-
 from app import db, app
 from models import *
 import flask
@@ -16,6 +15,7 @@ import serializers
 import sys
 from search import Search
 import math
+from flask_security import current_user
 
 API_HOST = app.config["API_HOST"]
 
@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApiException(Exception):
+
     """
     Class for handling all of our expected API errors.
     """
@@ -45,6 +46,7 @@ class ApiException(Exception):
         }
         return rv
 
+
 def get_filter():
     filters = []
     args = flask.request.args.to_dict()
@@ -52,8 +54,9 @@ def get_filter():
         if "filter" in key:
             fieldname = re.search("filter\[(.*)\]", key).group(1)
             if fieldname:
-                filters.append({ fieldname: args[key] })
+                filters.append({fieldname: args[key]})
     return filters
+
 
 @app.errorhandler(ApiException)
 def handle_api_exception(error):
@@ -109,45 +112,45 @@ def send_api_response(data_json):
 def api_resources():
     current_time = datetime.datetime.utcnow()
     return {
-        "committee": db.session.query(Organisation) \
-            .filter_by(type='committee') \
-            .order_by(Organisation.house_id, Organisation.name),
+        "committee": db.session.query(Committee)
+        .order_by(Committee.house_id, Committee.name),
 
-        "committee-meeting": db.session.query(Event) \
-            .filter(Event.type == 'committee-meeting') \
-            .order_by(desc(Event.date)),
+        "committee-meeting": db.session.query(Event)
+        .filter(Event.type == 'committee-meeting')
+        .order_by(desc(Event.date)),
 
         "bill": db.session.query(Bill)
-            .order_by(desc(Bill.year)),
+        .order_by(desc(Bill.year)),
 
         "member": db.session.query(Member)
-            .order_by(Member.name),
+        .order_by(Member.name),
 
         "hansard": db.session.query(Hansard)
-            .order_by(desc(Hansard.meeting_date)),
+        .order_by(desc(Hansard.meeting_date)),
 
         "briefing": db.session.query(Briefing)
-            .order_by(desc(Briefing.briefing_date)),
-        "question_reply": db.session.query(Questions_replies)
-            .order_by(desc(Questions_replies.start_date)),
+        .order_by(desc(Briefing.briefing_date)),
+        "question_reply": db.session.query(QuestionReply)
+        .order_by(desc(QuestionReply.start_date)),
         "schedule": db.session.query(Schedule)
-            .order_by(desc(Schedule.meeting_date))
-            .filter(Schedule.meeting_date >= current_time ),
-        "tabled_committee_report": db.session.query(Tabled_committee_report)
-            .order_by(desc(Tabled_committee_report.start_date)),
-        "calls_for_comment": db.session.query(Calls_for_comment)
-            .order_by(desc(Calls_for_comment.start_date)),
-        "policy_document": db.session.query(Policy_document)
-            .order_by(desc(Policy_document.start_date)),
+        .order_by(desc(Schedule.meeting_date))
+        .filter(Schedule.meeting_date >= current_time),
+        "tabled_committee_report": db.session.query(TabledCommitteeReport)
+        .order_by(desc(TabledCommitteeReport.start_date)),
+        "calls_for_comment": db.session.query(CallForComment)
+        .order_by(desc(CallForComment.start_date)),
+        "policy_document": db.session.query(PolicyDocument)
+        .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
-            .order_by(desc(Gazette.start_date)),
+        .order_by(desc(Gazette.start_date)),
         "book": db.session.query(Book)
-            .order_by(desc(Book.start_date)),
+        .order_by(desc(Book.start_date)),
         "featured": db.session.query(Featured)
-            .order_by(desc(Featured.start_date)),
-        "daily_schedule": db.session.query(Daily_schedule)
-            .order_by(desc(Daily_schedule.start_date)),
+        .order_by(desc(Featured.start_date)),
+        "daily_schedule": db.session.query(DailySchedule)
+        .order_by(desc(DailySchedule.start_date)),
     }
+
 
 @app.route('/search/')
 def search():
@@ -170,7 +173,14 @@ def search():
     filters["end_date"] = request.args.get('filter[end_date]')
     filters["type"] = request.args.get('filter[type]')
     filters["committee"] = request.args.get('filter[committee]')
-    searchresult = search.search(q, per_page, page * per_page, content_type=filters["type"], start_date=filters["start_date"], end_date=filters["end_date"], committee=filters["committee"])
+    searchresult = search.search(
+        q,
+        per_page,
+        page * per_page,
+        content_type=filters["type"],
+        start_date=filters["start_date"],
+        end_date=filters["end_date"],
+        committee=filters["committee"])
     bincounts = search.count(q)
 
     result = {}
@@ -178,15 +188,21 @@ def search():
     result["count"] = searchresult["hits"]["total"]
     result["max_score"] = searchresult["hits"]["max_score"]
     result["bincount"] = {}
-    result["bincount"]["types"] = bincounts[0]["aggregations"]["types"]["buckets"]
-    result["bincount"]["years"] = bincounts[1]["aggregations"]["years"]["buckets"]
+    result["bincount"]["types"] = bincounts[
+        0]["aggregations"]["types"]["buckets"]
+    result["bincount"]["years"] = bincounts[
+        1]["aggregations"]["years"]["buckets"]
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
 
     if result["count"] > (page + 1) * per_page:
-        result["next"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(page+1) + "&per_page=" + str(per_page)
-        result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
-        result["first"] = flask.request.url_root + "search/?q=" + q + "&page=0" + "&per_page=" + str(per_page)
+        result["next"] = flask.request.url_root + "search/?q=" + q + \
+            "&page=" + str(page + 1) + "&per_page=" + str(per_page)
+        result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + \
+            str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
+        result["first"] = flask.request.url_root + "search/?q=" + \
+            q + "&page=0" + "&per_page=" + str(per_page)
     return json.dumps(result)
+
 
 @app.route('/hitlog/', methods=['GET', 'POST'])
 def hitlog():
@@ -194,11 +210,15 @@ def hitlog():
     Records a hit from the end-user. Should be called in a non-blocking manner
     """
     logger.debug("caught a hit")
-    hitlog = HitLog( ip_addr = flask.request.form["ip_addr"], user_agent = flask.request.form["user_agent"], url = flask.request.form["url"])
+    hitlog = HitLog(
+        ip_addr=flask.request.form["ip_addr"],
+        user_agent=flask.request.form["user_agent"],
+        url=flask.request.form["url"])
     db.session.add(hitlog)
     db.session.commit()
-    
+
     return ""
+
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )
@@ -231,12 +251,16 @@ def resource_list(resource, resource_id=None):
         except NoResultFound:
             raise ApiException(404, "Not found")
     else:
-        queryset = base_query.limit(per_page).offset(page*per_page).all()
+        queryset = base_query.limit(per_page).offset(page * per_page).all()
         count = base_query.count()
     next = None
     if count > (page + 1) * per_page:
-        next = flask.request.url_root + resource + "/?page=" + str(page+1)
-    out = serializers.queryset_to_json(queryset, count=count, next=next)
+        next = flask.request.url_root + resource + "/?page=" + str(page + 1)
+    out = serializers.queryset_to_json(
+        queryset,
+        count=count,
+        next=next,
+        current_user=current_user)
     return send_api_response(out)
 
 

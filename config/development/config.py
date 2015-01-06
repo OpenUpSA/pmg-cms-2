@@ -1,8 +1,8 @@
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'sqlite:///../instance/tmp.db'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
-API_HOST = "http://api.pmg.dev/"
-FRONTEND_HOST = "http://pmg.dev/"
+API_HOST = "http://api.pmg.dev:5001/"
+FRONTEND_HOST = "http://pmg.dev:5000/"
 SESSION_COOKIE_DOMAIN = "pmg.dev"
 RESULTS_PER_PAGE = 50
 SQLALCHEMY_ECHO = False
@@ -41,6 +41,8 @@ SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "ioaefroijaAMELRK#$(aerieuh984akef#$graerj"
 SECURITY_EMAIL_SENDER = "pmgorg.noreply@gmail.com"
 SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
+SECURITY_POST_LOGIN_VIEW = "/admin"
+SECURITY_POST_LOGOUT_VIEW = "/admin"
 
 # Flask-Security features
 SECURITY_CONFIRMABLE = True

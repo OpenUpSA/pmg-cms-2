@@ -35,12 +35,12 @@
 {% macro render_committee_membership(model, column) %}
 {% if model[column] %}
 {% for membership in model[column] %}
-<a href="{{ url_for('committee.edit_view', id=membership.organisation.id) }}">
+<a href="{{ url_for('committee.edit_view', id=membership.committee.id) }}">
 <span class="label alert-info">
-  {% if membership.organisation.name | length > 45 -%}
-    {{ membership.organisation.name[0:45] }}...
+  {% if membership.committee.name | length > 45 -%}
+    {{ membership.committee.name[0:45] }}...
   {% else -%}
-    {{ membership.organisation.name }}
+    {{ membership.committee.name }}
   {% endif %}
   </span>
 </a>

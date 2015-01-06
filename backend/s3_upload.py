@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 def rounded_megabytes(bytes):
 
-    megabytes = bytes/float(1024*1024)
-    megabytes = math.ceil(megabytes*1000)/1000  # round the float
+    megabytes = bytes / float(1024 * 1024)
+    megabytes = math.ceil(megabytes * 1000) / 1000  # round the float
     return megabytes
 
 

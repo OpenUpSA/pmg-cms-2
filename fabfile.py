@@ -70,7 +70,6 @@ def set_permissions():
     return
 
 
-
 def setup():
 
     sudo('apt-get update')

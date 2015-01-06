@@ -25,11 +25,20 @@ def user_management_api(endpoint, data=None):
         headers['Authentication-Token'] = session['authentication_token']
     try:
         logger.debug(json.dumps(headers))
-        response = requests.post(API_HOST + query_str, data=data, headers=headers, allow_redirects=False)
+        response = requests.post(
+            API_HOST +
+            query_str,
+            data=data,
+            headers=headers,
+            allow_redirects=False)
         try:
             out = response.json()
             if response.status_code != 200:
-                raise ApiException(response.status_code, out.get('message', u"An unspecified error has occurred."))
+                raise ApiException(
+                    response.status_code,
+                    out.get(
+                        'message',
+                        u"An unspecified error has occurred."))
             if out.get('response') and out['response'].get('errors'):
                 for field, messages in out['response']['errors'].iteritems():
                     for message in messages:
@@ -69,8 +78,10 @@ def login():
         response = user_management_api('login', json.dumps(data))
 
         # save Api Key
-        if response and response.get('user') and response['user'].get('authentication_token'):
-            session['authentication_token'] = response['user']['authentication_token']
+        if response and response.get(
+                'user') and response['user'].get('authentication_token'):
+            session['authentication_token'] = response[
+                'user']['authentication_token']
             session['authenticated'] = True
             session['_fresh'] = True
             session['user_id'] = response['user'].get('id')
@@ -79,7 +90,6 @@ def login():
                 return redirect(request.values['next'])
 
     return render_template('user_management/login_user.html', form=form)
-
 
 
 @app.route('/logout/', methods=['GET', ])
@@ -91,7 +101,7 @@ def logout():
     if response:
         flash(u'You have been logged out successfully.', 'success')
         return redirect(request.args.get('next', None) or
-                    url_for('index'))
+                        url_for('index'))
     return redirect(url_for('index'))
 
 
@@ -113,11 +123,15 @@ def register():
         response = user_management_api('register', json.dumps(data))
 
         # save Api Key and redirect user
-        if response and response.get('user') and response['user'].get('authentication_token'):
+        if response and response.get(
+                'user') and response['user'].get('authentication_token'):
             logger.debug("saving authentication_token to the session")
-            session['authentication_token'] = response['user']['authentication_token']
+            session['authentication_token'] = response[
+                'user']['authentication_token']
 
-            flash(u'You have been registered. Please check your email for a confirmation.', 'success')
+            flash(
+                u'You have been registered. Please check your email for a confirmation.',
+                'success')
             if request.values.get('next'):
                 return redirect(request.values['next'])
 
@@ -138,11 +152,15 @@ def send_confirmation():
 
         # redirect user
         if response and response.get('user'):
-            flash(u'Your confirmation email has been resent. Please check your inbox.', 'success')
+            flash(
+                u'Your confirmation email has been resent. Please check your inbox.',
+                'success')
             if request.values.get('next'):
                 return redirect(request.values['next'])
 
-    return render_template('user_management/send_confirmation.html', send_confirmation_form=form)
+    return render_template(
+        'user_management/send_confirmation.html',
+        send_confirmation_form=form)
 
 
 @app.route('/forgot-password/', methods=['GET', 'POST'])
@@ -158,11 +176,15 @@ def forgot_password():
         response = user_management_api('reset', json.dumps(data))
         # redirect user
         if response and not response.get('errors'):
-            flash(u'You will receive an email with instructions for resetting your password. Please check your inbox.', 'success')
+            flash(
+                u'You will receive an email with instructions for resetting your password. Please check your inbox.',
+                'success')
             if request.values.get('next'):
                 return redirect(request.values['next'])
 
-    return render_template('user_management/forgot_password.html', forgot_password_form=form)
+    return render_template(
+        'user_management/forgot_password.html',
+        forgot_password_form=form)
 
 
 @app.route('/reset/<token>', methods=['GET', 'POST'])
@@ -184,7 +206,10 @@ def reset_password(token):
             if request.values.get('next'):
                 return redirect(request.values['next'])
 
-    return render_template('user_management/reset_password.html', reset_password_form=form, reset_password_token=token)
+    return render_template(
+        'user_management/reset_password.html',
+        reset_password_form=form,
+        reset_password_token=token)
 
 
 @app.route('/change-password/', methods=['GET', 'POST'])
@@ -206,7 +231,9 @@ def change_password():
             if request.values.get('next'):
                 return redirect(request.values['next'])
 
-    return render_template('user_management/change_password.html', change_password_form=form)
+    return render_template(
+        'user_management/change_password.html',
+        change_password_form=form)
 
 
 @app.route('/confirm/<confirmation_key>', methods=['GET', ])
@@ -218,6 +245,3 @@ def confirm_email(confirmation_key):
     if response and not response.get('errors'):
         flash(u'Thanks. Your email address has been confirmed.', 'success')
     return redirect(url_for('index'))
-
-
-

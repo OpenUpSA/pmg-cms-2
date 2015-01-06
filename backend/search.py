@@ -1,18 +1,16 @@
-from pyelasticsearch import ElasticSearch
-from datetime import datetime
-import requests
-from app import db, app
-from flask import Flask
-import models
-from sqlalchemy import types
 import sys
-from transforms import *
 import math
 import argparse
-from bs4 import BeautifulSoup
 import logging
-from functools import reduce
 
+import requests
+from pyelasticsearch import ElasticSearch
+from sqlalchemy import types
+from inflection import underscore, camelize
+
+from app import db, app
+import models
+from transforms import *
 
 class Search:
 
@@ -23,24 +21,6 @@ class Search:
     per_batch = 50
     logger = logging.getLogger(__name__)
 
-    def _getVal(self, obj, field):
-        if isinstance(field, list):
-            if (len(field) == 1):
-                if hasattr(obj, field[0]):
-                    return getattr(obj, field[0])
-            key = field[:1][0]
-            if isinstance(key, int):
-                if len(obj) > key:
-                    return self._getVal(obj[key], field[1:])
-                return None
-            if hasattr(obj, key):
-                newobj = getattr(obj, key)
-                return self._getVal(newobj, field[1:])
-            else:
-                return None
-        else:
-            return getattr(obj, field)
-
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
         try:
@@ -48,8 +28,8 @@ class Search:
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
 
-        Model = getattr(models, Transforms.model_model[data_type])
-        ids = db.session.query(Model.id).all()
+        Model = self.model_for_data_type(data_type)
+        ids = [r[0] for r in db.session.query(Model.id).all()]
 
         count = len(ids)
         pages = int(math.ceil(float(count) / float(self.per_batch)))
@@ -63,7 +43,7 @@ class Search:
                     id_subsection.append(ids.pop())
 
             rows = db.session.query(Model).filter(Model.id.in_(id_subsection)).all()
-            items = [self.serialise(data_type, r) for r in rows]
+            items = [Transforms.serialise(data_type, r) for r in rows]
             self.add_many(data_type, items)
 
     def drop_index(self, data_type):
@@ -73,7 +53,7 @@ class Search:
 
     def add_obj(self, obj):
         data_type = self.data_type_for_obj(obj)
-        item = self.serialise(data_type, obj)
+        item = Transforms.serialise(data_type, obj)
         self.add(data_type, item)
 
     def add_many(self, data_type, items):
@@ -86,8 +66,12 @@ class Search:
         self.delete(self.data_type_for_obj(obj), obj.id)
 
     def data_type_for_obj(self, obj):
-        # TODO: implement
-        pass
+        # QuestionReply -> question_reply
+        return underscore(type(obj).__name__)
+
+    def model_for_data_type(self, data_type):
+        # question_reply -> QuestionReply class
+        return getattr(models, camelize(data_type))
 
     def delete(self, data_type, uid):
         self.es.delete(self.index_name, data_type, uid)
@@ -98,14 +82,9 @@ class Search:
         except:
             return False
 
-    def serialise(self, data_type, obj):
-        item = {}
-        for key, field in Transforms.convert_rules[data_type].iteritems():
-            val = self._getVal(obj, field)
-            if isinstance(val, unicode):
-                val = BeautifulSoup(val).get_text().strip()
-            item[key] = val
-        return item
+    def indexable(self, obj):
+        """ Should this object be indexed for searching? """
+        return self.data_type_for_obj(obj) in Transforms.convert_rules
 
     def mapping(self, data_type):
         mapping = {
@@ -241,7 +220,7 @@ class Search:
                 size=0)]
 
     def reindex_everything(self):
-        for data_type in Transforms.data_types:
+        for data_type in Transforms.data_types():
             self.reindex_all(data_type)
 
 
@@ -251,7 +230,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--import',
         dest='import_data_type',
-        choices=Transforms.data_types,
+        choices=Transforms.data_types(),
         help='Imports the data from a content type to ElasticSearch')
     parser.add_argument('--test', action="store_true")
     parser.add_argument('--reindex', action="store_true")

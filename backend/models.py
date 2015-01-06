@@ -711,7 +711,7 @@ def on_models_changed(sender, changes):
     for obj, change in changes:
         # obj is the changed object, change is one of: update, insert, delete
 
-        if getattr(obj, 'reindex_on_change', False):
+        if searcher.indexable(obj):
             logger.debug('Reindexing changed item: %s %s' % (change, obj))
 
             if change == 'delete':

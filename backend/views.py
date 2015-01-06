@@ -3,7 +3,6 @@ from app import db, app
 from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response
-from functools import wraps
 import json
 from sqlalchemy import func, or_, distinct, desc
 from sqlalchemy.orm import joinedload
@@ -16,6 +15,7 @@ import sys
 from search import Search
 import math
 from flask_security import current_user
+from flask_security.decorators import load_user
 
 API_HOST = app.config["API_HOST"]
 
@@ -78,37 +78,6 @@ def send_api_response(data_json):
     return response
 
 
-# def login_required(f):
-#     @wraps(f)
-#     def decorated_function(*args, **kwargs):
-#         if g.user is None or not g.user.is_active():
-#             raise ApiException(401, "You need to be logged-in in order to access this resource.")
-#         return f(*args, **kwargs)
-#     return decorated_function
-#
-#
-# @app.before_request
-# def load_user():
-#
-#     user = None
-#     # handle authentication via Auth Header
-#     if request.headers.get('Authorization') and request.headers['Authorization'].split(":")[0]=="ApiKey":
-#         key_value = request.headers['Authorization'].split(":")[1]
-#         api_key = ApiKey.query.filter_by(key=key_value).first()
-#         if api_key:
-#             user = api_key.user
-#     # handle authentication via session cookie (for admin)
-#     if session and session.get('api_key'):
-#         api_key = ApiKey.query.filter_by(key=session.get('api_key')).first()
-#         if api_key:
-#             user = api_key.user
-#     g.user = user
-#     return
-
-# -------------------------------------------------------------------
-# API endpoints:
-#
-
 def api_resources():
     current_time = datetime.datetime.utcnow()
     return {
@@ -151,6 +120,9 @@ def api_resources():
         .order_by(desc(DailySchedule.start_date)),
     }
 
+# -------------------------------------------------------------------
+# API endpoints:
+#
 
 @app.route('/search/')
 def search():
@@ -222,6 +194,7 @@ def hitlog():
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )
+@load_user('token', 'session')
 def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.
@@ -265,6 +238,7 @@ def resource_list(resource, resource_id=None):
 
 
 @app.route('/', )
+@load_user('token', 'session')
 def landing():
     """
     List available endpoints.

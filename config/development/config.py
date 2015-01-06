@@ -36,6 +36,7 @@ MAIL_PASSWORD = "agoaiejlagrAIERJaerknj"
 MAIL_DEFAULT_SENDER = "pmgorg.noreply@gmail.com"
 
 # Flask-Security config
+SECURITY_HOST = FRONTEND_HOST
 SECURITY_URL_PREFIX = "/security"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "ioaefroijaAMELRK#$(aerieuh984akef#$graerj"
@@ -46,6 +47,7 @@ SECURITY_POST_LOGOUT_VIEW = "/admin"
 
 # Flask-Security features
 SECURITY_CONFIRMABLE = True
+SECURITY_LOGIN_WITHOUT_CONFIRMATION = True
 SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True

@@ -24,7 +24,6 @@ def user_management_api(endpoint, data=None):
     if endpoint != 'login' and session and session.get('authentication_token'):
         headers['Authentication-Token'] = session['authentication_token']
     try:
-        logger.debug(json.dumps(headers))
         response = requests.post(
             API_HOST +
             query_str,
@@ -44,7 +43,7 @@ def user_management_api(endpoint, data=None):
                     for message in messages:
                         flash(message, 'danger')
         except ValueError:
-            logger.error("No JSON object could be decoded")
+            logger.error("Error interpreting response from API. No JSON object could be decoded")
             flash(u"Error interpreting response from API.", 'danger')
             logger.debug(response.text)
             return
@@ -52,7 +51,6 @@ def user_management_api(endpoint, data=None):
             logger.debug(json.dumps(out, indent=4))
         except Exception:
             logger.debug("Error logging response from API")
-        update_current_user()
         return out['response']
 
     except ConnectionError:
@@ -74,15 +72,12 @@ def login():
             'email': form.email.data,
             'password': form.password.data
         }
-        session['email'] = form.email.data
-        session['identifier'] = form.email.data
         response = user_management_api('login', json.dumps(data))
 
-        # save Api Key
-        if response and response.get(
-                'user') and response['user'].get('authentication_token'):
-            session['authentication_token'] = response[
-                'user']['authentication_token']
+        # save auth token
+        if response and response.get('user') and response['user'].get('authentication_token'):
+            session['api_key'] = response['user']['authentication_token']
+            update_current_user()
 
             if request.values.get('next'):
                 return redirect(request.values['next'])
@@ -116,17 +111,13 @@ def register():
             'email': form.email.data,
             'password': form.password.data
         }
-        session['email'] = form.email.data
-        session['identifier'] = form.email.data
         response = user_management_api('register', json.dumps(data))
 
         # save Api Key and redirect user
-        if response and response.get(
-                'user') and response['user'].get('authentication_token'):
+        if response and response.get('user') and response['user'].get('authentication_token'):
             logger.debug("saving authentication_token to the session")
-            session['authentication_token'] = response[
-                'user']['authentication_token']
-
+            session['api_key'] = response['user']['authentication_token']
+            update_current_user()
             flash(
                 u'You have been registered. Please check your email for a confirmation.',
                 'success')
@@ -185,7 +176,7 @@ def forgot_password():
         forgot_password_form=form)
 
 
-@app.route('/reset/<token>', methods=['GET', 'POST'])
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     """View function that handles a reset password request."""
 
@@ -234,7 +225,7 @@ def change_password():
         change_password_form=form)
 
 
-@app.route('/confirm/<confirmation_key>', methods=['GET', ])
+@app.route('/confirm-email/<confirmation_key>', methods=['GET', ])
 def confirm_email(confirmation_key):
     """View function for confirming an email address."""
 

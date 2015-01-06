@@ -175,9 +175,6 @@ def load_from_api(
     # add auth header
     if session and session.get('api_key'):
         headers = {'Authentication-Token': session.get('api_key')}
-        logger.debug("HEADERS: " + json.dumps(headers, indent=4))
-    else:
-        logger.debug("NO API_KEY PRESENT")
     try:
         response = requests.get(
             API_HOST +

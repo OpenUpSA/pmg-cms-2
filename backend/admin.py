@@ -107,6 +107,25 @@ class MyIndexView(AdminIndexView):
             record_counts=record_counts,
             file_count=file_count)
 
+    def is_accessible(self):
+        if not current_user.is_active() or not current_user.is_authenticated():
+            return False
+        if not current_user.has_role(
+                'editor') or not current_user.has_role('user-admin'):
+            return False
+        return True
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            return redirect(
+                '/security/login?next=' +
+                urllib.quote_plus(
+                    request.url),
+                code=302)
+
 
 class MyModelView(ModelView):
     can_create = True

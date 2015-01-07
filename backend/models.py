@@ -149,6 +149,8 @@ class BillType(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+    prefix = db.Column(db.String(5))
+    description = db.Column(db.Text)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -160,6 +162,7 @@ class BillStatus(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -172,44 +175,38 @@ class Bill(db.Model):
         db.UniqueConstraint(
             'number',
             'year',
-            'bill_type_id',
-            'title'),
+            'bill_type_id'),
         {})
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
-    bill_code = db.Column(db.String(100))
-    act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
     year = db.Column(db.Integer)
     date_of_introduction = db.Column(db.Date)
     date_of_assent = db.Column(db.Date)
     effective_date = db.Column(db.Date)
-    objective = db.Column(db.String(1000))
-    is_deleted = db.Column(db.Boolean, default=False)
+    act_name = db.Column(db.String(250))
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bill', lazy=False)
     bill_type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
     bill_type = db.relationship('BillType', backref='bill', lazy=False)
-    place_of_introduction_id = db.Column(
-        db.Integer,
-        db.ForeignKey('committee.id'))
-    place_of_introduction = db.relationship('Committee')
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    place_of_introduction = db.relationship('House')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
 
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
     files = db.relationship("File")
 
-    def code(self):
+    def get_code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
 
-    def delete(self):
-        self.is_deleted = True
-
     def __unicode__(self):
-        return unicode(str(self.code) + " - " + self.name)
+        out = self.get_code()
+        if self.title:
+            out += " - " + self.title
+        return unicode(out)
 
 
 class Briefing(db.Model):

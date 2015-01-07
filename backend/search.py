@@ -230,6 +230,9 @@ class Search:
         for data_type in Transforms.data_types():
             self.reindex_all(data_type)
 
+    def delete_everything(self):
+        self.es.delete_index(self.index_name)        
+
 
 if __name__ == "__main__":
     # print "ElasticSearch PMG library"
@@ -241,6 +244,7 @@ if __name__ == "__main__":
         help='Imports the data from a content type to ElasticSearch')
     parser.add_argument('--test', action="store_true")
     parser.add_argument('--reindex', action="store_true")
+    parser.add_argument('--delete', action="store_true")
     args = parser.parse_args()
 
     search = Search()
@@ -250,3 +254,5 @@ if __name__ == "__main__":
         search.reindex_all(args.import_data_type)
     if (args.reindex):
         search.reindex_everything()
+    if (args.delete):
+        search.delete_everything()

@@ -314,49 +314,65 @@ class InlineContent(InlineFormAdmin):
             s3_bucket.upload_file(filename)
 
 
-# class CommitteeMeetingView(EventView):
-#
-#     # note: the related committee_meeting is displayed as part of the event model
-#     # by using SQLAlchemy joined-table inheritance. See gist:
-#     # https://gist.github.com/mrjoes/6007994
-#
-#     column_list = ('date', 'committee', 'title', 'content')
-#     column_labels = {'committee': 'Committee', }
-#     column_sortable_list = (
-#         'date',
-#         'title',
-#         ('committee', 'committee.name'),
-#     )
-#     column_default_sort = (Event.date, True)
-#     column_searchable_list = ('title', 'committee.name')
-#     column_formatters = dict(
-#         content=macro('render_event_content'),
-#     )
-#     form_excluded_columns = (
-#         'event',
-#         'member',
-#     )
-#     form_columns = (
-#         'committee',
-#         'date',
-#         'title',
-#         'summary',
-#         'body',
-#         'content',
-#     )
-#
-#     form_widget_args = {
-#         'body': {
-#             'class': 'ckeditor'
-#         },
-#         'summary': {
-#             'class': 'ckeditor'
-#         }
-#     }
-#     inline_models = (
-#         InlineContent(Content),
-#     )
-#     inline_model_form_converter = ContentModelConverter
+class CommitteeMeetingView(EventView):
+
+    column_list = ('date', 'committee', 'title', 'content')
+    column_labels = {'committee': 'Committee', }
+    column_sortable_list = (
+        'date',
+        'title',
+        ('committee', 'committee.name'),
+    )
+    column_default_sort = (Event.date, True)
+    column_searchable_list = ('title', 'committee.name')
+    column_formatters = dict(
+        content=macro('render_event_content'),
+    )
+    form_excluded_columns = (
+        'event',
+        'member',
+    )
+    form_columns = (
+        'committee',
+        'date',
+        'title',
+        'summary',
+        'body',
+        'content',
+    )
+    form_extra_fields = {
+        'summary': CKTextAreaField('Summary'),
+        'body': CKTextAreaField('Body'),
+    }
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+        'summary': {
+            'class': 'ckeditor'
+        }
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
+    inline_model_form_converter = ContentModelConverter
+
+    def on_form_prefill(self, form, id):
+        event_obj = Event.query.get(id)
+        form.summary.data = event_obj.committee_meeting_report.summary
+        form.body.data = event_obj.committee_meeting_report.body
+        return
+
+    def on_model_change(self, form, model, is_created):
+        # create / update related CommitteeMeetingReport
+        if is_created:
+            committee_meeting_report = CommitteeMeetingReport(event=model)
+        else:
+            committee_meeting_report = model.committee_meeting_report
+        committee_meeting_report.summary = form.summary.data
+        committee_meeting_report.body = form.body.data
+        db.session.add(committee_meeting_report)
+        return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 
 class MemberView(MyModelView):
@@ -555,14 +571,14 @@ admin.add_view(
         name="Committees",
         endpoint='committee',
         category="Committees"))
-# admin.add_view(
-#     CommitteeMeetingView(
-#         CommitteeMeeting,
-#         db.session,
-#         type="committee-meeting",
-#         name="Committee Meetings",
-#         endpoint='committee_meeting',
-#         category="Committees"))
+admin.add_view(
+    CommitteeMeetingView(
+        Event,
+        db.session,
+        type="committee-meeting",
+        name="Committee Meetings",
+        endpoint='committee_meeting',
+        category="Committees"))
 admin.add_view(
     TabledReportView(
         TabledCommitteeReport,

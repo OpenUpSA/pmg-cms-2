@@ -417,7 +417,7 @@ def bills():
         bill.objective = billobj["objective"]
         bill.is_deleted = billobj["is_deleted"]
         bill.status_id = addChild(BillStatus, billobj["status"])
-        bill.bill_type_id = addChild(BillType, billobj["bill_type"])
+        bill.type_id = addChild(BillType, billobj["bill_type"])
         # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
         # place_of_introduction = db.relationship('Committee')
         # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))

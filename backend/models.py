@@ -175,7 +175,7 @@ class Bill(db.Model):
         db.UniqueConstraint(
             'number',
             'year',
-            'bill_type_id'),
+            'type_id'),
         {})
 
     id = db.Column(db.Integer, primary_key=True)
@@ -189,8 +189,8 @@ class Bill(db.Model):
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bill', lazy=False)
-    bill_type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
-    bill_type = db.relationship('BillType', backref='bill', lazy=False)
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
+    type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
@@ -201,6 +201,11 @@ class Bill(db.Model):
 
     def get_code(self):
         return self.type.prefix + str(self.number) + "-" + str(self.year)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['code'] = self.get_code()
+        return tmp
 
     def __unicode__(self):
         out = self.get_code()
@@ -342,7 +347,6 @@ class Member(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
-        logger.debug(STATIC_HOST)
         return tmp
 
 

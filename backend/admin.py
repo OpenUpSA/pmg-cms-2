@@ -577,6 +577,12 @@ admin.add_view(
         name="Members",
         endpoint='member'))
 admin.add_view(
+    MyModelView(
+        Bill,
+        db.session,
+        name="Bills",
+        endpoint='bill'))
+admin.add_view(
     QuestionView(
         QuestionReply,
         db.session,

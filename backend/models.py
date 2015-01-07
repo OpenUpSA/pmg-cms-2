@@ -1,14 +1,19 @@
-from app import app, db
-import serializers
-from sqlalchemy import desc, Index
-from sqlalchemy.orm import backref
-from sqlalchemy import UniqueConstraint
 from random import random
 import string
 import datetime
 import logging
+
+from sqlalchemy import desc, Index
+from sqlalchemy.orm import backref
+from sqlalchemy import UniqueConstraint
+
 from flask.ext.security import UserMixin, RoleMixin, \
     Security, SQLAlchemyUserDatastore
+from flask.ext.sqlalchemy import models_committed
+
+from app import app, db
+import serializers
+from search import Search
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -696,3 +701,22 @@ class HitLog(db.Model):
     ip_addr = db.Column(db.String(40), index=True)
     user_agent = db.Column(db.String(255))
     url = db.Column(db.String(255))
+
+
+# Listen for model updates
+@models_committed.connect_via(app)
+def on_models_changed(sender, changes):
+    searcher = Search()
+
+    for obj, change in changes:
+        # obj is the changed object, change is one of: update, insert, delete
+
+        if searcher.indexable(obj):
+            logger.debug('Reindexing changed item: %s %s' % (change, obj))
+
+            if change == 'delete':
+                # deleted
+                searcher.delete_obj(obj)
+            else:
+                # updated or inserted
+                searcher.add_obj(obj)

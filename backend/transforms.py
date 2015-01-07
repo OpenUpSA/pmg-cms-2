@@ -1,11 +1,19 @@
+from bs4 import BeautifulSoup
+
 class Transforms:
+    @classmethod
+    def data_types(cls):
+        return cls.convert_rules.keys()
+
+    # If there is a rule defined here, the corresponding CamelCase model
+    # will be indexed
     convert_rules = {
         "committee": {
             "id": "id",
             "title": "name",
             "description": ["info", "about"]
         },
-        "committee-meeting": {
+        "committee_meeting": {
             "id": "id",
             "title": "title",
             "description": "summary",
@@ -45,24 +53,24 @@ class Transforms:
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", 0, "name"],
-            "committee_id": ["committee", 0, "id"],
+            "committee_name": ["committee", "name"],
+            "committee_id": ["committee", "id"],
         },
         "tabled_committee_report": {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", 0, "name"],
-            "committee_id": ["committee", 0, "id"],
+            "committee_name": ["committee", "name"],
+            "committee_id": ["committee", "id"],
         },
-        "calls_for_comment": {
+        "call_for_comment": {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", 0, "name"],
-            "committee_id": ["committee", 0, "id"],
+            "committee_name": ["committee", "name"],
+            "committee_id": ["committee", "id"],
         },
         "policy_document": {
             "id": "id",
@@ -82,30 +90,32 @@ class Transforms:
         },
     }
 
-    data_types = [
-        'committee',
-        'committee-meeting',
-        'member',
-        'bill',
-        'hansard',
-        'briefing',
-        'question_reply',
-        'tabled_committee_report',
-        'calls_for_comment',
-        'policy_document',
-        'gazette',
-        'daily_schedule']
+    @classmethod
+    def serialise(cls, data_type, obj):
+        item = {}
+        for key, field in Transforms.convert_rules[data_type].iteritems():
+            val = cls.get_val(obj, field)
+            if isinstance(val, unicode):
+                val = BeautifulSoup(val).get_text().strip()
+            item[key] = val
+        return item
 
-    model_model = {
-        'committee': "Committee",
-        'committee-meeting': "CommitteeMeeting",
-        'member': "Member",
-        'bill': "Bill",
-        'hansard': "Hansard",
-        'briefing': "Briefing",
-        'question_reply': "QuestionReply",
-        'tabled_committee_report': "TabledCommitteeReport",
-        'calls_for_comment': "CallForComment",
-        'policy_document': "PolicyDocument",
-        'gazette': "Gazette",
-        'daily_schedule': "DailySchedule"}
+    @classmethod
+    def get_val(cls, obj, field):
+        if isinstance(field, list):
+            if (len(field) == 1):
+                if hasattr(obj, field[0]):
+                    return getattr(obj, field[0])
+            key = field[:1][0]
+            if isinstance(key, int):
+                if len(obj) > key:
+                    return cls.get_val(obj[key], field[1:])
+                return None
+            if hasattr(obj, key):
+                newobj = getattr(obj, key)
+                return cls.get_val(newobj, field[1:])
+            else:
+                return None
+        else:
+            return getattr(obj, field)
+

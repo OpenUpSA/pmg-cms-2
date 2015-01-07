@@ -347,18 +347,24 @@ def rebuild_db():
             if committee_obj:
                 committee_obj = committee_obj['model']
 
-            report_obj = CommitteeMeeting(
-                body=parsed_report.body,
-                summary=parsed_report.summary,
+            event_obj = Event(
+                type="committee-meeting",
                 committee=committee_obj,
                 date=parsed_report.date,
                 title=parsed_report.title
+            )
+            db.session.add(event_obj)
+
+            report_obj = CommitteeMeetingReport(
+                body=parsed_report.body,
+                summary=parsed_report.summary,
+                event=event_obj
             )
             db.session.add(report_obj)
 
             for item in parsed_report.related_docs:
                 doc_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
                     )
                 doc_obj.file_path=item["filepath"]
@@ -367,7 +373,7 @@ def rebuild_db():
 
             for item in parsed_report.audio:
                 audio_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
                     )
                 if item["filepath"].startswith('files/'):
@@ -426,11 +432,11 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    committeemeetings = CommitteeMeeting.query.limit(5)
+    committeemeetings = CommitteeMeetingReport.query.limit(5)
     tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
-        featured.committee_meeting.append(committeemeeting)
+        featured.committee_meeting_report.append(committeemeeting)
     for tabledreport in tabledreports:
         featured.tabled_committee_report.append(tabledreport)
     featured.title = "LivemagSA Launched Live From Parliament"

@@ -285,6 +285,15 @@ class Event(db.Model):
             'events',
             order_by=desc('Event.date')))
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        if self.type == "committee-meeting":
+            if tmp.get('committee_meeting_report'):
+                tmp['body'] = tmp['committee_meeting_report'].get('body')
+                tmp['summary'] = tmp['committee_meeting_report'].get('summary')
+                tmp.pop('committee_meeting_report')
+        return tmp
+
     def __unicode__(self):
         if self.type == "committee-meeting":
             tmp = "unknown date"
@@ -301,11 +310,6 @@ class Event(db.Model):
         if self.title:
             tmp += " - " + self.title
         return unicode(tmp)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'event',
-        'polymorphic_on': type,
-    }
 
 
 class MembershipType(db.Model):
@@ -599,24 +603,24 @@ class Featured(db.Model):
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
     start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
-    committee_meeting = db.relationship(
-        'CommitteeMeeting',
-        secondary='featured_committee_meeting_join')
+    committee_meeting_report = db.relationship(
+        'CommitteeMeetingReport',
+        secondary='featured_committee_meeting_report_join')
     tabled_committee_report = db.relationship(
         'TabledCommitteeReport',
         secondary='featured_tabled_committee_report_join')
 
-featured_committee_meeting_join = db.Table(
-    'featured_committee_meeting_join',
+featured_committee_meeting_report_join = db.Table(
+    'featured_committee_meeting_report_join',
     db.Model.metadata,
     db.Column(
         'featured_id',
         db.Integer,
         db.ForeignKey('featured.id')),
     db.Column(
-        'committee_meeting_id',
+        'committee_meeting_report_id',
         db.Integer,
-        db.ForeignKey('committee_meeting.id')))
+        db.ForeignKey('committee_meeting_report.id')))
 
 featured_tabled_committee_report_join = db.Table(
     'featured_tabled_committee_report_join',
@@ -658,9 +662,9 @@ daily_schedule_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-class CommitteeMeeting(Event):
+class CommitteeMeetingReport(db.Model):
 
-    __tablename__ = "committee_meeting"
+    __tablename__ = "committee_meeting_report"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
 
@@ -668,13 +672,10 @@ class CommitteeMeeting(Event):
     summary = db.Column(db.Text())
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+    event = db.relationship('Event', backref=backref('committee_meeting_report', lazy='joined', uselist=False))
 
     def __unicode__(self):
         return unicode(self.id)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'committee-meeting',
-    }
 
 
 class Content(db.Model):

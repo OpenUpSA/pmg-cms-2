@@ -9,6 +9,7 @@ RESULTS_PER_PAGE = 20
 
 STATIC_HOST = "http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/"
 ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
+SEARCH_REINDEX_CHANGES = True # reindex changes to models
 S3_BUCKET = "eu-west-1-pmg"
 UPLOAD_PATH = "/tmp/pmg_upload/"
 MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads

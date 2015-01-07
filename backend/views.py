@@ -132,9 +132,8 @@ def search():
 
     search = Search()
     filters = {}
-    print request.args
+    logger.debug("Search args: %s" % request.args)
     q = request.args.get('q')
-    logger.debug("search called")
     page = 0
     if (request.args.get('page')):
         page = int(request.args.get('page'))

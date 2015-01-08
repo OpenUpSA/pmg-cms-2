@@ -89,7 +89,7 @@ class MyIndexView(AdminIndexView):
         record_counts = [
             ('Members', 'member.index_view', Member.query.count()),
             ('Committee', 'committee.index_view', Committee.query.count()),
-            ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
+            # ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
             ('Questions & Replies', 'question.index_view', QuestionReply.query.count()),
             ('Calls for Comment', 'call_for_comment.index_view', CallForComment.query.count()),
             ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),
@@ -106,6 +106,25 @@ class MyIndexView(AdminIndexView):
             'admin/my_index.html',
             record_counts=record_counts,
             file_count=file_count)
+
+    def is_accessible(self):
+        if not current_user.is_active() or not current_user.is_authenticated():
+            return False
+        if not current_user.has_role(
+                'editor') or not current_user.has_role('user-admin'):
+            return False
+        return True
+
+    def _handle_view(self, name, **kwargs):
+        """
+        Override builtin _handle_view in order to redirect users when a view is not accessible.
+        """
+        if not self.is_accessible():
+            return redirect(
+                '/security/login?next=' +
+                urllib.quote_plus(
+                    request.url),
+                code=302)
 
 
 class MyModelView(ModelView):
@@ -297,10 +316,6 @@ class InlineContent(InlineFormAdmin):
 
 class CommitteeMeetingView(EventView):
 
-    # note: the related committee_meeting is displayed as part of the event model
-    # by using SQLAlchemy joined-table inheritance. See gist:
-    # https://gist.github.com/mrjoes/6007994
-
     column_list = ('date', 'committee', 'title', 'content')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
@@ -325,7 +340,10 @@ class CommitteeMeetingView(EventView):
         'body',
         'content',
     )
-
+    form_extra_fields = {
+        'summary': CKTextAreaField('Summary'),
+        'body': CKTextAreaField('Body'),
+    }
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
@@ -338,6 +356,23 @@ class CommitteeMeetingView(EventView):
         InlineContent(Content),
     )
     inline_model_form_converter = ContentModelConverter
+
+    def on_form_prefill(self, form, id):
+        event_obj = Event.query.get(id)
+        form.summary.data = event_obj.committee_meeting_report.summary
+        form.body.data = event_obj.committee_meeting_report.body
+        return
+
+    def on_model_change(self, form, model, is_created):
+        # create / update related CommitteeMeetingReport
+        if is_created:
+            committee_meeting_report = CommitteeMeetingReport(event=model)
+        else:
+            committee_meeting_report = model.committee_meeting_report
+        committee_meeting_report.summary = form.summary.data
+        committee_meeting_report.body = form.body.data
+        db.session.add(committee_meeting_report)
+        return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 
 class MemberView(MyModelView):
@@ -538,7 +573,7 @@ admin.add_view(
         category="Committees"))
 admin.add_view(
     CommitteeMeetingView(
-        CommitteeMeeting,
+        Event,
         db.session,
         type="committee-meeting",
         name="Committee Meetings",
@@ -557,6 +592,12 @@ admin.add_view(
         db.session,
         name="Members",
         endpoint='member'))
+admin.add_view(
+    MyModelView(
+        Bill,
+        db.session,
+        name="Bills",
+        endpoint='bill'))
 admin.add_view(
     QuestionView(
         QuestionReply,

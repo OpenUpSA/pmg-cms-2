@@ -74,9 +74,9 @@ def find_files(obj):
         # print obj["files"]
         for f in obj["files"]:
             fobj = File(
-                    filemime=f["filemime"],
-                    origname = f["origname"],
-                    url = f["filepath"].replace("files/", ""),
+                filemime=f["filemime"],
+                origname = f["origname"],
+                url = f["filepath"].replace("files/", ""),
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -85,12 +85,12 @@ def find_files(obj):
         # print obj["audio"]
         for f in obj["audio"]:
             fobj = File(
-                    filemime=f["filemime"],
-                    origname = f["origname"],
-                    url = "audio/" + f["filename"].replace("files/", ""),
-                    playtime = f["playtime"],
-                    description = f["title_format"]
-                )
+                filemime=f["filemime"],
+                origname = f["origname"],
+                url = "audio/" + f["filename"].replace("files/", ""),
+                playtime = f["playtime"],
+                description = f["title_format"]
+            )
             db.session.add(fobj)
             files.append(fobj)
         db.session.commit()
@@ -105,13 +105,13 @@ def find_committee(obj):
             # print committee, term
             if committee:
                 committees.append(committee)
-            # else:
-            #     print term
+                # else:
+                #     print term
     return committees
 
 def prep_table(model_class):
     print "Deleted rows: ", model_class.query.delete()
-    
+
 
 def rebuild_table(table_name, model_class, mappings):
     logger.debug("Rebuilding %s" % table_name)
@@ -188,6 +188,34 @@ def rebuild_db():
     # populate membership_type
     chairperson = MembershipType(name="chairperson")
     db.session.add(chairperson)
+    db.session.commit()
+
+    # populate bill_type options
+    tmp = [
+        ('', 'Draft', 'Draft'),
+        ('B', 'S74', 'Section 74: Constitutional amendments'),
+        ('B', 'S75', 'Section 75: Ordinary Bills not affecting the provinces'),
+        ('PMB', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
+        ('B', 'S77', 'Section 77: Money Bills'),
+        ]
+    for (prefix, name, description) in tmp:
+        bill_type = BillType(prefix=prefix, name=name, description=description)
+        db.session.add(bill_type)
+    db.session.commit()
+
+    # populate bill_status options
+    tmp = [
+        ('lapsed', 'Lapsed'),
+        ('withdrawn', 'Withdrawn'),
+        ('na', 'Under consideration by the National Assembly.'),
+        ('ncop', 'Under consideration by the National Council of Provinces.'),
+        ('enacted', 'The bill has been signed into law.'),
+        ('act-commenced', 'Act commenced'),
+        ('act-partly-commenced', 'Act partially commenced'),
+        ]
+    for (name, description) in tmp:
+        bill_status = BillStatus(name=name, description=description)
+        db.session.add(bill_status)
     db.session.commit()
 
     # populate committees
@@ -319,29 +347,35 @@ def rebuild_db():
             if committee_obj:
                 committee_obj = committee_obj['model']
 
-            report_obj = CommitteeMeeting(
-                body=parsed_report.body,
-                summary=parsed_report.summary,
+            event_obj = Event(
+                type="committee-meeting",
                 committee=committee_obj,
                 date=parsed_report.date,
                 title=parsed_report.title
+            )
+            db.session.add(event_obj)
+
+            report_obj = CommitteeMeetingReport(
+                body=parsed_report.body,
+                summary=parsed_report.summary,
+                event=event_obj
             )
             db.session.add(report_obj)
 
             for item in parsed_report.related_docs:
                 doc_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
-                )
+                    )
                 doc_obj.file_path=item["filepath"]
                 doc_obj.title=item["title"]
                 db.session.add(doc_obj)
 
             for item in parsed_report.audio:
                 audio_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
-                )
+                    )
                 if item["filepath"].startswith('files/'):
                     audio_obj.file_path=item["filepath"][6::]
                 else:
@@ -389,7 +423,7 @@ def bills():
         bill.objective = billobj["objective"]
         bill.is_deleted = billobj["is_deleted"]
         bill.status_id = addChild(BillStatus, billobj["status"])
-        bill.bill_type_id = addChild(BillType, billobj["bill_type"])
+        bill.type_id = addChild(BillType, billobj["bill_type"])
         # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
         # place_of_introduction = db.relationship('Committee')
         # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
@@ -398,11 +432,11 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    committeemeetings = CommitteeMeeting.query.limit(5)
+    committeemeetings = CommitteeMeetingReport.query.limit(5)
     tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
-        featured.committee_meeting.append(committeemeeting)
+        featured.committee_meeting_report.append(committeemeeting)
     for tabledreport in tabledreports:
         featured.tabled_committee_report.append(tabledreport)
     featured.title = "LivemagSA Launched Live From Parliament"

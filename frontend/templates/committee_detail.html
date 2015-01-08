@@ -84,7 +84,7 @@
 						<h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
 						<ul class="list-unstyled list-spaced">
 							{% for result in committee.calls_for_comment[0:5] %}
-								{% include 'calls_for_comment_stub.html' %}
+								{% include 'call_for_comment_stub.html' %}
 							{% endfor %}
 						</ul>
 						{% if committee.calls_for_comment|length > 5 %}

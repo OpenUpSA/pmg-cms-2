@@ -29,7 +29,7 @@
 <ul class="list-unstyled">
 	{% for result in results %}
 		<li>
-			{% include content_type + '_stub.html' %}
+			{% include content_type | replace("-", "_") + '_stub.html' %}
 		</li>
 	{% endfor %}
 </ul>

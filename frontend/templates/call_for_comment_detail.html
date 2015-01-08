@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block page %}
+	{% if call_for_comment.committee %}
+		<a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a>
+	{% endif %}
+	<h4 class="light-red">Call for Comment</h4>
+	<h1>{{ call_for_comment.title }}</h1>
+	{% if call_for_comment.end_date %}
+		<h4>Comment expires on {{ call_for_comment.end_date }}</h4>
+	{% endif %}
+	{% if call_for_comment.start_date %}
+		<h4>{{ call_for_comment.start_date }}</h4>
+	{% endif %}
+	{% if call_for_comment.committee %}
+		<h2><a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a></h2>
+	{% endif %}
+	{{ call_for_comment.body|safe }}
+{% endblock %}

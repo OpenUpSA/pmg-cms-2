@@ -75,8 +75,11 @@ def to_dict(obj, include_related=False):
     """
     try:
         return obj.to_dict(include_related=include_related)
-    except:
+    except AttributeError:
         return model_to_dict(obj, include_related=include_related)
+    except Exception as e:
+        logger.exception(e)
+        raise e
 
 
 def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):

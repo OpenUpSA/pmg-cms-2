@@ -370,7 +370,7 @@ class Committee(db.Model):
         "TabledCommitteeReport",
         lazy=True)
     questions_replies = db.relationship("QuestionReply", lazy=True)
-    calls_for_comment = db.relationship("CallForComment", lazy=True)
+    calls_for_comments = db.relationship("CallForComment", lazy=True)
 
     def __unicode__(self):
         tmp = self.name

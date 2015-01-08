@@ -192,11 +192,13 @@ def rebuild_db():
 
     # populate bill_type options
     tmp = [
-        ('', 'Draft', 'Draft'),
+        ('X', 'Draft', 'Draft'),
         ('B', 'S74', 'Section 74: Constitutional amendments'),
         ('B', 'S75', 'Section 75: Ordinary Bills not affecting the provinces'),
-        ('PMB', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
+        ('B', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
         ('B', 'S77', 'Section 77: Money Bills'),
+        ('PMB', 'Private Member Bill',
+         'Private Member Bill: Bills that are drawn up by private members, as opposed to ministers or committees.')
         ]
     for (prefix, name, description) in tmp:
         bill_type = BillType(prefix=prefix, name=name, description=description)
@@ -480,7 +482,7 @@ def merge_billtracker():
             # introduced_by_id
             # introduced_by
             db.session.add(bill_obj)
-    db.session.commit()
+            db.session.commit()
     return
 
 

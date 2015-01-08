@@ -200,7 +200,10 @@ class Bill(db.Model):
     files = db.relationship("File")
 
     def get_code(self):
-        return self.type.prefix + str(self.number) + "-" + str(self.year)
+        out = self.type.prefix if self.type else "X"
+        out += str(self.number) if self.number else ""
+        out += "-" + str(self.year)
+        return unicode(out)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

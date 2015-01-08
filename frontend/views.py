@@ -284,14 +284,49 @@ def index():
 
 
 @app.route('/bills/')
-def bills():
+@app.route('/bills/<int:page>/')
+def bills(page=0):
     """
     Page through all available bills.
     """
 
     logger.debug("bills page called")
+    bill_list = load_from_api('bill', return_everything=True)
+    bills = bill_list['results']
+    # filters = {}
+    # params = {}
+    count = bill_list["count"]
+    per_page = app.config['RESULTS_PER_PAGE']
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    url = "/bills"
+    return render_template(
+        'list.html',
+        results=bills,
+        num_pages=num_pages,
+        page=page,
+        url=url,
+        icon="file-text-o",
+        content_type="bill",
+        title="Bills")
 
-    return render_template('bill_list.html')
+
+@app.route('/bill/<int:bill_id>/')
+def bill(bill_id):
+    """
+    With Bills, we try to send them to BillTracker if it exists. Else we serve the PDF. If that doesn't work, we Kill Bill
+    """
+
+    logger.debug("bill page called")
+    bill = load_from_api('bill', bill_id)
+    logger.debug(bill)
+    if ("bill_code" in bill):
+        logger.debug("found bill code", bill["bill_code"])
+        return redirect(
+            "http://bills.pmg.org.za/bill/%s" %
+            bill["bill_code"],
+            code=302)
+    logger.debug(bill)
+    return "Oh dear"
 
 
 @app.route('/committee/<int:committee_id>/')
@@ -373,25 +408,6 @@ def committee_meeting(event_id):
         audio=audio,
         related_docs=related_docs,
         STATIC_HOST=app.config['STATIC_HOST'])
-
-
-@app.route('/bill/<int:bill_id>/')
-def bill(bill_id):
-    """
-    With Bills, we try to send them to BillTracker if it exists. Else we serve the PDF. If that doesn't work, we Kill Bill
-    """
-
-    logger.debug("bill page called")
-    bill = load_from_api('bill', bill_id)
-    logger.debug(bill)
-    if ("bill_code" in bill):
-        logger.debug("found bill code", bill["bill_code"])
-        return redirect(
-            "http://bills.pmg.org.za/bill/%s" %
-            bill["bill_code"],
-            code=302)
-    logger.debug(bill)
-    return "Oh dear"
 
 
 @app.route('/tabled-committee-reports/')

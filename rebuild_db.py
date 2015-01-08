@@ -192,11 +192,13 @@ def rebuild_db():
 
     # populate bill_type options
     tmp = [
-        ('', 'Draft', 'Draft'),
+        ('X', 'Draft', 'Draft'),
         ('B', 'S74', 'Section 74: Constitutional amendments'),
         ('B', 'S75', 'Section 75: Ordinary Bills not affecting the provinces'),
-        ('PMB', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
+        ('B', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
         ('B', 'S77', 'Section 77: Money Bills'),
+        ('PMB', 'Private Member Bill',
+         'Private Member Bill: Bills that are drawn up by private members, as opposed to ministers or committees.')
         ]
     for (prefix, name, description) in tmp:
         bill_type = BillType(prefix=prefix, name=name, description=description)
@@ -209,6 +211,7 @@ def rebuild_db():
         ('withdrawn', 'Withdrawn'),
         ('na', 'Under consideration by the National Assembly.'),
         ('ncop', 'Under consideration by the National Council of Provinces.'),
+        ('president', 'Approved by parliament. Waiting to be signed into law.'),
         ('enacted', 'The bill has been signed into law.'),
         ('act-commenced', 'Act commenced'),
         ('act-partly-commenced', 'Act partially commenced'),
@@ -454,6 +457,35 @@ def clear_db():
 def disable_reindexing():
     Search.reindex_changes = False
 
+
+def merge_billtracker():
+
+    with open ("data/billtracker_dump.txt", "r") as f:
+        data=f.read()
+        bills = json.loads(data)
+        for rec in bills:
+            bill_obj = Bill(
+                title=rec['name'],
+                number=rec['number'],
+                year=rec['year'],
+                )
+            if rec.get('bill_type'):
+                bill_obj.type = BillType.query.filter_by(name=rec['bill_type']).one()
+            if rec.get('status'):
+                bill_obj.status = BillStatus.query.filter_by(name=rec['status']).one()
+            # date_of_introduction
+            # date_of_assent
+            # effective_date
+            # act_name
+            # place_of_introduction_id
+            # place_of_introduction
+            # introduced_by_id
+            # introduced_by
+            db.session.add(bill_obj)
+            db.session.commit()
+    return
+
+
 if __name__ == '__main__':
     disable_reindexing()
     clear_db()
@@ -481,3 +513,6 @@ if __name__ == '__main__':
     user.roles.append(superuser_role)
     db.session.add(user)
     db.session.commit()
+
+    # add billtracker data
+    merge_billtracker()

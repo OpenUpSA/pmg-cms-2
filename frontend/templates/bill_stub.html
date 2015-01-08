@@ -1,7 +1,6 @@
-<div class="member-stub">
+<div class="bill-stub">
 	<div class="title">
 		<span class="label label-default">Bill</span>
-		<a href="/bill/{{ result._id }}">{{ result._source.title }} - {{ result._source.date|pretty_date }}</a>
+		<a href="/bill/{{ result.id }}">{% if result.code %}{{ result.code }}{% else %}X{% endif %} - {{ result.title }}</a>
 	</div>
-	
 </div>

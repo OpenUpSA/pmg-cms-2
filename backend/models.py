@@ -287,6 +287,16 @@ class Event(db.Model):
         backref=backref(
             'events',
             order_by=desc('Event.date')))
+    house_id = db.Column(
+        db.Integer,
+        db.ForeignKey('house.id'),
+        index=True)
+    house = db.relationship(
+        'House',
+        lazy=False,
+        backref=backref(
+            'events',
+            order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
 
     def to_dict(self, include_related=False):

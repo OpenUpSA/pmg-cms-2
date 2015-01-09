@@ -493,7 +493,7 @@ def merge_billtracker():
                 bill_obj.type = BillType.query.filter_by(name=rec['bill_type']).one()
             if rec.get('status'):
                 bill_obj.status = BillStatus.query.filter_by(name=rec['status']).one()
-            # date_of_assent
+
             # effective_date
             # act_name
             # introduced_by_id
@@ -522,21 +522,49 @@ def merge_billtracker():
                         ambiguous_match_count += 1
                 elif entry['type'] == "default":
                     if "introduced" in entry['title']:
+                        tmp_location = na_obj
                         if entry['location']:
-                            bill_obj.place_of_introduction = location_map[entry['location']]
+                            tmp_location = location_map[entry['location']]
+                        bill_obj.place_of_introduction = tmp_location
                         if entry_date:
                             bill_obj.date_of_introduction = entry_date
-                    if "passed by" in entry['title']:
+                        tmp_event = Event(
+                            type="bill-introduced",
+                            title=entry['title'],
+                            date=entry_date,
+                            house=tmp_location
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
+                    elif "passed by" in entry['title']:
                         if "council" in entry['title'].lower() or "ncop" in entry['title'].lower():
-                            entry_type = "bill-passed-ncop"
+                            location = ncop_obj
                         elif "assembly" in entry['title'].lower() or "passed by na" in entry['title'].lower():
-                            entry_type = "bill-passed-na"
+                            location = na_obj
                         else:
                             print entry
 
                             raise Exception("error locating bill-passed event")
                         tmp_event = Event(
-                            type=entry_type,
+                            type="bill-passed",
+                            title=entry['title'],
+                            date=entry_date,
+                            house=location
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
+                    elif "enacted" in entry['title'].lower() + entry['description'].lower() and entry['agent']['type'] == "president":
+                        tmp_event = Event(
+                            type="bill-enacted",
+                            title=entry['description'] + " - " + entry['title'],
+                            date=entry_date
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        bill_obj.date_of_assent = entry_date
+                        db.session.add(tmp_event)
+                    elif "signed" in entry['title'].lower() and entry['agent']['type'] == "president":
+                        tmp_event = Event(
+                            type="bill-signed",
                             title=entry['title'],
                             date=entry_date
                         )

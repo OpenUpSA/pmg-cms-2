@@ -271,7 +271,7 @@ class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime(timezone=True))
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
 
@@ -605,7 +605,7 @@ class Featured(db.Model):
     title = db.Column(db.String(255))
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
-    start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     committee_meeting_report = db.relationship(
         'CommitteeMeetingReport',
         secondary='featured_committee_meeting_report_join')
@@ -702,7 +702,7 @@ class HitLog(db.Model):
     __tablename__ = "hit_log"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     ip_addr = db.Column(db.String(40), index=True)
     user_agent = db.Column(db.String(255))
     url = db.Column(db.String(255))

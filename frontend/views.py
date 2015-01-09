@@ -318,15 +318,7 @@ def bill(bill_id):
 
     logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    logger.debug(bill)
-    if ("bill_code" in bill):
-        logger.debug("found bill code", bill["bill_code"])
-        return redirect(
-            "http://bills.pmg.org.za/bill/%s" %
-            bill["bill_code"],
-            code=302)
-    logger.debug(bill)
-    return "Oh dear"
+    return render_template('bill_detail.html', bill=bill)
 
 
 @app.route('/committee/<int:committee_id>/')

@@ -43,3 +43,7 @@ data/
 *.log
 .boto
 pmg.org.za.key
+.webassets-cache
+webassets-external
+app.*.js
+app.*.css

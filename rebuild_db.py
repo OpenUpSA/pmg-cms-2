@@ -12,6 +12,8 @@ from sqlalchemy import types
 from backend.app import app, db
 from backend.models import *
 from backend.search import Search
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy import Date, cast
 
 logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
@@ -460,7 +462,12 @@ def disable_reindexing():
 
 def merge_billtracker():
 
-    with open ("data/billtracker_dump.txt", "r") as f:
+    entry_count = 0
+    committee_meeting_count = 0
+    encoding_error_count = 0
+    unmatched_count = 0
+    ambiguous_match_count = 0
+    with open("data/billtracker_dump.txt", "r") as f:
         data=f.read()
         bills = json.loads(data)
         for rec in bills:
@@ -481,8 +488,35 @@ def merge_billtracker():
             # place_of_introduction
             # introduced_by_id
             # introduced_by
+
+            # tag committee meetings (based on title, because we have nothing better)
+            for entry in rec['entries']:
+                entry_count += 1
+                if entry['type'] == "committee-meeting":
+                    committee_meeting_count += 1
+                    try:
+                        title = unicode(entry['title'].replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', ''))
+                        entry_date = datetime.datetime.strptime(entry['date'], "%Y-%m-%d").date()
+                        event_obj = Event.query.filter(cast(Event.date, Date) == entry_date) \
+                            .filter(Event.title.like('%' + title[5:35] + '%')).one()
+                        bill_obj.events.append(event_obj)
+                    except UnicodeEncodeError as e:
+                        encoding_error_count += 1
+                        pass
+                    except NoResultFound as e:
+                        unmatched_count += 1
+                        pass
+                    except MultipleResultsFound as e:
+                        ambiguous_match_count += 1
+
             db.session.add(bill_obj)
             db.session.commit()
+
+        print entry_count, "entries"
+        print committee_meeting_count, "committee meetings"
+        print encoding_error_count, "encoding errors"
+        print unmatched_count, "orphans"
+        print ambiguous_match_count, "ambiguous matches"
     return
 
 
@@ -497,9 +531,7 @@ if __name__ == '__main__':
     rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
     rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
     rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
     rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
-    # bills()
     add_featured()
 
     # add default roles

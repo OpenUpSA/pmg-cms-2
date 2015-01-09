@@ -18,5 +18,33 @@ with open('config/%s/logging.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
+
+# setup assets
+from flask.ext.assets import Environment, Bundle
+assets = Environment(app)
+assets.url_expire = False
+assets.debug      = False #app.debug
+# source files
+assets.load_path  = ['%s/static' % app.config.root_path]
+
+#assets.register('css',
+#    Bundle(
+#      'stylesheets/**/*.css',
+#      Bundle(
+#        'stylesheets/*.scss',
+#        filters='pyscss',
+#        output='stylesheets/app.%(version)s.css'),
+#      output='stylesheets/all.%(version)s.css'))
+
+assets.register('js', Bundle(
+    'bower_components/jquery/dist/jquery.min.js',
+    'bower_components/bootstrap/js/tab.js',
+    'bower_components/bootstrap/js/transition.js',
+    'bower_components/bootstrap/js/alert.js',
+    'chosen/chosen.jquery.js',
+    'resources/javascript/pmg.js',
+    output='app.%(version)s.js'))
+
+
 import views
 import user_management

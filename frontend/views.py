@@ -318,15 +318,7 @@ def bill(bill_id):
 
     logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    logger.debug(bill)
-    if ("bill_code" in bill):
-        logger.debug("found bill code", bill["bill_code"])
-        return redirect(
-            "http://bills.pmg.org.za/bill/%s" %
-            bill["bill_code"],
-            code=302)
-    logger.debug(bill)
-    return "Oh dear"
+    return render_template('bill_detail.html', bill=bill)
 
 
 @app.route('/committee/<int:committee_id>/')
@@ -589,42 +581,6 @@ def gazette(gazette_id):
     return render_template(
         'gazette_detail.html',
         gazette=gazette,
-        STATIC_HOST=app.config['STATIC_HOST'])
-
-
-@app.route('/books/')
-@app.route('/books/<int:page>/')
-def books(page=0):
-    """
-    Page through all available books.
-    """
-
-    logger.debug("books page called")
-    books_list = load_from_api('book', page=page)
-    count = books_list["count"]
-    per_page = app.config['RESULTS_PER_PAGE']
-    num_pages = int(math.ceil(float(count) / float(per_page)))
-    books = books_list['results']
-    url = "/books"
-    return render_template(
-        'books_list.html',
-        books=books,
-        num_pages=num_pages,
-        page=page,
-        url=url)
-
-
-@app.route('/book/<int:book_id>/')
-def book(book_id):
-    """
-    Policy Document
-    """
-    logger.debug("book page called")
-    book = load_from_api('book', book_id)
-    logger.debug(book)
-    return render_template(
-        'book_detail.html',
-        book=book,
         STATIC_HOST=app.config['STATIC_HOST'])
 
 

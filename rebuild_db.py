@@ -497,9 +497,9 @@ def merge_billtracker():
                     try:
                         title = unicode(entry['title'].replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', ''))
                         entry_date = datetime.datetime.strptime(entry['date'], "%Y-%m-%d").date()
-                        event_obj = Event.query.filter(cast(Event.date, Date) == entry_date).filter(Event.title.like('%' + title[0:10] + '%')).one()
+                        event_obj = Event.query.filter(cast(Event.date, Date) == entry_date) \
+                            .filter(Event.title.like('%' + title[5:35] + '%')).one()
                         bill_obj.events.append(event_obj)
-                        # event_obj = Event.query.filter(Event.title.like('%' + title[0:40] + '%')).one()
                     except UnicodeEncodeError as e:
                         encoding_error_count += 1
                         pass

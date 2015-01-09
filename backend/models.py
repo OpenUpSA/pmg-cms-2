@@ -287,6 +287,7 @@ class Event(db.Model):
         backref=backref(
             'events',
             order_by=desc('Event.date')))
+    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -313,6 +314,18 @@ class Event(db.Model):
         if self.title:
             tmp += " - " + self.title
         return unicode(tmp)
+
+
+event_bills = db.Table(
+    'event_bills',
+    db.Column(
+        'event_id',
+        db.Integer(),
+        db.ForeignKey('event.id')),
+    db.Column(
+        'bill_id',
+        db.Integer(),
+        db.ForeignKey('bill.id')))
 
 
 class MembershipType(db.Model):

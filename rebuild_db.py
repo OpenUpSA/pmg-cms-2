@@ -526,6 +526,22 @@ def merge_billtracker():
                             bill_obj.place_of_introduction = location_map[entry['location']]
                         if entry_date:
                             bill_obj.date_of_introduction = entry_date
+                    if "passed by" in entry['title']:
+                        if "council" in entry['title'].lower() or "ncop" in entry['title'].lower():
+                            entry_type = "bill-passed-ncop"
+                        elif "assembly" in entry['title'].lower() or "passed by na" in entry['title'].lower():
+                            entry_type = "bill-passed-na"
+                        else:
+                            print entry
+
+                            raise Exception("error locating bill-passed event")
+                        tmp_event = Event(
+                            type=entry_type,
+                            title=entry['title'],
+                            date=entry_date
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
 
             db.session.add(bill_obj)
             db.session.commit()

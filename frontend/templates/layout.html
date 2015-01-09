@@ -24,15 +24,9 @@
 	</div>
 
 	{% block javascript %}
-
 	{% assets "js" %}
 		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
 	{% endassets %}
-
-	<script>
-		// Hit Logging
-		$.get("/hitlog/" + Math.random().toString(36).substring(7));
-	</script>
 	{% endblock %}
 	</div>
 </body>

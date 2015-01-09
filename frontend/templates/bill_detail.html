@@ -9,6 +9,10 @@
       <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
       <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
+      {% if bill.date_of_introduction %}
+        <p>Introduced on {{ bill.date_of_introduction }}{% if bill.place_of_introduction %} in the {{ bill.place_of_introduction.name }}{% endif %}.</p>
+      {% endif %}
+
       <ul>
         {% for event in bill.events %}
           {% if event.type == "committee-meeting" %}

@@ -1,12 +1,13 @@
 {% extends "base.html" %}
 
 {% block page %}
-  <h3 class="red"><span class="fa fa-comment"></span> Bill</h3>
+  <h3 class="red"><span class="fa fa-file-text-o"></span> Bill</h3>
 
   <div class="row">
-    <div class="col-sm-8 justify-p">
+    <div class="col-sm-12 justify-p">
       <h1>{{ bill.code }}: {{ bill.title }}</h1>
-      <p class="lead">{{ bill.status.description }}</p>
+      <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+      <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
       <ul>
         {% for event in bill.events %}

@@ -183,7 +183,8 @@ def rebuild_db():
     joint_obj = House(name="Joint (NA + NCOP)", name_short="Joint")
     ncop_obj = House(name="National Council of Provinces", name_short="NCOP")
     na_obj = House(name="National Assembly", name_short="NA")
-    for obj in [joint_obj, ncop_obj, na_obj]:
+    presidents_office_obj = House(name="The President's Office", name_short="President")
+    for obj in [joint_obj, ncop_obj, na_obj, presidents_office_obj]:
         db.session.add(obj)
     db.session.commit()
 
@@ -201,7 +202,7 @@ def rebuild_db():
         ('B', 'S77', 'Section 77: Money Bills'),
         ('PMB', 'Private Member Bill',
          'Private Member Bill: Bills that are drawn up by private members, as opposed to ministers or committees.')
-        ]
+    ]
     for (prefix, name, description) in tmp:
         bill_type = BillType(prefix=prefix, name=name, description=description)
         db.session.add(bill_type)
@@ -462,6 +463,18 @@ def disable_reindexing():
 
 def merge_billtracker():
 
+    na_obj = House.query.filter_by(name_short="NA").one()
+    ncop_obj = House.query.filter_by(name_short="NCOP").one()
+    joint_obj = House.query.filter_by(name_short="Joint").one()
+    president_obj = House.query.filter_by(name_short="President").one()
+
+    location_map = {
+        1: na_obj,
+        2: ncop_obj,
+        3: president_obj,
+        4: joint_obj,
+        }
+
     entry_count = 0
     committee_meeting_count = 0
     encoding_error_count = 0
@@ -480,23 +493,22 @@ def merge_billtracker():
                 bill_obj.type = BillType.query.filter_by(name=rec['bill_type']).one()
             if rec.get('status'):
                 bill_obj.status = BillStatus.query.filter_by(name=rec['status']).one()
-            # date_of_introduction
             # date_of_assent
             # effective_date
             # act_name
-            # place_of_introduction_id
-            # place_of_introduction
             # introduced_by_id
             # introduced_by
 
             # tag committee meetings (based on title, because we have nothing better)
             for entry in rec['entries']:
                 entry_count += 1
+                entry_date = None
+                if entry['date'] and not entry['date'] == "None":
+                    entry_date = datetime.datetime.strptime(entry['date'], "%Y-%m-%d").date()
                 if entry['type'] == "committee-meeting":
                     committee_meeting_count += 1
                     try:
                         title = unicode(entry['title'].replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', ''))
-                        entry_date = datetime.datetime.strptime(entry['date'], "%Y-%m-%d").date()
                         event_obj = Event.query.filter(cast(Event.date, Date) == entry_date) \
                             .filter(Event.title.like('%' + title[5:35] + '%')).one()
                         bill_obj.events.append(event_obj)
@@ -508,6 +520,12 @@ def merge_billtracker():
                         pass
                     except MultipleResultsFound as e:
                         ambiguous_match_count += 1
+                elif entry['type'] == "default":
+                    if "introduced" in entry['title']:
+                        if entry['location']:
+                            bill_obj.place_of_introduction = location_map[entry['location']]
+                        if entry_date:
+                            bill_obj.date_of_introduction = entry_date
 
             db.session.add(bill_obj)
             db.session.commit()

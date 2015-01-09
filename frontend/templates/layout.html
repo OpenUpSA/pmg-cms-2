@@ -8,9 +8,9 @@
 	{% block head %}{% endblock %}
 
 	{% block stylesheets %}
-	<link rel="stylesheet" href="/static/resources/css/style.css">
-	<link rel="stylesheet" href="/static/font-awesome-4.2.0/css/font-awesome.min.css">
-	<link rel="stylesheet" href="/static/chosen/chosen.min.css">
+	{% assets "css" %}
+		<link rel="stylesheet" href="{{ ASSET_URL }}">
+	{% endassets %}
 	{% endblock %}
 	{% block style %}{% endblock %}
 

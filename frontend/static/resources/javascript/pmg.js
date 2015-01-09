@@ -11,4 +11,7 @@ $(function() {
 	});
 
 	$(".chosen").chosen({width: "100%"});
-})
+});
+
+// Hit Logging
+$.get("/hitlog/" + Math.random().toString(36).substring(7));

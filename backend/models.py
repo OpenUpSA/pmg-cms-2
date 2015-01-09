@@ -581,33 +581,6 @@ gazette_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-# === Book === #
-
-class Book(db.Model):
-
-    __tablename__ = "book"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    summary = db.Column(db.Text())
-    body = db.Column(db.Text())
-    start_date = db.Column(db.Date())
-    files = db.relationship("File", secondary='book_file_join')
-    nid = db.Column('nid', db.Integer())
-
-book_file_table = db.Table(
-    'book_file_join',
-    db.Model.metadata,
-    db.Column(
-        'book_id',
-        db.Integer,
-        db.ForeignKey('book.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
-
-
 # === Featured Content === #
 
 class Featured(db.Model):

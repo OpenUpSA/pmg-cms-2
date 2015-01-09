@@ -107,8 +107,6 @@ def api_resources():
         .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
         .order_by(desc(Gazette.start_date)),
-        "book": db.session.query(Book)
-        .order_by(desc(Book.start_date)),
         "featured": db.session.query(Featured)
         .order_by(desc(Featured.start_date)),
         "daily_schedule": db.session.query(DailySchedule)

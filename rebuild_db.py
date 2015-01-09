@@ -531,9 +531,7 @@ if __name__ == '__main__':
     rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
     rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
     rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
     rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
-    # bills()
     add_featured()
 
     # add default roles

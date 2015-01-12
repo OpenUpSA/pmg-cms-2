@@ -244,7 +244,7 @@ class EventView(MyModelView):
 
     form_ajax_refs = {
         'content': {
-            'fields': ('title', 'type'),
+            'fields': ('type', ),
             'page_size': 25
         }
     }
@@ -317,15 +317,14 @@ class InlineContent(InlineFormAdmin):
 
 class CommitteeMeetingView(EventView):
 
-    column_list = ('date', 'committee', 'title', 'content')
+    column_list = ('date', 'committee', 'content')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
-        'title',
         ('committee', 'committee.name'),
     )
     column_default_sort = (Event.date, True)
-    column_searchable_list = ('title', 'committee.name')
+    column_searchable_list = ('committee.name', )
     column_formatters = dict(
         content=macro('render_event_content'),
     )
@@ -336,7 +335,6 @@ class CommitteeMeetingView(EventView):
     form_columns = (
         'committee',
         'date',
-        'title',
         'summary',
         'body',
         'content',
@@ -360,19 +358,25 @@ class CommitteeMeetingView(EventView):
 
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
-        form.summary.data = event_obj.committee_meeting_report.summary
-        form.body.data = event_obj.committee_meeting_report.body
+        committee_meeting_report = Content.query.filter_by(event=event_obj).one()
+
+        form.summary.data = committee_meeting_report.rich_text.summary
+        form.body.data = committee_meeting_report.rich_text.body
         return
 
     def on_model_change(self, form, model, is_created):
         # create / update related CommitteeMeetingReport
         if is_created:
-            committee_meeting_report = CommitteeMeetingReport(event=model)
+            rich_text_obj = RichText()
+            db.session.add(rich_text_obj)
+            committee_meeting_report = Content(event=model, type="committee-meeting-report", rich_text=rich_text_obj)
         else:
-            committee_meeting_report = model.committee_meeting_report
-        committee_meeting_report.summary = form.summary.data
-        committee_meeting_report.body = form.body.data
+            committee_meeting_report = Content.query.filter_by(event=model).filter_by(type="committee-meeting-report").one()
+            rich_text_obj = committee_meeting_report.rich_text
+        rich_text_obj.summary = form.summary.data
+        rich_text_obj.body = form.body.data
         db.session.add(committee_meeting_report)
+        db.session.add(rich_text_obj)
         return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 

@@ -534,6 +534,8 @@ def merge_billtracker():
                             date=entry_date,
                             house=tmp_location
                         )
+                        if entry.get('agent') and entry['agent'].get('name'):
+                            bill_obj.introduced_by = entry['agent']['name']
                         tmp_event.bills.append(bill_obj)
                         db.session.add(tmp_event)
                     elif "passed by" in entry['title']:

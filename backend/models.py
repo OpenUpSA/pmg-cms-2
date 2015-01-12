@@ -186,6 +186,7 @@ class Bill(db.Model):
     date_of_assent = db.Column(db.Date)
     effective_date = db.Column(db.Date)
     act_name = db.Column(db.String(250))
+    introduced_by = db.Column(db.String(250))
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bill', lazy=False)
@@ -193,8 +194,6 @@ class Bill(db.Model):
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
-    introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
-    introduced_by = db.relationship('Member')
 
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
     files = db.relationship("File")

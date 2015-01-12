@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page %}
+  <h3 class="red"><span class="fa fa-file-text-o"></span> Bill</h3>
+
+  <div class="row">
+    <div class="col-sm-12 justify-p">
+      <h1>{{ bill.code }}: {{ bill.title }}</h1>
+      <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+      <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
+
+      {% if bill.date_of_introduction %}
+        <p>Introduced on {{ bill.date_of_introduction }}{% if bill.place_of_introduction %} in the {{ bill.place_of_introduction.name }}{% endif %}.</p>
+      {% endif %}
+
+      <ul>
+        {% for event in bill.events %}
+          {% if event.type == "committee-meeting" %}
+            <li><a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.date }} - {{ event.title }}</a></li>
+          {% else %}
+            <li>{{ event.date }} - {{ event.title }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+
+    </div>
+  </div>
+{% endblock %}
+

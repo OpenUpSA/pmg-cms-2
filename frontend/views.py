@@ -257,7 +257,7 @@ def index():
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
-        if committee_meeting["committee_id"]:
+        if committee_meeting.get('committee'):
             committee_meetings.append(committee_meeting)
             if len(committee_meetings) == 10:
                 break

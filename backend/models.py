@@ -149,6 +149,8 @@ class BillType(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+    prefix = db.Column(db.String(5))
+    description = db.Column(db.Text)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -160,6 +162,7 @@ class BillStatus(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -172,44 +175,46 @@ class Bill(db.Model):
         db.UniqueConstraint(
             'number',
             'year',
-            'bill_type_id',
-            'title'),
+            'type_id'),
         {})
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
-    bill_code = db.Column(db.String(100))
-    act_name = db.Column(db.String(250))
     number = db.Column(db.Integer)
     year = db.Column(db.Integer)
     date_of_introduction = db.Column(db.Date)
     date_of_assent = db.Column(db.Date)
     effective_date = db.Column(db.Date)
-    objective = db.Column(db.String(1000))
-    is_deleted = db.Column(db.Boolean, default=False)
+    act_name = db.Column(db.String(250))
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bill', lazy=False)
-    bill_type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
-    bill_type = db.relationship('BillType', backref='bill', lazy=False)
-    place_of_introduction_id = db.Column(
-        db.Integer,
-        db.ForeignKey('committee.id'))
-    place_of_introduction = db.relationship('Committee')
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
+    type = db.relationship('BillType', backref='bill', lazy=False)
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    place_of_introduction = db.relationship('House')
     introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     introduced_by = db.relationship('Member')
 
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
     files = db.relationship("File")
 
-    def code(self):
-        return self.type.prefix + str(self.number) + "-" + str(self.year)
+    def get_code(self):
+        out = self.type.prefix if self.type else "X"
+        out += str(self.number) if self.number else ""
+        out += "-" + str(self.year)
+        return unicode(out)
 
-    def delete(self):
-        self.is_deleted = True
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['code'] = self.get_code()
+        return tmp
 
     def __unicode__(self):
-        return unicode(str(self.code) + " - " + self.name)
+        out = self.get_code()
+        if self.title:
+            out += " - " + self.title
+        return unicode(out)
 
 
 class Briefing(db.Model):
@@ -266,7 +271,7 @@ class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime(timezone=True))
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
 
@@ -282,6 +287,26 @@ class Event(db.Model):
         backref=backref(
             'events',
             order_by=desc('Event.date')))
+    house_id = db.Column(
+        db.Integer,
+        db.ForeignKey('house.id'),
+        index=True)
+    house = db.relationship(
+        'House',
+        lazy=False,
+        backref=backref(
+            'events',
+            order_by=desc('Event.date')))
+    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        if self.type == "committee-meeting":
+            if tmp.get('committee_meeting_report'):
+                tmp['body'] = tmp['committee_meeting_report'].get('body')
+                tmp['summary'] = tmp['committee_meeting_report'].get('summary')
+                tmp.pop('committee_meeting_report')
+        return tmp
 
     def __unicode__(self):
         if self.type == "committee-meeting":
@@ -300,10 +325,17 @@ class Event(db.Model):
             tmp += " - " + self.title
         return unicode(tmp)
 
-    __mapper_args__ = {
-        'polymorphic_identity': 'event',
-        'polymorphic_on': type,
-    }
+
+event_bills = db.Table(
+    'event_bills',
+    db.Column(
+        'event_id',
+        db.Integer(),
+        db.ForeignKey('event.id')),
+    db.Column(
+        'bill_id',
+        db.Integer(),
+        db.ForeignKey('bill.id')))
 
 
 class MembershipType(db.Model):
@@ -345,7 +377,6 @@ class Member(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
-        logger.debug(STATIC_HOST)
         return tmp
 
 
@@ -365,7 +396,7 @@ class Committee(db.Model):
         "TabledCommitteeReport",
         lazy=True)
     questions_replies = db.relationship("QuestionReply", lazy=True)
-    calls_for_comment = db.relationship("CallForComment", lazy=True)
+    calls_for_comments = db.relationship("CallForComment", lazy=True)
 
     def __unicode__(self):
         tmp = self.name
@@ -560,33 +591,6 @@ gazette_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-# === Book === #
-
-class Book(db.Model):
-
-    __tablename__ = "book"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    summary = db.Column(db.Text())
-    body = db.Column(db.Text())
-    start_date = db.Column(db.Date())
-    files = db.relationship("File", secondary='book_file_join')
-    nid = db.Column('nid', db.Integer())
-
-book_file_table = db.Table(
-    'book_file_join',
-    db.Model.metadata,
-    db.Column(
-        'book_id',
-        db.Integer,
-        db.ForeignKey('book.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
-
-
 # === Featured Content === #
 
 class Featured(db.Model):
@@ -597,25 +601,25 @@ class Featured(db.Model):
     title = db.Column(db.String(255))
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
-    start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
-    committee_meeting = db.relationship(
-        'CommitteeMeeting',
-        secondary='featured_committee_meeting_join')
+    start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
+    committee_meeting_report = db.relationship(
+        'CommitteeMeetingReport',
+        secondary='featured_committee_meeting_report_join')
     tabled_committee_report = db.relationship(
         'TabledCommitteeReport',
         secondary='featured_tabled_committee_report_join')
 
-featured_committee_meeting_join = db.Table(
-    'featured_committee_meeting_join',
+featured_committee_meeting_report_join = db.Table(
+    'featured_committee_meeting_report_join',
     db.Model.metadata,
     db.Column(
         'featured_id',
         db.Integer,
         db.ForeignKey('featured.id')),
     db.Column(
-        'committee_meeting_id',
+        'committee_meeting_report_id',
         db.Integer,
-        db.ForeignKey('committee_meeting.id')))
+        db.ForeignKey('committee_meeting_report.id')))
 
 featured_tabled_committee_report_join = db.Table(
     'featured_tabled_committee_report_join',
@@ -657,9 +661,9 @@ daily_schedule_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-class CommitteeMeeting(Event):
+class CommitteeMeetingReport(db.Model):
 
-    __tablename__ = "committee_meeting"
+    __tablename__ = "committee_meeting_report"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
 
@@ -667,13 +671,10 @@ class CommitteeMeeting(Event):
     summary = db.Column(db.Text())
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+    event = db.relationship('Event', backref=backref('committee_meeting_report', lazy='joined', uselist=False))
 
     def __unicode__(self):
         return unicode(self.id)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'committee-meeting',
-    }
 
 
 class Content(db.Model):
@@ -697,7 +698,7 @@ class HitLog(db.Model):
     __tablename__ = "hit_log"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     ip_addr = db.Column(db.String(40), index=True)
     user_agent = db.Column(db.String(255))
     url = db.Column(db.String(255))

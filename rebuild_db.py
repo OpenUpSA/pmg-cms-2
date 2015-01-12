@@ -12,6 +12,8 @@ from sqlalchemy import types
 from backend.app import app, db
 from backend.models import *
 from backend.search import Search
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy import Date, cast
 
 logger = logging.getLogger('rebuild_db')
 logging.getLogger('sqlalchemy.engine').level = logging.WARN
@@ -74,9 +76,9 @@ def find_files(obj):
         # print obj["files"]
         for f in obj["files"]:
             fobj = File(
-                    filemime=f["filemime"],
-                    origname = f["origname"],
-                    url = f["filepath"].replace("files/", ""),
+                filemime=f["filemime"],
+                origname = f["origname"],
+                url = f["filepath"].replace("files/", ""),
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -85,12 +87,12 @@ def find_files(obj):
         # print obj["audio"]
         for f in obj["audio"]:
             fobj = File(
-                    filemime=f["filemime"],
-                    origname = f["origname"],
-                    url = "audio/" + f["filename"].replace("files/", ""),
-                    playtime = f["playtime"],
-                    description = f["title_format"]
-                )
+                filemime=f["filemime"],
+                origname = f["origname"],
+                url = "audio/" + f["filename"].replace("files/", ""),
+                playtime = f["playtime"],
+                description = f["title_format"]
+            )
             db.session.add(fobj)
             files.append(fobj)
         db.session.commit()
@@ -105,13 +107,13 @@ def find_committee(obj):
             # print committee, term
             if committee:
                 committees.append(committee)
-            # else:
-            #     print term
+                # else:
+                #     print term
     return committees
 
 def prep_table(model_class):
     print "Deleted rows: ", model_class.query.delete()
-    
+
 
 def rebuild_table(table_name, model_class, mappings):
     logger.debug("Rebuilding %s" % table_name)
@@ -181,13 +183,45 @@ def rebuild_db():
     joint_obj = House(name="Joint (NA + NCOP)", name_short="Joint")
     ncop_obj = House(name="National Council of Provinces", name_short="NCOP")
     na_obj = House(name="National Assembly", name_short="NA")
-    for obj in [joint_obj, ncop_obj, na_obj]:
+    presidents_office_obj = House(name="The President's Office", name_short="President")
+    for obj in [joint_obj, ncop_obj, na_obj, presidents_office_obj]:
         db.session.add(obj)
     db.session.commit()
 
     # populate membership_type
     chairperson = MembershipType(name="chairperson")
     db.session.add(chairperson)
+    db.session.commit()
+
+    # populate bill_type options
+    tmp = [
+        ('X', 'Draft', 'Draft'),
+        ('B', 'S74', 'Section 74: Constitutional amendments'),
+        ('B', 'S75', 'Section 75: Ordinary Bills not affecting the provinces'),
+        ('B', 'S76', 'Section 76: Ordinary Bills affecting the provinces'),
+        ('B', 'S77', 'Section 77: Money Bills'),
+        ('PMB', 'Private Member Bill',
+         'Private Member Bill: Bills that are drawn up by private members, as opposed to ministers or committees.')
+    ]
+    for (prefix, name, description) in tmp:
+        bill_type = BillType(prefix=prefix, name=name, description=description)
+        db.session.add(bill_type)
+    db.session.commit()
+
+    # populate bill_status options
+    tmp = [
+        ('lapsed', 'Lapsed'),
+        ('withdrawn', 'Withdrawn'),
+        ('na', 'Under consideration by the National Assembly.'),
+        ('ncop', 'Under consideration by the National Council of Provinces.'),
+        ('president', 'Approved by parliament. Waiting to be signed into law.'),
+        ('enacted', 'The bill has been signed into law.'),
+        ('act-commenced', 'Act commenced'),
+        ('act-partly-commenced', 'Act partially commenced'),
+        ]
+    for (name, description) in tmp:
+        bill_status = BillStatus(name=name, description=description)
+        db.session.add(bill_status)
     db.session.commit()
 
     # populate committees
@@ -318,29 +352,35 @@ def rebuild_db():
             if committee_obj:
                 committee_obj = committee_obj['model']
 
-            report_obj = CommitteeMeeting(
-                body=parsed_report.body,
-                summary=parsed_report.summary,
+            event_obj = Event(
+                type="committee-meeting",
                 committee=committee_obj,
                 date=parsed_report.date,
                 title=parsed_report.title
+            )
+            db.session.add(event_obj)
+
+            report_obj = CommitteeMeetingReport(
+                body=parsed_report.body,
+                summary=parsed_report.summary,
+                event=event_obj
             )
             db.session.add(report_obj)
 
             for item in parsed_report.related_docs:
                 doc_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
-                )
+                    )
                 doc_obj.file_path=item["filepath"]
                 doc_obj.title=item["title"]
                 db.session.add(doc_obj)
 
             for item in parsed_report.audio:
                 audio_obj = Content(
-                    event=report_obj,
+                    event=event_obj,
                     type=item["filemime"],
-                )
+                    )
                 if item["filepath"].startswith('files/'):
                     audio_obj.file_path=item["filepath"][6::]
                 else:
@@ -388,7 +428,7 @@ def bills():
         bill.objective = billobj["objective"]
         bill.is_deleted = billobj["is_deleted"]
         bill.status_id = addChild(BillStatus, billobj["status"])
-        bill.bill_type_id = addChild(BillType, billobj["bill_type"])
+        bill.type_id = addChild(BillType, billobj["bill_type"])
         # place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
         # place_of_introduction = db.relationship('Committee')
         # introduced_by_id = db.Column(db.Integer, db.ForeignKey('member.id'))
@@ -397,11 +437,11 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    committeemeetings = CommitteeMeeting.query.limit(5)
+    committeemeetings = CommitteeMeetingReport.query.limit(5)
     tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
     for committeemeeting in committeemeetings:
-        featured.committee_meeting.append(committeemeeting)
+        featured.committee_meeting_report.append(committeemeeting)
     for tabledreport in tabledreports:
         featured.tabled_committee_report.append(tabledreport)
     featured.title = "LivemagSA Launched Live From Parliament"
@@ -419,6 +459,128 @@ def clear_db():
 def disable_reindexing():
     Search.reindex_changes = False
 
+
+def merge_billtracker():
+
+    na_obj = House.query.filter_by(name_short="NA").one()
+    ncop_obj = House.query.filter_by(name_short="NCOP").one()
+    joint_obj = House.query.filter_by(name_short="Joint").one()
+    president_obj = House.query.filter_by(name_short="President").one()
+
+    location_map = {
+        1: na_obj,
+        2: ncop_obj,
+        3: president_obj,
+        4: joint_obj,
+        }
+
+    entry_count = 0
+    committee_meeting_count = 0
+    encoding_error_count = 0
+    unmatched_count = 0
+    ambiguous_match_count = 0
+    with open("data/billtracker_dump.txt", "r") as f:
+        data=f.read()
+        bills = json.loads(data)
+        for rec in bills:
+            bill_obj = Bill(
+                title=rec['name'],
+                number=rec['number'],
+                year=rec['year'],
+                )
+            if rec.get('bill_type'):
+                bill_obj.type = BillType.query.filter_by(name=rec['bill_type']).one()
+            if rec.get('status'):
+                bill_obj.status = BillStatus.query.filter_by(name=rec['status']).one()
+
+            # effective_date
+            # act_name
+            # introduced_by_id
+            # introduced_by
+
+            # tag committee meetings (based on title, because we have nothing better)
+            for entry in rec['entries']:
+                entry_count += 1
+                entry_date = None
+                if entry['date'] and not entry['date'] == "None":
+                    entry_date = datetime.datetime.strptime(entry['date'], "%Y-%m-%d").date()
+                if entry['type'] == "committee-meeting":
+                    committee_meeting_count += 1
+                    try:
+                        title = unicode(entry['title'].replace('\\"', '').replace('\\r', '').replace('\\n', '').replace('\\t', ''))
+                        event_obj = Event.query.filter(cast(Event.date, Date) == entry_date) \
+                            .filter(Event.title.like('%' + title[5:35] + '%')).one()
+                        bill_obj.events.append(event_obj)
+                    except UnicodeEncodeError as e:
+                        encoding_error_count += 1
+                        pass
+                    except NoResultFound as e:
+                        unmatched_count += 1
+                        pass
+                    except MultipleResultsFound as e:
+                        ambiguous_match_count += 1
+                elif entry['type'] == "default":
+                    if "introduced" in entry['title']:
+                        tmp_location = na_obj
+                        if entry['location']:
+                            tmp_location = location_map[entry['location']]
+                        bill_obj.place_of_introduction = tmp_location
+                        if entry_date:
+                            bill_obj.date_of_introduction = entry_date
+                        tmp_event = Event(
+                            type="bill-introduced",
+                            title=entry['title'],
+                            date=entry_date,
+                            house=tmp_location
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
+                    elif "passed by" in entry['title']:
+                        if "council" in entry['title'].lower() or "ncop" in entry['title'].lower():
+                            location = ncop_obj
+                        elif "assembly" in entry['title'].lower() or "passed by na" in entry['title'].lower():
+                            location = na_obj
+                        else:
+                            print entry
+
+                            raise Exception("error locating bill-passed event")
+                        tmp_event = Event(
+                            type="bill-passed",
+                            title=entry['title'],
+                            date=entry_date,
+                            house=location
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
+                    elif "enacted" in entry['title'].lower() + entry['description'].lower() and entry['agent']['type'] == "president":
+                        tmp_event = Event(
+                            type="bill-enacted",
+                            title=entry['description'] + " - " + entry['title'],
+                            date=entry_date
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        bill_obj.date_of_assent = entry_date
+                        db.session.add(tmp_event)
+                    elif "signed" in entry['title'].lower() and entry['agent']['type'] == "president":
+                        tmp_event = Event(
+                            type="bill-signed",
+                            title=entry['title'],
+                            date=entry_date
+                        )
+                        tmp_event.bills.append(bill_obj)
+                        db.session.add(tmp_event)
+
+            db.session.add(bill_obj)
+            db.session.commit()
+
+        print entry_count, "entries"
+        print committee_meeting_count, "committee meetings"
+        print encoding_error_count, "encoding errors"
+        print unmatched_count, "orphans"
+        print ambiguous_match_count, "ambiguous matches"
+    return
+
+
 if __name__ == '__main__':
     disable_reindexing()
     clear_db()
@@ -430,9 +592,7 @@ if __name__ == '__main__':
     rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
     rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
     rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("book", Book, { "title": "title", "summary": "teaser", "start_date": "start_date", "body": "body", "nid": "nid" })
     rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
-    # bills()
     add_featured()
 
     # add default roles
@@ -446,3 +606,6 @@ if __name__ == '__main__':
     user.roles.append(superuser_role)
     db.session.add(user)
     db.session.commit()
+
+    # add billtracker data
+    merge_billtracker()

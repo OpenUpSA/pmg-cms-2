@@ -21,7 +21,7 @@
     {% set committee_id = result.committee[0].id %}
   {% endif %}
 {% endif %}
-<div class="calls-for-comment-stub space-bottom-sm">
+<div class="call-for-comment-stub space-bottom-sm">
   <div>
     <span class="label label-primary">Calls for Comment</span>
     {% if committee_name %}
@@ -30,7 +30,7 @@
     {{ date|pretty_date }} ({{ date|human_date }})
   </div>
   <div>
-    <a href="/calls-for-comment/{{ id }}">{{ title|safe }}</a>
+    <a href="/call-for-comment/{{ id }}">{{ title|safe }}</a>
   </div>
   {% if result.highlight %}
   {% if result.highlight.description %}

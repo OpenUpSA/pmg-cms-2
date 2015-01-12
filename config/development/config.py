@@ -1,5 +1,5 @@
 DEBUG = True
-SQLALCHEMY_DATABASE_URI = 'sqlite:///../instance/tmp.db'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.dev:5001/"
 FRONTEND_HOST = "http://pmg.dev:5000/"

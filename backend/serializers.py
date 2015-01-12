@@ -63,9 +63,10 @@ def model_to_dict(obj, include_related=False):
                             tmp_dict[key].append(item.to_dict())
                         else:
                             tmp_dict[key].append(model_to_dict(item))
-            # join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
-            # if tmp_dict.get(join_key):
-            #     tmp_dict.pop(join_key)
+            # remove redundant ids
+            join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
+            if tmp_dict.get(join_key):
+                tmp_dict.pop(join_key)
     return tmp_dict
 
 
@@ -75,8 +76,11 @@ def to_dict(obj, include_related=False):
     """
     try:
         return obj.to_dict(include_related=include_related)
-    except:
+    except AttributeError:
         return model_to_dict(obj, include_related=include_related)
+    except Exception as e:
+        logger.exception(e)
+        raise e
 
 
 def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):

@@ -63,9 +63,10 @@ def model_to_dict(obj, include_related=False):
                             tmp_dict[key].append(item.to_dict())
                         else:
                             tmp_dict[key].append(model_to_dict(item))
-            # join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
-            # if tmp_dict.get(join_key):
-            #     tmp_dict.pop(join_key)
+            # remove redundant ids
+            join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
+            if tmp_dict.get(join_key):
+                tmp_dict.pop(join_key)
     return tmp_dict
 
 

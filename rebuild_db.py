@@ -310,8 +310,7 @@ def rebuild_db():
     logger.debug("reading report.js")
     with open('data/report.json', 'r') as f:
         records = []
-        lines = f.readlines()
-        for line in lines:
+        for line in f.readlines():
             report = json.loads(line)
             parsed_report = parsers.MeetingReportParser(report)
 
@@ -359,7 +358,7 @@ def rebuild_db():
             i += 1
             if i % 500 == 0:
                 logger.debug("writing 500 reports...")
-                db.session.commit()
+            db.session.commit()
     return
 
 def addChild(Child, val):

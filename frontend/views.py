@@ -272,7 +272,9 @@ def index():
             scheduledates.append(curdate)
     stock_pic = "stock" + str(random.randint(1, 18)) + ".jpg"
     featured_list = load_from_api('featured')["results"]
-    featured_content = load_from_api('featured', featured_list[0]["id"])
+    featured_content = None
+    if len(featured_list) > 0:
+        featured_content = load_from_api('featured', featured_list[0]["id"])
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,

@@ -101,14 +101,12 @@ def api_resources():
         .filter(Schedule.meeting_date >= current_time),
         "tabled_committee_report": db.session.query(TabledCommitteeReport)
         .order_by(desc(TabledCommitteeReport.start_date)),
-        "calls_for_comment": db.session.query(CallForComment)
+        "call_for_comment": db.session.query(CallForComment)
         .order_by(desc(CallForComment.start_date)),
         "policy_document": db.session.query(PolicyDocument)
         .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
         .order_by(desc(Gazette.start_date)),
-        "book": db.session.query(Book)
-        .order_by(desc(Book.start_date)),
         "featured": db.session.query(Featured)
         .order_by(desc(Featured.start_date)),
         "daily_schedule": db.session.query(DailySchedule)

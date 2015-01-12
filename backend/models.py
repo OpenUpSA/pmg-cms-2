@@ -200,7 +200,10 @@ class Bill(db.Model):
     files = db.relationship("File")
 
     def get_code(self):
-        return self.type.prefix + str(self.number) + "-" + str(self.year)
+        out = self.type.prefix if self.type else "X"
+        out += str(self.number) if self.number else ""
+        out += "-" + str(self.year)
+        return unicode(out)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -268,7 +271,7 @@ class Event(db.Model):
     __tablename__ = "event"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    date = db.Column(db.DateTime)
+    date = db.Column(db.DateTime(timezone=True))
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
 
@@ -284,6 +287,17 @@ class Event(db.Model):
         backref=backref(
             'events',
             order_by=desc('Event.date')))
+    house_id = db.Column(
+        db.Integer,
+        db.ForeignKey('house.id'),
+        index=True)
+    house = db.relationship(
+        'House',
+        lazy=False,
+        backref=backref(
+            'events',
+            order_by=desc('Event.date')))
+    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -310,6 +324,18 @@ class Event(db.Model):
         if self.title:
             tmp += " - " + self.title
         return unicode(tmp)
+
+
+event_bills = db.Table(
+    'event_bills',
+    db.Column(
+        'event_id',
+        db.Integer(),
+        db.ForeignKey('event.id')),
+    db.Column(
+        'bill_id',
+        db.Integer(),
+        db.ForeignKey('bill.id')))
 
 
 class MembershipType(db.Model):
@@ -370,7 +396,7 @@ class Committee(db.Model):
         "TabledCommitteeReport",
         lazy=True)
     questions_replies = db.relationship("QuestionReply", lazy=True)
-    calls_for_comment = db.relationship("CallForComment", lazy=True)
+    calls_for_comments = db.relationship("CallForComment", lazy=True)
 
     def __unicode__(self):
         tmp = self.name
@@ -565,33 +591,6 @@ gazette_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-# === Book === #
-
-class Book(db.Model):
-
-    __tablename__ = "book"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    summary = db.Column(db.Text())
-    body = db.Column(db.Text())
-    start_date = db.Column(db.Date())
-    files = db.relationship("File", secondary='book_file_join')
-    nid = db.Column('nid', db.Integer())
-
-book_file_table = db.Table(
-    'book_file_join',
-    db.Model.metadata,
-    db.Column(
-        'book_id',
-        db.Integer,
-        db.ForeignKey('book.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
-
-
 # === Featured Content === #
 
 class Featured(db.Model):
@@ -602,7 +601,7 @@ class Featured(db.Model):
     title = db.Column(db.String(255))
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
-    start_date = db.Column(db.DateTime(), default=datetime.datetime.utcnow)
+    start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     committee_meeting_report = db.relationship(
         'CommitteeMeetingReport',
         secondary='featured_committee_meeting_report_join')
@@ -699,7 +698,7 @@ class HitLog(db.Model):
     __tablename__ = "hit_log"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
     ip_addr = db.Column(db.String(40), index=True)
     user_agent = db.Column(db.String(255))
     url = db.Column(db.String(255))

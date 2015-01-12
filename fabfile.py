@@ -109,12 +109,12 @@ def deploy():
 
     # enter application directory and pull latest code from github
     with cd(env.project_dir):
-        # ensure we are on the target branch
-        sudo('git checkout ' + env.git_branch)
         # first, discard local changes, then pull
         with settings(warn_only=True):
             sudo('git reset --hard')
         sudo('git pull origin ' + env.git_branch)
+        # ensure we are on the target branch
+        sudo('git checkout -f ' + env.git_branch)
 
     # install dependencies
     with virtualenv():

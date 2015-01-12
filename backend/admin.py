@@ -88,8 +88,9 @@ class MyIndexView(AdminIndexView):
 
         record_counts = [
             ('Members', 'member.index_view', Member.query.count()),
+            ('Bill', 'bill.index_view', Bill.query.count()),
             ('Committee', 'committee.index_view', Committee.query.count()),
-            # ('Committee Meetings', 'committee_meeting.index_view', CommitteeMeeting.query.count()),
+            ('Committee Meetings', 'committee_meeting.index_view', Event.query.filter_by(type="committee-meeting").count()),
             ('Questions & Replies', 'question.index_view', QuestionReply.query.count()),
             ('Calls for Comment', 'call_for_comment.index_view', CallForComment.query.count()),
             ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),

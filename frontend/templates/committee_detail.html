@@ -79,15 +79,15 @@
 						{% endif %}
 					</div>
 				{% endif %}
-				{% if committee.calls_for_comment %}
+				{% if committee.calls_for_comments %}
 					<div class="col-md-6">
 						<h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
 						<ul class="list-unstyled list-spaced">
-							{% for result in committee.calls_for_comment[0:5] %}
-								{% include 'calls_for_comment_stub.html' %}
+							{% for result in committee.calls_for_comments[0:5] %}
+								{% include 'call_for_comment_stub.html' %}
 							{% endfor %}
 						</ul>
-						{% if committee.calls_for_comment|length > 5 %}
+						{% if committee.calls_for_comments|length > 5 %}
 							<a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
 						{% endif %}
 					</div>

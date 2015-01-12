@@ -247,12 +247,13 @@ class File(db.Model):
     __tablename__ = "file"
 
     id = db.Column(db.Integer, primary_key=True)
-    filemime = db.Column(db.String(50))
+    title = db.Column(db.String(250))
+    file_mime = db.Column(db.String(50))
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
     duration = db.Column(db.Integer, default=0)
     playtime = db.Column(db.String(10))
-    url = db.Column(db.String(255))
+    file_path = db.Column(db.String(255))
 
     def __unicode__(self):
         return u'%s' % self.url
@@ -300,11 +301,6 @@ class Event(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        if self.type == "committee-meeting":
-            if tmp.get('committee_meeting_report'):
-                tmp['body'] = tmp['committee_meeting_report'].get('body')
-                tmp['summary'] = tmp['committee_meeting_report'].get('summary')
-                tmp.pop('committee_meeting_report')
         return tmp
 
     def __unicode__(self):
@@ -601,24 +597,9 @@ class Featured(db.Model):
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
     start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
-    committee_meeting_report = db.relationship(
-        'CommitteeMeetingReport',
-        secondary='featured_committee_meeting_report_join')
     tabled_committee_report = db.relationship(
         'TabledCommitteeReport',
         secondary='featured_tabled_committee_report_join')
-
-featured_committee_meeting_report_join = db.Table(
-    'featured_committee_meeting_report_join',
-    db.Model.metadata,
-    db.Column(
-        'featured_id',
-        db.Integer,
-        db.ForeignKey('featured.id')),
-    db.Column(
-        'committee_meeting_report_id',
-        db.Integer,
-        db.ForeignKey('committee_meeting_report.id')))
 
 featured_tabled_committee_report_join = db.Table(
     'featured_tabled_committee_report_join',
@@ -660,17 +641,14 @@ daily_schedule_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-class CommitteeMeetingReport(db.Model):
+class RichText(db.Model):
 
-    __tablename__ = "committee_meeting_report"
+    __tablename__ = "rich_text"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
 
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
-
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
-    event = db.relationship('Event', backref=backref('committee_meeting_report', lazy='joined', uselist=False))
 
     def __unicode__(self):
         return unicode(self.id)
@@ -682,14 +660,16 @@ class Content(db.Model):
 
     id = db.Column(db.Integer, index=True, primary_key=True)
     type = db.Column(db.String(50), index=True, nullable=False)
-    title = db.Column(db.String(200))
-    file_path = db.Column(db.String(200))
 
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
     event = db.relationship('Event', backref=backref('content', lazy='joined'))
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True)
+    file = db.relationship('File', lazy='joined')
+    rich_text_id = db.Column(db.Integer, db.ForeignKey('rich_text.id'), index=True)
+    rich_text = db.relationship('RichText', lazy='joined')
 
     def __unicode__(self):
-        return unicode(self.title)
+        return unicode(self.type + " - " + str(self.id))
 
 
 class HitLog(db.Model):

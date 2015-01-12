@@ -23,6 +23,7 @@ with open('config/%s/logging.yaml' % env) as f:
 from flask.ext.assets import Environment, Bundle
 assets = Environment(app)
 assets.url_expire = False
+assets.url = app.static_url_path
 assets.debug      = app.debug
 # source files
 assets.load_path  = ['%s/static' % app.config.root_path]

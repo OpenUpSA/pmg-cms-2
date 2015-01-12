@@ -22,7 +22,7 @@
 
       <div class="row">
         <div id="schedule" class="col-md-4">
-          <h3><span class="glyphicon glyphicon-calendar"></span> Schedule</h3>
+          <h3><span class="fa fa-calendar"></span> Schedule</h3>
           {% if not scheduledates %}
             <h4>No meetings currently scheduled</h4>
           {% endif %}
@@ -53,7 +53,7 @@
                 <td>{{ committee_meeting.date|pretty_date|nbsp|safe }}</td>
                 <td><a href="/committee/{{ committee_meeting.committee.id }}">{{ committee_meeting.committee.name }}</a></td>
                 <td>
-                  <span class="glyphicon glyphicon-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
+                  <span class="fa fa-headphones"></span> <a href="/committee-meeting/{{ committee_meeting.id }}">{{ committee_meeting.title }}</a>
                 </td>
               </tr>
             {% endfor %}

@@ -671,6 +671,21 @@ class Content(db.Model):
     def __unicode__(self):
         return unicode(self.type + " - " + str(self.id))
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        # lift nested 'file' or 'rich_text' fields to look like attributes on this model
+        if tmp.get('file'):
+            for key, val in tmp['file'].iteritems():
+                if tmp.get(key):
+                    pass  # don't overwrite parent model attributes from the child model
+                tmp[key] = val
+        if tmp.get('rich_text'):
+            for key, val in tmp['rich_text'].iteritems():
+                if tmp.get(key):
+                    pass  # don't overwrite parent model attributes from the child model
+                tmp[key] = val
+        return tmp
+
 
 class HitLog(db.Model):
 

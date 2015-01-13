@@ -70,15 +70,47 @@ def construct_obj(obj, mappings):
             result_obj.update(tmp)
     return result_obj
 
+def find_content(obj):
+    content = []
+    if (obj.has_key("files") and (type(obj["files"]) is list) and (len(obj["files"]) > 0)):
+        # print obj["files"]
+        for f in obj["files"]:
+            fobj = File(
+                file_mime=f["filemime"],
+                origname = f["origname"],
+                file_path = f["filepath"].replace("files/", ""),
+                )
+            db.session.add(fobj)
+            content_obj = Content(type="related-doc", file=fobj)
+            db.session.add(content_obj)
+            content.append(content_obj)
+        db.session.commit()
+    if (obj.has_key("audio") and (type(obj["audio"]) is list) and (len(obj["audio"]) > 0)):
+        # print obj["audio"]
+        for f in obj["audio"]:
+            fobj = File(
+                file_mime=f["filemime"],
+                origname = f["origname"],
+                file_path = "audio/" + f["filename"].replace("files/", ""),
+                playtime = f["playtime"],
+                description = f["title_format"]
+            )
+            db.session.add(fobj)
+            content_obj = Content(type="audio", file=fobj)
+            db.session.add(content_obj)
+            content.append(content_obj)
+        db.session.commit()
+    return content
+
 def find_files(obj):
     files = []
     if (obj.has_key("files") and (type(obj["files"]) is list) and (len(obj["files"]) > 0)):
         # print obj["files"]
         for f in obj["files"]:
             fobj = File(
-                filemime=f["filemime"],
+                file_mime=f["filemime"],
                 origname = f["origname"],
-                url = f["filepath"].replace("files/", ""),
+                file_path = f["filepath"].replace("files/", ""),
                 )
             db.session.add(fobj)
             files.append(fobj)
@@ -87,9 +119,9 @@ def find_files(obj):
         # print obj["audio"]
         for f in obj["audio"]:
             fobj = File(
-                filemime=f["filemime"],
+                file_mime=f["filemime"],
                 origname = f["origname"],
-                url = "audio/" + f["filename"].replace("files/", ""),
+                file_path = "audio/" + f["filename"].replace("files/", ""),
                 playtime = f["playtime"],
                 description = f["title_format"]
             )
@@ -142,7 +174,7 @@ def rebuild_table(table_name, model_class, mappings):
                     if (committees):
                         for committee in committees:
                             new_rec.committee.append(committee)
-                if (len(files)):
+                if len(files) > 0:
                     for f in files:
                         new_rec.files.append(f)
                 for key,val in newobj.iteritems():
@@ -156,6 +188,7 @@ def rebuild_table(table_name, model_class, mappings):
             except:
                 logger.warning("Error reading row for " + table_name)
         db.session.commit()
+
 
 def guess_pa_link(name, names):
     name_parts = re.split(",", name)
@@ -360,45 +393,61 @@ def rebuild_db():
             )
             db.session.add(event_obj)
 
-            report_obj = CommitteeMeetingReport(
+            rich_text_obj = RichText(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
+            )
+            db.session.add(rich_text_obj)
+            report_obj = Content(
+                type="committee-meeting-report",
+                rich_text=rich_text_obj,
                 event=event_obj
             )
             db.session.add(report_obj)
 
             for item in parsed_report.related_docs:
+                file_obj=File(
+                    file_mime=item["filemime"],
+                    file_path=item["filepath"],
+                    title=item["title"]
+                )
+                db.session.add(file_obj)
                 doc_obj = Content(
                     event=event_obj,
-                    type=item["filemime"],
+                    type='related-doc',
+                    file=file_obj
                     )
-                doc_obj.file_path=item["filepath"]
-                doc_obj.title=item["title"]
                 db.session.add(doc_obj)
 
             for item in parsed_report.audio:
+
+                file_obj=File(
+                    file_mime=item["filemime"]
+                )
+                if item["filepath"].startswith('files/'):
+                    file_obj.file_path=item["filepath"][6::]
+                else:
+                    file_obj.file_path=item["filepath"]
+                if item.get("title_format"):
+                    file_obj.title=item["title_format"]
+                elif item.get("filename"):
+                    file_obj.title=item["filename"]
+                elif item.get("origname"):
+                    file_obj.title=item["origname"]
+                else:
+                    file_obj.title="Unnamed audio"
+                db.session.add(file_obj)
                 audio_obj = Content(
                     event=event_obj,
-                    type=item["filemime"],
+                    type="audio",
+                    file=file_obj
                     )
-                if item["filepath"].startswith('files/'):
-                    audio_obj.file_path=item["filepath"][6::]
-                else:
-                    audio_obj.file_path=item["filepath"]
-                if item.get("title_format"):
-                    audio_obj.title=item["title_format"]
-                elif item.get("filename"):
-                    audio_obj.title=item["filename"]
-                elif item.get("origname"):
-                    audio_obj.title=item["origname"]
-                else:
-                    audio_obj.title="Unnamed audio"
                 db.session.add(audio_obj)
 
             i += 1
             if i % 500 == 0:
                 logger.debug("writing 500 reports...")
-            db.session.commit()
+                db.session.commit()
     return
 
 def addChild(Child, val):
@@ -437,11 +486,8 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    committeemeetings = CommitteeMeetingReport.query.limit(5)
     tabledreports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
-    for committeemeeting in committeemeetings:
-        featured.committee_meeting_report.append(committeemeeting)
     for tabledreport in tabledreports:
         featured.tabled_committee_report.append(tabledreport)
     featured.title = "LivemagSA Launched Live From Parliament"
@@ -533,6 +579,8 @@ def merge_billtracker():
                             date=entry_date,
                             house=tmp_location
                         )
+                        if entry.get('agent') and entry['agent'].get('name'):
+                            bill_obj.introduced_by = entry['agent']['name']
                         tmp_event.bills.append(bill_obj)
                         db.session.add(tmp_event)
                     elif "passed by" in entry['title']:
@@ -581,19 +629,124 @@ def merge_billtracker():
     return
 
 
+def add_content(dump_name, content_type, event_type, mappings=None):
+    logger.debug("Adding content: %s" % content_type)
+    i = 0
+    with open('data/' + dump_name + '.json', 'r') as f:
+        lines = f.readlines()
+        logger.debug("Found %i records" % (len(lines)))
+        for line in lines:
+            try:
+                obj = json.loads(line)
+                newobj = construct_obj(obj, mappings)
+                # Check for Dates
+                for mapping in mappings.keys():
+                    if "date" in mapping:
+                        if (newobj.has_key(mappings[mapping])):
+                            newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
+                # initialise 'content' and 'event' instances
+                content_obj = Content(type=content_type)
+                if event_type:
+                    event_obj = Event(type=event_type)
+                    content_obj.event = event_obj
+                # associate related committee
+                committees = find_committee(obj)
+                if len(committees) > 0:
+                    event_obj.committee_id = committees[0].id
+                # associate related files
+                content_list = find_files(obj)
+                if content_list:
+                    for related_content_obj in content_list:
+                        related_content_obj.event = event_obj
+                        db.session.add(related_content_obj)
+                # add related 'rich text' object
+                if content_type in ['hansard', 'briefing', ]:
+                    rich_text_obj = RichText()
+                    if newobj.get('body'):
+                        rich_text_obj.body = newobj['body']
+                    elif newobj.get('minutes'):
+                        rich_text_obj.body = newobj['minutes']
+                    if newobj.get('summary'):
+                        rich_text_obj.summary = newobj['summary']
+                    if newobj.get('presentation'):
+                        if rich_text_obj.body:
+                            rich_text_obj.body = rich_text_obj.body + newobj['presentation']
+                        else:
+                            rich_text_obj.body = newobj['presentation']
+                    content_obj.rich_text = rich_text_obj
+                    db.session.add(rich_text_obj)
+                # populate 'content' and 'event' instances
+                for key, val in newobj.iteritems():
+                    if content_type == "hansard" and key == 'meeting_date':
+                        event_obj.date = val
+                    elif content_type == "briefing" and key == 'briefing_date':
+                        event_obj.date = val
+                    elif key == 'title':
+                        event_obj.title = val
+                    else:
+                        setattr(content_obj, key, val)
+                db.session.add(content_obj)
+                db.session.add(event_obj)
+                i += 1
+                if (i == 100):
+                    db.session.commit()
+                    i = 0
+                    logger.debug("Wrote 100 rows...")
+            except Exception as e:
+                print e
+                logger.warning("Error reading row for " + content_type)
+        db.session.commit()
+
+
 if __name__ == '__main__':
     disable_reindexing()
     clear_db()
     rebuild_db()
-    rebuild_table("hansard", Hansard, { "title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body" })
-    rebuild_table("briefing", Briefing, {"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" })
-    rebuild_table("questions_replies", QuestionReply, {"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"})
-    rebuild_table("tabled_committee_report", TabledCommitteeReport, { "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("calls_for_comment", CallForComment, { "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" })
-    rebuild_table("policy_document", PolicyDocument, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("gazette", Gazette, { "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" })
-    rebuild_table("daily_schedule", DailySchedule, { "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" })
-    add_featured()
+
+    add_content(
+        "hansard",
+        content_type="hansard",
+        event_type="plenary",
+        mappings={"title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body"}
+    )
+    add_content(
+        "briefing",
+        content_type="briefing",
+        event_type="media-briefing",
+        mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
+    )
+    rebuild_table(
+        "questions_replies",
+        QuestionReply,
+        mappings={"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"}
+    )
+    rebuild_table(
+        "tabled_committee_report",
+        TabledCommitteeReport,
+        mappings={ "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" }
+    )
+    rebuild_table(
+        "calls_for_comment",
+        CallForComment,
+        mappings={ "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" }
+    )
+    rebuild_table(
+        "policy_document",
+        PolicyDocument,
+        mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
+    )
+    rebuild_table(
+        "gazette",
+        Gazette,
+        mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
+    )
+    rebuild_table(
+        "daily_schedule",
+        DailySchedule,
+        mappings={ "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" }
+    )
+
+    # add_featured()
 
     # add default roles
     admin_role = Role(name="editor")

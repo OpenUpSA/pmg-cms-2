@@ -1,41 +1,41 @@
 {% extends 'admin/model/list.html' %}
 {% block head_css %}
-{{ super() }}
-<style>
+  {{ super() }}
+  <style>
 
-</style>
+  </style>
 {% endblock head_css%}
 
 {% import '_macros.html' as macros %}
 
 {% macro render_html(model, column) %}
-{{ model[column] }}
+  {{ model[column] }}
 {% endmacro %}
 
 {% macro render_raw_html(model, column) %}
-{% if model[column] %}
-{{ model[column] | truncate(400, True) }}
-{% endif %}
+  {% if model[column] %}
+    {{ model[column] | truncate(400, True) }}
+  {% endif %}
 {% endmacro %}
 
 {% macro render_profile_pic(model, column) %}
-<img style="max-width: 100px;" src="{{ STATIC_HOST }}{{ model[column] }}" />
+  <img style="max-width: 100px;" src="{{ STATIC_HOST }}{{ model[column] }}" />
 {% endmacro %}
 
 {% macro render_external_link(model, column) %}
-{% if model['pa_link'] -%}
-<a class="btn btn-default btn-sm" href="http://www.pa.org.za{{ model['pa_link'] }}" target="_blank"><i class="fa fa-chevron-right"></i> view profile on PA</a>
-{% endif %}
+  {% if model['pa_link'] -%}
+    <a class="btn btn-default btn-sm" href="http://www.pa.org.za{{ model['pa_link'] }}" target="_blank"><i class="fa fa-chevron-right"></i> view profile on PA</a>
+  {% endif %}
 {% endmacro %}
 
 {% macro render_membership_count(model, column) %}
-<span class="badge{% if not model[column] | length %} alert-danger{% else %} alert-info{% endif %}">{{ model[column] | length }}</span>
+  <span class="badge{% if not model[column] | length %} alert-danger{% else %} alert-info{% endif %}">{{ model[column] | length }}</span>
 {% endmacro %}
 
 {% macro render_committee_membership(model, column) %}
-{% if model[column] %}
-{% for membership in model[column] %}
-<a href="{{ url_for('committee.edit_view', id=membership.committee.id) }}">
+  {% if model[column] %}
+    {% for membership in model[column] %}
+      <a href="{{ url_for('committee.edit_view', id=membership.committee.id) }}">
 <span class="label alert-info">
   {% if membership.committee.name | length > 45 -%}
     {{ membership.committee.name[0:45] }}...
@@ -43,19 +43,21 @@
     {{ membership.committee.name }}
   {% endif %}
   </span>
-</a>
-{% if not loop.last %}<br>{% endif %}
-{% endfor %}
-{% endif %}
+      </a>
+      {% if not loop.last %}<br>{% endif %}
+    {% endfor %}
+  {% endif %}
 {% endmacro %}
 
 {% macro render_event_content(model, column) %}
-{% for item in model[column] %}
-{% if item.file_path %}<a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank">{% endif %}
-<span class="label alert-info">
-  {{ macros.file_type_icon(item.type) }} {% if item.title | length > 55 %}{{ item.title[0:55] }}...{% else %}{{ item.title }}{% endif %}
+  {% for item in model[column] %}
+    {% if item.file %}
+      {% if item.file.file_path %}<a href="{{ STATIC_HOST }}{{ item.file.file_path }}" target="_blank">{% endif %}
+      <span class="label alert-info">
+  {{ macros.file_type_icon(item.file.file_mime) }} {% if item.file.title | length > 55 %}{{ item.file.title[0:55] }}...{% else %}{{ item.file.title }}{% endif %}
   </span>
-  {% if item.file_path %}</a>{% endif %}
-{% if not loop.last %}<br>{% endif %}
-{% endfor %}
+      {% if item.file.file_path %}</a>{% endif %}
+      {% if not loop.last %}<br>{% endif %}
+    {% endif %}
+  {% endfor %}
 {% endmacro %}

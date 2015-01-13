@@ -95,8 +95,8 @@ class MyIndexView(AdminIndexView):
             ('Calls for Comment', 'call_for_comment.index_view', CallForComment.query.count()),
             ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),
             ('Gazette', 'gazette.index_view', Gazette.query.count()),
-            ('Hansards', 'hansard.index_view', Hansard.query.count()),
-            ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
+            ('Hansards', 'hansard.index_view', Event.query.filter_by(type="plenary").count()),
+            ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
         ]
@@ -244,7 +244,7 @@ class EventView(MyModelView):
 
     form_ajax_refs = {
         'content': {
-            'fields': ('title', 'type'),
+            'fields': ('type', ),
             'page_size': 25
         }
     }
@@ -294,7 +294,7 @@ class ContentModelConverter(InlineModelConverter):
 
 
 class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('type', 'file_path', )
+    form_excluded_columns = ('type', 'file', 'rich_text')
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
@@ -317,15 +317,14 @@ class InlineContent(InlineFormAdmin):
 
 class CommitteeMeetingView(EventView):
 
-    column_list = ('date', 'committee', 'title', 'content')
+    column_list = ('date', 'committee', 'content')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
-        'title',
         ('committee', 'committee.name'),
     )
     column_default_sort = (Event.date, True)
-    column_searchable_list = ('title', 'committee.name')
+    column_searchable_list = ('committee.name', )
     column_formatters = dict(
         content=macro('render_event_content'),
     )
@@ -336,7 +335,6 @@ class CommitteeMeetingView(EventView):
     form_columns = (
         'committee',
         'date',
-        'title',
         'summary',
         'body',
         'content',
@@ -360,20 +358,156 @@ class CommitteeMeetingView(EventView):
 
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
-        form.summary.data = event_obj.committee_meeting_report.summary
-        form.body.data = event_obj.committee_meeting_report.body
+        committee_meeting_report = Content.query.filter_by(event=event_obj).filter_by(type="committee-meeting-report").one()
+
+        form.summary.data = committee_meeting_report.rich_text.summary
+        form.body.data = committee_meeting_report.rich_text.body
         return
 
     def on_model_change(self, form, model, is_created):
         # create / update related CommitteeMeetingReport
         if is_created:
-            committee_meeting_report = CommitteeMeetingReport(event=model)
+            rich_text_obj = RichText()
+            db.session.add(rich_text_obj)
+            committee_meeting_report = Content(event=model, type="committee-meeting-report", rich_text=rich_text_obj)
         else:
-            committee_meeting_report = model.committee_meeting_report
-        committee_meeting_report.summary = form.summary.data
-        committee_meeting_report.body = form.body.data
+            committee_meeting_report = Content.query.filter_by(event=model).filter_by(type="committee-meeting-report").one()
+            rich_text_obj = committee_meeting_report.rich_text
+        rich_text_obj.summary = form.summary.data
+        rich_text_obj.body = form.body.data
         db.session.add(committee_meeting_report)
+        db.session.add(rich_text_obj)
         return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
+
+
+class HansardView(EventView):
+
+    column_list = (
+        'title',
+        'date',
+        'content',
+    )
+    column_sortable_list = (
+        'title',
+        'date',
+    )
+    column_default_sort = (Event.date, True)
+    column_searchable_list = ('title', )
+    column_formatters = dict(
+        content=macro('render_event_content'),
+    )
+    form_excluded_columns = (
+        'event',
+        'member',
+    )
+    form_columns = (
+        'date',
+        'body',
+        'content',
+    )
+    form_extra_fields = {
+        'body': CKTextAreaField('Body'),
+    }
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
+    inline_model_form_converter = ContentModelConverter
+
+    def on_form_prefill(self, form, id):
+        event_obj = Event.query.get(id)
+        hansard = Content.query.filter_by(event=event_obj).filter_by(type="hansard").one()
+        if hansard.rich_text:
+            form.body.data = hansard.rich_text.body
+        return
+
+    def on_model_change(self, form, model, is_created):
+        # create / update related Hansard content record
+        if is_created:
+            rich_text_obj = RichText()
+            db.session.add(rich_text_obj)
+            hansard = Content(event=model, type="hansard", rich_text=rich_text_obj)
+        else:
+            hansard = Content.query.filter_by(event=model).filter_by(type="hansard").one()
+            rich_text_obj = hansard.rich_text
+        rich_text_obj.body = form.body.data
+        db.session.add(hansard)
+        db.session.add(rich_text_obj)
+        return super(HansardView, self).on_model_change(form, model, is_created)
+
+
+class BriefingView(EventView):
+
+    column_list = (
+        'committee',
+        'title',
+        'date',
+        'content',
+    )
+    column_sortable_list = (
+        'title',
+        'date',
+    )
+    column_default_sort = (Event.date, True)
+    column_searchable_list = ('title', )
+    column_formatters = dict(
+        content=macro('render_event_content'),
+    )
+    form_excluded_columns = (
+        'event',
+        'member',
+    )
+    form_columns = (
+        'committee',
+        'date',
+        'summary',
+        'body',
+        'content',
+    )
+    form_extra_fields = {
+        'summary': CKTextAreaField('Summary'),
+        'body': CKTextAreaField('Body'),
+    }
+    form_widget_args = {
+        'summary': {
+            'class': 'ckeditor'
+        },
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
+    inline_model_form_converter = ContentModelConverter
+
+    def on_form_prefill(self, form, id):
+        event_obj = Event.query.get(id)
+        briefing = Content.query.filter_by(event=event_obj).filter_by(type="briefing").one()
+        if briefing.rich_text:
+            form.summary.data = briefing.rich_text.summary
+            form.body.data = briefing.rich_text.body
+        return
+
+    def on_model_change(self, form, model, is_created):
+        # create / update related briefing content record
+        if is_created:
+            rich_text_obj = RichText()
+            db.session.add(rich_text_obj)
+            briefing = Content(event=model, type="briefing", rich_text=rich_text_obj)
+        else:
+            briefing = Content.query.filter_by(event=model).filter_by(type="briefing").one()
+            rich_text_obj = briefing.rich_text
+        rich_text_obj.summary = form.summary.data
+        rich_text_obj.body = form.body.data
+        db.session.add(briefing)
+        db.session.add(rich_text_obj)
+        return super(BriefingView, self).on_model_change(form, model, is_created)
+
 
 
 class MemberView(MyModelView):
@@ -495,42 +629,6 @@ class GazetteView(MyModelView):
     column_searchable_list = ('title', )
 
 
-class HansardView(MyModelView):
-
-    column_exclude_list = (
-        'body',
-    )
-    column_default_sort = ('meeting_date', True)
-    column_searchable_list = ('title', )
-    form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-    }
-
-
-class BriefingView(MyModelView):
-
-    column_exclude_list = (
-        'minutes',
-        'summary',
-        'presentation',
-    )
-    column_default_sort = ('briefing_date', True)
-    column_searchable_list = ('title', )
-    form_widget_args = {
-        'minutes': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        },
-        'presentation': {
-            'class': 'ckeditor'
-        },
-    }
-
-
 class PolicyDocumentView(MyModelView):
 
     column_default_sort = ('effective_date', True)
@@ -622,8 +720,9 @@ admin.add_view(
         category="Other Content"))
 admin.add_view(
     HansardView(
-        Hansard,
+        Event,
         db.session,
+        type="plenary",
         name="Hansards",
         endpoint='hansard',
         category="Other Content"))
@@ -643,8 +742,9 @@ admin.add_view(
         category="Other Content"))
 admin.add_view(
     BriefingView(
-        Briefing,
+        Event,
         db.session,
+        type="media-briefing",
         name="Media Briefings",
         endpoint='briefing',
         category="Other Content"))

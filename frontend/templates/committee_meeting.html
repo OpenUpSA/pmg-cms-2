@@ -51,7 +51,7 @@
         {% if audio %}
         <ul class="list-unstyled">
           {% for item in audio %}
-          <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="glyphicon glyphicon-headphones"></span> {{ item.title }}</a></li>
+          <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-headphones"></span> {{ item.title }}</a></li>
           {% endfor %}
         </ul>
         {% else %}
@@ -67,7 +67,7 @@
         {% if related_docs %}
         <ul class="list-unstyled">
           {% for item in related_docs %}
-          <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{ item.title }}</a></li>
+          <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-file"></span> {{ item.title }}</a></li>
           {% endfor %}
         </ul>
         {% else %}

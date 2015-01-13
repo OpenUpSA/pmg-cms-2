@@ -349,8 +349,7 @@ def rebuild_db():
     # logger.debug("reading report.js")
     # with open('data/report.json', 'r') as f:
     #     records = []
-    #     lines = f.readlines()
-    #     for line in lines:
+    #     for line in f.readlines():
     #         report = json.loads(line)
     #         parsed_report = parsers.MeetingReportParser(report)
     #

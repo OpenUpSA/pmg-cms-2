@@ -90,10 +90,12 @@ def api_resources():
         .order_by(desc(Bill.year)),
         "member": db.session.query(Member)
         .order_by(Member.name),
-        "hansard": db.session.query(Hansard)
-        .order_by(desc(Hansard.meeting_date)),
-        "briefing": db.session.query(Briefing)
-        .order_by(desc(Briefing.briefing_date)),
+        "hansard": db.session.query(Event)
+        .filter(Event.type == 'plenary')
+        .order_by(desc(Event.date)),
+        "briefing": db.session.query(Event)
+        .filter(Event.type == 'media-briefing')
+        .order_by(desc(Event.date)),
         "question_reply": db.session.query(QuestionReply)
         .order_by(desc(QuestionReply.start_date)),
         "schedule": db.session.query(Schedule)

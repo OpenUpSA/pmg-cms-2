@@ -17,6 +17,7 @@ import os
 from s3_upload import S3Bucket
 import urllib
 from operator import itemgetter
+from dateutil import tz
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -317,14 +318,14 @@ class InlineContent(InlineFormAdmin):
 
 class CommitteeMeetingView(EventView):
 
-    column_list = ('date', 'committee', 'content')
+    column_list = ('date', 'title', 'committee', 'content')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
         ('committee', 'committee.name'),
     )
     column_default_sort = (Event.date, True)
-    column_searchable_list = ('committee.name', )
+    column_searchable_list = ('committee.name', 'title')
     column_formatters = dict(
         content=macro('render_event_content'),
     )
@@ -377,6 +378,8 @@ class CommitteeMeetingView(EventView):
         rich_text_obj.body = form.body.data
         db.session.add(committee_meeting_report)
         db.session.add(rich_text_obj)
+        # make sure date is timezone aware
+        model.date = model.date.replace(tzinfo=tz.gettz('Africa/Johannesburg'))
         return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 

@@ -257,7 +257,7 @@ def index():
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
-        if committee_meeting["committee_id"]:
+        if committee_meeting.get('committee'):
             committee_meetings.append(committee_meeting)
             if len(committee_meetings) == 10:
                 break
@@ -272,7 +272,9 @@ def index():
             scheduledates.append(curdate)
     stock_pic = "stock" + str(random.randint(1, 18)) + ".jpg"
     featured_list = load_from_api('featured')["results"]
-    featured_content = load_from_api('featured', featured_list[0]["id"])
+    featured_content = None
+    if len(featured_list) > 0:
+        featured_content = load_from_api('featured', featured_list[0]["id"])
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,

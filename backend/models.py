@@ -355,6 +355,7 @@ class Committee(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     about = db.Column(db.Text())
     contact_details = db.Column(db.Text())
+    ad_hoc = db.Column(db.Boolean())
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     house = db.relationship('House', lazy='joined')

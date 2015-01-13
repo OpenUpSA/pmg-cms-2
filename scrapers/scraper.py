@@ -87,12 +87,12 @@ class Scraper:
         return
 
     def _save_tabledreport(self, title, committee_name, body):
-        tabled_committee_report = Tabled_committee_report()
-        committee = Organisation.query.filter_by(name=committee_name).first()
-        if (committee):
+        tabled_committee_report = TabledCommitteeReport()
+        committee = Committee.query.filter_by(name=committee_name).first()
+        if committee:
             tabled_committee_report.title = title
             tabled_committee_report.body = body
-            tabled_committee_report.committee.append(committee)
+            tabled_committee_report.committee = committee
             db.session.add(tabled_committee_report)
         else:
             if committee_name not in self.missing_committees:
@@ -100,9 +100,9 @@ class Scraper:
         db.session.commit()
 
     def _report_exists(self, title, committee_name):
-        committee = Organisation.query.filter_by(name=committee_name).first()
+        committee = Committee.query.filter_by(name=committee_name).first()
         if (committee):
-            check = Tabled_committee_report.query.filter_by(title=title).first()
+            check = TabledCommitteeReport.query.filter_by(title=title).first()
             if check:
                 return True
         return False

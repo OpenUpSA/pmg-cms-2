@@ -443,6 +443,7 @@ class HansardView(EventView):
 class BriefingView(EventView):
 
     column_list = (
+        'committee',
         'title',
         'date',
         'content',
@@ -461,6 +462,7 @@ class BriefingView(EventView):
         'member',
     )
     form_columns = (
+        'committee',
         'date',
         'summary',
         'body',

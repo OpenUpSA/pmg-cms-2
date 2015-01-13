@@ -651,9 +651,8 @@ def add_content(dump_name, content_type, event_type, mappings=None):
                     content_obj.event = event_obj
                 # associate related committee
                 committees = find_committee(obj)
-                if hasattr(content_obj, 'committee_id'):
-                    if len(committees):
-                        event_obj.committee_id = committees[0].id
+                if len(committees) > 0:
+                    event_obj.committee_id = committees[0].id
                 # associate related files
                 content_list = find_files(obj)
                 if content_list:

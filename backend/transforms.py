@@ -31,7 +31,6 @@ class Transforms:
         "bill": {
             "id": "id",
             "title": "title",
-            "description": "bill_code"
         },
         # "hansard": {
         #     "id": "id",

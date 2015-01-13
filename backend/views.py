@@ -93,8 +93,9 @@ def api_resources():
         "hansard": db.session.query(Event)
         .filter(Event.type == 'plenary')
         .order_by(desc(Event.date)),
-        "briefing": db.session.query(Briefing)
-        .order_by(desc(Briefing.briefing_date)),
+        "briefing": db.session.query(Event)
+        .filter(Event.type == 'media-briefing')
+        .order_by(desc(Event.date)),
         "question_reply": db.session.query(QuestionReply)
         .order_by(desc(QuestionReply.start_date)),
         "schedule": db.session.query(Schedule)

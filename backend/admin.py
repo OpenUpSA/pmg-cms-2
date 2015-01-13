@@ -96,7 +96,7 @@ class MyIndexView(AdminIndexView):
             ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),
             ('Gazette', 'gazette.index_view', Gazette.query.count()),
             ('Hansards', 'hansard.index_view', Event.query.filter_by(type="plenary").count()),
-            ('Media Briefings', 'briefing.index_view', Briefing.query.count()),
+            ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
         ]
@@ -420,9 +420,9 @@ class HansardView(EventView):
 
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
-        hansard = Content.query.filter_by(event=event_obj).one()
-
-        form.body.data = hansard.rich_text.body
+        hansard = Content.query.filter_by(event=event_obj).filter_by(type="hansard").one()
+        if hansard.rich_text:
+            form.body.data = hansard.rich_text.body
         return
 
     def on_model_change(self, form, model, is_created):
@@ -438,6 +438,74 @@ class HansardView(EventView):
         db.session.add(hansard)
         db.session.add(rich_text_obj)
         return super(HansardView, self).on_model_change(form, model, is_created)
+
+
+class BriefingView(EventView):
+
+    column_list = (
+        'title',
+        'date',
+        'content',
+    )
+    column_sortable_list = (
+        'title',
+        'date',
+    )
+    column_default_sort = (Event.date, True)
+    column_searchable_list = ('title', )
+    column_formatters = dict(
+        content=macro('render_event_content'),
+    )
+    form_excluded_columns = (
+        'event',
+        'member',
+    )
+    form_columns = (
+        'date',
+        'summary',
+        'body',
+        'content',
+    )
+    form_extra_fields = {
+        'summary': CKTextAreaField('Summary'),
+        'body': CKTextAreaField('Body'),
+    }
+    form_widget_args = {
+        'summary': {
+            'class': 'ckeditor'
+        },
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+    inline_models = (
+        InlineContent(Content),
+    )
+    inline_model_form_converter = ContentModelConverter
+
+    def on_form_prefill(self, form, id):
+        event_obj = Event.query.get(id)
+        briefing = Content.query.filter_by(event=event_obj).filter_by(type="briefing").one()
+        if briefing.rich_text:
+            form.summary.data = briefing.rich_text.summary
+            form.body.data = briefing.rich_text.body
+        return
+
+    def on_model_change(self, form, model, is_created):
+        # create / update related briefing content record
+        if is_created:
+            rich_text_obj = RichText()
+            db.session.add(rich_text_obj)
+            briefing = Content(event=model, type="briefing", rich_text=rich_text_obj)
+        else:
+            briefing = Content.query.filter_by(event=model).filter_by(type="briefing").one()
+            rich_text_obj = briefing.rich_text
+        rich_text_obj.summary = form.summary.data
+        rich_text_obj.body = form.body.data
+        db.session.add(briefing)
+        db.session.add(rich_text_obj)
+        return super(BriefingView, self).on_model_change(form, model, is_created)
+
 
 
 class MemberView(MyModelView):
@@ -559,29 +627,6 @@ class GazetteView(MyModelView):
     column_searchable_list = ('title', )
 
 
-
-class BriefingView(MyModelView):
-
-    column_exclude_list = (
-        'minutes',
-        'summary',
-        'presentation',
-    )
-    column_default_sort = ('briefing_date', True)
-    column_searchable_list = ('title', )
-    form_widget_args = {
-        'minutes': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        },
-        'presentation': {
-            'class': 'ckeditor'
-        },
-    }
-
-
 class PolicyDocumentView(MyModelView):
 
     column_default_sort = ('effective_date', True)
@@ -695,8 +740,9 @@ admin.add_view(
         category="Other Content"))
 admin.add_view(
     BriefingView(
-        Briefing,
+        Event,
         db.session,
+        type="media-briefing",
         name="Media Briefings",
         endpoint='briefing',
         category="Other Content"))

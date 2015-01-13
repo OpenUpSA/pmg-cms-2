@@ -216,31 +216,6 @@ class Bill(db.Model):
         return unicode(out)
 
 
-class Briefing(db.Model):
-
-    __tablename__ = "briefing"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), nullable=False)
-    briefing_date = db.Column(db.Date)
-    summary = db.Column(db.Text)
-    minutes = db.Column(db.Text)
-    presentation = db.Column(db.Text)
-    files = db.relationship("File", secondary='briefing_file_join')
-    start_date = db.Column(db.Date())
-
-briefing_file_table = db.Table(
-    'briefing_file_join',
-    db.Model.metadata,
-    db.Column(
-        'briefing_id',
-        db.Integer,
-        db.ForeignKey('briefing.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
-
 
 class File(db.Model):
 
@@ -256,7 +231,7 @@ class File(db.Model):
     file_path = db.Column(db.String(255))
 
     def __unicode__(self):
-        return u'%s' % self.url
+        return u'%s' % self.title
 
 # M2M table
 bill_event_table = db.Table(

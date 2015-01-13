@@ -294,7 +294,7 @@ class ContentModelConverter(InlineModelConverter):
 
 
 class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('type', 'file_path', )
+    form_excluded_columns = ('type', 'file', 'rich_text')
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
@@ -358,7 +358,7 @@ class CommitteeMeetingView(EventView):
 
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
-        committee_meeting_report = Content.query.filter_by(event=event_obj).one()
+        committee_meeting_report = Content.query.filter_by(event=event_obj).filter_by(type="committee-meeting-report").one()
 
         form.summary.data = committee_meeting_report.rich_text.summary
         form.body.data = committee_meeting_report.rich_text.body

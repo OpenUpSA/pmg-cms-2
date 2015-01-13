@@ -195,9 +195,6 @@ class Bill(db.Model):
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
 
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
-    files = db.relationship("File")
-
     def get_code(self):
         out = self.type.prefix if self.type else "X"
         out += str(self.number) if self.number else ""

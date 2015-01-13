@@ -428,17 +428,6 @@ class Membership(db.Model):
         return unicode(tmp)
 
 
-class Hansard(db.Model):
-
-    __tablename__ = "hansard"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255))
-    meeting_date = db.Column(db.Date())
-    start_date = db.Column(db.Date())
-    body = db.Column(db.Text())
-
-
 # === Schedule === #
 
 class Schedule(db.Model):

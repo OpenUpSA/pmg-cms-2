@@ -47,7 +47,7 @@ def inject_paths():
         'FRONTEND_HOST': FRONTEND_HOST,
         'API_HOST': API_HOST,
         'STATIC_HOST': STATIC_HOST,
-    }
+        }
     return context_vars
 
 
@@ -100,7 +100,7 @@ class MyIndexView(AdminIndexView):
             ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
-        ]
+            ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
         file_count = Content.query.count()
 
@@ -122,11 +122,8 @@ class MyIndexView(AdminIndexView):
         Override builtin _handle_view in order to redirect users when a view is not accessible.
         """
         if not self.is_accessible():
-            return redirect(
-                '/security/login?next=' +
-                urllib.quote_plus(
-                    request.url),
-                code=302)
+            tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
+            return redirect(tmp, code=302)
 
 
 class MyModelView(ModelView):
@@ -152,7 +149,7 @@ class MyModelView(ModelView):
             return redirect(
                 '/security/login?next=' +
                 urllib.quote_plus(
-                    request.url),
+                    request.base_url),
                 code=302)
 
 
@@ -179,7 +176,7 @@ class UserView(MyRestrictedModelView):
         'last_login_ip',
         'current_login_ip',
         'login_count',
-    ]
+        ]
     column_searchable_list = ('email',)
     form_excluded_columns = [
         'password',
@@ -189,7 +186,7 @@ class UserView(MyRestrictedModelView):
         'last_login_ip',
         'current_login_ip',
         'login_count',
-    ]
+        ]
 
 
 # This widget uses custom template for inline field list
@@ -228,7 +225,7 @@ class CommitteeView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
-    )
+        )
     form_columns = (
         'name',
         'house',
@@ -328,7 +325,7 @@ class CommitteeMeetingView(EventView):
     column_searchable_list = ('committee.name', 'title')
     column_formatters = dict(
         content=macro('render_event_content'),
-    )
+        )
     form_excluded_columns = (
         'event',
         'member',
@@ -343,7 +340,7 @@ class CommitteeMeetingView(EventView):
     form_extra_fields = {
         'summary': CKTextAreaField('Summary'),
         'body': CKTextAreaField('Body'),
-    }
+        }
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
@@ -398,7 +395,7 @@ class HansardView(EventView):
     column_searchable_list = ('title', )
     column_formatters = dict(
         content=macro('render_event_content'),
-    )
+        )
     form_excluded_columns = (
         'event',
         'member',
@@ -410,12 +407,12 @@ class HansardView(EventView):
     )
     form_extra_fields = {
         'body': CKTextAreaField('Body'),
-    }
+        }
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
         },
-    }
+        }
     inline_models = (
         InlineContent(Content),
     )
@@ -459,7 +456,7 @@ class BriefingView(EventView):
     column_searchable_list = ('title', )
     column_formatters = dict(
         content=macro('render_event_content'),
-    )
+        )
     form_excluded_columns = (
         'event',
         'member',
@@ -474,7 +471,7 @@ class BriefingView(EventView):
     form_extra_fields = {
         'summary': CKTextAreaField('Summary'),
         'body': CKTextAreaField('Body'),
-    }
+        }
     form_widget_args = {
         'summary': {
             'class': 'ckeditor'
@@ -482,7 +479,7 @@ class BriefingView(EventView):
         'body': {
             'class': 'ckeditor'
         },
-    }
+        }
     inline_models = (
         InlineContent(Content),
     )
@@ -540,7 +537,7 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
-    )
+        )
     form_columns = (
         'name',
         'house',
@@ -564,7 +561,7 @@ class MemberView(MyModelView):
         'bio': {
             'rows': '10'
         },
-    }
+        }
     edit_template = "admin/edit_member.html"
 
     def on_model_change(self, form, model):
@@ -591,7 +588,7 @@ class QuestionView(MyModelView):
         'body': {
             'class': 'ckeditor'
         },
-    }
+        }
 
 
 class CallForCommentView(MyModelView):
@@ -609,7 +606,7 @@ class CallForCommentView(MyModelView):
         'summary': {
             'class': 'ckeditor'
         },
-    }
+        }
 
 
 class DailyScheduleView(MyModelView):
@@ -623,7 +620,7 @@ class DailyScheduleView(MyModelView):
         'body': {
             'class': 'ckeditor'
         },
-    }
+        }
 
 
 class GazetteView(MyModelView):
@@ -653,7 +650,7 @@ class TabledReportView(MyModelView):
         'summary': {
             'class': 'ckeditor'
         },
-    }
+        }
 
 # initialise admin instance
 admin = Admin(

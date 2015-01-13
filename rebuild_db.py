@@ -486,10 +486,10 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    tabledreports = TabledCommitteeReport.query.limit(5)
+    tabled_reports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
-    for tabledreport in tabledreports:
-        featured.tabled_committee_report.append(tabledreport)
+    for tabled_report in tabled_reports:
+        featured.tabled_committee_report.append(tabled_report)
     featured.title = "LivemagSA Launched Live From Parliament"
     featured.blurb = "For the next six months, LiveMagSA be teaming up with PMG to report directly from parliament, bringing you the highlights and telling you about the policy decisions that affect you."
     featured.link = "http://livemag.co.za/welcome-parliament/"
@@ -699,66 +699,66 @@ def add_content(dump_name, content_type, event_type, mappings=None):
 
 
 if __name__ == '__main__':
-    disable_reindexing()
-    clear_db()
-    rebuild_db()
+    # disable_reindexing()
+    # clear_db()
+    # rebuild_db()
+    #
+    # add_content(
+    #     "hansard",
+    #     content_type="hansard",
+    #     event_type="plenary",
+    #     mappings={"title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body"}
+    # )
+    # add_content(
+    #     "briefing",
+    #     content_type="briefing",
+    #     event_type="media-briefing",
+    #     mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
+    # )
+    # rebuild_table(
+    #     "questions_replies",
+    #     QuestionReply,
+    #     mappings={"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"}
+    # )
+    # rebuild_table(
+    #     "tabled_committee_report",
+    #     TabledCommitteeReport,
+    #     mappings={ "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" }
+    # )
+    # rebuild_table(
+    #     "calls_for_comment",
+    #     CallForComment,
+    #     mappings={ "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" }
+    # )
+    # rebuild_table(
+    #     "policy_document",
+    #     PolicyDocument,
+    #     mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
+    # )
+    # rebuild_table(
+    #     "gazette",
+    #     Gazette,
+    #     mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
+    # )
+    # rebuild_table(
+    #     "daily_schedule",
+    #     DailySchedule,
+    #     mappings={ "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" }
+    # )
 
-    add_content(
-        "hansard",
-        content_type="hansard",
-        event_type="plenary",
-        mappings={"title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body"}
-    )
-    add_content(
-        "briefing",
-        content_type="briefing",
-        event_type="media-briefing",
-        mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
-    )
-    rebuild_table(
-        "questions_replies",
-        QuestionReply,
-        mappings={"title": "title", "body": "body", "start_date": "start_date", "question_number": "question_number"}
-    )
-    rebuild_table(
-        "tabled_committee_report",
-        TabledCommitteeReport,
-        mappings={ "title": "title", "start_date": "start_date", "body": "body", "summary": "teaser", "nid": "nid" }
-    )
-    rebuild_table(
-        "calls_for_comment",
-        CallForComment,
-        mappings={ "title": "title", "start_date": "start_date", "end_date": "comment_exp", "body": "body", "summary": "teaser", "nid": "nid" }
-    )
-    rebuild_table(
-        "policy_document",
-        PolicyDocument,
-        mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
-    )
-    rebuild_table(
-        "gazette",
-        Gazette,
-        mappings={ "title": "title", "effective_date": "effective_date", "start_date": "start_date", "nid": "nid" }
-    )
-    rebuild_table(
-        "daily_schedule",
-        DailySchedule,
-        mappings={ "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" }
-    )
+    add_featured()
 
-    # add_featured()
-
-    # add default roles
-    admin_role = Role(name="editor")
-    db.session.add(admin_role)
-    superuser_role = Role(name="user-admin")
-    db.session.add(superuser_role)
-    # add a default admin user
-    user = User(email="admin@pmg.org.za", password="3o4ukjren3", active=True, confirmed_at=datetime.datetime.now())
-    user.roles.append(admin_role)
-    user.roles.append(superuser_role)
-    db.session.add(user)
-    db.session.commit()
-
-    # add billtracker data
-    merge_billtracker()
+    # # add default roles
+    # admin_role = Role(name="editor")
+    # db.session.add(admin_role)
+    # superuser_role = Role(name="user-admin")
+    # db.session.add(superuser_role)
+    # # add a default admin user
+    # user = User(email="admin@pmg.org.za", password="3o4ukjren3", active=True, confirmed_at=datetime.datetime.now())
+    # user.roles.append(admin_role)
+    # user.roles.append(superuser_role)
+    # db.session.add(user)
+    # db.session.commit()
+    #
+    # # add billtracker data
+    # merge_billtracker()

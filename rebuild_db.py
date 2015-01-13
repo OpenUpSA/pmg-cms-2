@@ -633,15 +633,26 @@ def add_content(dump_name, content_type, event_type, mappings=None):
                         related_content_obj.event = event_obj
                         db.session.add(related_content_obj)
                 # add related 'rich text' object
-                if newobj.get('body'):
-                    rich_text_obj = RichText(
-                        body=newobj['body']
-                    )
+                if content_type in ['hansard', 'briefing', ]:
+                    rich_text_obj = RichText()
+                    if newobj.get('body'):
+                        rich_text_obj.body = newobj['body']
+                    elif newobj.get('minutes'):
+                        rich_text_obj.body = newobj['minutes']
+                    if newobj.get('summary'):
+                        rich_text_obj.summary = newobj['summary']
+                    if newobj.get('presentation'):
+                        if rich_text_obj.body:
+                            rich_text_obj.body = rich_text_obj.body + newobj['presentation']
+                        else:
+                            rich_text_obj.body = newobj['presentation']
                     content_obj.rich_text = rich_text_obj
                     db.session.add(rich_text_obj)
                 # populate 'content' and 'event' instances
                 for key, val in newobj.iteritems():
                     if content_type == "hansard" and key == 'meeting_date':
+                        event_obj.date = val
+                    elif content_type == "briefing" and key == 'briefing_date':
                         event_obj.date = val
                     elif key == 'title':
                         event_obj.title = val
@@ -654,7 +665,8 @@ def add_content(dump_name, content_type, event_type, mappings=None):
                     db.session.commit()
                     i = 0
                     logger.debug("Wrote 100 rows...")
-            except:
+            except Exception as e:
+                print e
                 logger.warning("Error reading row for " + content_type)
         db.session.commit()
 
@@ -670,12 +682,12 @@ if __name__ == '__main__':
         event_type="plenary",
         mappings={"title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body"}
     )
-    # rebuild_table(
-    #     "briefing",
-    #     Briefing,
-    #     "briefing",
-    #     mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
-    # )
+    add_content(
+        "briefing",
+        content_type="briefing",
+        event_type="media-briefing",
+        mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
+    )
     # rebuild_table(
     #     "questions_replies",
     #     QuestionReply,

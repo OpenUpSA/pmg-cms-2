@@ -1,6 +1,7 @@
 from backend.app import logging
 from datetime import datetime
 import json
+from dateutil import tz
 
 
 class MyParser():
@@ -38,9 +39,7 @@ class MeetingReportParser(MyParser):
         if report_dict.get('meeting_date'):
             try:
                 timestamp = int(report_dict['meeting_date'].strip('"'))
-                self.date = datetime.fromtimestamp(
-                timestamp
-                )
+                self.date = datetime.fromtimestamp(timestamp, tz=tz.gettz('Africa/Johannesburg'))
             except (TypeError, AttributeError) as e:
                 pass
         self.summary = None

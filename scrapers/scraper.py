@@ -16,6 +16,9 @@ from sqlalchemy import types
 from bs4 import BeautifulSoup
 import csv
 from urlparse import urljoin
+import json
+import time
+import dateutil
 
 app = Flask(__name__)
 
@@ -86,7 +89,20 @@ class Scraper:
         self._save_schedule(result)
         return
 
+    def _date_tabledreport(self, title):
+    	logger.debug("Looking for date %s" % title)
+    	result = re.search("\d\d? (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December) (20)\d{2}", title)
+    	if result:
+            dt = time.strptime(result.group(0), "%d %B %Y")
+            logger.info("Date Found %s" % time.mktime(dt))
+            # logger.info("UDate Found %s" % dt.time())
+            return time.mktime(dt)
+    	else:
+            logger.info("Date Not Found %s" % title)
+            return None
+
     def _save_tabledreport(self, title, committee_name, body):
+    	self._date_tabledreport(title)
         tabled_committee_report = TabledCommitteeReport()
         committee = Committee.query.filter_by(name=committee_name).first()
         if committee:
@@ -108,7 +124,7 @@ class Scraper:
         return False
 
     def tabledreports(self):
-
+        fout = open("./data/tabled_committee_report.json", "w")
         # url = "http://pmg.org.za/tabled-committee-reports-2008-2013"
         # print "Fetching", url
         # page = requests.get(url)
@@ -135,12 +151,38 @@ class Scraper:
                     url = link['href']
                     if not re.match("http://", url):
                         url = "http://www.pmg.org/" + url.replace("../../../../../../", "")
-                    queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
+                    url = url.strip()
+                    if not re.search("\.pdf", url):
+                        if re.search("(www\.pmg\.org)", url):
+                            logger.info("Url inserted %s" % url)
+                            queue.insert(0, { "link": url, "name": link.get_text(), "committee": interval[2].strip()})
+                        else:
+                            logger.info("Url pushed %s" % url)
+                            queue.append({ "link": url, "name": link.get_text(), "committee": interval[2].strip()})
         for item in queue:
-            if (self._report_exists(item["name"], item["committee"]) == False):
-                # print "Processing report %s" % item["name"]
+            # if (self._report_exists(item["name"], item["committee"]) == False):
+            logger.info("Processing report %s" % item["name"])
+            logger.info("Fetching url %s" % item["link"])
+            try:
                 page = requests.get(item["link"]).text
-                self._save_tabledreport(item["name"], item["committee"], page)
+                soup = BeautifulSoup(page)
+                for script in soup(["script", "style"]):
+                    script.extract()    # rip it out
+                tabled_report = {}
+                tabled_report["title"] = item["name"]
+                tabled_report["content_type"] = "tabled_committee_reports"
+                tabled_report["start_date"] = self._date_tabledreport(item["name"])
+                tabled_report["terms"] = [  item["committee"].strip() ]
+                # logger.debug("Soup", soup.content)
+                if (soup.find("div", {"id": "main" })):
+                    tabled_report["body"] = soup.find("div", {"id": "main" }).find("div", {"class": "content"}).prettify().strip()    
+                else:
+                    tabled_report["body"] = soup.prettify().strip()
+                fout.write( json.dumps(tabled_report) + "\n" )
+                # self._save_tabledreport(item["name"], item["committee"], page)
+            except Exception:
+                logger.warning("Could not fetch url %s" % item["link"])
+        fout.close()
         print self.missing_committees
 
     def members(self):
@@ -149,7 +191,7 @@ class Scraper:
             memberswriter = csv.writer(csvfile)
             memberswriter.writerow(["url", "name"])
             while True:
-                html = requests.get(list_url).content
+                html = requests.get(list_url, timeout=1).content
                 soup = BeautifulSoup(html)
                 for item in soup.select(".person-list-item a"):
                     url = item["href"]

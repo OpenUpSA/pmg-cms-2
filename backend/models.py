@@ -357,7 +357,7 @@ class Committee(db.Model):
     contact_details = db.Column(db.Text())
     ad_hoc = db.Column(db.Boolean())
 
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
     tabled_committee_reports = db.relationship(

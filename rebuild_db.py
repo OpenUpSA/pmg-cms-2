@@ -385,8 +385,7 @@ def rebuild_db():
             if committee_obj:
                 committee_obj = committee_obj['model']
 
-            event_obj = Event(
-                type="committee-meeting",
+            event_obj = CommitteeMeeting(
                 committee=committee_obj,
                 date=parsed_report.date,
                 title=parsed_report.title
@@ -624,7 +623,7 @@ def merge_billtracker():
     return
 
 
-def add_content(dump_name, content_type, event_type, mappings=None):
+def add_content(dump_name, model_class, content_type, mappings=None):
     logger.debug("Adding content: %s" % content_type)
     i = 0
     with open('data/' + dump_name + '.json', 'r') as f:
@@ -641,9 +640,8 @@ def add_content(dump_name, content_type, event_type, mappings=None):
                             newobj[mappings[mapping]] = db_date_from_utime(newobj[mappings[mapping]])
                 # initialise 'content' and 'event' instances
                 content_obj = Content(type=content_type)
-                if event_type:
-                    event_obj = Event(type=event_type)
-                    content_obj.event = event_obj
+                event_obj = model_class()
+                content_obj.event = event_obj
                 # associate related committee
                 committees = find_committee(obj)
                 if len(committees) > 0:
@@ -736,14 +734,14 @@ if __name__ == '__main__':
 
     add_content(
         "hansard",
+        Plenary,
         content_type="hansard",
-        event_type="plenary",
         mappings={"title": "title", "meeting_date": "meeting_date", "start_date": "start_date", "body": "body"}
     )
     add_content(
         "briefing",
+        Briefing,
         content_type="briefing",
-        event_type="media-briefing",
         mappings={"title": "title", "briefing_date": "briefing_date", "summary": "summary", "minutes": "minutes", "presentation": "presentation", "start_date": "start_date" }
     )
     rebuild_table(
@@ -779,6 +777,9 @@ if __name__ == '__main__':
 
     add_featured()
 
+    # add billtracker data
+    merge_billtracker()
+
     # add default roles
     admin_role = Role(name="editor")
     db.session.add(admin_role)
@@ -790,6 +791,3 @@ if __name__ == '__main__':
     user.roles.append(superuser_role)
     db.session.add(user)
     db.session.commit()
-
-    # add billtracker data
-    merge_billtracker()

@@ -241,6 +241,9 @@ bill_event_table = db.Table(
 class Event(db.Model):
 
     __tablename__ = "event"
+    __mapper_args__ = {
+        'polymorphic_on': 'type'
+    }
 
     id = db.Column(db.Integer, index=True, primary_key=True)
     date = db.Column(db.DateTime(timezone=True))
@@ -303,6 +306,48 @@ event_bills = db.Table(
         'bill_id',
         db.Integer(),
         db.ForeignKey('bill.id')))
+
+
+class CommitteeMeeting(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'committee-meeting'
+    }
+
+
+class Plenary(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'plenary'
+    }
+
+
+class Briefing(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'media-briefing'
+    }
+
+
+class BillIntroduction(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'bill-introduced'
+    }
+
+
+class BillAdoption(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'bill-passed'
+    }
+
+
+class BillApproval(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'bill-signed'
+    }
+
+
+class BillEnactment(Event):
+    __mapper_args__ = {
+        'polymorphic_identity': 'bill-enacted'
+    }
 
 
 class MembershipType(db.Model):
@@ -519,7 +564,7 @@ policy_document_file_table = db.Table(
         'file_id',
         db.Integer,
         db.ForeignKey('file.id')),
-)
+    )
 
 
 # === Gazette === #

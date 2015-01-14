@@ -36,6 +36,7 @@ class MeetingReportParser(MyParser):
         self.title = None
         self.committee = None
         self.date = None
+        self.chairperson = None
         if report_dict.get('meeting_date'):
             try:
                 timestamp = int(report_dict['meeting_date'].strip('"'))
@@ -53,6 +54,7 @@ class MeetingReportParser(MyParser):
 
         self.extract_title()
         self.extract_committee()
+        self.extract_chairperson()
         self.extract_summary()
         self.extract_related_docs()
         self.extract_audio()
@@ -65,6 +67,11 @@ class MeetingReportParser(MyParser):
     def extract_committee(self):
         if self.source['terms']:
             self.committee = self.strip_rtf(self.source['terms'][0])
+        return
+
+    def extract_chairperson(self):
+        if self.source.get('chairperson'):
+            self.chairperson = self.strip_rtf(self.source['chairperson'])
         return
 
     def extract_summary(self):

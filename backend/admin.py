@@ -334,6 +334,7 @@ class CommitteeMeetingView(EventView):
         'committee',
         'title',
         'date',
+        'chairperson',
         'summary',
         'body',
         'content',
@@ -673,7 +674,7 @@ admin.add_view(
         category="Committees"))
 admin.add_view(
     CommitteeMeetingView(
-        Event,
+        CommitteeMeeting,
         db.session,
         type="committee-meeting",
         name="Committee Meetings",

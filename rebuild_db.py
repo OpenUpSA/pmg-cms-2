@@ -387,6 +387,7 @@ def rebuild_db():
 
             event_obj = CommitteeMeeting(
                 committee=committee_obj,
+                chairperson=parsed_report.chairperson,
                 date=parsed_report.date,
                 title=parsed_report.title
             )

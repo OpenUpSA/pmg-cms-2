@@ -38,3 +38,4 @@ six==1.8.0
 webassets==0.10.1
 wsgiref==0.1.2
 nltk==2.0.4
+alembic==0.7.4

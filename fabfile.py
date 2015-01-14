@@ -18,6 +18,7 @@ def rebuild_db():
             sudo('source production-env.sh && python rebuild_db.py')
     sudo("supervisorctl start pmg_cms")
 
+
 def copy_db():
     local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")
     local("tar cvzf pmg.sql.tar.gz pmg.sql")

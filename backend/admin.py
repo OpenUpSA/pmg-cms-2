@@ -332,6 +332,7 @@ class CommitteeMeetingView(EventView):
     )
     form_columns = (
         'committee',
+        'title',
         'date',
         'summary',
         'body',

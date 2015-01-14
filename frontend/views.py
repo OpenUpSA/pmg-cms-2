@@ -387,18 +387,22 @@ def committee_meeting(event_id):
     """
 
     event = load_from_api('committee-meeting', event_id)
+    report = None
     related_docs = []
     audio = []
     if event.get('content'):
         for item in event['content']:
             if "audio" in item['type']:
                 audio.append(item)
+            elif item['type'] == "committee-meeting-report":
+                report = item
             else:
                 related_docs.append(item)
 
     return render_template(
         'committee_meeting.html',
         event=event,
+        report=report,
         audio=audio,
         related_docs=related_docs,
         STATIC_HOST=app.config['STATIC_HOST'])

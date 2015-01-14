@@ -82,3 +82,23 @@ the following form::
     export AWS_SECRET_ACCESS_KEY=XXX
     export MAIL_PASSWORD=XXX
     export SECURITY_PASSWORD_SALT=XXX
+
+
+### Database migration
+
+We use alembic for applying changes to the data model. To setup a migration script:
+
+    alembic revision --autogenerate -m "<revision description>"
+    
+Then to run the script on your local machine: 
+
+    alembic upgrade head -c 'config/development/alembic.ini'
+    
+but first, ensure that the `sqlalchemy.url` parameter is pointing at the right place.
+
+To run migration scripts on the live database, copy the `alembic.ini` into the production config directory, update the
+`sqlalchemy.url` parameter, and 
+
+    alembic upgrade head -c 'config/production/alembic.ini'
+    
+Never add the production configuration to git, as it contains sensitive database credentials.

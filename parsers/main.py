@@ -1,6 +1,7 @@
 from backend.app import logging
-from datetime import datetime
+from datetime import datetime, time
 import json
+from dateutil import tz
 
 
 class MyParser():
@@ -38,9 +39,10 @@ class MeetingReportParser(MyParser):
         if report_dict.get('meeting_date'):
             try:
                 timestamp = int(report_dict['meeting_date'].strip('"'))
-                self.date = datetime.fromtimestamp(
-                timestamp
-                )
+                tmp = datetime.fromtimestamp(timestamp).date()
+                tmp = datetime.combine(tmp, time(0, 0))
+                tmp = tmp.replace(tzinfo=tz.gettz('utc'))
+                self.date = tmp
             except (TypeError, AttributeError) as e:
                 pass
         self.summary = None

@@ -312,6 +312,7 @@ class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
+    chairperson = db.Column(db.String(256))
 
 
 class Plenary(Event):

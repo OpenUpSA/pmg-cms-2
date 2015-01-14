@@ -18,6 +18,21 @@ def rebuild_db():
             sudo('source production-env.sh && python rebuild_db.py')
     sudo("supervisorctl start pmg_cms")
 
+
+def upgrade_db():
+    with virtualenv():
+        with cd(env.project_dir):
+            sudo('alembic upgrade head')
+    return
+
+
+def downgrade_db():
+    with virtualenv():
+        with cd(env.project_dir):
+            sudo('alembic downgrade -1')
+    return
+
+
 def copy_db():
     local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")
     local("tar cvzf pmg.sql.tar.gz pmg.sql")

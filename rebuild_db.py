@@ -396,7 +396,7 @@ def rebuild_db():
             rich_text_obj = RichText(
                 body=parsed_report.body,
                 summary=parsed_report.summary,
-            )
+                )
             db.session.add(rich_text_obj)
             report_obj = Content(
                 type="committee-meeting-report",
@@ -416,7 +416,7 @@ def rebuild_db():
                     event=event_obj,
                     type='related-doc',
                     file=file_obj
-                    )
+                )
                 db.session.add(doc_obj)
 
             for item in parsed_report.audio:
@@ -441,7 +441,7 @@ def rebuild_db():
                     event=event_obj,
                     type="audio",
                     file=file_obj
-                    )
+                )
                 db.session.add(audio_obj)
 
             i += 1
@@ -486,21 +486,16 @@ def bills():
     db.session.commit()
 
 def add_featured():
-    tabledreports = TabledCommitteeReport.query.limit(5)
+    tabled_reports = TabledCommitteeReport.query.limit(5)
     featured = Featured()
-    for tabledreport in tabledreports:
-        featured.tabled_committee_report.append(tabledreport)
+    for tabled_report in tabled_reports:
+        featured.tabled_committee_report.append(tabled_report)
     featured.title = "LivemagSA Launched Live From Parliament"
     featured.blurb = "For the next six months, LiveMagSA be teaming up with PMG to report directly from parliament, bringing you the highlights and telling you about the policy decisions that affect you."
     featured.link = "http://livemag.co.za/welcome-parliament/"
     db.session.add(featured)
     db.session.commit()
 
-def clear_db():
-    logger.debug("Dropping all")
-    db.drop_all()
-    logger.debug("Creating all")
-    db.create_all()
 
 def disable_reindexing():
     Search.reindex_changes = False
@@ -700,7 +695,43 @@ def add_content(dump_name, content_type, event_type, mappings=None):
 
 if __name__ == '__main__':
     disable_reindexing()
-    clear_db()
+
+    logger.debug("Dropping tables")
+    db.metadata.drop_all(db.engine, tables=[
+        House.__table__,
+        Party.__table__,
+        Province.__table__,
+        BillType.__table__,
+        BillStatus.__table__,
+        Bill.__table__,
+        File.__table__,
+        Event.__table__,
+        bill_event_table,
+        event_bills,
+        MembershipType.__table__,
+        Member.__table__,
+        Committee.__table__,
+        Membership.__table__,
+        schedule_house_table,
+        Schedule.__table__,
+        QuestionReply.__table__,
+        TabledCommitteeReport.__table__,
+        tabled_committee_report_file_table,
+        CallForComment.__table__,
+        PolicyDocument.__table__,
+        policy_document_file_table,
+        Gazette.__table__,
+        gazette_file_table,
+        Featured.__table__,
+        featured_tabled_committee_report_join,
+        DailySchedule.__table__,
+        daily_schedule_file_table,
+        RichText.__table__,
+        Content.__table__
+    ])
+
+    logger.debug("Creating all missing tables")
+    db.create_all()
     rebuild_db()
 
     add_content(
@@ -746,7 +777,7 @@ if __name__ == '__main__':
         mappings={ "title": "title", "start_date": "start_date", "body": "body", "schedule_date": "daily_sched_date", "nid": "nid" }
     )
 
-    # add_featured()
+    add_featured()
 
     # add default roles
     admin_role = Role(name="editor")

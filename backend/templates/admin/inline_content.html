@@ -2,20 +2,21 @@
 {% import '_macros.html' as macros %}
 
 {% macro render_field(field) %}
-{% set model = field.object_data %}
-<div class="row">
-  <div class="col-md-8">
-    {{ field }}
+  {% set model = field.object_data %}
+  <div class="row">
+    {% if model.file and model.file.file_path %}
+      <div class="col-md-10">
+        <a href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ model.file.file_path }}" target="_blank">
+          {{ macros.file_type_icon(model.type) }}
+          {{ model.file.title }}
+        </a>
+      </div>
+    {% else %}
+      <div class="col-md-8">
+        {{ field }}
+      </div>
+    {% endif %}
   </div>
-  <div class="col-md-2 text-center">
-    <p class="text-center">
-      <a href="{{ STATIC_HOST }}{{ model.file_path }}" target="_blank">
-        {{ macros.file_type_icon(model.type, size="fa-2x") }}<br>
-        {{ model.file_path }}
-      </a>
-    </p>
-  </div>
-</div>
 {% endmacro %}
 
 {{ base.render_inline_fields(field, template, render_field) }}

@@ -47,3 +47,5 @@ pmg.org.za.key
 webassets-external
 app.*.js
 app.*.css
+
+config/production/alembic.ini

@@ -1,41 +1,59 @@
 <nav class="navbar navbar-default navbar-pmg" role="navigation">
-	<div class="container">
-		<div class="row">
-			<div class="col-md- logo-container">
-				<a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
-			</div>
-			<div class="col-md-6">
-				<form class="navbar-form" role="search" action="/search">
-					<div class="input-group">
-						<input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
+  <div class="container">
+    <div class="row">
+      <div class="col-md- logo-container">
+        <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
+      </div>
+      <div class="col-md-6">
+        <form class="navbar-form" role="search" action="/search">
+          <div class="input-group">
+            <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
 						<span class="input-group-btn">
 							<input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
 						</span>
-					</div>
-				</form>
-			</div>
-			<div class="col-md-4">
-				<ul class="nav navbar-nav">
-					{% if session.current_user %}
-						<a href="/logout/" class="btn btn-primary navbar-btn btn-sm">Log Out</a>
-					{% else %}
-						<a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="/login/" class="btn btn-primary navbar-btn btn-sm">Log In</a> 
-					{% endif %}
-				</ul>
-			</div>
-		</div>
-	</div><!-- /.container -->
+          </div>
+        </form>
+      </div>
+      <div class="col-md-4">
+
+        <ul class="nav navbar-nav pull-right">
+          {% if session.current_user %}
+            {% set user = session.current_user %}
+            <div class="btn-group">
+              <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-user"></i> {{ user.email }} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu pull-right" role="menu">
+                <li><a href="{{ url_for('change_password') }}">Change password</a></li>
+                <li><a href="{{ url_for('send_confirmation') }}">Resend confirmation email</a></li>
+                {% for role in user.roles %}
+                  {% if role.name == 'editor' %}
+                    </li><li class="divider"></li>
+                    <li><a href="{{ config.API_HOST + "admin/" }}">Admin interface</a></li>
+                  {% endif %}
+                {% endfor %}
+                <li class="divider"></li>
+                <li><a href="{{ url_for('logout') }}">Log Out</a>
+              </ul>
+            </div>
+          {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="/login/" class="btn btn-primary navbar-btn btn-sm">Log In</a>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div><!-- /.container -->
 </nav>
 
 {% block top_links %}
-<div class="container">
-	<ul class="list-inline top-links">
-		<li><a href="/committees/">Committees</a></li>
-		<li><a href="/members">MPs</a></li>
-		<li><a href="/committee-meetings">Committee Meetings</a></li>
-		<li><a href="/bills">Bills</a></li>
-		<li><a href="/question_replies">Questions and Replies</a></li>
-		<li><a href="/calls-for-comments">Calls for Comments</a></li>
-	</ul>
-</div>
+  <div class="container">
+    <ul class="list-inline top-links">
+      <li><a href="/committees/">Committees</a></li>
+      <li><a href="/members">MPs</a></li>
+      <li><a href="/committee-meetings">Committee Meetings</a></li>
+      <li><a href="/bills">Bills</a></li>
+      <li><a href="/question_replies">Questions and Replies</a></li>
+      <li><a href="/calls-for-comments">Calls for Comments</a></li>
+    </ul>
+  </div>
 {% endblock %}

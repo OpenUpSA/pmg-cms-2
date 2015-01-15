@@ -228,6 +228,7 @@ class CommitteeView(MyModelView):
         )
     form_columns = (
         'name',
+        'ad_hoc',
         'house',
         'memberships',
     )

@@ -1,39 +1,73 @@
 {% extends "base.html" %}
 
 {% block page %}
-<h1><i class="fa fa-icon fa-group"></i> Parliamentary Committees</h1>
+  <h1><i class="fa fa-icon fa-group"></i> Parliamentary Committees</h1>
 
-<h2>National Assembly</h2>
-<ul>
-  {% for committee in committees %}
-  {% if committee.house.id == 3 %}
-  <li>
-    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-  </li>
-  {% endif %}
-  {% endfor %}
-</ul>
+  <h2>National Assembly</h2>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 3 and not committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 
-<h2>National Council of Provinces</h2>
-<ul>
-  {% for committee in committees %}
-  {% if committee.house.id == 2 %}
-  <li>
-    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-  </li>
-  {% endif %}
-  {% endfor %}
-</ul>
+  <h2>National Council of Provinces</h2>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 2 and not committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 
-<h2>Joint Committees</h2>
-<ul>
-  {% for committee in committees %}
-  {% if committee.house.id == 1 %}
-  <li>
-    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-  </li>
-  {% endif %}
-  {% endfor %}
-</ul>
+  <h2>Joint Committees</h2>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 1 and not committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h2>Ad-Hoc committees</h2>
+  <h4>National Assembly</h4>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 3 and committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h4>National Council of Provinces</h4>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 2 and committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+
+  <h4>Joint Committees</h4>
+  <ul>
+    {% for committee in committees %}
+      {% if committee.house.id == 1 and committee.ad_hoc %}
+        <li>
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 
 {% endblock page %}

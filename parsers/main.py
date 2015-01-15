@@ -40,7 +40,7 @@ class MeetingReportParser(MyParser):
         if report_dict.get('meeting_date'):
             try:
                 timestamp = int(report_dict['meeting_date'].strip('"'))
-                tmp = datetime.fromtimestamp(timestamp, tz=tz.gettz('utc'))
+                tmp = datetime.fromtimestamp(timestamp, tz=tz.gettz('UTC'))
                 self.date = tmp
             except (TypeError, AttributeError) as e:
                 pass

@@ -61,6 +61,24 @@ class Role(db.Model, RoleMixin):
         return unicode(self.name)
 
 
+class Organisation(db.Model):
+
+    __tablename__ = "organisation"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    domain = db.Column(db.String(100), nullable=False)
+    paid_subscriber = db.Column(db.Boolean)
+    created_at = db.Column(db.DateTime(timezone=True))
+    expiry = db.Column(db.DateTime(timezone=True))
+
+    subscriptions = db.relationship('Committee', secondary='organisation_committee',
+                            backref=db.backref('subscribed_organisations', lazy='dynamic'))
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+
 class User(db.Model, UserMixin):
 
     __tablename__ = "user"
@@ -69,13 +87,18 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), unique=True, nullable=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
-    confirmed_at = db.Column(db.DateTime())
-    last_login_at = db.Column(db.DateTime())
-    current_login_at = db.Column(db.DateTime())
+    confirmed_at = db.Column(db.DateTime(timezone=True))
+    last_login_at = db.Column(db.DateTime(timezone=True))
+    current_login_at = db.Column(db.DateTime(timezone=True))
     last_login_ip = db.Column(db.String(100))
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
 
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
+
+    subscriptions = db.relationship('Committee', secondary='user_committee',
+                            backref=db.backref('subscribed_users', lazy='dynamic'))
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -103,6 +126,30 @@ roles_users = db.Table(
         'role_id',
         db.Integer(),
         db.ForeignKey('role.id')))
+
+organisation_committee = db.Table(
+    'organisation_committee',
+    db.Column(
+        'organisation_id',
+        db.Integer(),
+        db.ForeignKey('organisation.id')),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id')))
+
+
+user_committee = db.Table(
+    'user_committee',
+    db.Column(
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id')),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id')))
+
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

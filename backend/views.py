@@ -17,8 +17,6 @@ import math
 from flask_security import current_user
 from flask_security.decorators import load_user
 
-API_HOST = app.config["API_HOST"]
-
 # handling static files (only relevant during development)
 app.static_folder = 'static'
 app.add_url_rule('/static/<path:filename>',
@@ -235,9 +233,11 @@ def landing():
     List available endpoints.
     """
 
+    base_url = url_for('landing', _external=True)
+
     out = {'endpoints': []}
     for resource in api_resources().keys():
-        out['endpoints'].append(API_HOST + resource)
+        out['endpoints'].append(base_url + resource)
     if current_user and current_user.is_active():
         try:
             out['current_user'] = serializers.to_dict(current_user)

@@ -85,6 +85,7 @@ class User(db.Model, UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=True)
+    name = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())
     confirmed_at = db.Column(db.DateTime(timezone=True))

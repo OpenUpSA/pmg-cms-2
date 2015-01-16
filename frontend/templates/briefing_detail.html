@@ -57,7 +57,7 @@
             {% for file in briefing.files %}
             {% if file.filemime not in ["audio/mpeg"] %}
               <li>
-                <a href="{{ file.url|file }}" target="_blank"><span class="glyphicon glyphicon-file"></span>
+                <a href="{{ file.url|file }}" target="_blank"><span class="fa fa-file"></span>
                 {% if (file.description) %}
               {{ file.description }}
               {% else %}

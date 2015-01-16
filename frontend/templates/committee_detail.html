@@ -119,38 +119,65 @@
         {% set break = 0.5 * committee.memberships | length %}
         {% set break = break | int %}
         <div class="row">
-          <div class="col-sm-6">
+          <div class="col-sm-12">
             <ul class="list-unstyled list-spaced">
 
+              {% for membership in committee.memberships %}
+                {% set member = membership.member %}
+                {% if membership.type == 'chairperson'%}
+                  <li class="clearfix">
+                    {%- if member.profile_pic_url %}
+                      <a href="/member/{{ member.id }}"><img class="member-profile-pic chairperson" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+                    {% else %}
+                      <p class="text-muted">No image available</p>
+                    {% endif %}
+                    <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
+                    <div class="label label-success">Chairperson</div>
+                    {% if member.party %}
+                      <span class="label label-warning">{{ member.party.name }}</span>
+                    {% endif %}
+                  </li>
+                  <hr>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-6">
+            <ul class="list-unstyled list-spaced">
               {% for membership in committee.memberships[0:break] %}
                 {% set member = membership.member %}
-                <li class="clearfix">
-                  {%- if member.profile_pic_url %}
-                    <a href="/member/{{ member.id }}"><img class="member-profile-pic{% if membership.type == 'chairperson'%} chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
-                  {% else %}
-                    <p class="text-muted">No image available</p>
-                  {% endif %}
-                  <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
-                  {% if membership.type == "chairperson"%}<div class="label label-success">Chairperson</div>{% endif %}
-                  {% if member.party %}
-                    <span class="label label-warning">{{ member.party.name }}</span>
-                  {% endif %}
-                </li>
+                {% if not membership.type or membership.type != 'chairperson'%}
+                  <li class="clearfix">
+                    {%- if member.profile_pic_url %}
+                      <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+                    {% else %}
+                      <p class="text-muted">No image available</p>
+                    {% endif %}
+                    <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
+                    {% if member.party %}
+                      <span class="label label-warning">{{ member.party.name }}</span>
+                    {% endif %}
+                  </li>
+                {% endif %}
               {% endfor %}
-
             </ul>
           </div>
           <div class="col-sm-6">
             <ul class="list-unstyled list-spaced">
               {% for membership in committee.memberships[break::] %}
                 {% set member = membership.member %}
-                <li class="clearfix">
-                  <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
-                  <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
-                  {% if member.party %}
-                    <span class="label label-warning">{{ member.party.name }}</span>
-                  {% endif %}
-                </li>
+                {% if not membership.type or membership.type != 'chairperson'%}
+                  <li class="clearfix">
+                    <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+                    <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
+                    {% if member.party %}
+                      <span class="label label-warning">{{ member.party.name }}</span>
+                    {% endif %}
+                  </li>
+                {% endif %}
               {% endfor %}
             </ul>
           </div>

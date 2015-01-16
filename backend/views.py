@@ -233,11 +233,9 @@ def landing():
     List available endpoints.
     """
 
-    base_url = url_for('landing', _external=True)
-
     out = {'endpoints': []}
     for resource in api_resources().keys():
-        out['endpoints'].append(base_url + resource)
+        out['endpoints'].append(request.base_url + resource)
     if current_user and current_user.is_active():
         try:
             out['current_user'] = serializers.to_dict(current_user)

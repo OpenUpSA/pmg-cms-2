@@ -16,6 +16,7 @@ from search import Search
 import math
 from flask_security import current_user
 from flask_security.decorators import load_user
+from werkzeug.exceptions import HTTPException
 
 API_HOST = app.config["API_HOST"]
 
@@ -28,23 +29,28 @@ app.add_url_rule('/static/<path:filename>',
 logger = logging.getLogger(__name__)
 
 
-class ApiException(Exception):
+class ApiException(HTTPException):
 
     """
     Class for handling all of our expected API errors.
     """
 
     def __init__(self, status_code, message):
-        Exception.__init__(self)
-        self.message = message
+        super(ApiException, self).__init__(message)
         self.status_code = status_code
 
     def to_dict(self):
         rv = {
             "code": self.status_code,
-            "message": self.message
+            "message": self.description
         }
         return rv
+
+    def get_response(self, environ=None):
+        response = flask.jsonify(self.to_dict())
+        response.status_code = self.status_code
+        response.headers['Access-Control-Allow-Origin'] = "*"
+        return response
 
 
 def get_filter():
@@ -56,18 +62,6 @@ def get_filter():
             if fieldname:
                 filters.append({fieldname: args[key]})
     return filters
-
-
-@app.errorhandler(ApiException)
-def handle_api_exception(error):
-    """
-    Error handler, used by flask to pass the error on to the user, rather than catching it and throwing a HTTP 500.
-    """
-
-    response = flask.jsonify(error.to_dict())
-    response.status_code = error.status_code
-    response.headers['Access-Control-Allow-Origin'] = "*"
-    return response
 
 
 def send_api_response(data_json):
@@ -193,7 +187,7 @@ def resource_list(resource, resource_id=None):
 
     base_query = api_resources().get(resource)
     if not base_query:
-        raise ApiException(400, "The specified resource type does not exist.")
+        raise ApiException(404, "The specified resource type does not exist.")
 
     # validate paging parameters
     page = 0

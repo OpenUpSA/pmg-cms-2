@@ -88,7 +88,7 @@ the following form::
 
 We use alembic for applying changes to the data model. To setup a migration script:
 
-    alembic revision --autogenerate -m "<revision description>"
+    alembic -c 'config/development/alembic.ini' revision --autogenerate -m "<revision description>"
     
 Then to run the script on your local machine: 
 

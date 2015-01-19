@@ -85,7 +85,7 @@ class User(db.Model, UserMixin):
     __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=True)
+    email = db.Column(db.String(255), unique=True, nullable=True, index=True)
     name = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255))
     active = db.Column(db.Boolean())

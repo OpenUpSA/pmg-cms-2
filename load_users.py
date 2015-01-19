@@ -77,12 +77,10 @@ if __name__ == '__main__':
     for organisation in organisations_list:
         domain_map[organisation.domain] = organisation
 
-    map = [
-        "Ad Hoc Committee on the Filling of Vacancies in the Commission for Gender Equality",
-        "Ad Hoc Committee to Consider and Report on the Recommendations contained in Public Protector Report no 13 of 2013-2014",
-        "Ad Hoc Committee - President\u2019s Submission in response to Public Protector\u2019s Report",
-        "Ad Hoc Committee on Commission for Gender Equality (CGE) Forensic Investigation",
-    ]
+    missing_committee = Committee.query.filter_by(name="Ad Hoc Committee - President's Submission in response to Public Protector's Report").one()
+    map = {
+        "Ad Hoc Committee - President\u2019s Submission in response to Public Protector\u2019s Report": missing_committee,
+    }
 
 
     not_found = []
@@ -107,7 +105,9 @@ if __name__ == '__main__':
                 committee_name = item.get('name').strip().encode('utf8')
                 committee = committee_map.get(committee_name)
                 if committee is None:
-                    if not committee_name in not_found:
+                    if map.get(committee_name):
+                        committee = map[committee_name]
+                    elif not committee_name in not_found:
                         not_found.append(committee_name)
                 else:
                     user_obj.subscriptions.append(committee)

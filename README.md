@@ -88,7 +88,7 @@ the following form::
 
 We use alembic for applying changes to the data model. To setup a migration script:
 
-    alembic revision --autogenerate -m "<revision description>"
+    alembic -c 'config/development/alembic.ini' revision --autogenerate -m "<revision description>"
     
 Then to run the script on your local machine: 
 
@@ -99,6 +99,6 @@ but first, ensure that the `sqlalchemy.url` parameter is pointing at the right p
 To run migration scripts on the live database, copy the `alembic.ini` into the production config directory, update the
 `sqlalchemy.url` parameter, and 
 
-    alembic upgrade head -c 'config/production/alembic.ini'
+    alembic -c 'config/production/alembic.ini' upgrade head
     
 Never add the production configuration to git, as it contains sensitive database credentials.

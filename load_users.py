@@ -3,6 +3,7 @@ from backend.app import app, db
 from backend.models import *
 from dateutil import tz
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 db.echo = False
 
@@ -84,37 +85,46 @@ if __name__ == '__main__':
 
 
     not_found = []
-    # load users
+    existing_users = []
+    user_list = User.query.all()
     for user in user_list:
+        existing_users.append(user.email)
+    # load users
+    i = 0
+    for user in user_list:
+        i += 1
         # populate user model
-        # print user.get('mail'), "[" + user.get('name') + "]"
-        user_obj = User()
-        user_obj.name = user.get('name')
-        user_obj.email = user.get('mail')
-        user_obj.active = True if user.get('status') == "1" else False
-        user_obj.last_login_at = datetime.fromtimestamp(int(user.get('login')), tz=tz.gettz('UTC'))
-        user_obj.password = user.get('pass')
+        if not user.get('mail') in existing_users:
+            # print user.get('mail'), "[" + user.get('name') + "]"
+            user_obj = User()
+            user_obj.name = user.get('name')
+            user_obj.email = user.get('mail')
+            user_obj.active = True if user.get('status') == "1" else False
+            user_obj.last_login_at = datetime.fromtimestamp(int(user.get('login')), tz=tz.gettz('UTC'))
+            user_obj.password = user.get('pass')
 
-        # link user to organisation
-        user_domain = user['mail'].split("@")[-1]
-        if domain_map.get(user_domain):
-            user_obj.organisation = domain_map.get(user_domain)
-        # set notification subscriptions
-        if user.get('subscribed'):
-            for item in user['subscribed']:
-                committee_name = item.get('name').strip().encode('utf8')
-                committee = committee_map.get(committee_name)
-                if committee is None:
-                    if map.get(committee_name):
-                        committee = map[committee_name]
-                    elif not committee_name in not_found:
-                        not_found.append(committee_name)
-                else:
-                    user_obj.subscriptions.append(committee)
+            # link user to organisation
+            user_domain = user['mail'].split("@")[-1]
+            if domain_map.get(user_domain):
+                user_obj.organisation = domain_map.get(user_domain)
+            # set notification subscriptions
+            if user.get('subscribed'):
+                for item in user['subscribed']:
+                    committee_name = item.get('name').strip().encode('utf8')
+                    committee = committee_map.get(committee_name)
+                    if committee is None:
+                        if map.get(committee_name):
+                            committee = map[committee_name]
+                        elif not committee_name in not_found:
+                            not_found.append(committee_name)
+                    else:
+                        user_obj.subscriptions.append(committee)
+    
+            db.session.add(user_obj)
+        if i % 50 == 0:
+            db.session.commit()
 
-        db.session.add(user_obj)
-
-    # db.session.commit()
+    db.session.commit()
 
     print len(not_found), " committees not found"
     print json.dumps(not_found, indent=4)

@@ -73,7 +73,8 @@ class Organisation(db.Model):
     expiry = db.Column(db.DateTime(timezone=True))
 
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
-                            backref=db.backref('subscribed_organisations', lazy='dynamic'))
+                                    lazy='joined',
+                                    backref=db.backref('subscribed_organisations'))
 
     def __unicode__(self):
         return unicode(self.name)
@@ -99,7 +100,8 @@ class User(db.Model, UserMixin):
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
     subscriptions = db.relationship('Committee', secondary='user_committee',
-                            backref=db.backref('subscribed_users', lazy='dynamic'))
+                                    lazy='joined',
+                                    backref=db.backref('subscribed_users'))
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 

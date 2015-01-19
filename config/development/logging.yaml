@@ -14,7 +14,7 @@ loggers:
   requests:
     level: DEBUG
   sqlalchemy.engine:
-    level: INFO
+    level: WARNING
   rebuild_db:
     level: DEBUG
 root:

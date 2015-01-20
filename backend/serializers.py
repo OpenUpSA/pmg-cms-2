@@ -107,7 +107,7 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
         }
         if current_user and current_user.is_active():
             try:
-                out['current_user'] = to_dict(current_user)
+                out['current_user'] = to_dict(current_user, include_related=True)
             except Exception:
                 logger.exception("Error serializing current user.")
                 pass

@@ -30,7 +30,7 @@ ALLOWED_EXTENSIONS = set(
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.mandrillapp.com'
-MAIL_PORT = 587
+MAIL_PORT = 465
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'webapps+pmg@code4sa.org'
 MAIL_PASSWORD = env['MAIL_PASSWORD']

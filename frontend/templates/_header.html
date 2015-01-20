@@ -28,6 +28,7 @@
                 {% if not user.confirmed %}
                   <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
                 {% endif %}
+                <li><a href="{{ url_for('manage_notifications') }}">Manage notifications</a></li>
                 {% for role in user.roles %}
                   {% if role.name == 'editor' %}
                     </li><li class="divider"></li>

@@ -877,3 +877,14 @@ def hitlog(random=False):
     url = API_HOST + "hitlog/"
     response = requests.post(url, headers=headers, data=hitlog)
     return response.content
+
+
+@app.route('/manage-notifications/')
+def manage_notifications():
+    """
+    Allow a user to manage their notification subscriptions.
+    """
+
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    return render_template('manage_notifications.html', committees=committees, )

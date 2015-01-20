@@ -34,7 +34,7 @@ MAIL_PORT = 465
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'webapps+pmg@code4sa.org'
 MAIL_PASSWORD = env['MAIL_PASSWORD']
-MAIL_DEFAULT_SENDER = "info@pmg.org.za"
+MAIL_DEFAULT_SENDER = "subscribe@pmg.org.za"
 
 # Flask-Security config
 SECURITY_HOST = FRONTEND_HOST

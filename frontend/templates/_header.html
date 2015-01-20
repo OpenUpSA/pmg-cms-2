@@ -1,10 +1,10 @@
 <nav class="navbar navbar-default navbar-pmg" role="navigation">
-  <div class="container">
-    <div class="row">
-      <div class="col-md- logo-container">
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="col-sm-3 col-md-2 col-md-offset-1 logo-container">
         <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo.png" alt="Parliamentary Monitoring Group"></a>
       </div>
-      <div class="col-md-6">
+      <div class="col-sm-6">
         <form class="navbar-form" role="search" action="/search">
           <div class="input-group">
             <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
@@ -14,7 +14,7 @@
           </div>
         </form>
       </div>
-      <div class="col-md-4">
+      <div class="col-sm-2">
 
         <ul class="nav navbar-nav pull-right">
           {% if session.current_user %}

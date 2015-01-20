@@ -1,3 +1,5 @@
+from os import environ as env
+
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
@@ -29,12 +31,12 @@ ALLOWED_EXTENSIONS = set(
 )
 
 # Flask-Mail
-MAIL_SERVER = 'smtp.gmail.com'
+MAIL_SERVER = 'smtp.mandrillapp.com'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
-MAIL_USERNAME = "pmgorg.noreply@gmail.com"
-MAIL_PASSWORD = "agoaiejlagrAIERJaerknj"
-MAIL_DEFAULT_SENDER = "pmgorg.noreply@gmail.com"
+MAIL_USERNAME = 'webapps+pmg@code4sa.org'
+MAIL_PASSWORD = env.get('MAIL_PASSWORD')
+MAIL_DEFAULT_SENDER = "info@pmg.org.za"
 
 # Flask-Security config
 SECURITY_HOST = FRONTEND_HOST

@@ -113,6 +113,10 @@ class User(db.Model, UserMixin):
         tmp.pop('current_login_ip')
         tmp.pop('last_login_at')
         tmp.pop('current_login_at')
+        if tmp.get('confirmed_at'):
+            tmp['confirmed'] = True
+        else:
+            tmp['confirmed'] = False
         tmp.pop('confirmed_at')
         tmp.pop('login_count')
         return tmp

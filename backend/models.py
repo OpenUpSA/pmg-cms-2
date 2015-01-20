@@ -545,7 +545,7 @@ class TabledCommitteeReport(db.Model):
     committee = db.relationship(
         'Committee',
         backref=db.backref(
-            'committee',
+            'tabled-committee-reports',
             lazy='dynamic'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())

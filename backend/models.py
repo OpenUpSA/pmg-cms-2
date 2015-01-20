@@ -73,8 +73,7 @@ class Organisation(db.Model):
     expiry = db.Column(db.DateTime(timezone=True))
 
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
-                                    lazy='joined',
-                                    backref=db.backref('subscribed_organisations'))
+                                    lazy='joined')
 
     def __unicode__(self):
         return unicode(self.name)

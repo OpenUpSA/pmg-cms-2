@@ -100,8 +100,7 @@ class User(db.Model, UserMixin):
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
     subscriptions = db.relationship('Committee', secondary='user_committee',
-                                    lazy='joined',
-                                    backref=db.backref('subscribed_users'))
+                                    lazy='joined')
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 

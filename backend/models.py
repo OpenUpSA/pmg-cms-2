@@ -455,12 +455,6 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
-    tabled_committee_reports = db.relationship(
-        "TabledCommitteeReport",
-        lazy=True)
-    questions_replies = db.relationship("QuestionReply", lazy=True)
-    calls_for_comments = db.relationship("CallForComment", lazy=True)
-
     def __unicode__(self):
         tmp = self.name
         if self.house:
@@ -526,8 +520,8 @@ class QuestionReply(db.Model):
     committee = db.relationship(
         'Committee',
         backref=db.backref(
-            'question-replies-committee',
-            lazy='dynamic'))
+            'questions_replies',
+            lazy='joined'))
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
@@ -545,8 +539,8 @@ class TabledCommitteeReport(db.Model):
     committee = db.relationship(
         'Committee',
         backref=db.backref(
-            'tabled-committee-reports',
-            lazy='dynamic'))
+            'tabled_committee_reports',
+            lazy='joined'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
@@ -580,8 +574,8 @@ class CallForComment(db.Model):
     committee = db.relationship(
         'Committee',
         backref=db.backref(
-            'call-for-comment-committee',
-            lazy='dynamic'))
+            'calls_for_comments',
+            lazy='joined'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     end_date = db.Column(db.Date())

@@ -25,7 +25,9 @@
               </button>
               <ul class="dropdown-menu pull-right" role="menu">
                 <li><a href="{{ url_for('change_password') }}">Change password</a></li>
-                <li><a href="{{ url_for('send_confirmation') }}">Resend confirmation email</a></li>
+                {% if not user.confirmed %}
+                  <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
+                {% endif %}
                 {% for role in user.roles %}
                   {% if role.name == 'editor' %}
                     </li><li class="divider"></li>

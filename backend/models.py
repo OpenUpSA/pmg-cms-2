@@ -519,9 +519,7 @@ class QuestionReply(db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
     committee = db.relationship(
         'Committee',
-        backref=db.backref(
-            'questions_replies',
-            lazy='joined'))
+        backref=db.backref('questions_replies'))
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
@@ -538,9 +536,7 @@ class TabledCommitteeReport(db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
     committee = db.relationship(
         'Committee',
-        backref=db.backref(
-            'tabled_committee_reports',
-            lazy='joined'))
+        backref=db.backref('tabled_committee_reports'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
@@ -573,9 +569,7 @@ class CallForComment(db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
     committee = db.relationship(
         'Committee',
-        backref=db.backref(
-            'calls_for_comments',
-            lazy='joined'))
+        backref=db.backref('calls_for_comments'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     end_date = db.Column(db.Date())

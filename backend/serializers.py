@@ -90,13 +90,11 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
     """
 
     if isinstance(obj_or_list, db.Model):
-        logger.debug("single obj")
         obj = obj_or_list
         # this a single object
         out = to_dict(obj, include_related=True)
     else:
         # this is a list of objects
-        logger.debug("list of objs")
         results = []
         for obj in obj_or_list:
             results.append(to_dict(obj, include_related=False))

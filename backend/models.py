@@ -94,6 +94,9 @@ class User(db.Model, UserMixin):
     last_login_ip = db.Column(db.String(100))
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
+    subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
+    subscribe_bill = db.Column(db.Boolean(), default=False)
+    subscribe_call_for_comment = db.Column(db.Boolean(), default=False)
 
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])

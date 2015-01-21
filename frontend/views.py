@@ -887,10 +887,15 @@ def manage_notifications():
     """
 
     if request.form:
-        out = {'subscriptions': []}
+        out = {'committee_subscriptions': [], 'general_subscriptions': []}
+        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
         for field_name in request.form.keys():
-            committee_id = int(field_name.split('-')[-1])
-            out['subscriptions'].append(committee_id)
+            if field_name in general_notifications:
+                key = "-".join(field_name.split('-')[1::])
+                out['general_subscriptions'].append(key)
+            else:
+                committee_id = int(field_name.split('-')[-1])
+                out['committee_subscriptions'].append(committee_id)
         tmp = send_to_api('update_subscriptions', json.dumps(out))
         if tmp:
             flash("Your notification subscriptions have been updated successfully.", "success")

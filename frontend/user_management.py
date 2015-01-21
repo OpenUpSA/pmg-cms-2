@@ -164,7 +164,7 @@ def forgot_password():
         }
         response = user_management_api('reset', json.dumps(data))
         # redirect user
-        if response and not response.get('errors'):
+        if not response or not response.get('errors'):
             flash(
                 u'You will receive an email with instructions for resetting your password. Please check your inbox.',
                 'success')

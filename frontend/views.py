@@ -213,11 +213,9 @@ def load_from_api(
     return
 
 
-def send_to_api(resource_name, resource_id=None, data=None):
+def send_to_api(endpoint, data=None):
 
-    query_str = resource_name + "/"
-    if resource_id:
-        query_str += str(resource_id) + "/"
+    query_str = endpoint + "/"
 
     headers = {
         'Accept': 'application/json',
@@ -235,11 +233,14 @@ def send_to_api(resource_name, resource_id=None, data=None):
         out = response.json()
 
         if response.status_code != 200:
+            try:
+                msg = response.json().get('message')
+            except Exception:
+                msg = None
+
             raise ApiException(
                 response.status_code,
-                response.json().get(
-                    'message',
-                    "An unspecified error has occurred."))
+                msg or "An unspecified error has occurred.")
         return out
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')
@@ -879,11 +880,18 @@ def hitlog(random=False):
     return response.content
 
 
-@app.route('/manage-notifications/')
+@app.route('/manage-notifications/', methods=['GET', 'POST'])
 def manage_notifications():
     """
     Allow a user to manage their notification subscriptions.
     """
+
+    if request.form:
+        out = {'subscriptions': []}
+        for field_name in request.form.keys():
+            committee_id = int(field_name.split('-')[-1])
+            out['subscriptions'].append(committee_id)
+        tmp = send_to_api('update_subscriptions', json.dumps(out))
 
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']

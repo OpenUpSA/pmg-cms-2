@@ -213,19 +213,17 @@ def load_from_api(
     return
 
 
-def send_to_api(resource_name, resource_id=None, data=None):
+def send_to_api(endpoint, data=None):
 
-    query_str = resource_name + "/"
-    if resource_id:
-        query_str += str(resource_id) + "/"
+    query_str = endpoint + "/"
 
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
     # add auth header
-    if session and session.get('authentication_token'):
-        headers['Authentication-Token'] = session['authentication_token']
+    if session and session.get('api_key'):
+        headers['Authentication-Token'] = session.get('api_key')
     try:
         response = requests.post(
             API_HOST +
@@ -235,11 +233,14 @@ def send_to_api(resource_name, resource_id=None, data=None):
         out = response.json()
 
         if response.status_code != 200:
+            try:
+                msg = response.json().get('message')
+            except Exception:
+                msg = None
+
             raise ApiException(
                 response.status_code,
-                response.json().get(
-                    'message',
-                    "An unspecified error has occurred."))
+                msg or "An unspecified error has occurred.")
         return out
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')
@@ -877,3 +878,22 @@ def hitlog(random=False):
     url = API_HOST + "hitlog/"
     response = requests.post(url, headers=headers, data=hitlog)
     return response.content
+
+
+@app.route('/manage-notifications/', methods=['GET', 'POST'])
+def manage_notifications():
+    """
+    Allow a user to manage their notification subscriptions.
+    """
+
+    if request.form:
+        out = {'subscriptions': []}
+        for field_name in request.form.keys():
+            committee_id = int(field_name.split('-')[-1])
+            out['subscriptions'].append(committee_id)
+        tmp = send_to_api('update_subscriptions', json.dumps(out))
+        if tmp:
+            flash("Your notification subscriptions have been updated successfully.", "success")
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    return render_template('manage_notifications.html', committees=committees, )

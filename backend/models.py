@@ -98,8 +98,7 @@ class User(db.Model, UserMixin):
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
-    subscriptions = db.relationship('Committee', secondary='user_committee',
-                                    lazy='joined')
+    subscriptions = db.relationship('Committee', secondary='user_committee')
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -119,6 +118,12 @@ class User(db.Model, UserMixin):
             tmp['confirmed'] = False
         tmp.pop('confirmed_at')
         tmp.pop('login_count')
+        # send subscriptions back as a dict
+        subscription_dict = {}
+        if tmp.get('subscriptions'):
+            for committee in tmp['subscriptions']:
+                subscription_dict[committee['id']] = committee.get('name')
+        tmp['subscriptions'] = subscription_dict
         return tmp
 
 roles_users = db.Table(

@@ -237,3 +237,20 @@ def landing():
             logger.exception("Error serializing current user.")
             pass
     return send_api_response(json.dumps(out, indent=4))
+
+
+@app.route('/update_subscriptions/', methods=['POST', ])
+@load_user('token', 'session')
+def update_subscriptions():
+    """
+    Update user's notification subscriptions.
+    """
+
+    out = {}
+    if current_user and current_user.is_active():
+        try:
+            out['current_user'] = serializers.to_dict(current_user)
+        except Exception:
+            logger.exception("Error serializing current user.")
+            pass
+    return send_api_response(json.dumps(out, indent=4))

@@ -37,15 +37,42 @@
 
 {% block page %}
   <h1>Manage Notifications</h1>
-  <p class="lead">Subscribe to committees below to receive email updates on their activity.</p>
+  <p class="lead">Here you can choose which email notifications you wish to receive from us.</p>
   <hr>
+
   <form method="post" action="{{ url_for('manage_notifications') }}">
+    <h2>General updates</h2>
+    <ul>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="select-bill" name="select-bill"{% if user.subscribe_bill %} checked{% endif %}>
+          New bills introduced to parliament
+        </label>
+      </li>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="select-call-for-comment" name="select-call-for-comment"{% if user.subscribe_call_for_comment %} checked{% endif %}>
+          Calls for comment on bills that are under consideration
+        </label>
+      </li>
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="select-daily-schedule" name="select-daily-schedule"{% if user.subscribe_daily_schedule %} checked{% endif %}>
+          Daily schedule of parliament
+        </label>
+      </li>
+    </ul>
+
+    <hr>
+
     <div class="row text-center submit-btn-container" style="display: none;">
       <div class="col-md-12">
         <button type="submit" class="btn btn-primary btn-lg">Save changes to your notification settings</button>
         <hr>
       </div>
     </div>
+
+    <h2>Standing Committees</h2>
     <div class="row">
       <div class="col-md-4">
         <h3>National Assembly</h3>

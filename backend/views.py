@@ -248,17 +248,23 @@ def update_subscriptions():
 
     out = {}
     if current_user and current_user.is_active():
+        committee_subscriptions = request.json.get('committee_subscriptions')
+        logger.debug(json.dumps(committee_subscriptions, indent=4))
+        general_subscriptions = request.json.get('general_subscriptions')
+        logger.debug(json.dumps(general_subscriptions, indent=4))
 
-        new_subscriptions = request.json.get('subscriptions')
-        if new_subscriptions:
-            # remove user's current subscriptions
-            current_user.subscriptions = []
-            # retrieve list of chosen committees
-            committee_list = Committee.query.filter(Committee.id.in_(new_subscriptions)).all()
-            for committee in committee_list:
-                current_user.subscriptions.append(committee)
-            db.session.add(current_user)
-            db.session.commit()
+        # remove user's current subscriptions
+        current_user.subscriptions = []
+        # retrieve list of chosen committees
+        committee_list = Committee.query.filter(Committee.id.in_(committee_subscriptions)).all()
+        for committee in committee_list:
+            current_user.subscriptions.append(committee)
+        # update general True/False subscriptions
+        current_user.subscribe_daily_schedule = True if 'daily-schedule' in general_subscriptions else False
+        current_user.subscribe_bill = True if 'bill' in general_subscriptions else False
+        current_user.subscribe_call_for_comment = True if 'call-for-comment' in general_subscriptions else False
+        db.session.add(current_user)
+        db.session.commit()
         try:
             out['current_user'] = serializers.to_dict(current_user)
         except Exception:

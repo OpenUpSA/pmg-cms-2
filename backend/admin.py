@@ -655,6 +655,27 @@ class TabledReportView(MyModelView):
         },
         }
 
+
+class EmailTemplateView(MyModelView):
+    column_list = (
+        'name',
+        'subject',
+        'description',
+    )
+    column_default_sort = ('name', True)
+    column_searchable_list = ('name', 'subject', 'description', 'body')
+    form_columns = (
+        'name',
+        'description',
+        'subject',
+        'body',
+    )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
+
 # initialise admin instance
 admin = Admin(
     app,
@@ -772,3 +793,9 @@ admin.add_view(
         name="Bill Type",
         endpoint='bill-type',
         category="Form Options"))
+admin.add_view(
+    EmailTemplateView(
+        EmailTemplate,
+        db.session,
+        name="Email Templates",
+        endpoint='email-templates'))

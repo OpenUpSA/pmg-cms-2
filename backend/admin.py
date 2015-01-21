@@ -20,6 +20,7 @@ from s3_upload import S3Bucket
 
 from app import app, db
 from models import *
+from email_alerts import EmailAlertView
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -795,9 +796,15 @@ admin.add_view(
         name="Bill Type",
         endpoint='bill-type',
         category="Form Options"))
+
+# Email alerts
 admin.add_view(
     EmailTemplateView(
         EmailTemplate,
         db.session,
         name="Email Templates",
         endpoint='email-templates'))
+admin.add_view(
+    EmailAlertView(
+        name="Email Alerts",
+        endpoint='alerts'))

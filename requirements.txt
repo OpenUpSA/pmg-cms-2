@@ -6,7 +6,7 @@ Flask-Login==0.2.10
 Flask-Mail==0.9.1
 Flask-Principal==0.4.0
 Flask-SQLAlchemy==1.0
-git+http://github.com/Code4SA/flask-security.git@2.0.2
+git+http://github.com/Code4SA/flask-security.git@2.0.4
 Flask-WTF==0.10.3
 Jinja2==2.7.3
 MarkupSafe==0.23

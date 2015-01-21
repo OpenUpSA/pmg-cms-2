@@ -222,8 +222,8 @@ def send_to_api(endpoint, data=None):
         'Content-Type': 'application/json'
     }
     # add auth header
-    if session and session.get('authentication_token'):
-        headers['Authentication-Token'] = session['authentication_token']
+    if session and session.get('api_key'):
+        headers['Authentication-Token'] = session.get('api_key')
     try:
         response = requests.post(
             API_HOST +
@@ -892,7 +892,8 @@ def manage_notifications():
             committee_id = int(field_name.split('-')[-1])
             out['subscriptions'].append(committee_id)
         tmp = send_to_api('update_subscriptions', json.dumps(out))
-
+        if tmp:
+            flash("Your notification subscriptions have been updated successfully.", "success")
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
     return render_template('manage_notifications.html', committees=committees, )

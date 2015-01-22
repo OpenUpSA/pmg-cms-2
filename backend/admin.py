@@ -759,12 +759,14 @@ admin.add_view(
 
 # Email alerts
 admin.add_view(
+    EmailAlertView(
+        category='Email Alerts',
+        name="Send Emails",
+        endpoint='alerts'))
+admin.add_view(
     EmailTemplateView(
         EmailTemplate,
         db.session,
         name="Email Templates",
+        category='Email Alerts',
         endpoint='email-templates'))
-admin.add_view(
-    EmailAlertView(
-        name="Email Alerts",
-        endpoint='alerts'))

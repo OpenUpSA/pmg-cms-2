@@ -1,6 +1,7 @@
 from random import random
 import string
 import datetime
+from dateutil.relativedelta import relativedelta
 import logging
 
 from sqlalchemy import desc, Index
@@ -62,6 +63,11 @@ class Role(db.Model, RoleMixin):
         return unicode(self.name)
 
 
+def one_year_later():
+
+    return datetime.datetime.now() + relativedelta(years=1)
+
+
 class Organisation(db.Model):
 
     __tablename__ = "organisation"
@@ -71,13 +77,23 @@ class Organisation(db.Model):
     domain = db.Column(db.String(100), nullable=False)
     paid_subscriber = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
-    expiry = db.Column(db.DateTime(timezone=True))
+    expiry = db.Column(db.DateTime(timezone=True), default=one_year_later)
 
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
                                     lazy='joined')
 
     def __unicode__(self):
         return unicode(self.name)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        # send subscriptions back as a dict
+        subscription_dict = {}
+        if tmp.get('subscriptions'):
+            for committee in tmp['subscriptions']:
+                subscription_dict[committee['id']] = committee.get('name')
+        tmp['subscriptions'] = subscription_dict
+        return tmp
 
 
 class User(db.Model, UserMixin):

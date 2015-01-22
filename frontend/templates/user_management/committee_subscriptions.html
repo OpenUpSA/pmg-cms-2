@@ -12,7 +12,9 @@
 {% set user = session.current_user %}
 
 {% macro check_subscribed(committee_id) %}
-  {% if user.subscriptions and user.subscriptions[committee_id|string] %}
+  {% if user.organisation and
+  user.organisation.subscriptions and
+  user.organisation.subscriptions[committee_id|string] %}
     checked
   {% endif %}
 {% endmacro %}
@@ -36,28 +38,102 @@
 {% endmacro %}
 
 {% block page %}
+
   <h1>Committee subscriptions</h1>
-  <p class="lead">Access to certain meeting reports are restricted.</p>
+  <p class="lead">
+    Access to the following committee meeting reports are restricted to fee-paying customers.*
+    All other committee minutes are freely accessible.</p>
   <hr>
 
   <form method="post" action="{{ url_for('committee_subscriptions') }}">
-    <h2>Premium committees</h2>
-
+    <h2>National Assembly committees</h2>
+    <p>Your account currently have access to the following: </p>
     <ul class="list-unstyled">
       {% for committee in committees %}{{ render_committee_checkbox(committee) }}{% endfor %}
     </ul>
-
-    <p>
-      {{ user.organisation }}
-    </p>
-
-    <div class="row text-center submit-btn-container">
-      <div class="col-md-12">
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your subscription settings</button>
-        <hr>
-      </div>
-    </div>
   </form>
+  {% if user.organisation %}
+    <p>Access will expire on {{ user.organisation.expiry }}</p>
+  {% endif %}
+  <hr>
+
+  <h2>Subscription Options</h2>
+  <p>
+    <strong>Annual Subscription: R4 900</strong><br>
+    Choose 4 of the above committees and receive comprehensive minutes and documents for 12 months.
+    Should your organization require access to more than 4 of the above committees, this is possible
+    according to the list below.
+  </p>
+
+  <p>
+    <strong>Short access: R1 500</strong><br>
+    Subscribe to one committee for 3 months.
+  </p>
+
+  <p>
+    <strong>Single meeting report plus documents: R375</strong><br>
+    Send an email to subscribe@pmg.org.za & receive the meeting report immediately upon proof of payment.
+  </p>
+
+  <p>
+    <strong>2015 Price List</strong> (PMG does not charge VAT)
+    Basic subscription (access to 4 committees) R4 900
+    Basic subscription plus 1 extra committee   R5 500
+    Basic subscription plus 2 extra committees R6 100
+    Basic subscription plus 3 extra committees R6 700
+    Basic subscription plus 4 extra committees R7 200
+    Basic subscription plus 5 extra committees R7 700
+    Basic subscription plus 6 extra committees R8 100
+    Basic subscription plus 7 extra committees R8 500
+    Basic subscription plus 8 extra committees R8 800
+    Basic subscription plus 9 extra committees R9 100
+    Basic subscription plus 10 extra committees R9 300
+    Basic subscription plus 11 extra committees R9 500
+  </p>
+
+  <h2>How To Subscribe</h2>
+  <p>
+    Send an email to <a href="mailto:subscribe@pmg.org.za"target="_blank">subscribe@pmg.org.za</a> providing the
+    following info:
+
+  <ul>
+    <li>Contact person</li>
+    <li>Job Title</li>
+    <li>Organization</li>
+    <li>Organization's VAT number</li>
+    <li>Work phone</li>
+    <li>Postal Address</li>
+    <li>Email Address</li>
+    <li>Committees you wish to subscribe to</li>
+  </ul>
+  We will then email you a Statement / Tax invoice.
+  </p>
+  <h2>Payment details</h2>
+  <p>
+  <ul class="list-unstyled">
+    <li>Payment via electronic transfer or direct deposit:</li>
+    <li>
+      <ul>
+        <li>Bank account name: PARLIAMENTARY MONITORING</li>
+        <li>First National Bank (Adderley Street)</li>
+        <li>Cheque Account number: 62234188557</li>
+        <li>Branch code: 201409</li>
+        <li>Universal code for EFT: 250655</li>
+        <li>Email EFT receipt to subscribe@pmg.org.za</li>
+      </ul>
+    </li>
+  </ul>
+  If you have any queries, phone (021) 465 8885 and speak to Pumza Mokorotlo <a href="mailto:subscribe@pmg.org.za"target="_blank">subscribe@pmg.org.za</a>
+  </p>
+
+  <hr>
+  <p><span class="lead">* The following users are exempt from paying a subscription fee:</span><br>
+  <ul class="">
+    <li>Non-government and community-based organisations [this does not include umbrella non-profit associations for commercial organisations]</li>
+    <li>Public educational institutions [full-time staff and students]</li>
+    <li>Please send us an email to <a href="mailto:info@pmg.org.za"target="_blank">info@pmg.org.za</a> motivating for free access - using an email address that clearly identifies your affiliation to one of the above. If you do not have an email address, you will need to fax proof of your affiliation to: 021 465 8887</li>
+  </ul>
+  </p>
 
 {% endblock page %}
 

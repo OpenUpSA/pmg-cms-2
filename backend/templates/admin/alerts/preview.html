@@ -1,0 +1,12 @@
+<dl class="dl-horizontal">
+	<dt>From</dt>
+	<dd>{{ form.message.sender }}</dd>
+
+	<dt>Subject</dt>
+	<dd>{{ form.message.subject }}</dd>
+</dl>
+
+<div class="well">
+	{{ form.message.html|safe }}
+</div>
+

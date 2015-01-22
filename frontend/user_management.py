@@ -21,8 +21,8 @@ def user_management_api(endpoint, data=None):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
-    if endpoint != 'login' and session and session.get('authentication_token'):
-        headers['Authentication-Token'] = session['authentication_token']
+    if endpoint != 'login' and session and session.get('api_key'):
+        headers['Authentication-Token'] = session['api_key']
     try:
         response = requests.post(
             API_HOST +
@@ -89,7 +89,7 @@ def login():
 def logout():
     """View function which handles a logout request."""
 
-    response = user_management_api('logout/')
+    response = user_management_api('logout')
     session.clear()
     if response:
         flash(u'You have been logged out successfully.', 'success')
@@ -164,7 +164,7 @@ def forgot_password():
         }
         response = user_management_api('reset', json.dumps(data))
         # redirect user
-        if response and not response.get('errors'):
+        if not response or not response.get('errors'):
             flash(
                 u'You will receive an email with instructions for resetting your password. Please check your inbox.',
                 'success')
@@ -189,11 +189,16 @@ def reset_password(token):
         }
         response = user_management_api('reset/' + token, json.dumps(data))
 
-        # redirect user
-        if response and not not response.get('errors'):
+        if response and not response.get('errors'):
             flash(u'Your password has been changed successfully.', 'success')
+            logger.debug("saving authentication_token to the session")
+            session['api_key'] = response['user']['authentication_token']
+            update_current_user()
+            # redirect user
             if request.values.get('next'):
                 return redirect(request.values['next'])
+            else:
+                return redirect(url_for('index'))
 
     return render_template(
         'user_management/reset_password.html',

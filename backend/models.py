@@ -94,12 +94,14 @@ class User(db.Model, UserMixin):
     last_login_ip = db.Column(db.String(100))
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
+    subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
+    subscribe_bill = db.Column(db.Boolean(), default=False)
+    subscribe_call_for_comment = db.Column(db.Boolean(), default=False)
 
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
-    subscriptions = db.relationship('Committee', secondary='user_committee',
-                                    lazy='joined')
+    subscriptions = db.relationship('Committee', secondary='user_committee')
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -119,6 +121,12 @@ class User(db.Model, UserMixin):
             tmp['confirmed'] = False
         tmp.pop('confirmed_at')
         tmp.pop('login_count')
+        # send subscriptions back as a dict
+        subscription_dict = {}
+        if tmp.get('subscriptions'):
+            for committee in tmp['subscriptions']:
+                subscription_dict[committee['id']] = committee.get('name')
+        tmp['subscriptions'] = subscription_dict
         return tmp
 
 roles_users = db.Table(
@@ -727,11 +735,13 @@ class Content(db.Model):
                 if tmp.get(key):
                     pass  # don't overwrite parent model attributes from the child model
                 tmp[key] = val
+            tmp.pop('file')
         if tmp.get('rich_text'):
             for key, val in tmp['rich_text'].iteritems():
                 if tmp.get(key):
                     pass  # don't overwrite parent model attributes from the child model
                 tmp[key] = val
+            tmp.pop('rich_text')
         return tmp
 
 

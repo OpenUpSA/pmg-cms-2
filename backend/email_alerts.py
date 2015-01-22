@@ -2,7 +2,7 @@ from flask import redirect, request, url_for, jsonify, flash
 from flask.ext.admin import BaseView, expose
 from flask_mail import Message
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField, validators, HiddenField
+from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField
 from wtforms.fields.html5 import EmailField
 
 from models import EmailTemplate
@@ -64,6 +64,11 @@ class EmailAlertForm(Form):
     subject = StringField('Subject', [validators.Required()])
     from_line = EmailField('From', [validators.Required()], default='subscribe@pmg.org.za')
     body = TextAreaField('Content of the alert')
+
+    # recipient options
+    daily_schedule_subscribers = BooleanField('Daily schedule subscribers')
+    bill_subscribers = BooleanField('Newly introduced bill subscribers')
+    call_for_comment_subscribers = BooleanField('Calls for comment subscribers')
 
     @property
     def template(self):

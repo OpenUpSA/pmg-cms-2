@@ -1,5 +1,14 @@
 {% extends 'admin/master.html' %}
 
+{% macro checkbox(field) %}
+	<div class="checkbox">
+		<label>
+			{{ field(**kwargs)|safe }}
+			{{ field.label() }}
+		</label>
+	</div>
+{% endmacro %}
+
 {% block body %}
 	{{ super() }}
 
@@ -10,14 +19,22 @@
 	<form class="form-horizontal" action="{{ url_for('alerts.new') }}" method="POST" id="new_alert_form" data-confirm="Lots of people will read this email. Have you checked the details?">
 		{{ form.hidden_tag() }}
 
-		<fieldset>
-			<legend>Email content</legend>
-			{{ render_field_with_errors(form.from_line) }}
-			{{ render_field_with_errors(form.subject) }}
-			{{ render_field_with_errors(form.body) }}
+		{{ render_field_with_errors(form.from_line) }}
+		{{ render_field_with_errors(form.subject) }}
+		{{ render_field_with_errors(form.body) }}
 
 		<fieldset>
-			<legend>Recipients</legend>
+			<legend>General Recipients</legend>
+
+			{{ checkbox(form.daily_schedule_subscribers) }}
+			{{ checkbox(form.bill_subscribers) }}
+			{{ checkbox(form.call_for_comment_subscribers) }}
+
+		</fieldset>
+
+		<fieldset>
+			<legend>Committee Recipients</legend>
+
 		</fieldset>
 
 		<hr>
@@ -26,6 +43,8 @@
 			<button type="button" class="btn btn-success preview">Preview &amp; Send email</button>
 		</div>
 	</form>
+
+	<br>
 
 
 	<!-- Preview modal -->

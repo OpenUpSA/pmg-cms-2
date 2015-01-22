@@ -5,6 +5,7 @@ import logging
 
 from sqlalchemy import desc, Index
 from sqlalchemy.orm import backref
+from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
 from flask.ext.security import UserMixin, RoleMixin, \
@@ -128,6 +129,28 @@ class User(db.Model, UserMixin):
                 subscription_dict[committee['id']] = committee.get('name')
         tmp['subscriptions'] = subscription_dict
         return tmp
+
+
+def set_organisation(target, value, oldvalue, initiator):
+    """Set a user's organisation, based on the domain of their email address."""
+
+    if not target.organisation:
+        try:
+            user_domain = value.split("@")[-1]
+            org = Organisation.query.filter_by(domain=user_domain).first()
+            if org:
+                target.organisation = org
+            db.session.add(target)
+            db.session.commit()
+        except Exception as e:
+            # fail silently, but log the exception
+            logger.exception(e)
+            pass
+    return
+
+# setup listener on User.email attribute
+listen(User.email, 'set', set_organisation)
+
 
 roles_users = db.Table(
     'roles_users',

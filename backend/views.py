@@ -271,3 +271,5 @@ def update_subscriptions():
             logger.exception("Error serializing current user.")
             pass
     return send_api_response(json.dumps(out, indent=4))
+
+

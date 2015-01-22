@@ -35,6 +35,18 @@
 		<fieldset>
 			<legend>Committee Recipients</legend>
 
+			<div class="committee-list">
+
+			{% for choice in form.committee_ids %}
+				<div class="checkbox">
+					<label>
+						<input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
+						{{ choice.label() }}
+					</label>
+				</div>
+			{% endfor %}
+			</div>
+
 		</fieldset>
 
 		<hr>

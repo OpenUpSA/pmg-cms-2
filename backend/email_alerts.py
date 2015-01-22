@@ -1,8 +1,11 @@
+from itertools import chain
+
 from flask import redirect, request, url_for, jsonify, flash
 from flask.ext.admin import BaseView, expose
 from flask_mail import Message
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField
+from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField, SelectMultipleField
+from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
 
 from models import EmailTemplate, User, Committee
@@ -74,6 +77,14 @@ class EmailAlertForm(Form):
     bill_subscribers = BooleanField('Newly introduced bill subscribers')
     call_for_comment_subscribers = BooleanField('Calls for comment subscribers')
 
+    committee_ids = SelectMultipleField('Committee Subscribers', [validators.Optional()], coerce=int, widget=CheckboxInput)
+
+    def __init__(self, *args, **kwargs):
+        super(EmailAlertForm, self).__init__(*args, **kwargs)
+
+        self.committee_ids.choices = [(c.id, c.name) for c in Committee.query.order_by(Committee.name).all()]
+
+
     @property
     def template(self):
         if not hasattr(self, '_template'):
@@ -85,7 +96,6 @@ class EmailAlertForm(Form):
 
     def generate_email(self):
         # TODO: render
-        # TODO: recipients
         recipients = self.get_recipients()
 
         self.message = Message(
@@ -106,6 +116,10 @@ class EmailAlertForm(Form):
         if self.call_for_comment_subscribers.data:
             groups.append(User.query.filter(User.subscribe_call_for_comment == True).all())
 
-        # TODO: committees
+        if self.committee_ids.data:
+            groups.append(User.query
+                    .join(User.subscriptions)
+                    .filter(Committee.id.in_(self.committee_ids.data))
+                    .all())
 
-        return set(u.email for u in groups if u)
+        return set(u.email for u in chain(*groups) if u)

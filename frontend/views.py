@@ -913,27 +913,3 @@ def hitlog(random=False):
     url = API_HOST + "hitlog/"
     response = requests.post(url, headers=headers, data=hitlog)
     return response.content
-
-
-@app.route('/manage-notifications/', methods=['GET', 'POST'])
-def manage_notifications():
-    """
-    Allow a user to manage their notification subscriptions.
-    """
-
-    if request.form:
-        out = {'committee_subscriptions': [], 'general_subscriptions': []}
-        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
-        for field_name in request.form.keys():
-            if field_name in general_notifications:
-                key = "-".join(field_name.split('-')[1::])
-                out['general_subscriptions'].append(key)
-            else:
-                committee_id = int(field_name.split('-')[-1])
-                out['committee_subscriptions'].append(committee_id)
-        tmp = send_to_api('update_subscriptions', json.dumps(out))
-        if tmp:
-            flash("Your notification subscriptions have been updated successfully.", "success")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
-    return render_template('manage_notifications.html', committees=committees, )

@@ -214,12 +214,14 @@ class CommitteeView(MyModelView):
     column_list = (
         'name',
         'house',
+        'ad_hoc',
         'memberships'
     )
     column_labels = {'memberships': 'Members', }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
+        'ad_hoc',
     )
     column_default_sort = (Committee.name, False)
     column_searchable_list = ('name', )
@@ -229,6 +231,7 @@ class CommitteeView(MyModelView):
     form_columns = (
         'name',
         'ad_hoc',
+        'premium',
         'house',
         'memberships',
     )

@@ -70,7 +70,7 @@ class Organisation(db.Model):
     name = db.Column(db.String(255), nullable=False)
     domain = db.Column(db.String(100), nullable=False)
     paid_subscriber = db.Column(db.Boolean)
-    created_at = db.Column(db.DateTime(timezone=True))
+    created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
     expiry = db.Column(db.DateTime(timezone=True))
 
     subscriptions = db.relationship('Committee', secondary='organisation_committee',

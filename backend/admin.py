@@ -189,6 +189,21 @@ class UserView(MyRestrictedModelView):
         ]
 
 
+class OrganisationView(MyModelView):
+
+    can_create = True
+    column_searchable_list = ('domain', 'name')
+    form_ajax_refs = {
+        'users': {
+            'fields': ('name', 'email'),
+            'page_size': 25
+        },
+        'subscriptions': {
+            'fields': ('name', ),
+            'page_size': 25
+        }
+    }
+
 # This widget uses custom template for inline field list
 class InlineMembershipsWidget(RenderTemplateWidget):
 
@@ -668,7 +683,20 @@ admin = Admin(
     template_mode='bootstrap3')
 
 # add admin views for each model
-admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
+admin.add_view(
+    UserView(
+        User,
+        db.session,
+        name="Users",
+        endpoint='user',
+        category='Users'))
+admin.add_view(
+    OrganisationView(
+        Organisation,
+        db.session,
+        name="Organisations",
+        endpoint='organisation',
+        category='Users'))
 admin.add_view(
     CommitteeView(
         Committee,

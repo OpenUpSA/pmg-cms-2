@@ -735,11 +735,13 @@ class Content(db.Model):
                 if tmp.get(key):
                     pass  # don't overwrite parent model attributes from the child model
                 tmp[key] = val
+            tmp.pop('file')
         if tmp.get('rich_text'):
             for key, val in tmp['rich_text'].iteritems():
                 if tmp.get(key):
                     pass  # don't overwrite parent model attributes from the child model
                 tmp[key] = val
+            tmp.pop('rich_text')
         return tmp
 
 

@@ -936,4 +936,4 @@ def manage_notifications():
             flash("Your notification subscriptions have been updated successfully.", "success")
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
-    return render_template('manage_notifications.html', committees=committees, )
+    return render_template('user_management/manage_notifications.html', committees=committees, )

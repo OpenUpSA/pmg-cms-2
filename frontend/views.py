@@ -213,19 +213,17 @@ def load_from_api(
     return
 
 
-def send_to_api(resource_name, resource_id=None, data=None):
+def send_to_api(endpoint, data=None):
 
-    query_str = resource_name + "/"
-    if resource_id:
-        query_str += str(resource_id) + "/"
+    query_str = endpoint + "/"
 
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
     # add auth header
-    if session and session.get('authentication_token'):
-        headers['Authentication-Token'] = session['authentication_token']
+    if session and session.get('api_key'):
+        headers['Authentication-Token'] = session.get('api_key')
     try:
         response = requests.post(
             API_HOST +
@@ -235,11 +233,14 @@ def send_to_api(resource_name, resource_id=None, data=None):
         out = response.json()
 
         if response.status_code != 200:
+            try:
+                msg = response.json().get('message')
+            except Exception:
+                msg = None
+
             raise ApiException(
                 response.status_code,
-                response.json().get(
-                    'message',
-                    "An unspecified error has occurred."))
+                msg or "An unspecified error has occurred.")
         return out
     except requests.ConnectionError:
         flash('Error connecting to backend service.', 'danger')
@@ -625,13 +626,27 @@ def member(member_id):
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
-@app.route('/hansard/<int:hansard_id>')
-def hansard(hansard_id):
-    logger.debug("hansard page called")
-    hansard = load_from_api('hansard', hansard_id)
+@app.route('/hansard/<int:event_id>')
+def hansard(event_id):
+    event = load_from_api('hansard', event_id)
+    report = None
+    related_docs = []
+    audio = []
+    if event.get('content'):
+        for item in event['content']:
+            if "audio" in item['type']:
+                audio.append(item)
+            elif item['type'] == "hansard":
+                report = item
+            else:
+                related_docs.append(item)
+
     return render_template(
         'hansard_detail.html',
-        hansard=hansard,
+        event=event,
+        report=report,
+        audio=audio,
+        related_docs=related_docs,
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -643,7 +658,7 @@ def hansards(page=0):
     """
 
     logger.debug("hansards page called")
-    hansards_list = load_from_api('briefing', page=page)
+    hansards_list = load_from_api('hansard', page=page)
     count = hansards_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -660,10 +675,31 @@ def hansards(page=0):
         content_type="hansard")
 
 
-@app.route('/briefing/<int:briefing_id>')
-def briefing(briefing_id):
-    logger.debug("briefing page called")
-    briefing = load_from_api('briefing', briefing_id)
+@app.route('/briefing/<int:event_id>')
+def briefing(event_id):
+
+    event = load_from_api('briefing', event_id)
+    report = None
+    related_docs = []
+    audio = []
+    if event.get('content'):
+        for item in event['content']:
+            if "audio" in item['type']:
+                audio.append(item)
+            elif item['type'] == "briefing":
+                report = item
+            else:
+                related_docs.append(item)
+
+    return render_template(
+        'briefing_detail.html',
+        event=event,
+        report=report,
+        audio=audio,
+        related_docs=related_docs,
+        STATIC_HOST=app.config['STATIC_HOST'])
+
+
     return render_template(
         'briefing_detail.html',
         briefing=briefing,
@@ -877,3 +913,27 @@ def hitlog(random=False):
     url = API_HOST + "hitlog/"
     response = requests.post(url, headers=headers, data=hitlog)
     return response.content
+
+
+@app.route('/manage-notifications/', methods=['GET', 'POST'])
+def manage_notifications():
+    """
+    Allow a user to manage their notification subscriptions.
+    """
+
+    if request.form:
+        out = {'committee_subscriptions': [], 'general_subscriptions': []}
+        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
+        for field_name in request.form.keys():
+            if field_name in general_notifications:
+                key = "-".join(field_name.split('-')[1::])
+                out['general_subscriptions'].append(key)
+            else:
+                committee_id = int(field_name.split('-')[-1])
+                out['committee_subscriptions'].append(committee_id)
+        tmp = send_to_api('update_subscriptions', json.dumps(out))
+        if tmp:
+            flash("Your notification subscriptions have been updated successfully.", "success")
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    return render_template('user_management/manage_notifications.html', committees=committees, )

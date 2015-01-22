@@ -41,7 +41,8 @@ assets.register('js', Bundle(
     'bower_components/bootstrap/js/alert.js',
     'bower_components/bootstrap/js/dropdown.js',
     'chosen/chosen.jquery.js',
-    'resources/javascript/*.js',
+    'resources/javascript/users.js',
+    'resources/javascript/pmg.js',
     output='javascript/app.%(version)s.js'))
 
 

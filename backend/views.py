@@ -53,7 +53,7 @@ class ApiException(HTTPException):
 
 def get_filter():
     filters = []
-    args = flask.request.args.to_dict()
+    args = request.args.to_dict()
     for key in args:
         if "filter" in key:
             fieldname = re.search("filter\[(.*)\]", key).group(1)
@@ -150,11 +150,11 @@ def search():
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
 
     if result["count"] > (page + 1) * per_page:
-        result["next"] = flask.request.url_root + "search/?q=" + q + \
+        result["next"] = request.url_root + "search/?q=" + q + \
             "&page=" + str(page + 1) + "&per_page=" + str(per_page)
-        result["last"] = flask.request.url_root + "search/?q=" + q + "&page=" + \
+        result["last"] = request.url_root + "search/?q=" + q + "&page=" + \
             str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
-        result["first"] = flask.request.url_root + "search/?q=" + \
+        result["first"] = request.url_root + "search/?q=" + \
             q + "&page=0" + "&per_page=" + str(per_page)
     return json.dumps(result)
 
@@ -166,9 +166,9 @@ def hitlog():
     """
     logger.debug("caught a hit")
     hitlog = HitLog(
-        ip_addr=flask.request.form["ip_addr"],
-        user_agent=flask.request.form["user_agent"],
-        url=flask.request.form["url"])
+        ip_addr=request.form["ip_addr"],
+        user_agent=request.form["user_agent"],
+        url=request.form["url"])
     db.session.add(hitlog)
     db.session.commit()
 
@@ -190,12 +190,12 @@ def resource_list(resource, resource_id=None):
     # validate paging parameters
     page = 0
     per_page = app.config['RESULTS_PER_PAGE']
-    if flask.request.args.get('page'):
+    if request.args.get('page'):
         try:
-            page = int(flask.request.args.get('page'))
+            page = int(request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-    # if flask.request.args.get('filter'):
+    # if request.args.get('filter'):
     filters = get_filter()
     if (len(filters)):
         for f in filters:
@@ -211,7 +211,7 @@ def resource_list(resource, resource_id=None):
         count = base_query.count()
     next = None
     if count > (page + 1) * per_page:
-        next = flask.request.url_root + resource + "/?page=" + str(page + 1)
+        next = request.url_root + resource + "/?page=" + str(page + 1)
     out = serializers.queryset_to_json(
         queryset,
         count=count,
@@ -231,6 +231,40 @@ def landing():
     for resource in api_resources().keys():
         out['endpoints'].append(request.base_url + resource)
     if current_user and current_user.is_active():
+        try:
+            out['current_user'] = serializers.to_dict(current_user)
+        except Exception:
+            logger.exception("Error serializing current user.")
+            pass
+    return send_api_response(json.dumps(out, indent=4))
+
+
+@app.route('/update_subscriptions/', methods=['POST', ])
+@load_user('token')
+def update_subscriptions():
+    """
+    Update user's notification subscriptions.
+    """
+
+    out = {}
+    if current_user and current_user.is_active():
+        committee_subscriptions = request.json.get('committee_subscriptions')
+        logger.debug(json.dumps(committee_subscriptions, indent=4))
+        general_subscriptions = request.json.get('general_subscriptions')
+        logger.debug(json.dumps(general_subscriptions, indent=4))
+
+        # remove user's current subscriptions
+        current_user.subscriptions = []
+        # retrieve list of chosen committees
+        committee_list = Committee.query.filter(Committee.id.in_(committee_subscriptions)).all()
+        for committee in committee_list:
+            current_user.subscriptions.append(committee)
+        # update general True/False subscriptions
+        current_user.subscribe_daily_schedule = True if 'daily-schedule' in general_subscriptions else False
+        current_user.subscribe_bill = True if 'bill' in general_subscriptions else False
+        current_user.subscribe_call_for_comment = True if 'call-for-comment' in general_subscriptions else False
+        db.session.add(current_user)
+        db.session.commit()
         try:
             out['current_user'] = serializers.to_dict(current_user)
         except Exception:

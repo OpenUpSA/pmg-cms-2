@@ -626,13 +626,27 @@ def member(member_id):
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
-@app.route('/hansard/<int:hansard_id>')
-def hansard(hansard_id):
-    logger.debug("hansard page called")
-    hansard = load_from_api('hansard', hansard_id)
+@app.route('/hansard/<int:event_id>')
+def hansard(event_id):
+    event = load_from_api('hansard', event_id)
+    report = None
+    related_docs = []
+    audio = []
+    if event.get('content'):
+        for item in event['content']:
+            if "audio" in item['type']:
+                audio.append(item)
+            elif item['type'] == "hansard":
+                report = item
+            else:
+                related_docs.append(item)
+
     return render_template(
         'hansard_detail.html',
-        hansard=hansard,
+        event=event,
+        report=report,
+        audio=audio,
+        related_docs=related_docs,
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -644,7 +658,7 @@ def hansards(page=0):
     """
 
     logger.debug("hansards page called")
-    hansards_list = load_from_api('briefing', page=page)
+    hansards_list = load_from_api('hansard', page=page)
     count = hansards_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))

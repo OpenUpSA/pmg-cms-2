@@ -1,11 +1,85 @@
 {% extends "base.html" %}
 
 {% block page %}
-<h4 class="light-red">Hansard</h4>
-<h1>{{ hansard.title }}</h1>
-<h2>{{ hansard.meeting_date }}</h2>
+  <h3 class="red"><span class="fa fa-archive"></span> Hansard</h3>
 
-<div>{{ hansard.body|safe }}</div>
+  <div class="row">
+    <div class="col-sm-8 justify-p">
+      <h1>{{ event.title }}</h1>
+
+      <h3>House:
+        {% if event.house %}{{ event.house.name }}
+        {% else %}
+          (unknown)
+        {% endif %}
+      </h3>
+
+      {% if event.chairperson %}
+        <h3>Chairperson: {{ event.chairperson }}</h3>
+      {% endif %}
+
+      <h3>
+        Date of Meeting:
+        {% if event.date %}
+          {{ event.date | pretty_date }}
+        {% else %}
+          (unknown)
+        {% endif %}
+      </h3>
+
+      <h2>Summary</h2>
+      {% if report and report.summary %}
+        {{ report.summary | safe }}
+      {% else %}
+        <p><em>No summary available.</em></p>
+      {% endif %}
+      <hr>
+
+      <h2>Minutes</h2>
+      {% if report and report.body %}
+        {{ report.body | safe }}
+      {% else %}
+        <p><em>No minutes available.</em></p>
+      {% endif %}
+      <hr>
+    </div>
+
+    <div class="col-sm-4">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h4>Audio</h4>
+        </div>
+        <div class="panel-body">
+          {% if audio %}
+            <ul class="list-unstyled">
+              {% for item in audio %}
+                <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-headphones"></span> {{ item.title }}</a></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="lead text-muted">No audio content</p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h4>Documents</h4>
+        </div>
+        <div class="panel-body">
+          {% if related_docs %}
+            <ul class="list-unstyled">
+              {% for item in related_docs %}
+                <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-file"></span> {{ item.title }}</a></li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="lead text-muted">No related documents</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
 
 {% endblock %}
 

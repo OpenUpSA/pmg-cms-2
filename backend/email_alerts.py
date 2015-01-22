@@ -5,7 +5,7 @@ from flask_wtf import Form
 from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField
 from wtforms.fields.html5 import EmailField
 
-from models import EmailTemplate
+from models import EmailTemplate, User, Committee
 from app import app, db, mail
 from rbac import RBACMixin
 
@@ -32,9 +32,13 @@ class EmailAlertView(RBACMixin, BaseView):
 
         if form.validate_on_submit() and form.previewed.data == '1':
             # send it
-            form.send_email()
-            flash('Your email alert has been sent.')
-            return redirect(url_for('alerts.index'))
+            form.generate_email()
+            if not form.message.recipients:
+                flash('There are no recipients to send this email to.', 'error')
+            else:
+                form.send_email()
+                flash('Your email alert has been sent.')
+                return redirect(url_for('alerts.index'))
 
         # force a preview before being sent again
         form.previewed.data = '0'
@@ -77,13 +81,31 @@ class EmailAlertForm(Form):
         return self._template
 
     def send_email(self):
-        self.generate_email()
         mail.send(self.message)
 
     def generate_email(self):
         # TODO: render
         # TODO: recipients
+        recipients = self.get_recipients()
+
         self.message = Message(
                 subject=self.subject.data,
                 sender=self.from_line.data,
-                html=self.body.data)
+                html=self.body.data,
+                recipients=recipients)
+
+    def get_recipients(self):
+        groups = []
+
+        if self.daily_schedule_subscribers.data:
+            groups.append(User.query.filter(User.subscribe_daily_schedule == True).all())
+
+        if self.bill_subscribers.data:
+            groups.append(User.query.filter(User.subscribe_bill == True).all())
+
+        if self.call_for_comment_subscribers.data:
+            groups.append(User.query.filter(User.subscribe_call_for_comment == True).all())
+
+        # TODO: committees
+
+        return set(u.email for u in groups if u)

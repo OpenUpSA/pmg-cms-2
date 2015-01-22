@@ -120,22 +120,23 @@ def pagination_processor():
 
 
 class ApiException(Exception):
-
     """
     Class for handling all of our expected API errors.
     """
 
     def __init__(self, status_code, message):
-        Exception.__init__(self)
-        self.message = message
+        super(ApiException, self).__init__(message)
         self.status_code = status_code
 
-    def to_dict(self):
-        rv = {
-            "code": self.status_code,
-            "message": self.message
-        }
-        return rv
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def page_not_found(error):
+    return render_template('500.html', error=error), 500
 
 
 @app.errorhandler(ApiException)
@@ -149,11 +150,7 @@ def handle_api_exception(error):
     # catch 'Unauthorised' status
     if error.status_code == 401:
         session.clear()
-        return redirect(
-            url_for('login') +
-            "?next=" +
-            urllib.quote_plus(
-                request.path))
+        return redirect(url_for('login') + "?next=" + urllib.quote_plus(request.path))
 
     return render_template('500.html', error=error), 500
 
@@ -181,6 +178,10 @@ def load_from_api(
             query_str,
             headers=headers,
             params=params)
+
+        if response.status_code == 404:
+            abort(404)
+
         if response.status_code != 200:
             try:
                 msg = response.json().get('message')

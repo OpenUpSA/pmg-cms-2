@@ -274,3 +274,14 @@ def manage_notifications():
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
     return render_template('user_management/manage_notifications.html', committees=committees, )
+
+
+@app.route('/committee-subscriptions/', methods=['GET', 'POST'])
+def committee_subscriptions():
+    """
+    Manage subscriptions to premium content.
+    """
+
+    committee_list = load_from_api('committee', return_everything=True, params={'filter[premium]': 'True'})
+    committees = committee_list['results']
+    return render_template('user_management/committee_subscriptions.html', committees=committees, )

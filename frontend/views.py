@@ -661,10 +661,31 @@ def hansards(page=0):
         content_type="hansard")
 
 
-@app.route('/briefing/<int:briefing_id>')
-def briefing(briefing_id):
-    logger.debug("briefing page called")
-    briefing = load_from_api('briefing', briefing_id)
+@app.route('/briefing/<int:event_id>')
+def briefing(event_id):
+
+    event = load_from_api('briefing', event_id)
+    report = None
+    related_docs = []
+    audio = []
+    if event.get('content'):
+        for item in event['content']:
+            if "audio" in item['type']:
+                audio.append(item)
+            elif item['type'] == "briefing":
+                report = item
+            else:
+                related_docs.append(item)
+
+    return render_template(
+        'briefing_detail.html',
+        event=event,
+        report=report,
+        audio=audio,
+        related_docs=related_docs,
+        STATIC_HOST=app.config['STATIC_HOST'])
+
+
     return render_template(
         'briefing_detail.html',
         briefing=briefing,

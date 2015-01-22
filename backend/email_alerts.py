@@ -7,8 +7,11 @@ from wtforms.fields.html5 import EmailField
 
 from models import EmailTemplate
 from app import app, db, mail
+from rbac import RBACMixin
 
-class EmailAlertView(BaseView):
+class EmailAlertView(RBACMixin, BaseView):
+    required_roles = ['editor']
+
     @expose('/')
     def index(self):
         templates = db.session.query(EmailTemplate).order_by(EmailTemplate.name).all()

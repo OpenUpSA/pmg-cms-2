@@ -13,7 +13,7 @@
 	{% for template in templates %}
 		<tr>
 			<td>
-				<a href="{{ url_for('alerts.new') }}?template={{ template.id }}">{{ template.name }}</a>
+				<a href="{{ url_for('alerts.new') }}?template_id={{ template.id }}">{{ template.name }}</a>
 			</td>
 			<td>{{ template.description }}</td>
 		</tr>

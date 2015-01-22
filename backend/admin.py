@@ -1,6 +1,5 @@
 import logging
 import os
-import urllib
 from operator import itemgetter
 from dateutil import tz
 
@@ -21,6 +20,7 @@ from s3_upload import S3Bucket
 from app import app, db
 from models import *
 from email_alerts import EmailAlertView
+from rbac import RBACMixin
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -85,7 +85,8 @@ class CKTextAreaField(fields.TextAreaField):
     widget = CKTextAreaWidget()
 
 
-class MyIndexView(AdminIndexView):
+class MyIndexView(RBACMixin, AdminIndexView):
+    required_roles = ['editor']
 
     @expose("/")
     def index(self):
@@ -112,24 +113,10 @@ class MyIndexView(AdminIndexView):
             record_counts=record_counts,
             file_count=file_count)
 
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role(
-                'editor') or not current_user.has_role('user-admin'):
-            return False
-        return True
 
-    def _handle_view(self, name, **kwargs):
-        """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
-        """
-        if not self.is_accessible():
-            tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
-            return redirect(tmp, code=302)
+class MyModelView(RBACMixin, ModelView):
+    required_roles = ['editor']
 
-
-class MyModelView(ModelView):
     can_create = True
     can_edit = True
     can_delete = True
@@ -137,37 +124,10 @@ class MyModelView(ModelView):
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
 
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role('editor'):
-            return False
-        return True
 
-    def _handle_view(self, name, **kwargs):
-        """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
-        """
-        if not self.is_accessible():
-            return redirect(
-                '/security/login?next=' +
-                urllib.quote_plus(
-                    request.base_url),
-                code=302)
+class UserView(MyModelView):
+    required_roles = ['user-admin']
 
-
-class MyRestrictedModelView(MyModelView):
-
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role(
-                'editor') or not current_user.has_role('user-admin'):
-            return False
-        return True
-
-
-class UserView(MyRestrictedModelView):
     can_create = False
     can_delete = True
     column_list = [

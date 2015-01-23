@@ -1,4 +1,5 @@
 from itertools import chain
+import logging
 
 from flask import redirect, request, url_for, jsonify, flash
 from flask.ext.admin import BaseView, expose
@@ -7,10 +8,13 @@ from flask_wtf import Form
 from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField, SelectMultipleField
 from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
+import mandrill
 
 from models import EmailTemplate, User, Committee
 from app import app, db, mail
 from rbac import RBACMixin
+
+log = logging.getLogger(__name__)
 
 class EmailAlertView(RBACMixin, BaseView):
     required_roles = ['editor']
@@ -36,11 +40,11 @@ class EmailAlertView(RBACMixin, BaseView):
         if form.validate_on_submit() and form.previewed.data == '1':
             # send it
             form.generate_email()
-            if not form.message.recipients:
+            if not form.recipients:
                 flash('There are no recipients to send this email to.', 'error')
             else:
                 form.send_email()
-                flash('Your email alert has been sent.')
+                flash("Your email alert with subject '%s' has been sent to %d recipients." % (form.message.subject, len(form.recipients)))
                 return redirect(url_for('alerts.index'))
 
         # force a preview before being sent again
@@ -83,6 +87,7 @@ class EmailAlertForm(Form):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
 
         self.committee_ids.choices = [(c.id, c.name) for c in Committee.query.order_by(Committee.name).all()]
+        self.message = None
 
 
     @property
@@ -92,19 +97,40 @@ class EmailAlertForm(Form):
         return self._template
 
     def send_email(self):
-        mail.send(self.message)
+        # TODO: don't send in development?
+
+        if not self.message:
+            self.generate_email()
+
+        recipients = [{'email': r.email} for r in self.recipients]
+        merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]}]
+
+        mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
+        msg = {
+            "html": self.message.html,
+            "subject": self.message.subject,
+            "from_email": self.message.sender,
+            "to": recipients,
+            "merge_vars": merge_vars,
+            "track_opens": True,
+            "track_clicks": True,
+            "preserve_recipients": False,
+        }
+
+        log.info("Sending email via mandrill: %s" % msg)
+        mandrill_client.messages.send(message=msg)
 
     def generate_email(self):
         # TODO: render
-        recipients = self.get_recipients()
+
+        self.recipients = self.get_recipient_users()
 
         self.message = Message(
                 subject=self.subject.data,
                 sender=self.from_line.data,
-                html=self.body.data,
-                recipients=recipients)
+                html=self.body.data)
 
-    def get_recipients(self):
+    def get_recipient_users(self):
         groups = []
 
         if self.daily_schedule_subscribers.data:
@@ -122,4 +148,4 @@ class EmailAlertForm(Form):
                     .filter(Committee.id.in_(self.committee_ids.data))
                     .all())
 
-        return set(u.email for u in chain(*groups) if u)
+        return set(u for u in chain(*groups))

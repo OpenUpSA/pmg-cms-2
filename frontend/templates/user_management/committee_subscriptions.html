@@ -53,7 +53,11 @@
     </ul>
   </form>
   {% if user.organisation %}
-    <p>Access will expire on {{ user.organisation.expiry }}</p>
+    {% if user.organisation.has_expired %}
+      <p>Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.</p>
+    {% else %}
+      <p>Access will expire on {{ user.organisation.expiry | pretty_date(format_option="long") }}</p>
+    {% endif %}
   {% endif %}
   <hr>
 

@@ -19,10 +19,12 @@ logger = logging.getLogger(__name__)
 
 
 @app.template_filter('pretty_date')
-def _jinja2_filter_datetime(iso_str):
+def _jinja2_filter_datetime(iso_str, format_option=None):
     if not iso_str:
         return ""
     format = '%d %b %Y'
+    if format_option == "long":
+        format = '%d %B %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
 

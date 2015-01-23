@@ -1,6 +1,6 @@
 from flask import render_template, g, request, redirect, session, url_for, abort, flash
 from frontend import app
-from views import ApiException, load_from_api
+from views import ApiException, load_from_api, send_to_api
 import os
 import forms
 import requests
@@ -250,3 +250,38 @@ def update_current_user():
     if tmp.get('current_user'):
         session['current_user'] = tmp['current_user']
     return
+
+
+@app.route('/manage-notifications/', methods=['GET', 'POST'])
+def notification_settings():
+    """
+    Allow a user to manage their notification subscriptions.
+    """
+
+    if request.form:
+        out = {'committee_subscriptions': [], 'general_subscriptions': []}
+        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
+        for field_name in request.form.keys():
+            if field_name in general_notifications:
+                key = "-".join(field_name.split('-')[1::])
+                out['general_subscriptions'].append(key)
+            else:
+                committee_id = int(field_name.split('-')[-1])
+                out['committee_subscriptions'].append(committee_id)
+        tmp = send_to_api('update_subscriptions', json.dumps(out))
+        if tmp:
+            flash("Your notification subscriptions have been updated successfully.", "success")
+    committee_list = load_from_api('committee', return_everything=True)
+    committees = committee_list['results']
+    return render_template('user_management/notification_settings.html', committees=committees, )
+
+
+@app.route('/committee-subscriptions/', methods=['GET', 'POST'])
+def committee_subscriptions():
+    """
+    Manage subscriptions to premium content.
+    """
+
+    committee_list = load_from_api('committee', return_everything=True, params={'filter[premium]': 'True'})
+    committees = committee_list['results']
+    return render_template('user_management/committee_subscriptions.html', committees=committees, )

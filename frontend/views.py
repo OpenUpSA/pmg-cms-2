@@ -20,10 +20,12 @@ logger = logging.getLogger(__name__)
 
 
 @app.template_filter('pretty_date')
-def _jinja2_filter_datetime(iso_str):
+def _jinja2_filter_datetime(iso_str, format_option=None):
     if not iso_str:
         return ""
     format = '%d %b %Y'
+    if format_option == "long":
+        format = '%d %B %Y'
     date = dateutil.parser.parse(iso_str)
     return date.strftime(format)
 
@@ -700,12 +702,6 @@ def briefing(event_id):
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
-    return render_template(
-        'briefing_detail.html',
-        briefing=briefing,
-        STATIC_HOST=app.config['STATIC_HOST'])
-
-
 @app.route('/briefings/')
 @app.route('/briefings/<int:page>/')
 def briefings(page=0):
@@ -914,26 +910,3 @@ def hitlog(random=False):
     response = requests.post(url, headers=headers, data=hitlog)
     return response.content
 
-
-@app.route('/manage-notifications/', methods=['GET', 'POST'])
-def manage_notifications():
-    """
-    Allow a user to manage their notification subscriptions.
-    """
-
-    if request.form:
-        out = {'committee_subscriptions': [], 'general_subscriptions': []}
-        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
-        for field_name in request.form.keys():
-            if field_name in general_notifications:
-                key = "-".join(field_name.split('-')[1::])
-                out['general_subscriptions'].append(key)
-            else:
-                committee_id = int(field_name.split('-')[-1])
-                out['committee_subscriptions'].append(committee_id)
-        tmp = send_to_api('update_subscriptions', json.dumps(out))
-        if tmp:
-            flash("Your notification subscriptions have been updated successfully.", "success")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
-    return render_template('user_management/manage_notifications.html', committees=committees, )

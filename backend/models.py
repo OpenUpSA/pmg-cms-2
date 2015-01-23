@@ -426,7 +426,8 @@ class CommitteeMeeting(Event):
         # by default, all committee meetings are accessible
         if self.committee.premium:
             # for premium committees, check if the user's organisation is subscribed to the committee
-            if current_user.active and current_user.organisation and current_user.organisation.subscriptions:
+            if not current_user.is_anonymous and current_user.active and \
+                    current_user.organisation and current_user.organisation.subscriptions:
                 if not current_user.organisation.has_expired():
                     for tmp_committee in current_user.organisation.subscriptions:
                         if tmp_committee == self.committee:

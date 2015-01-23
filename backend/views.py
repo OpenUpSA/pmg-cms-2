@@ -62,12 +62,12 @@ def get_filter():
     return filters
 
 
-def send_api_response(data_json):
+def send_api_response(data_json, status_code=200):
 
     response = flask.make_response(data_json)
     response.headers['Access-Control-Allow-Origin'] = "*"
     response.headers['Content-Type'] = "application/json"
-    response.status_code = 200
+    response.status_code = status_code
     return response
 
 
@@ -212,12 +212,19 @@ def resource_list(resource, resource_id=None):
     next = None
     if count > (page + 1) * per_page:
         next = request.url_root + resource + "/?page=" + str(page + 1)
+    status_code = 200
+    if resource == "committee-meeting" and resource_id:
+        if not queryset.check_permission():
+            if current_user.is_anonymous:
+                status_code = 401  # Unauthorized, i.e. authentication is required
+            else:
+                status_code = 403  # Forbidden, i.e. the user is not subscribed
     out = serializers.queryset_to_json(
         queryset,
         count=count,
         next=next,
         current_user=current_user)
-    return send_api_response(out)
+    return send_api_response(out, status_code=status_code)
 
 
 @app.route('/', )

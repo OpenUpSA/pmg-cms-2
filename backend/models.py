@@ -13,6 +13,7 @@ from sqlalchemy import UniqueConstraint
 from flask.ext.security import UserMixin, RoleMixin, \
     Security, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import models_committed
+from flask_security import current_user
 
 from app import app, db
 import serializers
@@ -83,6 +84,11 @@ class Organisation(db.Model):
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
                                     lazy='joined')
 
+    def has_expired(self):
+        if datetime.datetime.now(tz=tz.tzlocal()) < self.expiry:
+            return False
+        return True
+
     def __unicode__(self):
         return unicode(self.name)
 
@@ -95,9 +101,7 @@ class Organisation(db.Model):
                 subscription_dict[committee['id']] = committee.get('name')
         tmp['subscriptions'] = subscription_dict
         # set 'has_expired' flag as appropriate
-        tmp['has_expired'] = True
-        if datetime.datetime.now(tz=tz.tzlocal()) < self.expiry:
-            tmp['has_expired'] = False
+        tmp['has_expired'] = self.has_expired()
         return tmp
 
 
@@ -417,6 +421,27 @@ class CommitteeMeeting(Event):
         'polymorphic_identity': 'committee-meeting'
     }
     chairperson = db.Column(db.String(256))
+
+    def check_permission(self):
+        # by default, all committee meetings are accessible
+        if self.committee.premium:
+            # for premium committees, check if the user's organisation is subscribed to the committee
+            if current_user.active and current_user.organisation and current_user.organisation.subscriptions:
+                if not current_user.organisation.has_expired():
+                    for tmp_committee in current_user.organisation.subscriptions:
+                        if tmp_committee == self.committee:
+                            return True
+            return False
+        return True
+
+    def to_dict(self, include_related=False):
+        tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
+        # check user permissions, popping some content if required
+        if not self.check_permission():
+            if tmp['content']:
+                # remove premium content
+                tmp['content'] = []
+        return tmp
 
 
 class Plenary(Event):

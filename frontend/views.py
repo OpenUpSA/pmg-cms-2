@@ -1,5 +1,6 @@
 import logging
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
+from werkzeug.exceptions import HTTPException
 from frontend import app
 import requests
 from datetime import datetime, date
@@ -119,42 +120,37 @@ def pagination_processor():
     return dict(pagination=pagination)
 
 
-class ApiException(Exception):
-
+class ApiException(HTTPException):
     """
     Class for handling all of our expected API errors.
     """
 
     def __init__(self, status_code, message):
-        Exception.__init__(self)
-        self.message = message
-        self.status_code = status_code
+        super(ApiException, self).__init__(message)
+        self.code = status_code
+        self.message = self.description
 
-    def to_dict(self):
-        rv = {
-            "code": self.status_code,
-            "message": self.message
-        }
-        return rv
+    def get_response(self, environ=None):
+        logger.error("API error: %s" % self.description)
+        flash(self.description + " (" + str(self.code) + ")", "danger")
+
+        if self.code == 401:
+            session.clear()
+            return redirect(url_for('login') + "?next=" + urllib.quote_plus(request.path))
+
+        return super(ApiException, self).get_response(environ)
+
+    def get_body(self, environ):
+        return render_template('500.html', error=self)
 
 
-@app.errorhandler(ApiException)
-def handle_api_exception(error):
-    """
-    Error handler, used by flask to pass the error on to the user, rather than catching it and throwing a HTTP 500.
-    """
-    logger.error("API error: %s" % error.message)
-    flash(error.message + " (" + str(error.status_code) + ")", "danger")
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
-    # catch 'Unauthorised' status
-    if error.status_code == 401:
-        session.clear()
-        return redirect(
-            url_for('login') +
-            "?next=" +
-            urllib.quote_plus(
-                request.path))
 
+@app.errorhandler(500)
+def server_error(error):
     return render_template('500.html', error=error), 500
 
 
@@ -181,6 +177,10 @@ def load_from_api(
             query_str,
             headers=headers,
             params=params)
+
+        if response.status_code == 404:
+            abort(404)
+
         if response.status_code != 200:
             try:
                 msg = response.json().get('message')

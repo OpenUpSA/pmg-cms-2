@@ -46,7 +46,7 @@ class ApiException(HTTPException):
 
     def get_response(self, environ=None):
         response = flask.jsonify(self.to_dict())
-        response.code = self.code
+        response.status_code = self.code
         response.headers['Access-Control-Allow-Origin'] = "*"
         return response
 
@@ -67,6 +67,7 @@ def send_api_response(data_json):
     response = flask.make_response(data_json)
     response.headers['Access-Control-Allow-Origin'] = "*"
     response.headers['Content-Type'] = "application/json"
+    response.status_code = 200
     return response
 
 
@@ -195,9 +196,8 @@ def resource_list(resource, resource_id=None):
             page = int(request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-    # if request.args.get('filter'):
     filters = get_filter()
-    if (len(filters)):
+    if filters:
         for f in filters:
             base_query = base_query.filter_by(**f)
     if resource_id:

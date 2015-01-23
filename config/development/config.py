@@ -30,12 +30,15 @@ ALLOWED_EXTENSIONS = set(
     ]
 )
 
+# Mandrill
+MANDRILL_API_KEY = env.get('MAIL_PASSWORD')
+
 # Flask-Mail
 MAIL_SERVER = 'smtp.mandrillapp.com'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'webapps+pmg@code4sa.org'
-MAIL_PASSWORD = env.get('MAIL_PASSWORD')
+MAIL_PASSWORD = MANDRILL_API_KEY
 MAIL_DEFAULT_SENDER = "info@pmg.org.za"
 
 # Flask-Security config
@@ -43,7 +46,7 @@ SECURITY_HOST = FRONTEND_HOST
 SECURITY_URL_PREFIX = "/security"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = "ioaefroijaAMELRK#$(aerieuh984akef#$graerj"
-SECURITY_EMAIL_SENDER = "pmgorg.noreply@gmail.com"
+SECURITY_EMAIL_SENDER = MAIL_DEFAULT_SENDER
 SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 SECURITY_POST_LOGIN_VIEW = "/admin"
 SECURITY_POST_LOGOUT_VIEW = "/admin"

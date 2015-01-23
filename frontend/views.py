@@ -128,6 +128,7 @@ class ApiException(HTTPException):
     def __init__(self, status_code, message):
         super(ApiException, self).__init__(message)
         self.code = status_code
+        self.message = self.description
 
     def get_response(self, environ=None):
         logger.error("API error: %s" % self.description)
@@ -149,7 +150,7 @@ def page_not_found(error):
 
 
 @app.errorhandler(500)
-def page_not_found(error):
+def server_error(error):
     return render_template('500.html', error=error), 500
 
 

@@ -1,0 +1,29 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+	{{ super() }}
+
+	<h1>Send an email alert</h1>
+	<br>
+
+	<h4>What template would you like to use?</h4>
+
+
+	<table class="table table-striped">
+	{% for template in templates %}
+		<tr>
+			<td>
+				<a href="{{ url_for('alerts.new') }}?template_id={{ template.id }}">{{ template.name }}</a>
+			</td>
+			<td>{{ template.description }}</td>
+		</tr>
+	{% endfor %}
+
+	</table>
+
+	<p>
+	If none of these are suitable, <a href="{{ url_for('email-templates.create_view')}}">create a new template</a>.
+	</p>
+
+
+{% endblock body %}

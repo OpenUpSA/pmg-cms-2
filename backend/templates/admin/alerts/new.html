@@ -21,7 +21,28 @@
 
 		{{ render_field_with_errors(form.from_line) }}
 		{{ render_field_with_errors(form.subject) }}
-		{{ render_field_with_errors(form.body) }}
+
+		<div class="form-group">
+			{{ form.body.label(class_='control-label col-sm-2') }}
+			<div class="col-sm-10">
+				<div class="template-tips">
+					<p>These placeholders are replaced when the email is sent:</p>
+
+					<table class="table table-condensed table-striped table-bordered">
+						<tr>
+							<th>Placeholder</th>
+							<th>Replaced with</th>
+					  </tr>
+						<tr>
+							<td>*|NAME|*</td>
+							<td>User's full name, or <i>Subscriber</i> if no name is set.</td>
+						</tr>
+					</table>
+
+				</div>
+				{{ form.body(class_='form-control') }}
+			</div>
+		</div>
 
 		<fieldset>
 			<legend>General Recipients</legend>

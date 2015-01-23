@@ -8,6 +8,7 @@ from flask_wtf import Form
 from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField, SelectMultipleField
 from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
+from sqlalchemy.orm import lazyload
 import mandrill
 
 from models import EmailTemplate, User, Committee
@@ -145,6 +146,7 @@ class EmailAlertForm(Form):
         if self.committee_ids.data:
             groups.append(User.query
                     .join(User.subscriptions)
+                    .options(lazyload(User.organisation))
                     .filter(Committee.id.in_(self.committee_ids.data))
                     .all())
 

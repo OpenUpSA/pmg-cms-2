@@ -1,6 +1,6 @@
 import urllib
 
-from flask import redirect
+from flask import request, redirect
 from flask.ext.security import current_user
 
 class RBACMixin(object):

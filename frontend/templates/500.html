@@ -6,6 +6,6 @@
 
 <h3>We've been notified and will take a look. Please try again.</h3>
 
-<p>The error is: {{ error.message }} {% if error.status_code %} ({{ error.status_code }}) {% endif %}</p>
+<p>The error is: {{ error.description }} ({{ error.code }})</p>
 
 {% endblock page %}

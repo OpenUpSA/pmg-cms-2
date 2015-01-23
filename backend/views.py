@@ -35,18 +35,18 @@ class ApiException(HTTPException):
 
     def __init__(self, status_code, message):
         super(ApiException, self).__init__(message)
-        self.status_code = status_code
+        self.code = status_code
 
     def to_dict(self):
         rv = {
-            "code": self.status_code,
+            "code": self.code,
             "message": self.description
         }
         return rv
 
     def get_response(self, environ=None):
         response = flask.jsonify(self.to_dict())
-        response.status_code = self.status_code
+        response.code = self.code
         response.headers['Access-Control-Allow-Origin'] = "*"
         return response
 
@@ -236,7 +236,7 @@ def landing():
         except Exception:
             logger.exception("Error serializing current user.")
             pass
-    return send_api_response(json.dumps(out, indent=4))
+    return send_api_response(json.dumps(out, cls=serializers.CustomEncoder, indent=4))
 
 
 @app.route('/update_subscriptions/', methods=['POST', ])
@@ -271,3 +271,4 @@ def update_subscriptions():
             logger.exception("Error serializing current user.")
             pass
     return send_api_response(json.dumps(out, indent=4))
+

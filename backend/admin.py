@@ -152,6 +152,29 @@ class UserView(MyModelView):
         ]
 
 
+class OrganisationView(MyModelView):
+
+    can_create = True
+    column_searchable_list = ('domain', 'name')
+    form_ajax_refs = {
+        'users': {
+            'fields': ('name', 'email'),
+            'page_size': 25
+        },
+        'subscriptions': {
+            'fields': ('name', ),
+            'page_size': 25
+        }
+    }
+    form_excluded_columns = [
+        'created_at',
+    ]
+
+    def on_model_change(self, form, model, is_created):
+        # make sure the new date is timezone aware
+        model.expiry = model.expiry.replace(tzinfo=tz.tzlocal())
+
+
 # This widget uses custom template for inline field list
 class InlineMembershipsWidget(RenderTemplateWidget):
 
@@ -177,12 +200,14 @@ class CommitteeView(MyModelView):
     column_list = (
         'name',
         'house',
+        'ad_hoc',
         'memberships'
     )
     column_labels = {'memberships': 'Members', }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
+        'ad_hoc',
     )
     column_default_sort = (Committee.name, False)
     column_searchable_list = ('name', )
@@ -192,6 +217,7 @@ class CommitteeView(MyModelView):
     form_columns = (
         'name',
         'ad_hoc',
+        'premium',
         'house',
         'memberships',
     )
@@ -219,6 +245,8 @@ class EventView(MyModelView):
         if is_created:
             # set some default values when creating a new record
             model.type = self.type
+        # make sure the new date is timezone aware
+        model.date = model.date.replace(tzinfo=tz.tzlocal())
 
     def get_query(self):
         """
@@ -341,8 +369,6 @@ class CommitteeMeetingView(EventView):
         rich_text_obj.body = form.body.data
         db.session.add(committee_meeting_report)
         db.session.add(rich_text_obj)
-        # make sure date is timezone aware
-        model.date = model.date.replace(tzinfo=tz.gettz('Africa/Johannesburg'))
         return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 
@@ -649,7 +675,20 @@ admin = Admin(
     template_mode='bootstrap3')
 
 # add admin views for each model
-admin.add_view(UserView(User, db.session, name="Users", endpoint='user'))
+admin.add_view(
+    UserView(
+        User,
+        db.session,
+        name="Users",
+        endpoint='user',
+        category='Users'))
+admin.add_view(
+    OrganisationView(
+        Organisation,
+        db.session,
+        name="Organisations",
+        endpoint='organisation',
+        category='Users'))
 admin.add_view(
     CommitteeView(
         Committee,

@@ -1,6 +1,6 @@
 import urllib
 
-from flask import request, redirect
+from flask import request, redirect, abort
 from flask.ext.security import current_user
 
 class RBACMixin(object):
@@ -28,8 +28,10 @@ class RBACMixin(object):
         Override builtin _handle_view in order to redirect users when a view is not accessible.
         """
         if not self.is_accessible():
-            tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
-            return redirect(tmp, code=302)
-
-
-
+            if current_user.is_authenticated():
+                # permission denied
+                abort(403)
+            else:
+                # login
+                tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
+                return redirect(tmp)

@@ -92,7 +92,7 @@ We use alembic for applying changes to the data model. To setup a migration scri
     
 Then to run the script on your local machine: 
 
-    alembic upgrade head -c 'config/development/alembic.ini'
+    alembic -c 'config/development/alembic.ini' upgrade head
     
 but first, ensure that the `sqlalchemy.url` parameter is pointing at the right place.
 

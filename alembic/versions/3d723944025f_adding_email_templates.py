@@ -1,14 +1,14 @@
 """Adding Email Templates
 
 Revision ID: 3d723944025f
-Revises: 544fa615efc3
+Revises: 148ca74a6d3
 Create Date: 2015-01-23 12:28:20.581924
 
 """
 
 # revision identifiers, used by Alembic.
 revision = '3d723944025f'
-down_revision = '544fa615efc3'
+down_revision = '148ca74a6d3'
 branch_labels = None
 depends_on = None
 

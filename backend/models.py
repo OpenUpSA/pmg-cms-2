@@ -2,6 +2,7 @@ from random import random
 import string
 import datetime
 from dateutil.relativedelta import relativedelta
+from dateutil import tz
 import logging
 
 from sqlalchemy import desc, Index
@@ -93,6 +94,10 @@ class Organisation(db.Model):
             for committee in tmp['subscriptions']:
                 subscription_dict[committee['id']] = committee.get('name')
         tmp['subscriptions'] = subscription_dict
+        # set 'has_expired' flag as appropriate
+        tmp['has_expired'] = True
+        if datetime.datetime.now(tz=tz.tzlocal()) < self.expiry:
+            tmp['has_expired'] = False
         return tmp
 
 

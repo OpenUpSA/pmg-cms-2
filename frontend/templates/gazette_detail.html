@@ -13,13 +13,18 @@
 <h4>Effective Date: {{ gazette.effective_date }}</h4>
 {% endif %}
   
-{% for file in gazette.files %}
-{% if file.description %}
-<a href="{{file.url|file}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
-{% else %}
-<a href="{{file.url|file}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
+{% if gazette.files %}
+<ul class="fa-ul">
+  {% for file in gazette.files %}
+  <li>
+    {% if file.url %}
+    <a href="{{file.url|file}}"><i class="fa-li fa fa-file"></i> {{ file.description if file.description else file.origname }}</a>
+    {% else %}
+    <i class="fa-li fa fa-file"></i> {{ file.description if file.description else file.origname }}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
 {% endif %}
-{% endfor %}
-
 
 {% endblock %}

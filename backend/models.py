@@ -331,8 +331,14 @@ class File(db.Model):
     playtime = db.Column(db.String(10))
     file_path = db.Column(db.String(255))
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = STATIC_HOST + tmp['file_path']
+        return tmp
+
     def __unicode__(self):
         return u'%s' % self.title
+
 
 # M2M table
 bill_event_table = db.Table(

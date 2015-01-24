@@ -19,6 +19,10 @@ app.session = session
 logger = logging.getLogger(__name__)
 
 
+def admin_url(model_name, id):
+    return API_HOST + 'admin/%s/edit/?id=%s' % (model_name, id)
+
+
 @app.template_filter('pretty_date')
 def _jinja2_filter_datetime(iso_str, format_option=None):
     if not iso_str:
@@ -323,7 +327,8 @@ def bill(bill_id):
 
     logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    return render_template('bill_detail.html', bill=bill)
+    return render_template('bill_detail.html', bill=bill,
+            admin_edit_url=admin_url('bill', bill_id))
 
 
 @app.route('/committee/<int:committee_id>/')
@@ -334,7 +339,9 @@ def committee_detail(committee_id):
 
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
-    return render_template('committee_detail.html', committee=committee)
+    return render_template('committee_detail.html',
+            committee=committee,
+            admin_edit_url=admin_url('committee', committee_id))
 
 
 @app.route('/committees/')
@@ -408,6 +415,7 @@ def committee_meeting(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
+        admin_edit_url=admin_url('committee_meeting', event_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -460,6 +468,7 @@ def tabled_committee_report(tabled_committee_report_id):
     return render_template(
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
+        admin_edit_url=admin_url('tabled_report', tabled_committee_report_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -512,6 +521,7 @@ def call_for_comment(call_for_comment_id):
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,
+        admin_edit_url=admin_url('call_for_comment', call_for_comment_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -551,6 +561,7 @@ def policy_document(policy_document_id):
     return render_template(
         'policy_document_detail.html',
         policy_document=policy_document,
+        admin_edit_url=admin_url('policy', policy_document_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -590,6 +601,7 @@ def gazette(gazette_id):
     return render_template(
         'gazette_detail.html',
         gazette=gazette,
+        admin_edit_url=admin_url('gazette', gazette_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 

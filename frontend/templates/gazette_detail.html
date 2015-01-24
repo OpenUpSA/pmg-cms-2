@@ -17,11 +17,7 @@
 <ul class="fa-ul">
   {% for file in gazette.files %}
   <li>
-    {% if file.url %}
-    <a href="{{file.url|file}}"><i class="fa-li fa fa-file"></i> {{ file.description if file.description else file.origname }}</a>
-    {% else %}
-    <i class="fa-li fa fa-file"></i> {{ file.description if file.description else file.origname }}
-    {% endif %}
+    <a href="{{file.url}}"><i class="fa-li fa fa-file"></i> {{ file.description if file.description else file.origname }}</a>
   </li>
   {% endfor %}
 </ul>

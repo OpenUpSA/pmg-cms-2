@@ -637,6 +637,7 @@ def member(member_id):
     return render_template(
         'member_detail.html',
         member=member,
+        admin_edit_url=admin_url('member', member_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -661,6 +662,7 @@ def hansard(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
+        admin_edit_url=admin_url('hansard', event_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -711,6 +713,7 @@ def briefing(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
+        admin_edit_url=admin_url('briefing', event_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -747,6 +750,7 @@ def daily_schedule(daily_schedule_id):
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
+        admin_edit_url=admin_url('schedule', daily_schedule_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 
@@ -782,6 +786,7 @@ def question_reply(question_reply_id):
     return render_template(
         'question_reply_detail.html',
         question_reply=question_reply,
+        admin_edit_url=admin_url('question', question_reply_id),
         STATIC_HOST=app.config['STATIC_HOST'])
 
 

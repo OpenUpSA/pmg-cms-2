@@ -1,0 +1,182 @@
+$icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
+$font-size-base:          10pt;
+
+//** Global textual link color.
+$link-color:            #0178d8;
+
+@import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Navbar
+
+.navbar-pmg {
+
+	background-color: #DDD;
+	border: none;
+	border-radius: 0px;
+	// height: 35px;
+	padding-top: 3px;
+
+	// XXX .drop-shadow(0, 1px, 2px, 0.6);
+
+	#logo {
+		max-height: 30px;
+	}
+
+	.navbar-brand {
+		padding: 7px 15px;
+	}
+
+	.navbar-form {
+		width: 100%;
+		padding-left: 0px;
+		margin-bottom: 0px;
+		border: none;
+		.input-group {
+			width: 100%;
+		}
+	}
+
+	.navbar-right {
+		.navbar-btn {
+			margin-top: 6px;
+			margin-right: 15px;
+		}
+	}
+
+	.logo-container {
+		min-width: 173px;
+	}
+}
+
+
+#news {
+	.news-pic {
+		background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
+		width: 100%;
+		height: 400px;
+		background-size: cover;
+		cursor: pointer;
+	}
+
+	.news-pic:hover {
+	 	.blurb {
+			background-color: rgba(255,255,255,1);
+		}
+	}
+
+	.blurb {
+		// XXX .transition(0.6s, ease-out);
+		width: 30%;
+		background-color: rgba(255,255,255,0.85);
+		padding: 15px;
+		margin: 15px;
+		float: right;
+		border-radius: 4px;
+	}
+}
+
+.dateline {
+	font-weight: bold;
+	margin: 5px 0px;
+}
+
+.blurb {
+	font-size: 10pt;
+}
+
+.bottom {
+	position: absolute;
+	bottom: 0px;
+
+	p {
+		margin-bottom: 0px;
+	}
+}
+
+.text-background {
+	background-color: rgba(255,255,255,0.8);
+	padding: 15px;
+}
+
+#reports {
+	form {
+		margin-top: 15px;
+	}
+
+	table {
+		margin-top: 35px;
+	}
+}
+
+.top-links {
+	a {
+		text-decoration: underline;
+		color: #444;
+		margin-top: 15px;
+	}
+}
+
+.light-red {
+	// XXX color: lighten($brand-danger, 10%);
+}
+
+.list-spaced {
+	li {
+		margin: 15px 0px;
+		img {
+			// .pull-left();
+			margin-right: 5px;
+		}
+	}
+}
+
+.space-bottom {
+	margin-bottom: 40px;
+}
+
+.space-bottom-sm {
+	margin-bottom: 10px;	
+}
+
+.container-body {
+	min-height: 60vh;
+}
+
+.nav-pills {
+	margin-bottom: 10px;
+}
+
+.bincount {
+	// XXX .label;
+	// XXX .label-default;
+	
+	right: 0px;
+}
+
+.chosen-container {
+	margin-bottom: 20px;
+}
+
+.collapse {
+	display: none;
+}
+
+.collapse-link {
+	cursor: pointer;
+}
+
+footer {
+	background-color: #444;
+	a, a:hover {
+		color: #aaa;
+		text-decoration: underline;
+	}
+	color: #aaa;
+	margin: 0px;
+	padding: 40px;
+	min-height: 200px;
+	ul {
+		list-style: inline;
+	}
+	margin-top: 60px;
+}

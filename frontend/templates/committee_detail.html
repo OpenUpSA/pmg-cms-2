@@ -73,9 +73,9 @@
           {% if committee.tabled_committee_reports %}
             <div class="col-md-6">
               <h3><span class="fa fa-briefcase"></span> Tabled Reports</h3>
-              <ul class="list-unstyled list-spaced">
+              <ul class="list-unstyled">
                 {% for result in committee.tabled_committee_reports[0:5] %}
-                  {% include 'tabled_committee_report_stub.html' %}
+                  <li>{% include 'tabled_committee_report_stub.html' %}</li>
                 {% endfor %}
               </ul>
               {% if committee.tabled_committee_reports|length > 5 %}
@@ -86,9 +86,9 @@
           {% if committee.calls_for_comments %}
             <div class="col-md-6">
               <h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
-              <ul class="list-unstyled list-spaced">
+              <ul class="list-unstyled">
                 {% for result in committee.calls_for_comments[0:5] %}
-                  {% include 'call_for_comment_stub.html' %}
+                  <li>{% include 'call_for_comment_stub.html' %}</li>
                 {% endfor %}
               </ul>
               {% if committee.calls_for_comments|length > 5 %}
@@ -99,9 +99,9 @@
           {% if committee.questions_replies %}
             <div class="col-md-6">
               <h3><span class="fa fa-question-circle"></span> Questions and Replies</h3>
-              <ul class="list-unstyled list-spaced">
+              <ul class="list-unstyled">
                 {% for result in committee.questions_replies[0:5] %}
-                  {% include 'question_reply_stub.html' %}
+                  <li>{% include 'question_reply_stub.html' %}</li>
                 {% endfor %}
               </ul>
               {% if committee.questions_replies|length > 5 %}

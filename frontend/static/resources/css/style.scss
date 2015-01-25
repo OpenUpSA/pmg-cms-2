@@ -1,5 +1,4 @@
 $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
-$font-size-base:          10pt;
 
 //** Global textual link color.
 $link-color:            #0178d8;
@@ -60,14 +59,16 @@ $link-color:            #0178d8;
 
 	.news-pic:hover {
 	 	.blurb {
-			background-color: rgba(255,255,255,1);
+			opacity: 1;
 		}
 	}
 
 	.blurb {
-		// XXX .transition(0.6s, ease-out);
+		transition: 0.3s ease-out;
+		background-color: white;
+		opacity: 0.85;
+
 		width: 30%;
-		background-color: rgba(255,255,255,0.85);
 		padding: 15px;
 		margin: 15px;
 		float: right;
@@ -78,10 +79,6 @@ $link-color:            #0178d8;
 .dateline {
 	font-weight: bold;
 	margin: 5px 0px;
-}
-
-.blurb {
-	font-size: 10pt;
 }
 
 .bottom {
@@ -117,14 +114,14 @@ $link-color:            #0178d8;
 }
 
 .light-red {
-	// XXX color: lighten($brand-danger, 10%);
+	color: lighten($brand-danger, 10%);
 }
 
 .list-spaced {
 	li {
 		margin: 15px 0px;
 		img {
-			// .pull-left();
+			float: left;
 			margin-right: 5px;
 		}
 	}
@@ -144,13 +141,6 @@ $link-color:            #0178d8;
 
 .nav-pills {
 	margin-bottom: 10px;
-}
-
-.bincount {
-	// XXX .label;
-	// XXX .label-default;
-	
-	right: 0px;
 }
 
 .chosen-container {

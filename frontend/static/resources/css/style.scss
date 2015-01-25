@@ -3,6 +3,12 @@ $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
 //** Global textual link color.
 $link-color:            #0178d8;
 
+// scale down heading font sizes, h1 is like h2, h2 like h3, etc.
+$font-size-base:          14px !default;
+$font-size-h1:            floor(($font-size-base * 2.15));
+$font-size-h2:            floor(($font-size-base * 1.7));
+$font-size-h3:            ceil(($font-size-base * 1.25));
+
 @import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
 
 // Navbar

@@ -1,4 +1,9 @@
 {% extends 'admin/model/create.html' %}
+
+{% block body %}
+    <h2>{{ admin_view.name }}</h2>
+    {{ super() }}
+{% endblock %}
  
 {% block tail %}
     {{ super() }}

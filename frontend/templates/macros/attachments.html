@@ -1,0 +1,30 @@
+{% macro attachments_panel(title, items, icon) -%}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">{{ title }}</h4>
+    </div>
+    <div class="panel-body">
+      {% if items %}
+        <ul class="fa-ul">
+          {% for item in items %}
+          <li>
+            <i class="fa fa-li {{icon}}"></i>
+            <a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank">{{ item.title }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">No related {{ title|lower }}</p>
+      {% endif %}
+    </div>
+  </div>
+{%- endmacro %}
+
+
+{% macro audio_attachments(audio) -%}
+  {{ attachments_panel("Audio", audio, "fa-headphones") }}
+{%- endmacro %}
+
+{% macro related_attachments(related_docs) -%}
+  {{ attachments_panel("Documents", related_docs, "fa-file") }}
+{%- endmacro %}

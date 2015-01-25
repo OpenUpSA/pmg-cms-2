@@ -1,13 +1,13 @@
 {% extends "base.html" %}
+{% from 'macros/attachments.html' import audio_attachments, related_attachments %}
 
 {% block page %}
+  <h4 class="light-red">Briefing</h4>
+  <h1>{{ event.title }}</h1>
+  <h5>{{ event.date }}</h5>
+
   <div class="row">
     <div class="col-sm-8">
-      <h4 class="light-red">Briefing</h4>
-      <h1>{{ event.title }}</h1>
-      <h5>{{ event.date }}</h5>
-
-
       {% if (report.summary) %}
         <div class="summary">{{ report.summary|safe }}</div>
       {% endif %}
@@ -17,48 +17,12 @@
         <div>{{ report.body|safe }}</div>
       {% endif %}
 
-      {#    {% if (briefing.presentation) %}#}
-      {#    <h3>Presentation</h3>#}
-      {#    <div>{{ briefing.presentation|safe }}</div>#}
-      {#    {% endif %}#}
     </div>
 
     <div class="col-sm-4">
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h4>Audio</h4>
-        </div>
-        <div class="panel-body">
-          {% if audio %}
-            <ul class="list-unstyled">
-              {% for item in audio %}
-                <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-headphones"></span> {{ item.title }}</a></li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="lead text-muted">No audio content</p>
-          {% endif %}
-        </div>
-      </div>
-      <div class="panel panel-primary">
-        <div class="panel-heading">
-          <h4>Documents</h4>
-        </div>
-        <div class="panel-body">
-          {% if related_docs %}
-            <ul class="list-unstyled">
-              {% for item in related_docs %}
-                <li><a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank"><span class="fa fa-file"></span> {{ item.title }}</a></li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="lead text-muted">No related documents</p>
-          {% endif %}
-        </div>
-      </div>
+      {{ audio_attachments(audio) }}
+      {{ related_attachments(related_docs) }}
     </div>
-
-
 
   </div>
 {% endblock %}

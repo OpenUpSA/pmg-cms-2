@@ -27,19 +27,21 @@ assets.debug      = app.debug
 # source files
 assets.load_path  = ['%s/static' % app.config.root_path]
 
+from webassets.filter.pyscss import PyScss
+
 assets.register('css',
     Bundle(
-      'resources/css/*.css',
       'font-awesome-4.2.0/css/font-awesome.min.css',
       'chosen/chosen.min.css',
+      Bundle(
+        'resources/css/*.scss',
+        filters=PyScss(load_paths=assets.load_path),
+        output='stylesheets/styles.%(version)s.css'),
       output='stylesheets/app.%(version)s.css'))
 
 assets.register('js', Bundle(
     'bower_components/jquery/dist/jquery.min.js',
-    'bower_components/bootstrap/js/tab.js',
-    'bower_components/bootstrap/js/transition.js',
-    'bower_components/bootstrap/js/alert.js',
-    'bower_components/bootstrap/js/dropdown.js',
+    'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
     'chosen/chosen.jquery.js',
     'resources/javascript/users.js',
     'resources/javascript/pmg.js',

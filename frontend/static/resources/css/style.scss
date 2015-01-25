@@ -14,14 +14,12 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 // Navbar
 
 .navbar-pmg {
-
 	background-color: #DDD;
 	border: none;
 	border-radius: 0px;
-	// height: 35px;
-	padding-top: 3px;
 
-	// XXX .drop-shadow(0, 1px, 2px, 0.6);
+	padding-top: 3px;
+	margin-bottom: 0px;
 
 	#logo {
 		max-height: 30px;
@@ -52,6 +50,17 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 		min-width: 173px;
 	}
 }
+
+nav.top-links {
+	padding: 10px;
+	margin-bottom: 10px;
+	background-color: #efefef;
+
+	ul {
+		margin-bottom: 0px;
+	}
+}
+
 
 
 #news {
@@ -108,14 +117,6 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 
 	table {
 		margin-top: 35px;
-	}
-}
-
-.top-links {
-	a {
-		text-decoration: underline;
-		color: #444;
-		margin-top: 15px;
 	}
 }
 

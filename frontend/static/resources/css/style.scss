@@ -1,0 +1,179 @@
+$icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
+
+//** Global textual link color.
+$link-color:            #0178d8;
+
+// scale down heading font sizes, h1 is like h2, h2 like h3, etc.
+$font-size-base:          14px !default;
+$font-size-h1:            floor(($font-size-base * 2.15));
+$font-size-h2:            floor(($font-size-base * 1.7));
+$font-size-h3:            ceil(($font-size-base * 1.25));
+
+@import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
+
+// Navbar
+
+.navbar-pmg {
+	background-color: #DDD;
+	border: none;
+	border-radius: 0px;
+
+	padding-top: 3px;
+	margin-bottom: 0px;
+
+	#logo {
+		max-height: 30px;
+	}
+
+	.navbar-brand {
+		padding: 7px 15px;
+	}
+
+	.navbar-form {
+		width: 100%;
+		padding-left: 0px;
+		margin-bottom: 0px;
+		border: none;
+		.input-group {
+			width: 100%;
+		}
+	}
+
+	.navbar-right {
+		.navbar-btn {
+			margin-top: 6px;
+			margin-right: 15px;
+		}
+	}
+
+	.logo-container {
+		min-width: 173px;
+	}
+}
+
+nav.top-links {
+	padding: 10px;
+	margin-bottom: 10px;
+	background-color: #efefef;
+
+	ul {
+		margin-bottom: 0px;
+	}
+}
+
+
+
+#news {
+	.news-pic {
+		background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
+		width: 100%;
+		height: 400px;
+		background-size: cover;
+		cursor: pointer;
+	}
+
+	.news-pic:hover {
+	 	.blurb {
+			opacity: 1;
+		}
+	}
+
+	.blurb {
+		transition: 0.3s ease-out;
+		background-color: white;
+		opacity: 0.85;
+
+		width: 30%;
+		padding: 15px;
+		margin: 15px;
+		float: right;
+		border-radius: 4px;
+	}
+}
+
+.dateline {
+	font-weight: bold;
+	margin: 5px 0px;
+}
+
+.bottom {
+	position: absolute;
+	bottom: 0px;
+
+	p {
+		margin-bottom: 0px;
+	}
+}
+
+.text-background {
+	background-color: rgba(255,255,255,0.8);
+	padding: 15px;
+}
+
+#reports {
+	form {
+		margin-top: 15px;
+	}
+
+	table {
+		margin-top: 35px;
+	}
+}
+
+.light-red {
+	color: lighten($brand-danger, 10%);
+}
+
+.list-spaced {
+	li {
+		margin: 15px 0px;
+		img {
+			float: left;
+			margin-right: 5px;
+		}
+	}
+}
+
+.space-bottom {
+	margin-bottom: 40px;
+}
+
+.space-bottom-sm {
+	margin-bottom: 10px;	
+}
+
+.container-body {
+	min-height: 60vh;
+}
+
+.nav-pills {
+	margin-bottom: 10px;
+}
+
+.chosen-container {
+	margin-bottom: 20px;
+}
+
+.collapse {
+	display: none;
+}
+
+.collapse-link {
+	cursor: pointer;
+}
+
+footer {
+	background-color: #444;
+	a, a:hover {
+		color: #aaa;
+		text-decoration: underline;
+	}
+	color: #aaa;
+	margin: 0px;
+	padding: 40px;
+	min-height: 200px;
+	ul {
+		list-style: inline;
+	}
+	margin-top: 60px;
+}

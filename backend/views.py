@@ -214,7 +214,8 @@ def resource_list(resource, resource_id=None):
         next = request.url_root + resource + "/?page=" + str(page + 1)
     status_code = 200
     if resource == "committee-meeting" and resource_id:
-        if not queryset.check_permission():
+        committee_meeting_obj = queryset
+        if not committee_meeting_obj.check_permission():
             if current_user.is_anonymous():
                 status_code = 401  # Unauthorized, i.e. authentication is required
             else:

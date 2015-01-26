@@ -46,7 +46,7 @@ class ApiException(HTTPException):
 
     def get_response(self, environ=None):
         response = flask.jsonify(self.to_dict())
-        response.code = self.code
+        response.status_code = self.code
         response.headers['Access-Control-Allow-Origin'] = "*"
         return response
 
@@ -62,11 +62,12 @@ def get_filter():
     return filters
 
 
-def send_api_response(data_json):
+def send_api_response(data_json, status_code=200):
 
     response = flask.make_response(data_json)
     response.headers['Access-Control-Allow-Origin'] = "*"
     response.headers['Content-Type'] = "application/json"
+    response.status_code = status_code
     return response
 
 
@@ -195,9 +196,8 @@ def resource_list(resource, resource_id=None):
             page = int(request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-    # if request.args.get('filter'):
     filters = get_filter()
-    if (len(filters)):
+    if filters:
         for f in filters:
             base_query = base_query.filter_by(**f)
     if resource_id:
@@ -212,12 +212,20 @@ def resource_list(resource, resource_id=None):
     next = None
     if count > (page + 1) * per_page:
         next = request.url_root + resource + "/?page=" + str(page + 1)
+    status_code = 200
+    if resource == "committee-meeting" and resource_id:
+        committee_meeting_obj = queryset
+        if not committee_meeting_obj.check_permission():
+            if current_user.is_anonymous():
+                status_code = 401  # Unauthorized, i.e. authentication is required
+            else:
+                status_code = 403  # Forbidden, i.e. the user is not subscribed
     out = serializers.queryset_to_json(
         queryset,
         count=count,
         next=next,
         current_user=current_user)
-    return send_api_response(out)
+    return send_api_response(out, status_code=status_code)
 
 
 @app.route('/', )

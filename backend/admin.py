@@ -1,5 +1,8 @@
-from app import app, db
-from models import *
+import logging
+import os
+from operator import itemgetter
+from dateutil import tz
+
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
@@ -10,14 +13,14 @@ from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
 from wtforms import fields, widgets
-import logging
 from sqlalchemy import func
 from werkzeug import secure_filename
-import os
 from s3_upload import S3Bucket
-import urllib
-from operator import itemgetter
-from dateutil import tz
+
+from app import app, db
+from models import *
+from email_alerts import EmailAlertView
+from rbac import RBACMixin
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -82,7 +85,8 @@ class CKTextAreaField(fields.TextAreaField):
     widget = CKTextAreaWidget()
 
 
-class MyIndexView(AdminIndexView):
+class MyIndexView(RBACMixin, AdminIndexView):
+    required_roles = ['editor']
 
     @expose("/")
     def index(self):
@@ -109,24 +113,10 @@ class MyIndexView(AdminIndexView):
             record_counts=record_counts,
             file_count=file_count)
 
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role(
-                'editor') or not current_user.has_role('user-admin'):
-            return False
-        return True
 
-    def _handle_view(self, name, **kwargs):
-        """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
-        """
-        if not self.is_accessible():
-            tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
-            return redirect(tmp, code=302)
+class MyModelView(RBACMixin, ModelView):
+    required_roles = ['editor']
 
-
-class MyModelView(ModelView):
     can_create = True
     can_edit = True
     can_delete = True
@@ -134,37 +124,21 @@ class MyModelView(ModelView):
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
 
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role('editor'):
-            return False
-        return True
+    def __init__(self, *args, **kwargs):
+        if 'frontend_url_format' in kwargs:
+            self.frontend_url_format = kwargs.pop('frontend_url_format')
 
-    def _handle_view(self, name, **kwargs):
-        """
-        Override builtin _handle_view in order to redirect users when a view is not accessible.
-        """
-        if not self.is_accessible():
-            return redirect(
-                '/security/login?next=' +
-                urllib.quote_plus(
-                    request.base_url),
-                code=302)
+        super(MyModelView, self).__init__(*args, **kwargs)
+
+    def frontend_url(self, model):
+        if getattr(self, 'frontend_url_format', None):
+            return FRONTEND_HOST + self.frontend_url_format % self.get_pk_value(model)
+        return None
 
 
-class MyRestrictedModelView(MyModelView):
+class UserView(MyModelView):
+    required_roles = ['user-admin']
 
-    def is_accessible(self):
-        if not current_user.is_active() or not current_user.is_authenticated():
-            return False
-        if not current_user.has_role(
-                'editor') or not current_user.has_role('user-admin'):
-            return False
-        return True
-
-
-class UserView(MyRestrictedModelView):
     can_create = False
     can_delete = True
     column_list = [
@@ -233,6 +207,7 @@ class MembershipModelConverter(InlineModelConverter):
 
 
 class CommitteeView(MyModelView):
+    frontend_url_format = 'committee/%s'
 
     column_list = (
         'name',
@@ -343,6 +318,7 @@ class InlineContent(InlineFormAdmin):
 
 
 class CommitteeMeetingView(EventView):
+    frontend_url_format = 'committee-meeting/%d'
 
     column_list = ('date', 'title', 'committee', 'content')
     column_labels = {'committee': 'Committee', }
@@ -410,6 +386,7 @@ class CommitteeMeetingView(EventView):
 
 
 class HansardView(EventView):
+    frontend_url_format = 'hansard/%d'
 
     column_list = (
         'title',
@@ -470,6 +447,7 @@ class HansardView(EventView):
 
 
 class BriefingView(EventView):
+    frontend_url_format = 'briefing/%s'
 
     column_list = (
         'committee',
@@ -540,6 +518,7 @@ class BriefingView(EventView):
 
 
 class MemberView(MyModelView):
+    frontend_url_format = 'member/%d'
 
     column_list = (
         'name',
@@ -606,7 +585,8 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 
-class QuestionView(MyModelView):
+class QuestionReplyView(MyModelView):
+    frontend_url_format = 'question_reply/%d'
 
     column_exclude_list = (
         'body',
@@ -621,6 +601,7 @@ class QuestionView(MyModelView):
 
 
 class CallForCommentView(MyModelView):
+    frontend_url_format = 'call-for-comment/%s'
 
     column_exclude_list = (
         'body',
@@ -639,6 +620,7 @@ class CallForCommentView(MyModelView):
 
 
 class DailyScheduleView(MyModelView):
+    frontend_url_format = 'daily_schedule/%d'
 
     column_exclude_list = (
         'body',
@@ -653,18 +635,21 @@ class DailyScheduleView(MyModelView):
 
 
 class GazetteView(MyModelView):
+    frontend_url_format = 'gazette/%d'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
 
 
 class PolicyDocumentView(MyModelView):
+    frontend_url_format = 'policy-document/%d'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
 
 
 class TabledReportView(MyModelView):
+    frontend_url_format = 'tabled-committee-report/%d'
 
     column_exclude_list = (
         'body',
@@ -680,6 +665,27 @@ class TabledReportView(MyModelView):
             'class': 'ckeditor'
         },
         }
+
+
+class EmailTemplateView(MyModelView):
+    column_list = (
+        'name',
+        'subject',
+        'description',
+    )
+    column_default_sort = ('name', True)
+    column_searchable_list = ('name', 'subject', 'description', 'body')
+    form_columns = (
+        'name',
+        'description',
+        'subject',
+        'body',
+    )
+    form_widget_args = {
+        'body': {
+            'class': 'ckeditor'
+        },
+    }
 
 # initialise admin instance
 admin = Admin(
@@ -738,9 +744,10 @@ admin.add_view(
         Bill,
         db.session,
         name="Bills",
-        endpoint='bill'))
+        endpoint='bill',
+        frontend_url_format='bill/%s'))
 admin.add_view(
-    QuestionView(
+    QuestionReplyView(
         QuestionReply,
         db.session,
         name="Questions & Replies",
@@ -811,3 +818,17 @@ admin.add_view(
         name="Bill Type",
         endpoint='bill-type',
         category="Form Options"))
+
+# Email alerts
+admin.add_view(
+    EmailAlertView(
+        category='Email Alerts',
+        name="Send Emails",
+        endpoint='alerts'))
+admin.add_view(
+    EmailTemplateView(
+        EmailTemplate,
+        db.session,
+        name="Email Templates",
+        category='Email Alerts',
+        endpoint='email-templates'))

@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from dateutil import tz
 import logging
 
-from sqlalchemy import desc, Index
+from sqlalchemy import desc, Index, func
 from sqlalchemy.orm import backref
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
@@ -335,8 +335,14 @@ class File(db.Model):
     playtime = db.Column(db.String(10))
     file_path = db.Column(db.String(255))
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = STATIC_HOST + tmp['file_path']
+        return tmp
+
     def __unicode__(self):
         return u'%s' % self.title
+
 
 # M2M table
 bill_event_table = db.Table(
@@ -825,6 +831,22 @@ class HitLog(db.Model):
     ip_addr = db.Column(db.String(40), index=True)
     user_agent = db.Column(db.String(255))
     url = db.Column(db.String(255))
+
+
+
+class EmailTemplate(db.Model):
+    __tablename__ = 'email_template'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(1024))
+    subject = db.Column(db.String(100))
+    body = db.Column(db.Text)
+
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
+
 
 
 # Listen for model updates

@@ -6,6 +6,11 @@
   </style>
 {% endblock head_css%}
 
+{% block body %}
+    <h2>{{ admin_view.name }}</h2>
+    {{ super() }}
+{% endblock %}
+
 {% import '_macros.html' as macros %}
 
 {% macro render_html(model, column) %}

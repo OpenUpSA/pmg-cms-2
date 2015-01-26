@@ -20,6 +20,17 @@
           {% if session.current_user %}
             {% set user = session.current_user %}
             <div class="btn-group">
+              {% if admin_edit_url %}
+                {% for role in user.roles %}
+                  {% if role.name == 'editor' %}
+                  <a class="btn navbar-btn btn-primary btn-sm" href="{{ admin_edit_url }}">
+                    <i class="fa fa-pencil"></i>
+                    Edit Page
+                  </a>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
               <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
                 <i class="fa fa-user"></i> {{ user.email }} <span class="caret"></span>
               </button>

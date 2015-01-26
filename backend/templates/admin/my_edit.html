@@ -1,4 +1,15 @@
 {% extends 'admin/model/edit.html' %}
+
+{% block body %}
+    {% if admin_view.frontend_url(model) %}
+    <div class="pull-right">
+        <a href="{{ admin_view.frontend_url(model) }}" class="btn btn-primary"><i class="fa fa-eye"></i> View page</a>
+    </div>
+    {% endif %}
+
+    <h2>Edit {{ admin_view.name }}</h2>
+    {{ super() }}
+{% endblock %}
  
 {% block tail %}
     {{ super() }}

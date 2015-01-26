@@ -124,6 +124,17 @@ class MyModelView(RBACMixin, ModelView):
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
 
+    def __init__(self, *args, **kwargs):
+        if 'frontend_url_format' in kwargs:
+            self.frontend_url_format = kwargs.pop('frontend_url_format')
+
+        super(MyModelView, self).__init__(*args, **kwargs)
+
+    def frontend_url(self, model):
+        if getattr(self, 'frontend_url_format', None):
+            return FRONTEND_HOST + self.frontend_url_format % self.get_pk_value(model)
+        return None
+
 
 class UserView(MyModelView):
     required_roles = ['user-admin']
@@ -196,6 +207,7 @@ class MembershipModelConverter(InlineModelConverter):
 
 
 class CommitteeView(MyModelView):
+    frontend_url_format = 'committee/%s'
 
     column_list = (
         'name',
@@ -306,6 +318,7 @@ class InlineContent(InlineFormAdmin):
 
 
 class CommitteeMeetingView(EventView):
+    frontend_url_format = 'committee-meeting/%d'
 
     column_list = ('date', 'title', 'committee', 'content')
     column_labels = {'committee': 'Committee', }
@@ -373,6 +386,7 @@ class CommitteeMeetingView(EventView):
 
 
 class HansardView(EventView):
+    frontend_url_format = 'hansard/%d'
 
     column_list = (
         'title',
@@ -433,6 +447,7 @@ class HansardView(EventView):
 
 
 class BriefingView(EventView):
+    frontend_url_format = 'briefing/%s'
 
     column_list = (
         'committee',
@@ -503,6 +518,7 @@ class BriefingView(EventView):
 
 
 class MemberView(MyModelView):
+    frontend_url_format = 'member/%d'
 
     column_list = (
         'name',
@@ -569,7 +585,8 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 
-class QuestionView(MyModelView):
+class QuestionReplyView(MyModelView):
+    frontend_url_format = 'question_reply/%d'
 
     column_exclude_list = (
         'body',
@@ -584,6 +601,7 @@ class QuestionView(MyModelView):
 
 
 class CallForCommentView(MyModelView):
+    frontend_url_format = 'call-for-comment/%s'
 
     column_exclude_list = (
         'body',
@@ -602,6 +620,7 @@ class CallForCommentView(MyModelView):
 
 
 class DailyScheduleView(MyModelView):
+    frontend_url_format = 'daily_schedule/%d'
 
     column_exclude_list = (
         'body',
@@ -616,18 +635,21 @@ class DailyScheduleView(MyModelView):
 
 
 class GazetteView(MyModelView):
+    frontend_url_format = 'gazette/%d'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
 
 
 class PolicyDocumentView(MyModelView):
+    frontend_url_format = 'policy-document/%d'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
 
 
 class TabledReportView(MyModelView):
+    frontend_url_format = 'tabled-committee-report/%d'
 
     column_exclude_list = (
         'body',
@@ -722,9 +744,10 @@ admin.add_view(
         Bill,
         db.session,
         name="Bills",
-        endpoint='bill'))
+        endpoint='bill',
+        frontend_url_format='bill/%s'))
 admin.add_view(
-    QuestionView(
+    QuestionReplyView(
         QuestionReply,
         db.session,
         name="Questions & Replies",

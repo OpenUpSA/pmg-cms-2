@@ -9,7 +9,7 @@
               {{ category | title }}
             {% else %}
               Error
-            {% endif %}: </strong> {{ message }}
+            {% endif %}: </strong> {{ message | safe}}
         </div>
       </div>
     {% endfor %}

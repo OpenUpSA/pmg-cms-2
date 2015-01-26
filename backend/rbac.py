@@ -33,5 +33,5 @@ class RBACMixin(object):
                 abort(403)
             else:
                 # login
-                tmp = '/security/login?next=' + urllib.quote_plus(request.base_url)
+                tmp = '/security/login?next=' + urllib.quote_plus(request.url)
                 return redirect(tmp)

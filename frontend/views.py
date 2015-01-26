@@ -186,8 +186,17 @@ def load_from_api(
 
         if response.status_code == 404:
             abort(404)
-
-        if response.status_code != 200:
+        elif response.status_code == 403:
+            msg = "Your subscription doesn't give you access to this committee's meeting reports." + \
+                  " Please see <a href='" + url_for('committee_subscriptions') + "'>the subscriptions page</a>" + \
+                  " for more details."
+            flash(msg, "danger")
+        elif response.status_code == 401:
+            msg = "Access is restricted. You need to log in to view this committee's meeting reports." + \
+                  " Please <a href='" + url_for('login', next=request.base_url) + "'>log in</a>" + \
+                  " or <a href='" + url_for('register') + "'>create a new account</a>."
+            flash(msg, "danger")
+        elif response.status_code != 200:
             try:
                 msg = response.json().get('message')
             except Exception:
@@ -328,7 +337,7 @@ def bill(bill_id):
     logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
     return render_template('bill_detail.html', bill=bill,
-            admin_edit_url=admin_url('bill', bill_id))
+                           admin_edit_url=admin_url('bill', bill_id))
 
 
 @app.route('/committee/<int:committee_id>/')
@@ -340,8 +349,8 @@ def committee_detail(committee_id):
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
     return render_template('committee_detail.html',
-            committee=committee,
-            admin_edit_url=admin_url('committee', committee_id))
+                           committee=committee,
+                           admin_edit_url=admin_url('committee', committee_id))
 
 
 @app.route('/committees/')
@@ -740,7 +749,7 @@ def briefings(page=0):
         icon="bullhorn",
         title="Media Briefings",
         content_type="briefing",
-    )
+        )
 
 
 @app.route('/daily_schedule/<int:daily_schedule_id>')

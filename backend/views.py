@@ -215,7 +215,7 @@ def resource_list(resource, resource_id=None):
     status_code = 200
     if resource == "committee-meeting" and resource_id:
         if not queryset.check_permission():
-            if current_user.is_anonymous:
+            if current_user.is_anonymous():
                 status_code = 401  # Unauthorized, i.e. authentication is required
             else:
                 status_code = 403  # Forbidden, i.e. the user is not subscribed

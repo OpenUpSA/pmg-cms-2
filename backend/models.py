@@ -431,6 +431,9 @@ class CommitteeMeeting(Event):
     def check_permission(self):
         # by default, all committee meetings are accessible
         if self.committee.premium:
+            # admin users have access to everything
+            if current_user.has_role('editor'):
+                return True
             # for premium committees, check if the user's organisation is subscribed to the committee
             if not current_user.is_anonymous and current_user.active and \
                     current_user.organisation and current_user.organisation.subscriptions:

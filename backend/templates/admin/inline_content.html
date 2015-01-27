@@ -1,7 +1,7 @@
-{% import 'admin/model/inline_list_base.html' as base with context %}
+{% import '/admin/inline_list_content.html' as base with context %}
 {% import '_macros.html' as macros %}
 
-{% macro render_field(field) %}
+{% macro render_file_field(field) %}
   {% set model = field.object_data %}
   <div class="row">
     {% if model.file and model.file.file_path %}
@@ -19,4 +19,4 @@
   </div>
 {% endmacro %}
 
-{{ base.render_inline_fields(field, template, render_field) }}
+{{ base.render_inline_fields(field, template, render_file_field) }}

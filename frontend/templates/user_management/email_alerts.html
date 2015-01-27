@@ -27,11 +27,11 @@
 {% endmacro %}
 
 {% block page %}
-  <h1>Manage Notifications</h1>
+  <h1>Email alerts</h1>
   <p class="lead">Here you can choose which email notifications you wish to receive from us.</p>
   <hr>
 
-  <form method="post" action="{{ url_for('manage_notifications') }}">
+  <form method="post" action="{{ url_for('email_alerts') }}">
     <h2>General updates</h2>
     <ul class="list-unstyled">
       <li class="checkbox">

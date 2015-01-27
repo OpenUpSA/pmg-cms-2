@@ -252,8 +252,8 @@ def update_current_user():
     return
 
 
-@app.route('/manage-notifications/', methods=['GET', 'POST'])
-def notification_settings():
+@app.route('/email_alerts/', methods=['GET', 'POST'])
+def email_alerts():
     """
     Allow a user to manage their notification subscriptions.
     """
@@ -270,10 +270,10 @@ def notification_settings():
                 out['committee_subscriptions'].append(committee_id)
         tmp = send_to_api('update_subscriptions', json.dumps(out))
         if tmp:
-            flash("Your notification subscriptions have been updated successfully.", "success")
+            flash("Your notification settings have been updated successfully.", "success")
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
-    return render_template('user_management/notification_settings.html', committees=committees, )
+    return render_template('user_management/email_alerts.html', committees=committees, )
 
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])

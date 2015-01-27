@@ -104,7 +104,6 @@ class EmailAlertForm(Form):
         recipients = [{'email': r.email} for r in self.recipients]
         merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]}]
 
-        mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
         msg = {
             "html": self.message.html,
             "subject": self.message.subject,
@@ -116,7 +115,10 @@ class EmailAlertForm(Form):
             "preserve_recipients": False,
         }
 
+        log.info("Email will be sent to %d recipients." % len(recipients))
         log.info("Sending email via mandrill: %s" % msg)
+
+        mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
         mandrill_client.messages.send(message=msg)
 
     def generate_email(self):
@@ -133,9 +135,11 @@ class EmailAlertForm(Form):
         groups = []
 
         if self.daily_schedule_subscribers.data:
+            log.info("Email recipients includes daily schedule subscribers")
             groups.append(User.query.filter(User.subscribe_daily_schedule == True).all())
 
         if self.committee_ids.data:
+            log.info("Email recipients includes subscribers for these committees: %s" % self.committee_ids.data)
             groups.append(User.query
                     .join(User.subscriptions)
                     .options(lazyload(User.organisation))

@@ -15,48 +15,46 @@
   {% if user.organisation and
   user.organisation.subscriptions and
   user.organisation.subscriptions[committee_id|string] %}
-    checked
+    <span class="label label-success">You have access</span>
+  {% else %}
+    <span class="label label-danger">You don't have access</span>
   {% endif %}
 {% endmacro %}
 
-{% macro render_select_all() %}
-  <li class="checkbox">
-    <label>
-      <input type="checkbox" class="select-all">
-      <strong>Select all</strong>
-    </label>
-  </li>
-{% endmacro %}
-
-{% macro render_committee_checkbox(committee) %}
-  <li class="checkbox">
-    <label>
-      <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committee-id-{{ committee.id }}" {{ check_subscribed(committee.id) }}>
-      {{- committee.name -}}
-    </label>
-  </li>
+{% macro render_committee_row(committee) %}
+  <tr>
+    <td>{{ committee.name }}</td>
+    <td>{{ committee.house.name }}</td>
+    <td>{{ check_subscribed(committee.id) }}</td>
+  </tr>
 {% endmacro %}
 
 {% block page %}
 
   <h1>Committee subscriptions</h1>
-  <p class="lead">
-    Access to the following committee meeting reports are restricted to fee-paying customers.*
-    All other committee minutes are freely accessible.</p>
   <hr>
+  <p class="lead">
+    Access to the following committee meeting reports are restricted to fee-paying customers.
+    All other committee minutes are freely accessible.*</p>
+  <h2>National Assembly committees</h2>
+  <table class="table table-bordered table-striped">
+    <tr>
+      <th>Committee</th>
+      <th>House</th>
+      <th>Subscription status</th>
+    </tr>
+    {% for committee in committees %}{{ render_committee_row(committee) }}{% endfor %}
+  </table>
 
-  <form method="post" action="{{ url_for('committee_subscriptions') }}">
-    <h2>National Assembly committees</h2>
-    <p>Your account currently have access to the following: </p>
-    <ul class="list-unstyled">
-      {% for committee in committees %}{{ render_committee_checkbox(committee) }}{% endfor %}
-    </ul>
-  </form>
   {% if user.organisation %}
     {% if user.organisation.has_expired %}
-      <p>Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.</p>
+      <div class="alert alert-danger" role="alert">
+        <strong>Note:</strong> Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.
+      </div>
     {% else %}
-      <p>Access will expire on {{ user.organisation.expiry | pretty_date(format_option="long") }}</p>
+      <div class="alert alert-warning" role="alert">
+        <strong>Note:</strong> Your access is set to expire on {{ user.organisation.expiry | pretty_date(format_option="long") }}
+      </div>
     {% endif %}
   {% endif %}
   <hr>

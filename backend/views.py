@@ -8,6 +8,7 @@ from sqlalchemy import func, or_, distinct, desc
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 import datetime
+from dateutil import tz
 from operator import itemgetter
 import re
 import serializers
@@ -25,6 +26,17 @@ app.add_url_rule('/static/<path:filename>',
                  view_func=app.send_static_file)
 
 logger = logging.getLogger(__name__)
+
+
+@app.before_request
+def before_request():
+    if not current_user.is_anonymous():
+        # log user's visit, but only once very hour
+        now = datetime.datetime.utcnow()
+        if current_user.current_login_at + datetime.timedelta(hours=1) < now:
+            current_user.current_login_at = now
+            db.session.add(current_user)
+            db.session.commit()
 
 
 class ApiException(HTTPException):

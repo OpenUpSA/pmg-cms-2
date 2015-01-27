@@ -163,17 +163,35 @@ nav.top-links {
 }
 
 footer {
-	background-color: #444;
-	a, a:hover {
-		color: #aaa;
-		text-decoration: underline;
-	}
-	color: #aaa;
 	margin: 0px;
 	padding: 40px;
-	min-height: 200px;
+
 	ul {
 		list-style: inline;
 	}
+
+	form {
+		margin-top: 35px;
+	}
+}
+
+.footer-1 {
 	margin-top: 60px;
+	background-color: darken(#ddd, 40%);
+	color: #dedede;
+
+	a, a:hover {
+		color: #dedede;
+		text-decoration: underline;
+	}
+}
+
+.footer-2 {
+	background-color: darken(#ddd, 60%);
+	color: #dedede;
+
+	a, a:hover {
+		color: #dedede;
+		text-decoration: underline;
+	}
 }

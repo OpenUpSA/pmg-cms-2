@@ -258,6 +258,9 @@ def email_alerts():
     Allow a user to manage their notification subscriptions.
     """
 
+    if not session.get('current_user'):
+        return redirect(url_for('login', next=request.url))
+
     if request.form:
         out = {'committee_subscriptions': [], 'general_subscriptions': []}
         general_notifications = ['select-daily-schedule', ]

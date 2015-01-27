@@ -341,7 +341,7 @@ class File(db.Model):
         return tmp
 
     def __unicode__(self):
-        return u'%s' % self.title
+        return u'%s' % self.file_path
 
 
 # M2M table

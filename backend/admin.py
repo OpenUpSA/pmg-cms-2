@@ -73,6 +73,15 @@ def jinja2_filter_dir(value):
     return '<br>'.join(res)
 
 
+@app.template_filter('is_file')
+def jinja2_filter_is_file(content_obj):
+    logger.debug("IS_FILE")
+    logger.debug(content_obj)
+    if content_obj.file:
+        return True
+    return False
+
+
 # Define wtforms widget and field
 class CKTextAreaWidget(widgets.TextArea):
 
@@ -301,6 +310,7 @@ class InlineContent(InlineFormAdmin):
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
         form_class.upload = fields.FileField('File')
+        form_class.title = fields.StringField('Title')
         return form_class
 
     def on_model_change(self, form, model):
@@ -309,12 +319,20 @@ class InlineContent(InlineFormAdmin):
         if file_data:
             if not allowed_file(file_data.filename):
                 raise Exception("File type not allowed.")
+            # create file object
+            new_file = File(file_mime=file_data.content_type)
+            new_file.title = form.title.data
             filename = secure_filename(file_data.filename)
-            model.type = file_data.content_type
+            # set relation between content model and file model
+            model.file = new_file
+            model.type = "related-doc"
+            # save file to disc
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
-            model.file_path = filename
-            s3_bucket.upload_file(filename)
+            # upload saved file to S3
+            filename = s3_bucket.upload_file(filename)
+            model.file.file_path = filename
+            db.session.add(new_file)
 
 
 class CommitteeMeetingView(EventView):
@@ -581,7 +599,7 @@ class MemberView(MyModelView):
             filename = secure_filename(file_data.filename)
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
-            s3_bucket.upload_file(filename)
+            filename = s3_bucket.upload_file(filename)
             model.profile_pic_url = filename
 
 

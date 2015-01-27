@@ -1,14 +1,14 @@
-{% import '/admin/inline_list_content.html' as base with context %}
+{% import '/admin/model/inline_list_base.html' as base with context %}
 {% import '_macros.html' as macros %}
 
 {% macro render_file_field(field) %}
   {% set model = field.object_data %}
   <div class="row">
-    {% if model.file and model.file.file_path %}
+    {% if model.file_path %}
       <div class="col-md-10">
-        <a href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ model.file.file_path }}" target="_blank">
+        <a href="http://eu-west-1-pmg.s3-website-eu-west-1.amazonaws.com/{{ model.file_path }}" target="_blank">
           {{ macros.file_type_icon(model.type) }}
-          {{ model.file.title }}
+          {{ model.file_path }}
         </a>
       </div>
     {% else %}

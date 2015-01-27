@@ -59,7 +59,7 @@
     {% if item.file %}
       {% if item.file.file_path %}<a href="{{ STATIC_HOST }}{{ item.file.file_path }}" target="_blank">{% endif %}
       <span class="label alert-info">
-  {{ macros.file_type_icon(item.file.file_mime) }} {% if item.file.title | length > 55 %}{{ item.file.title[0:55] }}...{% else %}{{ item.file.title }}{% endif %}
+  {{ macros.file_type_icon(item.file.file_mime) }} {% if item.file.title and item.file.title | length > 55 %}{{ item.file.title[0:55] }}...{% else %}{{ item.file.title }}{% endif %}
   </span>
       {% if item.file.file_path %}</a>{% endif %}
       {% if not loop.last %}<br>{% endif %}

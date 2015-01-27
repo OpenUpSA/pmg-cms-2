@@ -321,7 +321,6 @@ class Bill(db.Model):
         return unicode(out)
 
 
-
 class File(db.Model):
 
     __tablename__ = "file"
@@ -705,9 +704,10 @@ class Gazette(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     effective_date = db.Column(db.Date())
-    files = db.relationship("File", secondary='gazette_file_join')
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
+
+    files = db.relationship("File", secondary='gazette_file_join', backref="gazette")
 
 gazette_file_table = db.Table(
     'gazette_file_join',

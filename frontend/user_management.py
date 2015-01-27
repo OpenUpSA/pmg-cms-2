@@ -260,7 +260,7 @@ def email_alerts():
 
     if request.form:
         out = {'committee_subscriptions': [], 'general_subscriptions': []}
-        general_notifications = ['select-daily-schedule', 'select-call-for-comment', 'select-bill']
+        general_notifications = ['select-daily-schedule', ]
         for field_name in request.form.keys():
             if field_name in general_notifications:
                 key = "-".join(field_name.split('-')[1::])

@@ -13,6 +13,10 @@
 
 {% import '_macros.html' as macros %}
 
+{% macro datetime_as_date(model, column) %}
+{% if model[column] %}{{ model[column].date().isoformat() }}{% endif %}
+{% endmacro %}
+
 {% macro render_html(model, column) %}
   {{ model[column] }}
 {% endmacro %}

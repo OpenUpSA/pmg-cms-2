@@ -154,12 +154,11 @@ class UserView(MyModelView):
         'email',
         'active',
         'confirmed_at',
-        'last_login_at',
         'current_login_at',
-        'last_login_ip',
-        'current_login_ip',
         'login_count',
         ]
+    column_labels = {'current_login_at': "Last seen"}
+    column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     form_excluded_columns = [
         'password',

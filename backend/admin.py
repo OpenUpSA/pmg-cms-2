@@ -73,6 +73,15 @@ def jinja2_filter_dir(value):
     return '<br>'.join(res)
 
 
+@app.template_filter('is_file')
+def jinja2_filter_is_file(content_obj):
+    logger.debug("IS_FILE")
+    logger.debug(content_obj)
+    if content_obj.file:
+        return True
+    return False
+
+
 # Define wtforms widget and field
 class CKTextAreaWidget(widgets.TextArea):
 
@@ -179,7 +188,7 @@ class OrganisationView(MyModelView):
     }
     form_excluded_columns = [
         'created_at',
-    ]
+        ]
 
     def on_model_change(self, form, model, is_created):
         # make sure the new date is timezone aware
@@ -301,6 +310,7 @@ class InlineContent(InlineFormAdmin):
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
         form_class.upload = fields.FileField('File')
+        form_class.title = fields.StringField('Title')
         return form_class
 
     def on_model_change(self, form, model):
@@ -309,12 +319,20 @@ class InlineContent(InlineFormAdmin):
         if file_data:
             if not allowed_file(file_data.filename):
                 raise Exception("File type not allowed.")
+            # create file object
+            new_file = File(file_mime=file_data.content_type)
+            new_file.title = form.title.data
             filename = secure_filename(file_data.filename)
-            model.type = file_data.content_type
+            # save file to disc
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
-            model.file_path = filename
-            s3_bucket.upload_file(filename)
+            # upload saved file to S3
+            filename = s3_bucket.upload_file(filename)
+            new_file.file_path = filename
+            # set relation between content model and file model
+            model.file = new_file
+            model.type = "related-doc"
+            db.session.add(new_file)
 
 
 class CommitteeMeetingView(EventView):
@@ -581,8 +599,64 @@ class MemberView(MyModelView):
             filename = secure_filename(file_data.filename)
             logger.debug('saving uploaded file: ' + filename)
             file_data.save(os.path.join(UPLOAD_PATH, filename))
-            s3_bucket.upload_file(filename)
+            filename = s3_bucket.upload_file(filename)
             model.profile_pic_url = filename
+
+
+# This widget uses custom template for inline field list
+class InlineFileWidget(RenderTemplateWidget):
+
+    def __init__(self):
+        super(InlineFileWidget, self).__init__('admin/inline_file.html')
+
+
+# This InlineModelFormList will use our custom widget, when creating a
+# list of forms
+class FileFormList(InlineModelFormList):
+    widget = InlineFileWidget()
+
+
+# Create custom InlineModelConverter to link the form to its model
+class FileModelConverter(InlineModelConverter):
+    inline_field_list_type = FileFormList
+
+
+class InlineFile(InlineFormAdmin):
+    form_excluded_columns = (
+        'title',
+        'file_mime',
+        'origname',
+        'description',
+        'duration',
+        'playtime',
+        'file_path',
+        'daily_schedule',
+        'gazette',
+        'tabled_committee_report',
+        'policy_document',
+    )
+
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField('File')
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            if not allowed_file(file_data.filename):
+                raise Exception("File type not allowed.")
+            # create file object
+            model.file_mime=file_data.mimetype
+            filename = secure_filename(file_data.filename)
+            # save file to disc
+            logger.debug('saving uploaded file: ' + filename)
+            file_data.save(os.path.join(UPLOAD_PATH, filename))
+            # upload saved file to S3
+            filename = s3_bucket.upload_file(filename)
+            model.file_path = filename
+
 
 
 class QuestionReplyView(MyModelView):
@@ -593,6 +667,7 @@ class QuestionReplyView(MyModelView):
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', 'question_number')
+    form_excluded_columns = ('nid', )
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
@@ -632,6 +707,11 @@ class DailyScheduleView(MyModelView):
             'class': 'ckeditor'
         },
         }
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class GazetteView(MyModelView):
@@ -639,6 +719,11 @@ class GazetteView(MyModelView):
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class PolicyDocumentView(MyModelView):
@@ -646,6 +731,11 @@ class PolicyDocumentView(MyModelView):
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class TabledReportView(MyModelView):
@@ -665,6 +755,11 @@ class TabledReportView(MyModelView):
             'class': 'ckeditor'
         },
         }
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class EmailTemplateView(MyModelView):
@@ -685,7 +780,7 @@ class EmailTemplateView(MyModelView):
         'body': {
             'class': 'ckeditor'
         },
-    }
+        }
 
 # initialise admin instance
 admin = Admin(

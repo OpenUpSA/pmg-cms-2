@@ -1,7 +1,9 @@
 import logging
 import os
 from operator import itemgetter
+import datetime
 from dateutil import tz
+from dateutil.relativedelta import relativedelta
 
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
@@ -121,6 +123,23 @@ class MyIndexView(RBACMixin, AdminIndexView):
             'admin/my_index.html',
             record_counts=record_counts,
             file_count=file_count)
+
+
+class UsageReportView(RBACMixin, BaseView):
+    required_roles = ['editor', ]
+
+    @expose('/')
+    @expose('/<int:months>/')
+    def index(self, months=1):
+        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
+        users = User.query.filter(
+            User.current_login_at > cutoff
+        ).filter(
+            ~User.email.contains("@pmg.org.za")
+        ).order_by(
+            User.email
+        ).all()
+        return self.render('admin/usage_report.html', users=users, num_months=months)
 
 
 class MyModelView(RBACMixin, ModelView):
@@ -789,6 +808,13 @@ admin = Admin(
     index_view=MyIndexView(
         name='Home'),
     template_mode='bootstrap3')
+
+# usage reports
+admin.add_view(
+    UsageReportView(
+        name="Usage report",
+        endpoint='usage_report',
+        category='Users'))
 
 # add admin views for each model
 admin.add_view(

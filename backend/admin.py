@@ -630,6 +630,10 @@ class InlineFile(InlineFormAdmin):
         'duration',
         'playtime',
         'file_path',
+        'daily_schedule',
+        'gazette',
+        'tabled_committee_report',
+        'policy_document',
     )
 
     def postprocess_form(self, form_class):
@@ -703,6 +707,11 @@ class DailyScheduleView(MyModelView):
             'class': 'ckeditor'
         },
         }
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class GazetteView(MyModelView):
@@ -722,6 +731,11 @@ class PolicyDocumentView(MyModelView):
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class TabledReportView(MyModelView):
@@ -741,6 +755,11 @@ class TabledReportView(MyModelView):
             'class': 'ckeditor'
         },
         }
+    form_excluded_columns = ('nid', )
+    inline_models = (
+        InlineFile(File),
+    )
+    inline_model_form_converter = FileModelConverter
 
 
 class EmailTemplateView(MyModelView):

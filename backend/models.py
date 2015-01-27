@@ -623,18 +623,19 @@ class TabledCommitteeReport(db.Model):
     __tablename__ = "tabled_committee_report"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
-    committee = db.relationship(
-        'Committee',
-        backref=db.backref('tabled_committee_reports'))
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
+
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee = db.relationship(
+        'Committee',
+        backref=db.backref('tabled_committee_reports'))
     files = db.relationship(
         "File",
-        secondary='tabled_committee_report_file_join')
+        secondary='tabled_committee_report_file_join', backref='tabled_committee_report')
 
 tabled_committee_report_file_table = db.Table(
     'tabled_committee_report_file_join',
@@ -677,9 +678,11 @@ class PolicyDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255))
     effective_date = db.Column(db.Date())
-    files = db.relationship("File", secondary='policy_document_file_join')
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
+
+
+    files = db.relationship("File", secondary='policy_document_file_join', backref='policy_document')
 
 policy_document_file_table = db.Table(
     'policy_document_file_join',
@@ -762,7 +765,7 @@ class DailySchedule(db.Model):
     schedule_date = db.Column(db.Date())
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
-    files = db.relationship("File", secondary='daily_schedule_file_join')
+    files = db.relationship("File", secondary='daily_schedule_file_join', backref='daily_schedule')
 
 daily_schedule_file_table = db.Table(
     'daily_schedule_file_join',

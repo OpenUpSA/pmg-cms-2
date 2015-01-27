@@ -75,11 +75,6 @@ def _jinja2_filter_humandate(iso_str):
     return arrow.get(iso_str).humanize()
 
 
-@app.template_filter('file')
-def _jinja2_filter_file(filename):
-    return app.config['STATIC_HOST'] + filename
-
-
 @app.context_processor
 def pagination_processor():
     def pagination(page_count, current_page, per_page, url):
@@ -424,8 +419,7 @@ def committee_meeting(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
-        admin_edit_url=admin_url('committee_meeting', event_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('committee_meeting', event_id))
 
 
 @app.route('/tabled-committee-reports/')
@@ -477,9 +471,7 @@ def tabled_committee_report(tabled_committee_report_id):
     return render_template(
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
-        admin_edit_url=admin_url('tabled_report', tabled_committee_report_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
-
+        admin_edit_url=admin_url('tabled_report', tabled_committee_report_id))
 
 @app.route('/calls-for-comments/')
 @app.route('/calls-for-comments/<int:page>/')
@@ -530,8 +522,7 @@ def call_for_comment(call_for_comment_id):
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,
-        admin_edit_url=admin_url('call_for_comment', call_for_comment_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('call_for_comment', call_for_comment_id))
 
 
 @app.route('/policy-documents/')
@@ -570,8 +561,7 @@ def policy_document(policy_document_id):
     return render_template(
         'policy_document_detail.html',
         policy_document=policy_document,
-        admin_edit_url=admin_url('policy', policy_document_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('policy', policy_document_id))
 
 
 @app.route('/gazettes/')
@@ -610,8 +600,7 @@ def gazette(gazette_id):
     return render_template(
         'gazette_detail.html',
         gazette=gazette,
-        admin_edit_url=admin_url('gazette', gazette_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('gazette', gazette_id))
 
 
 @app.route('/members/')
@@ -646,8 +635,7 @@ def member(member_id):
     return render_template(
         'member_detail.html',
         member=member,
-        admin_edit_url=admin_url('member', member_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('member', member_id))
 
 
 @app.route('/hansard/<int:event_id>')
@@ -671,8 +659,7 @@ def hansard(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
-        admin_edit_url=admin_url('hansard', event_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('hansard', event_id))
 
 
 @app.route('/hansards/')
@@ -722,8 +709,7 @@ def briefing(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
-        admin_edit_url=admin_url('briefing', event_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('briefing', event_id))
 
 
 @app.route('/briefings/')
@@ -759,8 +745,7 @@ def daily_schedule(daily_schedule_id):
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
-        admin_edit_url=admin_url('schedule', daily_schedule_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('schedule', daily_schedule_id))
 
 
 @app.route('/daily_schedules/')
@@ -795,8 +780,7 @@ def question_reply(question_reply_id):
     return render_template(
         'question_reply_detail.html',
         question_reply=question_reply,
-        admin_edit_url=admin_url('question', question_reply_id),
-        STATIC_HOST=app.config['STATIC_HOST'])
+        admin_edit_url=admin_url('question', question_reply_id))
 
 
 @app.route('/question_replies/')
@@ -895,7 +879,6 @@ def search(page=0):
     committees = committee_list['results']
     return render_template(
         'search.html',
-        STATIC_HOST=app.config['STATIC_HOST'],
         q=q,
         results=result,
         count=count,

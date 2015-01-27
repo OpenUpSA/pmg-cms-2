@@ -9,7 +9,7 @@
           {% for item in items %}
           <li>
             <i class="fa fa-li {{icon}}"></i>
-            <a href="{{ STATIC_HOST }}{{ item.file_path }}" target="_blank">{{ item.title }}</a>
+            <a href="{{ item.url }}" target="_blank">{{ item.title }}</a>
           </li>
           {% endfor %}
         </ul>

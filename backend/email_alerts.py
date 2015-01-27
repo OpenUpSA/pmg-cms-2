@@ -79,8 +79,6 @@ class EmailAlertForm(Form):
 
     # recipient options
     daily_schedule_subscribers = BooleanField('Daily schedule subscribers')
-    bill_subscribers = BooleanField('Newly introduced bill subscribers')
-    call_for_comment_subscribers = BooleanField('Calls for comment subscribers')
 
     committee_ids = SelectMultipleField('Committee Subscribers', [validators.Optional()], coerce=int, widget=CheckboxInput)
 
@@ -136,12 +134,6 @@ class EmailAlertForm(Form):
 
         if self.daily_schedule_subscribers.data:
             groups.append(User.query.filter(User.subscribe_daily_schedule == True).all())
-
-        if self.bill_subscribers.data:
-            groups.append(User.query.filter(User.subscribe_bill == True).all())
-
-        if self.call_for_comment_subscribers.data:
-            groups.append(User.query.filter(User.subscribe_call_for_comment == True).all())
 
         if self.committee_ids.data:
             groups.append(User.query

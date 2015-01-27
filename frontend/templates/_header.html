@@ -40,7 +40,7 @@
                   <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
                 {% endif %}
                 <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
-                <li><a href="{{ url_for('notification_settings') }}">Manage notifications</a></li>
+                <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
                 {% for role in user.roles %}
                   {% if role.name == 'editor' %}
                     </li><li class="divider"></li>

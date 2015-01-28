@@ -1,48 +1,69 @@
-<footer>
+<footer class="footer-1">
   <div class="container">
     <div class="row">
-      <div class="col-sm-2">
-        <ul class="list-unstyled">
-          <li><strong>Legal</strong></li>
-          <li><a href="http://pmg.org.za/disclaimer-copyright">Copyright Parliamentary Monitoring Group</a></li>
-        </ul>
-      </div>
-      <div class="col-sm-2">
+      <div class="col-sm-3">
         <ul class="list-unstyled">
           <li><strong>PMG</strong></li>
           <li><a href="http://pmg.org.za/contact-pmg">Contact Us</a></li>
           <li><a href="http://pmg.org.za/what-is-pmg">About Us</a></li>
-          <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
+          <li><a href="{{ url_for('email_alerts') }}">Free Email Alerts</a></li>
         </ul>
       </div>
-      <div class="col-sm-2">
-        <ul class="list-unstyled">
-          <li><strong>Links</strong></li>
-          <li><a href="http://www.pa.org.za">People's Assembly</a></li>
-          <li><a href="http://bills.pmg.org.za">Bill Tracker</a></li>
-          <li><a href="http://code4sa.org">Code4SA</a></li>
-        </ul>
-      </div>
-       <div class="col-sm-2">
+      <div class="col-sm-3">
         <ul class="list-unstyled">
           <li><strong>Content</strong></li>
-          <li><a href="/bills">Bills</a></li>
+          <li><a href="/bills">Bills and Bill Tracker</a></li>
           <li><a href="/calls-for-comments">Calls for Comments</a></li>
           <li><a href="/committee-meetings">Committee Meetings</a></li>
           <li><a href="/committees/">Committees</a></li>
           <li><a href="/daily_schedules">Daily Schedules</a></li>
-          <li><a href="/gazettes">Gazettes</a></li>
+          <li><a href="/hansards">Hansards</a></li>
         </ul>
       </div>
-      <div class="col-sm-2">
+      <div class="col-sm-3">
         <ul class="list-unstyled">
           <li>&nbsp;</li>
-          <li><a href="/hansards">Hansards</a></li>
           <li><a href="/members/">Members of Parliament</a></li>
           <li><a href="/briefings">Media Briefings</a></li>
+          <li><a href="/gazettes">Gazettes</a></li>
           <li><a href="/policy-documents">Policy Documents</a></li>
           <li><a href="/question_replies">Questions and Replies</a></li>
           <li><a href="/tabled-committee-reports">Tabled Committee Reports</a></li>
+        </ul>
+      </div>
+      <div class="col-sm-3">
+        <ul class="list-unstyled">
+          <li><strong>Links</strong></li>
+          <li><a href="http://www.pa.org.za">People's Assembly</a></li>
+          <li><a href="http://api.pmg.org.za">PMG API</a></li>
+        </ul>
+
+        <form action="/search" method="GET">
+          <div class="input-group">
+            <input class="form-control" type="text" name="q" placeholder="Search PMG">
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="submit">Go</button>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<footer class="footer-2">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-9">
+        <ul class="list-unstyled">
+          <li><a href="http://pmg.org.za/disclaimer-copyright">Copyright Parliamentary Monitoring Group</a></li>
+        </ul>
+      </div>
+
+      <div class="col-sm-3">
+        <ul class="list-unstyled">
+          <li>Built by <a href="http://code4sa.org">Code for South Africa</a></li>
+          <li><i class="fa fa-github"></i> <a href="https://github.com/Code4SA/pmg-cms-2">Source Code on GitHub</li>
         </ul>
       </div>
     </div>

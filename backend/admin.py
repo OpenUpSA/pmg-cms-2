@@ -5,7 +5,7 @@ import datetime
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
-from flask import Flask, flash, redirect, url_for, request, render_template, g, abort
+from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.form import RenderTemplateWidget
@@ -18,7 +18,7 @@ from wtforms import fields, widgets
 from sqlalchemy import func
 from werkzeug import secure_filename
 from s3_upload import S3Bucket
-
+from xlsx import XLSXBuilder
 from app import app, db
 from models import *
 from email_alerts import EmailAlertView
@@ -140,6 +140,28 @@ class UsageReportView(RBACMixin, BaseView):
             User.email
         ).all()
         return self.render('admin/usage_report.html', users=users, num_months=months)
+
+
+    def xlsx(self, users, filename="active_users.xlsx"):
+        out = XLSXBuilder(users)
+        xlsx = out.build()
+        resp = make_response(xlsx)
+        resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        resp.headers['Content-Disposition'] = "attachment;filename=" + filename
+        return resp
+
+    @expose('/xlsx/<int:months>/')
+    def download(self, months=1):
+
+        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
+        users = User.query.filter(
+            User.current_login_at > cutoff
+        ).filter(
+            ~User.email.contains("@pmg.org.za")
+        ).order_by(
+            User.email
+        ).all()
+        return self.xlsx(users)
 
 
 class MyModelView(RBACMixin, ModelView):

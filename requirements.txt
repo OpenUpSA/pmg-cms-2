@@ -45,3 +45,4 @@ simplejson==3.6.5
 six==1.8.0
 webassets==0.10.1
 wsgiref==0.1.2
+xlsxwriter

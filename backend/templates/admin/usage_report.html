@@ -4,8 +4,8 @@
     <h1>Usage report</h1>
     <hr>
     <div class="row">
-    <p>
-    <strong>Available reports: </strong>
+      <p>
+        <strong>Available reports: </strong>
       <div class="btn-group text-center" role="group" style="padding-bottom: 20px;">
         <a
           href="{{ url_for('usage_report.index', months=1) }}"
@@ -32,10 +32,13 @@
           1 year
         </a>
       </div>
-    </p>
+    <a href="{{ url_for('usage_report.download', months=num_months) }}" target="_blank" class="btn btn-primary pull-right">
+      <i class="fa fa-download"></i> Download .xlsx
+    </a>
+      </p>
     </div>
     <div class="row">
-    <p class="lead">{{ users | length }} Users accessed the site in the past {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %}</p>
+      <p class="lead">{{ users | length }} Users accessed the site in the past {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %}</p>
       <table class="table table-bordered table-striped">
         <tr>
           <th>Username</th>

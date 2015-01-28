@@ -313,26 +313,27 @@ def bills(bill_type=None, page=0):
     Page through all available bills.
     """
     
-    if not bill_type in ['all', 'draft']:
+    if not bill_type in ['all', 'draft', 'current', 'pmb']:
         abort(404)
 
-    bill_type_ids = {
-            'draft': 1,
-            }
+    url = "/bills/" + bill_type
 
-    params = {}
     if bill_type != 'all':
-        params['filter[type_id]'] = bill_type_ids[bill_type]
-        title = bill_type.capitalize() + ' Bills'
+        if bill_type == 'pmb':
+            title = 'Private Member Bills'
+        else:
+            title = bill_type.capitalize() + ' Bills'
+
+        bill_type = 'bill/' + bill_type
     else:
+        bill_type = 'bill'
         title = "All Bills"
 
-    bill_list = load_from_api('bill', page=page, params=params)
+    bill_list = load_from_api(bill_type, page=page)
     bills = bill_list['results']
     count = bill_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    url = "/bills/all"
 
     status_dict = {
         "na": ("in progress", "label-primary"),

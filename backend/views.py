@@ -292,3 +292,16 @@ def update_subscriptions():
             pass
     return send_api_response(json.dumps(out, indent=4))
 
+
+@app.route('/check_redirect/', methods=['POST', ])
+def check_redirect():
+    """
+    Check if a given URL should be redirected.
+    """
+
+    out = {'redirect': None}
+    old_url = request.json.get('url')
+    new_url = Redirect.query.filter_by(old_url=old_url).first()
+    if new_url:
+        out['redirect'] = new_url
+    return send_api_response(json.dumps(out, indent=4))

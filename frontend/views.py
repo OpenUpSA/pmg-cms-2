@@ -147,6 +147,10 @@ class ApiException(HTTPException):
 
 @app.errorhandler(404)
 def page_not_found(error):
+    tmp = send_to_api('check_redirect', json.dumps({'url': request.path}))
+    if tmp and tmp.get('redirect'):
+        logger.debug("CAUGHT REDIRECT")
+        return redirect(tmp['redirect'], code=302)
     return render_template('404.html'), 404
 
 

@@ -301,6 +301,11 @@ def bills_portal():
     return render_template('bill_index.html')
 
 
+@app.route('/bills/explained/')
+def bills_explained():
+    return render_template('bills_explained.html')
+
+
 @app.route('/bills/all/')
 @app.route('/bills/all/<int:page>/')
 def bills(page=0):

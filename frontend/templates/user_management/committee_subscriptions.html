@@ -9,10 +9,13 @@
   </style>
 {% endblock %}
 
-{% set user = session.current_user %}
+{% set user = None %}
+{% if session.current_user %}
+  {% set user = session.current_user %}
+{% endif %}
 
 {% macro check_subscribed(committee_id) %}
-  {% if user.organisation and
+  {% if user and user.organisation and
   user.organisation.subscriptions and
   user.organisation.subscriptions[committee_id|string] %}
     <span class="label label-success">You have access</span>
@@ -46,7 +49,7 @@
     {% for committee in committees %}{{ render_committee_row(committee) }}{% endfor %}
   </table>
 
-  {% if user.organisation %}
+  {% if user and user.organisation %}
     {% if user.organisation.has_expired %}
       <div class="alert alert-danger" role="alert">
         <strong>Note:</strong> Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.

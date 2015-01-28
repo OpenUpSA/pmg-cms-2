@@ -78,7 +78,7 @@ class XLSXBuilder:
     def write_table(self, ws, name, rows, keys=None, rownum=0, colnum=0):
         if rows:
             keys = rows[0]
-            data = rows
+            data = rows[1::]
 
             ws.add_table(rownum, colnum, rownum+len(rows), colnum+len(keys)-1, {
                 'name': name,

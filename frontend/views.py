@@ -306,14 +306,28 @@ def bills_explained():
     return render_template('bills_explained.html')
 
 
-@app.route('/bills/all/')
-@app.route('/bills/all/<int:page>/')
-def bills(page=0):
+@app.route('/bills/<string:bill_type>/')
+@app.route('/bills/<string:bill_type>/<int:page>/')
+def bills(bill_type=None, page=0):
     """
     Page through all available bills.
     """
+    
+    if not bill_type in ['all', 'draft']:
+        abort(404)
 
-    bill_list = load_from_api('bill', page=page)
+    bill_type_ids = {
+            'draft': 1,
+            }
+
+    params = {}
+    if bill_type != 'all':
+        params['filter[type_id]'] = bill_type_ids[bill_type]
+        title = bill_type.capitalize() + ' Bills'
+    else:
+        title = "All Bills"
+
+    bill_list = load_from_api('bill', page=page, params=params)
     bills = bill_list['results']
     count = bill_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
@@ -338,7 +352,7 @@ def bills(page=0):
         url=url,
         icon="file-text-o",
         content_type="bill",
-        title="Bills")
+        title=title)
 
 
 @app.route('/bill/<int:bill_id>/')

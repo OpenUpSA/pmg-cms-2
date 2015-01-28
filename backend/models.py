@@ -334,8 +334,12 @@ class File(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = STATIC_HOST + tmp['file_path']
+        tmp['url'] = self.file_url
         return tmp
+
+    @property
+    def file_url(self):
+        return STATIC_HOST + self.file_path
 
     def __unicode__(self):
         return u'%s' % self.file_path

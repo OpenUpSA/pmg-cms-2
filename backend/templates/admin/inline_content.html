@@ -6,7 +6,7 @@
   <div class="row">
     {% if model.file and model.file.file_path %}
       <div class="col-md-10">
-        <a href="http://pmg-assets.s3-eu-west-1.amazonaws.com/{{ model.file.file_path }}" target="_blank">
+        <a href="{{ model.file.file_url }}" target="_blank">
           {{ macros.file_type_icon(model.type) }}
           {{ model.file.title }}
         </a>

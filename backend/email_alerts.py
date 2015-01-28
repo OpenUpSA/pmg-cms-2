@@ -84,9 +84,13 @@ class EmailAlertForm(Form):
 
     def __init__(self, *args, **kwargs):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
-
-        self.committee_ids.choices = [(c.id, c.name) for c in Committee.query.order_by(Committee.name).all()]
+        committee_list = Committee.query.order_by(Committee.house_id.desc()).order_by(Committee.name).all()
+        self.committee_ids.choices = [(c.id, c.name + " (" + c.house.name_short + ")") for c in committee_list]
         self.message = None
+        self.ad_hoc_mapper = []
+        for committee in committee_list:
+            if committee.ad_hoc:
+                self.ad_hoc_mapper.append(committee.id)
 
 
     @property

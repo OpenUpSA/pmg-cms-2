@@ -870,3 +870,11 @@ def on_models_changed(sender, changes):
             else:
                 # updated or inserted
                 searcher.add_obj(obj)
+
+
+class Redirect(db.Model):
+    __tablename__ = 'redirect'
+
+    id = db.Column(db.Integer, primary_key=True)
+    old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
+    new_url = db.Column(db.String(250), nullable=False)

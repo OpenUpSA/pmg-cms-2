@@ -258,6 +258,14 @@ class BillType(db.Model):
     prefix = db.Column(db.String(5))
     description = db.Column(db.Text)
 
+    @classmethod
+    def draft(cls):
+        return cls.query.filter(cls.name == "Draft").one()
+
+    @classmethod
+    def private_member_bill(cls):
+        return cls.query.filter(cls.name == "Private Member Bill").one()
+
     def __unicode__(self):
         return unicode(self.name)
 
@@ -269,6 +277,10 @@ class BillStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.Text)
+
+    @classmethod
+    def current(cls):
+        return cls.query.filter(cls.name.in_(["na", "ncop", "president"])).all()
 
     def __unicode__(self):
         return unicode(self.name)

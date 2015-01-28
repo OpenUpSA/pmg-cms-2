@@ -74,6 +74,48 @@ def get_filter():
     return filters
 
 
+def api_resource_list(resource, resource_id, base_query):
+    # validate paging parameters
+    page = 0
+    per_page = app.config['RESULTS_PER_PAGE']
+    if request.args.get('page'):
+        try:
+            page = int(request.args.get('page'))
+        except ValueError:
+            raise ApiException(422, "Please specify a valid 'page'.")
+    filters = get_filter()
+    if filters:
+        for f in filters:
+            base_query = base_query.filter_by(**f)
+    if resource_id:
+        try:
+            queryset = base_query.filter_by(id=resource_id).one()
+            count = 1
+        except NoResultFound:
+            raise ApiException(404, "Not found")
+    else:
+        queryset = base_query.limit(per_page).offset(page * per_page).all()
+        count = base_query.count()
+    next = None
+    if count > (page + 1) * per_page:
+        next = request.url_root + resource + "/?page=" + str(page + 1)
+    status_code = 200
+    if resource == "committee-meeting" and resource_id:
+        committee_meeting_obj = queryset
+        if not committee_meeting_obj.check_permission():
+            if current_user.is_anonymous():
+                status_code = 401  # Unauthorized, i.e. authentication is required
+            else:
+                status_code = 403  # Forbidden, i.e. the user is not subscribed
+    out = serializers.queryset_to_json(
+        queryset,
+        count=count,
+        next=next,
+        current_user=current_user)
+    return send_api_response(out, status_code=status_code)
+
+
+
 def send_api_response(data_json, status_code=200):
 
     response = flask.make_response(data_json)
@@ -188,6 +230,31 @@ def hitlog():
     return ""
 
 
+@app.route('/bill/<int:bill_id>/')
+@app.route('/bill/<string:scope>/')
+@load_user('token', 'session')
+def current_bill_list(scope=None, bill_id=None):
+    if bill_id:
+        return api_resource_list('bill', bill_id, api_resources().get('bill'))
+
+    if not scope in ['current', 'draft', 'pmb']:
+        raise ApiException(404, "The specified resource group does not exist.")
+
+    query = api_resources().get('bill')
+
+    if scope == 'current':
+        statuses = BillStatus.current()
+        query = query.filter(Bill.status_id.in_([s.id for s in statuses]))
+
+    elif scope == 'draft':
+        query = query.filter(Bill.type == BillType.draft())
+
+    elif scope == 'pmb':
+        query = query.filter(Bill.type == BillType.private_member_bill())
+
+    return api_resource_list('bill', None, query)
+
+
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )
 @load_user('token', 'session')
@@ -200,44 +267,7 @@ def resource_list(resource, resource_id=None):
     if not base_query:
         raise ApiException(404, "The specified resource type does not exist.")
 
-    # validate paging parameters
-    page = 0
-    per_page = app.config['RESULTS_PER_PAGE']
-    if request.args.get('page'):
-        try:
-            page = int(request.args.get('page'))
-        except ValueError:
-            raise ApiException(422, "Please specify a valid 'page'.")
-    filters = get_filter()
-    if filters:
-        for f in filters:
-            base_query = base_query.filter_by(**f)
-    if resource_id:
-        try:
-            queryset = base_query.filter_by(id=resource_id).one()
-            count = 1
-        except NoResultFound:
-            raise ApiException(404, "Not found")
-    else:
-        queryset = base_query.limit(per_page).offset(page * per_page).all()
-        count = base_query.count()
-    next = None
-    if count > (page + 1) * per_page:
-        next = request.url_root + resource + "/?page=" + str(page + 1)
-    status_code = 200
-    if resource == "committee-meeting" and resource_id:
-        committee_meeting_obj = queryset
-        if not committee_meeting_obj.check_permission():
-            if current_user.is_anonymous():
-                status_code = 401  # Unauthorized, i.e. authentication is required
-            else:
-                status_code = 403  # Forbidden, i.e. the user is not subscribed
-    out = serializers.queryset_to_json(
-        queryset,
-        count=count,
-        next=next,
-        current_user=current_user)
-    return send_api_response(out, status_code=status_code)
+    return api_resource_list(resource, resource_id, base_query)
 
 
 @app.route('/', )

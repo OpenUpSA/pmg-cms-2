@@ -297,24 +297,37 @@ def index():
 
 
 @app.route('/bills/')
-@app.route('/bills/<int:page>/')
+def bills_portal():
+    return render_template('bill_index.html')
+
+
+@app.route('/bills/all/')
+@app.route('/bills/all/<int:page>/')
 def bills(page=0):
     """
     Page through all available bills.
     """
 
-    logger.debug("bills page called")
-    bill_list = load_from_api('bill', return_everything=True)
+    bill_list = load_from_api('bill', page=page)
     bills = bill_list['results']
-    # filters = {}
-    # params = {}
     count = bill_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    url = "/bills"
+    url = "/bills/all"
+
+    status_dict = {
+        "na": ("in progress", "label-primary"),
+        "ncop": ("in progress", "label-primary"),
+        "assent": ("submitted to the president", "label-warning"),
+        "enacted": ("signed into law", "label-success"),
+        "withdrawn": ("withdrawn", "label-default"),
+        "lapsed": ("lapsed", "label-default"),
+        }
+
     return render_template(
         'list.html',
         results=bills,
+        status_dict=status_dict,
         num_pages=num_pages,
         page=page,
         url=url,

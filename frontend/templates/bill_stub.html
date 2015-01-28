@@ -1,6 +1,21 @@
 <div class="bill-stub">
-	<div class="title">
-		<span class="label label-default">Bill</span>
-		<a href="/bill/{{ result.id }}">{% if result.code %}{{ result.code }}{% else %}X{% endif %} - {{ result.title }}</a>
+	<div class="row">
+		<div class="col-xs-8">
+			<div class="title">
+				<a href="{{ url_for('bill', bill_id=result.id) }}">{{ result.title }}</a>
+			</div>
+		</div>
+		<div class="col-xs-2">
+			{% if result.status %}
+				{% if status_dict[result.status.name] %}
+				<span class="label {{ status_dict[result.status.name][1] }}">{{ status_dict[result.status.name][0] }}</span>
+				{% else %}
+				<span class="label label-default">{{ result.status.name }}</span>
+				{% endif %}
+			{% endif %}
+		</div>
+		<div class="col-xs-2">
+			[{{ result.code }}]
+		</div>
 	</div>
 </div>

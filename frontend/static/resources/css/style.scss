@@ -195,3 +195,16 @@ footer {
 		text-decoration: underline;
 	}
 }
+
+.bill-tiles {
+	.thumbnail,
+	.thumbnail:hover {
+		text-decoration: none;
+	}
+
+	h3 {
+		margin-top: 0px;
+	}
+}
+
+

@@ -2,8 +2,11 @@
 
 {% block page %}
 
-<h1>404 Not Found</h1>
+{# this tells javascript to register a Google Analytics event so we can track which pages cause 404s #}
+<div id="404-page">
+  <h1>404 Not Found</h1>
 
-<h3>What you're looking for doesn't seem to exist. Try searching?</h3>
+  <h3>What you're looking for doesn't seem to exist. Try searching?</h3>
+</div>
 
 {% endblock page %}

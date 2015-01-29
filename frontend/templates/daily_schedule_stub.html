@@ -10,7 +10,7 @@
 <div class="daily_schedule-stub space-bottom-sm">
   <div>
     <span class="label label-primary">Daily Schedule</span>
-    <a href="/daily_schedule/{{ id }}">{{ date|pretty_date }} </a>
+    <a href="{{ url_for('daily_schedule', daily_schedule_id=id) }}">{{ date|pretty_date }} </a>
     {{ date|human_date }}
   </div>
   {% if result.highlight %}

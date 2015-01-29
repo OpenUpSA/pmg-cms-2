@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% if call_for_comment.committee %}
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=call_for_comment.committee.id) }}">{{ call_for_comment.committee.name }}</a></li>
+  <li>Calls for Comments</li>
+  {% else %}
+  <li><a href="{{ url_for('calls_for_comments') }}">Calls for Comments</a></li>
+  {% endif %}
+</ol>
+{% endblock %}
+
 {% block page %}
-	{% if call_for_comment.committee %}
-		<a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a>
-	{% endif %}
-	<h4 class="light-red">Call for Comment</h4>
-	<h1>{{ call_for_comment.title }}</h1>
+	<h1><i class="fa fa-comments"></i> {{ call_for_comment.title }}</h1>
+
 	{% if call_for_comment.end_date %}
 		<h4>Comment expires on {{ call_for_comment.end_date }}</h4>
 	{% endif %}

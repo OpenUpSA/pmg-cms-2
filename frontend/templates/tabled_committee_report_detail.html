@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% if tabled_committee_report.committee %}
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=tabled_committee_report.committee.id) }}">{{ tabled_committee_report.committee.name }}</a></li>
+  <li>Tabled Reports</li>
+  {% else %}
+  <li><a href="{{ url_for('tabled_committee_reports') }}">Tabled Reports</a></li>
+  {% endif %}
+</ol>
+{% endblock %}
+
 {% block page %}
+	<h1><i class="fa fa-briefcase"></i> {{ tabled_committee_report.title }}</h1>
+
 	{% if tabled_committee_report.committee %}
-		<a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a>
+	<h4><a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a></h4>
 	{% endif %}
-	<h4 class="light-red">Tabled Committee Report</h4>
-	<h1>{{ tabled_committee_report.title }}</h1>
+
 	{{ tabled_committee_report.body|safe }}
 {% endblock %}

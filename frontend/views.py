@@ -579,7 +579,7 @@ def policy_documents(page=0):
         num_pages=num_pages,
         page=page,
         url=url,
-        icon="",
+        icon="file-text-o",
         content_type="policy_document",
         title="Policy Documents")
 
@@ -659,7 +659,7 @@ def members(page=0):
         url=url,
         icon="user",
         content_type="member",
-        title="Members")
+        title="Parliamentary Members")
 
 
 @app.route('/member/<int:member_id>')

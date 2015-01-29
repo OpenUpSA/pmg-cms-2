@@ -82,8 +82,7 @@ class Organisation(db.Model):
     expiry = db.Column(db.DateTime(timezone=True), default=one_year_later)
 
     # premium committee subscriptions
-    subscriptions = db.relationship('Committee', secondary='organisation_committee',
-                                    lazy='joined')
+    subscriptions = db.relationship('Committee', secondary='organisation_committee')
 
 
     def subscribed_to_committee(self, committee):

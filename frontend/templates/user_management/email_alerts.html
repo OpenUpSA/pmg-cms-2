@@ -3,7 +3,7 @@
 {% set user = session.current_user %}
 
 {% macro check_subscribed(committee_id) %}
-  {% if user.subscriptions and user.subscriptions[committee_id|string] %}
+  {% if user.committee_alerts and user.committee_alerts[committee_id|string] %}
     checked
   {% endif %}
 {% endmacro %}

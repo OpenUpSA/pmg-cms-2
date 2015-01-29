@@ -236,6 +236,7 @@ class OrganisationView(MyModelView):
     form_excluded_columns = [
         'created_at',
         ]
+    column_labels = {'subscriptions': "Premium subscriptions"}
 
     def on_model_change(self, form, model, is_created):
         # make sure the new date is timezone aware

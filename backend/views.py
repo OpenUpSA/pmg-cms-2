@@ -289,30 +289,26 @@ def landing():
     return send_api_response(json.dumps(out, cls=serializers.CustomEncoder, indent=4))
 
 
-@app.route('/update_subscriptions/', methods=['POST', ])
+@app.route('/update_alerts/', methods=['POST', ])
 @load_user('token')
-def update_subscriptions():
+def update_alerts():
     """
-    Update user's notification subscriptions.
+    Update user's notification alerts.
     """
 
     out = {}
     if current_user and current_user.is_active():
-        committee_subscriptions = request.json.get('committee_subscriptions')
-        logger.debug(json.dumps(committee_subscriptions, indent=4))
-        general_subscriptions = request.json.get('general_subscriptions')
-        logger.debug(json.dumps(general_subscriptions, indent=4))
+        committee_alerts = request.json.get('committee_alerts')
+        logger.debug(json.dumps(committee_alerts, indent=4))
+
+        general_alerts = request.json.get('general_alerts')
+        logger.debug(json.dumps(general_alerts, indent=4))
 
         # remove user's current subscriptions
-        current_user.subscriptions = []
-        # retrieve list of chosen committees
-        committee_list = Committee.query.filter(Committee.id.in_(committee_subscriptions)).all()
-        for committee in committee_list:
-            current_user.subscriptions.append(committee)
+        current_user.committee_alerts = Committee.query.filter(Committee.id.in_(committee_alerts)).all()
+
         # update general True/False subscriptions
-        current_user.subscribe_daily_schedule = True if 'daily-schedule' in general_subscriptions else False
-        current_user.subscribe_bill = True if 'bill' in general_subscriptions else False
-        current_user.subscribe_call_for_comment = True if 'call-for-comment' in general_subscriptions else False
+        current_user.subscribe_daily_schedule = True if 'daily-schedule' in general_alerts else False
         db.session.add(current_user)
         db.session.commit()
         try:

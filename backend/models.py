@@ -128,6 +128,9 @@ class User(db.Model, UserMixin):
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
+    # premium committee subscriptions, in addition to any that the user's organisation might have
+    subscriptions = db.relationship('Committee', secondary='user_committee')
+
     # alerts for changes to committees
     committee_alerts = db.relationship('Committee', secondary='user_committee_alerts')
     roles = db.relationship('Role', secondary='roles_users',
@@ -148,9 +151,8 @@ class User(db.Model, UserMixin):
 
         # first see if this user has a subscription
         # TODO: handle expired subscriptions
-        # TODO: self.subscriptions currently indicates interest in alerts, NOT premium subscriptions
-        #if committee in self.subscriptions:
-        #    return True
+        if committee in self.subscriptions:
+            return True
 
         # now check if our organisation has access
         return self.organisation and self.organisation.subscribed_to_committee(committee)
@@ -215,6 +217,18 @@ organisation_committee = db.Table(
         'organisation_id',
         db.Integer(),
         db.ForeignKey('organisation.id')),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id')))
+
+
+user_committee = db.Table(
+    'user_committee',
+    db.Column(
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id')),
     db.Column(
         'committee_id',
         db.Integer(),

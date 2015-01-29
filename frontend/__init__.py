@@ -34,7 +34,8 @@ assets.register('css',
       'font-awesome-4.2.0/css/font-awesome.min.css',
       'chosen/chosen.min.css',
       Bundle(
-        'resources/css/*.scss',
+        'resources/css/style.scss',
+        'resources/css/bill-progress.scss',
         filters=PyScss(load_paths=assets.load_path),
         output='stylesheets/styles.%(version)s.css'),
       output='stylesheets/app.%(version)s.css'))

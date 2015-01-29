@@ -360,7 +360,7 @@ class InlineContent(InlineFormAdmin):
         form_class.title = fields.StringField('Title')
         return form_class
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
@@ -637,7 +637,7 @@ class MemberView(MyModelView):
         }
     edit_template = "admin/edit_member.html"
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         # save profile pic, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
@@ -688,7 +688,7 @@ class InlineFile(InlineFormAdmin):
         form_class.upload = fields.FileField('File')
         return form_class
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:

@@ -6,6 +6,10 @@
     <div class="row">
       <p>
         <strong>Available reports: </strong>
+      {{ organisations | length }}
+    {% for organisation in organisations %}
+    <p>{{ organisation }}</p>
+    {% endfor %}
       <div class="btn-group text-center" role="group" style="padding-bottom: 20px;">
         <a
           href="{{ url_for('usage_report.index', months=1) }}"
@@ -38,18 +42,18 @@
       </p>
     </div>
     <div class="row">
-      <p class="lead">{{ users | length }} Users accessed the site in the past {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %}</p>
+      <p class="lead">{{ org_list | length }} Organisations accessed the site in the {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %} leading up to {{ today }}.</p>
       <table class="table table-bordered table-striped">
         <tr>
-          <th>Username</th>
           <th>Organisation</th>
-          <th>Email</th>
+          <th>Domain</th>
+          <th># Users</th>
         </tr>
-        {% for user in users %}
+        {% for org in org_list %}
           <tr>
-            <td>{{ user.name }}</td>
-            <td>{% if user.organisation %}{{ user.organisation.name }}{% endif %}</td>
-            <td>{{ user.email }}</td>
+            <td>{% if org[0] %}{{ org[0] }}{% endif %}</td>
+            <td>{{ org[1] }}</td>
+            <td>{{ org[2] }}</td>
           </tr>
         {% endfor %}
       </table>

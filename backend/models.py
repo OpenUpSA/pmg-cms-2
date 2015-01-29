@@ -84,10 +84,13 @@ class Organisation(db.Model):
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
                                     lazy='joined')
 
+
+    def subscribed_to_committee(self, committee):
+        """ Does this organisation have an active subscription to `committee`? """
+        return not self.has_expired() and (committee in self.subscriptions)
+
     def has_expired(self):
-        if datetime.datetime.now(tz=tz.tzlocal()) < self.expiry:
-            return False
-        return True
+        return datetime.datetime.now(tz=tz.tzlocal()) > self.expiry
 
     def __unicode__(self):
         return unicode(self.name)
@@ -131,6 +134,25 @@ class User(db.Model, UserMixin):
 
     def __unicode__(self):
         return unicode(self.email)
+
+    def subscribed_to_committee(self, committee):
+        """ Does this user have an active subscription to `committee`? """
+        # admin users have access to everything
+        if self.has_role('editor'):
+            return True
+
+        # inactive users should go away
+        if not self.active:
+            return False
+
+        # first see if this user has a subscription
+        # TODO: handle expired subscriptions
+        # TODO: self.subscriptions currently indicates interest in alerts, NOT premium subscriptions
+        #if committee in self.subscriptions:
+        #    return True
+
+        # now check if our organisation has access
+        return self.organisation and self.organisation.subscribed_to_committee(committee)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -444,17 +466,10 @@ class CommitteeMeeting(Event):
     def check_permission(self):
         # by default, all committee meetings are accessible
         if self.committee.premium:
-            # admin users have access to everything
-            if current_user.has_role('editor'):
-                return True
-            # for premium committees, check if the user's organisation is subscribed to the committee
-            if not current_user.is_anonymous and current_user.active and \
-                    current_user.organisation and current_user.organisation.subscriptions:
-                if not current_user.organisation.has_expired():
-                    for tmp_committee in current_user.organisation.subscriptions:
-                        if tmp_committee == self.committee:
-                            return True
-            return False
+            if current_user.is_anonymous:
+                return False
+
+            return current_user.subscribed_to_committee(self.committee)
         return True
 
     def to_dict(self, include_related=False):

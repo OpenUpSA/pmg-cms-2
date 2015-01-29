@@ -52,11 +52,11 @@ class S3Bucket():
 
     def upload_file(self, filename):
 
+        path = os.path.join(UPLOAD_PATH, filename)
         try:
             if not self.bucket:
                 self.get_bucket()
             # assemble key
-            path = os.path.join(UPLOAD_PATH, filename)
             bytes = os.path.getsize(path)
             megabytes = rounded_megabytes(bytes)
             logger.debug("uploading: " + path + " (" + str(megabytes) + " MB)")

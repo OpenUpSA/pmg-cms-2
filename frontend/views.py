@@ -578,7 +578,7 @@ def policy_documents(page=0):
         num_pages=num_pages,
         page=page,
         url=url,
-        icon="",
+        icon="file-text-o",
         content_type="policy_document",
         title="Policy Documents")
 

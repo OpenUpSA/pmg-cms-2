@@ -148,7 +148,7 @@ class EmailAlertForm(Form):
         if self.committee_ids.data:
             log.info("Email recipients includes subscribers for these committees: %s" % self.committee_ids.data)
             groups.append(User.query
-                    .join(User.subscriptions)
+                    .join(User.committee_alerts)
                     .options(lazyload(User.organisation))
                     .filter(Committee.id.in_(self.committee_ids.data))
                     .all())

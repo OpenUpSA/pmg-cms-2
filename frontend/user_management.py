@@ -255,23 +255,23 @@ def update_current_user():
 @app.route('/email_alerts/', methods=['GET', 'POST'])
 def email_alerts():
     """
-    Allow a user to manage their notification subscriptions.
+    Allow a user to manage their notification alerts.
     """
 
     if not session.get('current_user'):
         return redirect(url_for('login', next=request.url))
 
     if request.form:
-        out = {'committee_subscriptions': [], 'general_subscriptions': []}
+        out = {'committee_alerts': [], 'general_alerts': []}
         general_notifications = ['select-daily-schedule', ]
         for field_name in request.form.keys():
             if field_name in general_notifications:
                 key = "-".join(field_name.split('-')[1::])
-                out['general_subscriptions'].append(key)
+                out['general_alerts'].append(key)
             else:
                 committee_id = int(field_name.split('-')[-1])
-                out['committee_subscriptions'].append(committee_id)
-        tmp = send_to_api('update_subscriptions', json.dumps(out))
+                out['committee_alerts'].append(committee_id)
+        tmp = send_to_api('update_alerts', json.dumps(out))
         if tmp:
             flash("Your notification settings have been updated successfully.", "success")
     committee_list = load_from_api('committee', return_everything=True)

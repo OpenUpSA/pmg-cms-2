@@ -893,6 +893,17 @@ def search(page=0):
         yearcount=yearcount,
         committees=committees)
 
+@app.route('/page/<string:pagename>')
+def page(pagename):
+    """
+    Serves a page from templates/pages
+    """
+    logger.debug("Attempting to serve page", pagename)
+    fname = "pages/" + pagename + ".html"
+    return render_template(
+        fname
+    )
+
 
 @app.route('/hitlog/')
 @app.route('/hitlog/<string:random>/')

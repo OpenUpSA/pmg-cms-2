@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
 {% block page %}
-<h3 class="red"><span class="fa fa-file-text-o"></span> Bill</h3>
+  <h3 class="red"><span class="fa fa-file-text-o"></span> Bill</h3>
 
-<div class="justify-p">
-  <h1>
-    {{ bill.title }}
-    {% if bill.code %}
-    <span class="text-muted">({{ bill.code }})</span>
-    {% endif %}
-  </h1>
+  <div class="justify-p">
+    <h1>
+      {{ bill.title }}
+      {% if bill.code %}
+        <span class="text-muted">({{ bill.code }})</span>
+      {% endif %}
+    </h1>
 
-  {% if bill.status %}
-    <div class="bill-status-container">
-      <p id="status-text" class="lead">
-        {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
-          <div class="c4sa-container">
+    {% if bill.status %}
+      <div class="bill-status-container">
+        <p id="status-text" class="lead">
+          {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
+            <div class="c4sa-container">
             <div class="c4sa-grey c4sa-progress"></div>
             {% if bill.status.name == "enacted" %}
               <div class="c4sa-stage stage5">
@@ -30,40 +30,44 @@
             {% elif bill.status.name == "introduced" %}
               <div class="c4sa-stage stage1">
             {% endif %}
-                <div class="c4sa-green c4sa-progress stage"></div>
-                <div class="c4sa-dot dot1"></div>
-                <div class="c4sa-dot dot2"></div>
-                <div class="c4sa-dot dot3"></div>
-                <div class="c4sa-dot dot4"></div>
-                <div class="process_dot"></div>
-                <div class="c4sa-label label1"></div>
-                <div class="c4sa-label label2"></div>
-                <div class="c4sa-label label3"></div>
-                <div class="c4sa-label label4"></div>
-              </div>
+          <div class="c4sa-green c4sa-progress stage"></div>
+          <div class="c4sa-dot dot1"></div>
+          <div class="c4sa-dot dot2"></div>
+          <div class="c4sa-dot dot3"></div>
+          <div class="c4sa-dot dot4"></div>
+          <div class="process_dot"></div>
+          <div class="c4sa-label label1"></div>
+          <div class="c4sa-label label2"></div>
+          <div class="c4sa-label label3"></div>
+          <div class="c4sa-label label4"></div>
           </div>
-        {%- endif %}
-      </p>
-    </div>
-  {% endif %}
+          </div>
+          {%- endif %}
+        </p>
+      </div>
+    {% endif %}
 
-  <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
-  <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
+    <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+    <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
-  {% if bill.date_of_introduction %}
-    <p>Introduced on {{ bill.date_of_introduction }}{% if bill.place_of_introduction %} in the {{ bill.place_of_introduction.name }}{% endif %}.</p>
-  {% endif %}
+    {% if bill.date_of_introduction %}
+      <p>Introduced on {{ bill.date_of_introduction }}{% if bill.place_of_introduction %} in the {{ bill.place_of_introduction.name }}{% endif %}.</p>
+    {% endif %}
 
-  <ul>
-    {% for event in bill.events %}
-      {% if event.type == "committee-meeting" %}
-        <li><a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.date }} - {{ event.title }}</a></li>
-      {% else %}
-        <li>{{ event.date }} - {{ event.title }}</li>
-      {% endif %}
-    {% endfor %}
-  </ul>
+    {% if bill.events %}
+      <ul>
+        {% for event in bill.events %}
+          {% if event.type == "committee-meeting" %}
+            <li><a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.date }} - {{ event.title }}</a></li>
+          {% else %}
+            <li>{{ event.date }} - {{ event.title }}</li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="lead">So far, no events have been associated with this bill.</p>
+    {% endif %}
 
-</div>
+  </div>
 {% endblock %}
 

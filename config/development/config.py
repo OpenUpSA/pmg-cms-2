@@ -18,15 +18,18 @@ MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads
 ALLOWED_EXTENSIONS = set(
     [
         "doc",
+        "docx",
         "jpg",
         "jpeg",
         "mp3",
         "pdf",
         "ppt",
+        "pptx",
         "rtf",
         "txt",
         "wav",
         "xls",
+        "xlsx",
     ]
 )
 

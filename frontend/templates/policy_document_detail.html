@@ -1,11 +1,18 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('policy_documents') }}">Policy Documents</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
-<h4 class="light-red">Policy Document</h4>
-<h1>{{ policy_document.title }}</h1>
+<h1><i class="fa fa-file-text-o"></i> {{ policy_document.title }}</h1>
+
 {% if policy_document.end_date %}
 <h4>Comment expires on {{ policy_document.end_date }}</h4>
 {% endif %}
+
 {% if policy_document.start_date %}
 <h4>{{ policy_document.start_date }}</h4>
 {% endif %}

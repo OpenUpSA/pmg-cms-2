@@ -1,16 +1,20 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('bills_portal') }}">Bills</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
-  <h3 class="red"><span class="fa fa-file-text-o"></span> Bill</h3>
+  <h1>
+    <i class="fa fa-file-text-o"></i> {{ bill.title }}
+    {% if bill.code %}
+      <span class="text-muted">({{ bill.code }})</span>
+    {% endif %}
+  </h1>
 
   <div class="justify-p">
-    <h1>
-      {{ bill.title }}
-      {% if bill.code %}
-        <span class="text-muted">({{ bill.code }})</span>
-      {% endif %}
-    </h1>
-
     {% if bill.status %}
       <div class="bill-status-container">
         <p id="status-text" class="lead">

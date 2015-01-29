@@ -53,12 +53,22 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 
 nav.top-links {
 	padding: 10px;
-	margin-bottom: 10px;
 	background-color: #efefef;
 
 	ul {
 		margin-bottom: 0px;
 	}
+}
+
+// main page content
+article.page {
+	margin-top: 10px;
+}
+
+.breadcrumb {
+	background: none;
+	padding: 10px 0px 0px 0px;
+	margin: 0px;
 }
 
 
@@ -205,4 +215,15 @@ footer {
 	h3 {
 		margin-top: 0px;
 	}
+}
+
+// committee detail page
+.member-profile-pic{
+	max-width: 50px;
+	max-height: 75px;
+}
+
+.member-profile-pic.chairperson{
+	max-width: 100px;
+	max-height: 150px;
 }

@@ -1,11 +1,19 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('daily_schedules') }}">Daily Schedules</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
-<h4 class="light-red">Daily Schedule</h4>
-<h1>{{ daily_schedule.title }}</h1>
-{% if daily_schedule.start_date %}
-<h4>{{ daily_schedule.start_date }}</h4>
-{% endif %}
+<h1>
+  <i class="fa fa-calendar"></i> {{ daily_schedule.title }}
+  {% if daily_schedule.start_date %}
+  for {{ daily_schedule.start_date }}
+  {% endif %}
+</h1>
+
   
 <div class="row">
   <div class="col-md-6">

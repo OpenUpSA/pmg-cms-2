@@ -2,6 +2,12 @@
 
 {% block title %}Bills Explained{% endblock %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('bills_portal') }}">Bills</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
 <h1>The Legislative Process</h1>
 

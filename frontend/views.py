@@ -932,7 +932,7 @@ def page(pagename):
     """
     Serves a page from templates/pages
     """
-    logger.debug("Attempting to serve page", pagename)
+    logger.debug("Attempting to serve page: " + pagename)
     fname = "pages/" + re.sub(r'[^\w+_-]', '', pagename) + ".html"
     full_fname = os.path.join(app.root_path, "templates", fname)
     if not os.path.isfile(full_fname):

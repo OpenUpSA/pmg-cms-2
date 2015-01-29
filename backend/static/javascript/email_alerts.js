@@ -4,15 +4,18 @@ $(function() {
 
     self.init = function() {
       self.form = $('#new_alert_form');
-      self.form.find('.btn.preview').on('click', self.preview);
+      self.form.on('submit', function(e) {
+        if (self.form.find('[name=previewed]').val() != "1") {
+          e.preventDefault();
+          self.preview();
+        }
+      });
       $('.btn.send').on('click', self.send);
 
       self.editor = CKEDITOR.replace('body');
     };
 
-    self.preview = function(e) {
-      e.preventDefault();
-
+    self.preview = function() {
       $('.btn.preview').prop('disabled', true);
 
       self.editor.updateElement();

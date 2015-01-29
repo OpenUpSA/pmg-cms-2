@@ -33,6 +33,8 @@ ALLOWED_EXTENSIONS = set(
 
 # Mandrill
 MANDRILL_API_KEY = env.get('MAIL_PASSWORD')
+MANDRILL_TRANSACTIONAL_SUBACCOUNT = 'transactional'
+MANDRILL_ALERTS_SUBACCOUNT = 'alerts'
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.mandrillapp.com'

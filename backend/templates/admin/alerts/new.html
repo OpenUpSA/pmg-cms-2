@@ -19,8 +19,8 @@
   <form class="form-horizontal" action="{{ url_for('alerts.new') }}" method="POST" id="new_alert_form" data-confirm="Lots of people will read this email. Have you checked the details?">
     {{ form.hidden_tag() }}
 
-    {{ render_field_with_errors(form.from_line) }}
-    {{ render_field_with_errors(form.subject) }}
+    {{ render_field_with_errors(form.from_email, required=True) }}
+    {{ render_field_with_errors(form.subject, required=True) }}
 
     <div class="form-group">
       {{ form.body.label(class_='control-label col-sm-2') }}
@@ -85,7 +85,7 @@
     <hr>
 
     <div class="text-center">
-      <button type="button" class="btn btn-success preview">Preview &amp; Send email</button>
+      <button type="submit" class="btn btn-success preview">Preview &amp; Send email</button>
     </div>
   </form>
 

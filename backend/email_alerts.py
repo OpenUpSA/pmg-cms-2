@@ -74,7 +74,8 @@ class EmailAlertForm(Form):
     template_id = HiddenField('template_id', [validators.Required()])
     previewed = HiddenField('previewed', default='0')
     subject = StringField('Subject', [validators.Required()])
-    from_line = EmailField('From', [validators.Required()], default='"PMG Notifications " <alerts@pmg.org.za>')
+    # This MUST be an email address, the Mandrill API doesn't allow us to do names and emails in one field
+    from_email = EmailField('From address', [validators.Required()], default='alerts@pmg.org.za')
     body = TextAreaField('Content of the alert')
 
     # recipient options
@@ -111,12 +112,14 @@ class EmailAlertForm(Form):
         msg = {
             "html": self.message.html,
             "subject": self.message.subject,
+            "from_name": "PMG Notifications",
             "from_email": self.message.sender,
             "to": recipients,
             "merge_vars": merge_vars,
             "track_opens": True,
             "track_clicks": True,
             "preserve_recipients": False,
+            "subaccount": app.config['MANDRILL_ALERTS_SUBACCOUNT'],
         }
 
         log.info("Email will be sent to %d recipients." % len(recipients))
@@ -132,7 +135,7 @@ class EmailAlertForm(Form):
 
         self.message = Message(
                 subject=self.subject.data,
-                sender=self.from_line.data,
+                sender=self.from_email.data,
                 html=self.body.data)
 
     def get_recipient_users(self):

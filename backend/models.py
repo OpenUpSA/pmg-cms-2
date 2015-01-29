@@ -81,6 +81,7 @@ class Organisation(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
     expiry = db.Column(db.DateTime(timezone=True), default=one_year_later)
 
+    # premium committee subscriptions
     subscriptions = db.relationship('Committee', secondary='organisation_committee',
                                     lazy='joined')
 
@@ -128,7 +129,7 @@ class User(db.Model, UserMixin):
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
-    subscriptions = db.relationship('Committee', secondary='user_committee')
+    subscriptions = db.relationship('Committee', secondary='user_committee_alerts')
     roles = db.relationship('Role', secondary='roles_users',
                             backref=db.backref('users', lazy='dynamic'))
 
@@ -220,8 +221,8 @@ organisation_committee = db.Table(
         db.ForeignKey('committee.id')))
 
 
-user_committee = db.Table(
-    'user_committee',
+user_committee_alerts = db.Table(
+    'user_committee_alerts',
     db.Column(
         'user_id',
         db.Integer(),

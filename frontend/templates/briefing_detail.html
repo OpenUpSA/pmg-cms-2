@@ -1,9 +1,16 @@
 {% extends "base.html" %}
 {% from 'macros/attachments.html' import audio_attachments, related_attachments %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('briefings') }}">Media Briefings</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
-  <h4 class="light-red">Briefing</h4>
   <h1>{{ event.title }}</h1>
+  <h4 class="light-red">Briefing</h4>
+
   <h5>{{ event.date }}</h5>
 
   <div class="row">

@@ -74,7 +74,7 @@ class EmailAlertForm(Form):
     template_id = HiddenField('template_id', [validators.Required()])
     previewed = HiddenField('previewed', default='0')
     subject = StringField('Subject', [validators.Required()])
-    from_line = EmailField('From', [validators.Required()], default='subscribe@pmg.org.za')
+    from_line = EmailField('From', [validators.Required()], default='"PMG Notifications " <alerts@pmg.org.za>')
     body = TextAreaField('Content of the alert')
 
     # recipient options

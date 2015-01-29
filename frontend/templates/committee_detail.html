@@ -1,23 +1,16 @@
 {% extends "base.html" %}
 
-{% block style %}
-  <style>
-    .member-profile-pic{
-      max-width: 50px;
-      max-height: 75px;
-    }
-
-    .member-profile-pic.chairperson{
-      max-width: 100px;
-      max-height: 150px;
-    }
-  </style>
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+</ol>
 {% endblock %}
 
 {% block page %}
+  <h1>{{ committee.name }}</h1>
+
   <h4 class="light-red">{{ committee.house.name }} Committee</h4>
 
-  <h1>{{ committee.name }}</h1>
   {% if committee.about %}
     <h3 class="collapse-link"><span class="fa fa-caret-right"></span> About</h3>
     <div class="collapse">

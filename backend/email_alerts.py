@@ -117,6 +117,7 @@ class EmailAlertForm(Form):
             "track_opens": True,
             "track_clicks": True,
             "preserve_recipients": False,
+            "subaccount": app.config['MANDRILL_ALERTS_SUBACCOUNT'],
         }
 
         log.info("Email will be sent to %d recipients." % len(recipients))

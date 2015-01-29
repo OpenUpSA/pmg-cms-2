@@ -658,7 +658,7 @@ def members(page=0):
         url=url,
         icon="user",
         content_type="member",
-        title="Members")
+        title="Parliamentary Members")
 
 
 @app.route('/member/<int:member_id>')

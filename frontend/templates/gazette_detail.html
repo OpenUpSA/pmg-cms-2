@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('gazettes') }}">Gazettes</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
-<h4 class="light-red">Gazette</h4>
-<h1>{{ gazette.title }}</h1>
+<h1><i class="fa fa-file-text-o"></i> {{ gazette.title }}</h1>
+
 {% if gazette.end_date %}
 <h4>Comment expires on {{ gazette.end_date }}</h4>
 {% endif %}
+
 {% if gazette.start_date %}
 <h4>{{ gazette.start_date }}</h4>
 {% endif %}
+
 {% if gazette.effective_date %}
 <h4>Effective Date: {{ gazette.effective_date }}</h4>
 {% endif %}

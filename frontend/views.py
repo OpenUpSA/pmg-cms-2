@@ -159,12 +159,8 @@ def server_error(error):
     return render_template('500.html', error=error), 500
 
 
-def load_from_api(
-        resource_name,
-        resource_id=None,
-        page=None,
-        return_everything=False,
-        params={}):
+def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, params=None):
+    params = params or {}
 
     query_str = resource_name + "/"
     if resource_id:

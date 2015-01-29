@@ -11,6 +11,7 @@ import random
 import arrow
 import re
 import json
+import os.path
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -925,6 +926,20 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees)
+
+@app.route('/page/<string:pagename>')
+def page(pagename):
+    """
+    Serves a page from templates/pages
+    """
+    logger.debug("Attempting to serve page", pagename)
+    fname = "pages/" + re.sub(r'[^\w+_-]', '', pagename) + ".html"
+    full_fname = os.path.join(app.root_path, "templates", fname)
+    if not os.path.isfile(full_fname):
+       return abort(404)
+    return render_template(
+        fname
+    )
 
 
 @app.route('/hitlog/')

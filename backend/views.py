@@ -331,7 +331,7 @@ def check_redirect():
 
     out = {'redirect': None}
     old_url = request.json.get('url')
-    new_url = Redirect.query.filter_by(old_url=old_url).first()
-    if new_url:
-        out['redirect'] = new_url
+    redirect = Redirect.query.filter_by(old_url=old_url).first()
+    if redirect:
+        out['redirect'] = redirect.new_url
     return send_api_response(json.dumps(out, indent=4))

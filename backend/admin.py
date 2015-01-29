@@ -314,7 +314,8 @@ class EventView(MyModelView):
             # set some default values when creating a new record
             model.type = self.type
         # make sure the new date is timezone aware
-        model.date = model.date.replace(tzinfo=tz.tzlocal())
+        if model.date:
+            model.date = model.date.replace(tzinfo=tz.tzlocal())
 
     def get_query(self):
         """
@@ -360,7 +361,7 @@ class InlineContent(InlineFormAdmin):
         form_class.title = fields.StringField('Title')
         return form_class
 
-    def on_model_change(self, form, model, is_created):
+    def on_model_change(self, form, model):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
@@ -688,7 +689,7 @@ class InlineFile(InlineFormAdmin):
         form_class.upload = fields.FileField('File')
         return form_class
 
-    def on_model_change(self, form, model, is_created):
+    def on_model_change(self, form, model):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:

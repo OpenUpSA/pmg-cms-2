@@ -1,62 +1,59 @@
 {% extends 'admin/my_base.html' %}
 {% block body %}
-  <div class="container">
-    <h1>Usage report</h1>
-    <hr>
-    <div class="row">
-      <p>
-        <strong>Available reports: </strong>
-      {{ organisations | length }}
-    {% for organisation in organisations %}
-    <p>{{ organisation }}</p>
-    {% endfor %}
-      <div class="btn-group text-center" role="group" style="padding-bottom: 20px;">
-        <a
-          href="{{ url_for('usage_report.index', months=1) }}"
-          type="button"
-          class="btn btn-success{% if num_months == 1 %} active{% endif %}">
-          1 month
-        </a>
-        <a
-          href="{{ url_for('usage_report.index', months=3) }}"
-          type="button"
-          class="btn btn-success{% if num_months == 3 %} active{% endif %}">
-          3 months
-        </a>
-        <a
-          href="{{ url_for('usage_report.index', months=6) }}"
-          type="button"
-          class="btn btn-success{% if num_months == 6 %} active{% endif %}">
-          6 months
-        </a>
-        <a
-          href="{{ url_for('usage_report.index', months=12) }}"
-          type="button"
-          class="btn btn-success{% if num_months == 12 %} active{% endif %}">
-          1 year
-        </a>
-      </div>
+<div class="container">
+  <h1>Usage report</h1>
+  <hr>
+  <div class="row">
+    <p>
+      <strong>Available reports: </strong>
+      {% endfor %}
+    <div class="btn-group text-center" role="group" style="padding-bottom: 20px;">
+      <a
+        href="{{ url_for('usage_report.index', months=1) }}"
+        type="button"
+        class="btn btn-success{% if num_months == 1 %} active{% endif %}">
+        1 month
+      </a>
+      <a
+        href="{{ url_for('usage_report.index', months=3) }}"
+        type="button"
+        class="btn btn-success{% if num_months == 3 %} active{% endif %}">
+        3 months
+      </a>
+      <a
+        href="{{ url_for('usage_report.index', months=6) }}"
+        type="button"
+        class="btn btn-success{% if num_months == 6 %} active{% endif %}">
+        6 months
+      </a>
+      <a
+        href="{{ url_for('usage_report.index', months=12) }}"
+        type="button"
+        class="btn btn-success{% if num_months == 12 %} active{% endif %}">
+        1 year
+      </a>
+    </div>
     <a href="{{ url_for('usage_report.download', months=num_months) }}" target="_blank" class="btn btn-primary pull-right">
       <i class="fa fa-download"></i> Download .xlsx
     </a>
-      </p>
-    </div>
-    <div class="row">
-      <p class="lead">{{ org_list | length }} Organisations accessed the site in the {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %} leading up to {{ today }}.</p>
-      <table class="table table-bordered table-striped">
-        <tr>
-          <th>Organisation</th>
-          <th>Domain</th>
-          <th># Users</th>
-        </tr>
-        {% for org in org_list %}
-          <tr>
-            <td>{% if org[0] %}{{ org[0] }}{% endif %}</td>
-            <td>{{ org[1] }}</td>
-            <td>{{ org[2] }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
+    </p>
   </div>
+  <div class="row">
+    <p class="lead">{{ org_list | length }} Organisations accessed the site in the {% if num_months > 1 %}{{ num_months }} months{% else %}month{% endif %} leading up to {{ today }}.</p>
+    <table class="table table-bordered table-striped">
+      <tr>
+        <th>Organisation</th>
+        <th>Domain</th>
+        <th># Users</th>
+      </tr>
+      {% for org in org_list %}
+        <tr>
+          <td>{% if org[0] %}{{ org[0] }}{% endif %}</td>
+          <td>{{ org[1] }}</td>
+          <td>{{ org[2] }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
 {% endblock %}

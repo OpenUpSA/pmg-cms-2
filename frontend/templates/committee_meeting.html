@@ -1,9 +1,20 @@
 {% extends "base.html" %}
 {% from 'macros/attachments.html' import audio_attachments, related_attachments %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% if event.committee %}
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></li>
+  <li>Committee Meetings</li>
+  {% else %}
+  <li><a href="{{ url_for('committee_meetings') }}">Committee Meetings</a></li>
+  {% endif %}
+</ol>
+{% endblock %}
+
 {% block page %}
-  <h3 class="red"><span class="fa fa-comment"></span> Committee meeting</h3>
-  <h1>{{ event.title }}</h1>
+  <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
 
   <div class="row">
     <div class="col-sm-8 justify-p">

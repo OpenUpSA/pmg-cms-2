@@ -297,30 +297,63 @@ def index():
 
 
 @app.route('/bills/')
-@app.route('/bills/<int:page>/')
-def bills(page=0):
+def bills_portal():
+    return render_template('bill_index.html')
+
+
+@app.route('/bills/explained/')
+def bills_explained():
+    return render_template('bills_explained.html')
+
+
+@app.route('/bills/<string:bill_type>/')
+@app.route('/bills/<string:bill_type>/<int:page>/')
+def bills(bill_type=None, page=0):
     """
     Page through all available bills.
     """
+    
+    if not bill_type in ['all', 'draft', 'current', 'pmb']:
+        abort(404)
 
-    logger.debug("bills page called")
-    bill_list = load_from_api('bill', return_everything=True)
+    url = "/bills/" + bill_type
+
+    if bill_type != 'all':
+        if bill_type == 'pmb':
+            title = 'Private Member Bills'
+        else:
+            title = bill_type.capitalize() + ' Bills'
+
+        bill_type = 'bill/' + bill_type
+    else:
+        bill_type = 'bill'
+        title = "All Bills"
+
+    bill_list = load_from_api(bill_type, page=page)
     bills = bill_list['results']
-    # filters = {}
-    # params = {}
     count = bill_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    url = "/bills"
+
+    status_dict = {
+        "na": ("in progress", "label-primary"),
+        "ncop": ("in progress", "label-primary"),
+        "assent": ("submitted to the president", "label-warning"),
+        "enacted": ("signed into law", "label-success"),
+        "withdrawn": ("withdrawn", "label-default"),
+        "lapsed": ("lapsed", "label-default"),
+        }
+
     return render_template(
         'list.html',
         results=bills,
+        status_dict=status_dict,
         num_pages=num_pages,
         page=page,
         url=url,
         icon="file-text-o",
         content_type="bill",
-        title="Bills")
+        title=title)
 
 
 @app.route('/bill/<int:bill_id>/')

@@ -1,0 +1,123 @@
+.bill-status-container {
+		position: relative;
+		line-height: 1;
+		height: 155px;
+		width: 797px;
+		margin: 40px auto;
+
+		.c4sa-progress {
+				background-image:url('/static/resources/images/bill-progress.png');
+				background-repeat:no-repeat;
+				padding: 0px;
+		}
+
+		.c4sa-grey {
+				position: absolute;
+				width:757px;
+				height:115px;
+				left: 20px;
+				background-position: 0 -538px;
+		}
+
+		.c4sa-green {
+				position:absolute;
+				top: 11px;
+				left: 32px;
+				width:757px;
+				height:115px;
+		}
+
+		.c4sa-stage {
+				height: 40px;
+		}
+
+		/* select the correct green */
+		.stage1 .c4sa-green { background-position: 0 2px; }
+		.stage2 .c4sa-green { background-position: 0 -136px; }
+		.stage3 .c4sa-green { background-position: 0 -274px; }
+		.stage4 .c4sa-green { background-position: 0 -412px; }
+		.stage5 .c4sa-green { background-position: 0 -412px; }
+
+		.c4sa-dot {
+				position: absolute;
+				display: inline;
+				font-size:40px;
+				color: #999;
+		}
+
+		/* add a hidden 1 for stage 0 */
+		.stage1 .dot1:before { content: ""; }
+
+		/* text for future states */
+		.dot2:before { content: "2"; }
+		.dot3:before { content: "3"; }
+		.dot4:before { content: "4"; }
+
+		/* remove the text for past states */
+		.stage2 .dot2:before, .stage3 .dot2:before { content: ""; }
+		.stage3 .dot3:before, .stage4 .dot3:before { content: ""; }
+		.stage4 .c4sa-dot:before { content: ""; }
+		.stage5 .c4sa-dot:before { content: ""; }
+
+
+		/* define tick */
+		.dot1,
+		.stage2 .dot2, .stage3 .dot2, .stage4 .dot2, .stage5 .dot2,
+		.stage3 .dot3, .stage4 .dot3, .stage5 .dot3,
+		.stage5 .dot4
+		{
+				width: 45px;
+				height: 45px;
+				margin-left: -3px;
+				background-image:url('/static/resources/images/bill-tick.png');
+				background-repeat:no-repeat;
+		}
+
+		/* dot look */
+		.process_dot {
+				position:absolute;
+				width: 60px;
+				height: 60px;
+				background: #eaeaea;
+				-moz-border-radius: 50px;
+				-webkit-border-radius: 50px;
+				border-radius: 50px;
+		}
+
+		/* locate dot */
+		.dot1 { top: 37px; left: 55px; }
+		.dot2 { top: 37px; left: 276px; margin-left: 8px; }
+		.dot3 { top: 37px; left: 477px; margin-left: 8px; }
+		.dot4 { top: 37px; left: 699px; margin-left: 8px; }
+
+
+		/* place process dots */
+		.stage1 .process_dot { top:27px; left:46px; }
+		.stage2 .process_dot { top:27px; left:264px; }
+		.stage3 .process_dot { top:27px; left:466px; }
+		.stage4 .process_dot { top:27px; left:690px; }
+		.stage5 .process_dot { visibility: hidden; }
+
+
+		/* set label text */
+		.label1:after { content:"Introduced" }
+		.label2:after { content:"National Assembly" }
+		.label3:after { content:"National Council of Provinces" }
+		.label4:after { content:"Presidential Signature" }
+
+
+		/* set label look */
+		.c4sa-label {
+				position: absolute;
+				text-align: center;
+				width: 140px;
+				font-size:14px;
+				padding-top: 5px;
+		}
+
+		/* position labels */
+		.label1 { top: 120px; left: 5px; }
+		.label2 { top: 120px; left: 225px; }
+		.label3 { top: 120px; left: 428px; }
+		.label4 { top: 120px; left: 650px; }
+}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Bills{% endblock %}
+
+{% block page %}
+<div class="btn-group">
+    {% for i in year_list %}
+        <a href="/bills/{% if bill_type %}{{ bill_type }}/{% endif %}{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
+    {% endfor %}
+</div>
+
+<div class="bill-tiles">
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+            <a class="thumbnail" href="/bills/current/">
+                <div class="caption">
+                    <h3>Current bills</h3>
+                    <p>See which bills are currently making their way through Parliament.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a class="thumbnail" href="/bills/all/">
+                <div class="caption">
+                    <h3>All Bills</h3>
+                    <p>Find bills from our archive.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+            <a class="thumbnail" href="/bills/pmb/">
+                <div class="caption">
+                    <h3>Private Member Bills</h3>
+                    <p>Bills introduced by individual Members of Parliament.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a class="thumbnail" href="{{ url_for('bills_explained') }}">
+                <div class="caption">
+                    <h3>Bills Explained</h3>
+                    <p>Find out more about the legislative process.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> Read more</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-2">
+            <a class="thumbnail" href="/bills/draft/">
+                <div class="caption">
+                    <h3>Draft Bills</h3>
+                    <p>See which bills are waiting to be introduced.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock page %}

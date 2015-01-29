@@ -128,21 +128,31 @@ class MyIndexView(RBACMixin, AdminIndexView):
 class UsageReportView(RBACMixin, BaseView):
     required_roles = ['editor', ]
 
+    def get_list(self, months):
+
+        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
+        organisation_list = db.session.query(
+            Organisation.name,
+            Organisation.domain,
+            db.func.count(User.id).label("num_users")
+        ).join(
+            Organisation.users
+        ).filter(
+            User.current_login_at > cutoff
+        ).group_by(
+            Organisation.id
+        ).order_by(
+            Organisation.name
+        ).all()
+        return organisation_list
+
     @expose('/')
     @expose('/<int:months>/')
     def index(self, months=1):
-        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
-        users = User.query.filter(
-            User.current_login_at > cutoff
-        ).filter(
-            ~User.email.contains("@pmg.org.za")
-        ).order_by(
-            User.email
-        ).all()
-        return self.render('admin/usage_report.html', users=users, num_months=months)
 
+        return self.render('admin/usage_report.html', org_list=self.get_list(months), num_months=months, today=datetime.date.today())
 
-    def xlsx(self, users, filename="active_users.xlsx"):
+    def xlsx(self, users, filename):
         out = XLSXBuilder(users)
         xlsx = out.build()
         resp = make_response(xlsx)
@@ -153,15 +163,12 @@ class UsageReportView(RBACMixin, BaseView):
     @expose('/xlsx/<int:months>/')
     def download(self, months=1):
 
-        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
-        users = User.query.filter(
-            User.current_login_at > cutoff
-        ).filter(
-            ~User.email.contains("@pmg.org.za")
-        ).order_by(
-            User.email
-        ).all()
-        return self.xlsx(users)
+        today=datetime.date.today()
+        tmp = str(months) + " month up to " + str(today)
+        if months > 1:
+            tmp = str(months) + " months up to " + str(today)
+        filename = "PMG active organisations - " + tmp + ".xlsx"
+        return self.xlsx(self.get_list(months), filename=filename)
 
 
 class MyModelView(RBACMixin, ModelView):

@@ -771,7 +771,7 @@ def briefings(page=0):
         )
 
 
-@app.route('/daily_schedule/<int:daily_schedule_id>')
+@app.route('/daily-schedule/<int:daily_schedule_id>')
 def daily_schedule(daily_schedule_id):
     logger.debug("daily_schedule page called")
     daily_schedule = load_from_api('daily_schedule', daily_schedule_id)
@@ -781,8 +781,8 @@ def daily_schedule(daily_schedule_id):
         admin_edit_url=admin_url('schedule', daily_schedule_id))
 
 
-@app.route('/daily_schedules/')
-@app.route('/daily_schedules/<int:page>/')
+@app.route('/daily-schedules/')
+@app.route('/daily-schedules/<int:page>/')
 def daily_schedules(page=0):
     """
     Page through all available daily_schedules.

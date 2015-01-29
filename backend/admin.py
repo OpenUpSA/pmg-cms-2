@@ -205,7 +205,21 @@ class UserView(MyModelView):
         'current_login_at',
         'login_count',
         ]
-    column_labels = {'current_login_at': "Last seen"}
+    column_labels = {
+        'current_login_at': "Last seen",
+        'subscriptions': "User's premium subscriptions",
+        }
+    form_widget_args = {
+        'subscriptions': {
+            'placeholder': 'Choose a committee',
+            }
+        }
+    form_ajax_refs = {
+        'subscriptions': {
+            'fields': ('name', ),
+            'page_size': 25
+        }
+    }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     form_excluded_columns = [

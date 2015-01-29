@@ -845,6 +845,10 @@ class EmailTemplateView(MyModelView):
         },
         }
 
+
+class FeaturedContentView(MyModelView):
+    pass
+
 # initialise admin instance
 admin = Admin(
     app,
@@ -983,6 +987,15 @@ admin.add_view(
         name="Bill Type",
         endpoint='bill-type',
         category="Form Options"))
+
+# Featured content
+admin.add_view(
+    FeaturedContentView(
+        Featured,
+        db.session,
+        category='Other Content',
+        name="Featured Content",
+        endpoint='featured'))
 
 # Email alerts
 admin.add_view(

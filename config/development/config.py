@@ -54,6 +54,10 @@ SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 SECURITY_POST_LOGIN_VIEW = "/admin"
 SECURITY_POST_LOGOUT_VIEW = "/admin"
 
+# Flask-Security email subject lines
+SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
+SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"
+
 # Flask-Security features
 SECURITY_CONFIRMABLE = True
 SECURITY_LOGIN_WITHOUT_CONFIRMATION = True

@@ -107,7 +107,7 @@ class EmailAlertForm(Form):
             self.generate_email()
 
         recipients = [{'email': r.email} for r in self.recipients]
-        merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]}]
+        merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]} for r in self.recipients]
 
         msg = {
             "html": self.message.html,

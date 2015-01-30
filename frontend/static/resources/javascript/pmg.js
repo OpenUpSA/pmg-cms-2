@@ -19,6 +19,3 @@ $(function() {
 		ga('send', 'event', '404', document.location.pathname);
 	}
 });
-
-// Hit Logging
-$.get("/hitlog/" + Math.random().toString(36).substring(7));

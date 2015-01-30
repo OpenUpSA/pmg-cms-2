@@ -172,6 +172,17 @@ article.page {
 	cursor: pointer;
 }
 
+// PA button on landing page
+.pa-button {
+	text-align: center;
+	background: #efefef;
+	padding: 10px;
+
+	img {
+		margin-bottom: 10px;
+	}
+}
+
 footer {
 	margin: 0px;
 	padding: 40px;

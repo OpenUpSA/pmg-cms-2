@@ -974,8 +974,9 @@ def page(pagename):
     )
 
 
-# some old content contains links to a /docs/... which are
+# some old content contains links to /docs/... and /files/docs/... which are
 # now all stored on S3
 @app.route('/docs/<path:path>')
+@app.route('/files/docs/<path:path>')
 def docs(path):
     return redirect(app.config['STATIC_HOST'] + "docs/" + path)

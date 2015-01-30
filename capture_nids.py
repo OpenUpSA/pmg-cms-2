@@ -89,6 +89,7 @@ def capture_hansard_nids():
             i += 1
             try:
                 hansard = json.loads(line)
+                title = briefing["title"]
                 nid = hansard['nid']
                 try:
                     hansard_obj = Hansard.query.filter_by(title=title).one()
@@ -156,5 +157,5 @@ if __name__ == '__main__':
 
     Search.reindex_changes = False
     capture_hansard_nids()
-    capture_briefing_nids()
+    # capture_briefing_nids()
 

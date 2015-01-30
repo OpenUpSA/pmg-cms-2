@@ -134,3 +134,10 @@ def deploy():
     set_permissions()
     restart()
     return
+
+
+def upload_user_alert_script():
+
+    put('reload_user_alerts.py', '/tmp/reload_user_alerts.py')
+    sudo('mv /tmp/reload_user_alerts.py /var/www/pmg-cms/reload_user_alerts.py')
+    return

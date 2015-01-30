@@ -4,7 +4,7 @@ from backend.models import *
 from flask import url_for
 
 # read in json redirect dump
-with open('data/prod_url_alias.json', 'r') as f:
+with open('data/nid_url.json', 'r') as f:
 
     redirects = json.loads(f.read())
 

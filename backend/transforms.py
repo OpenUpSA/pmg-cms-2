@@ -35,7 +35,7 @@ class Transforms:
         "hansard": {
             "id": "id",
             "title": "title",
-            "fulltext": "body",
+            "fulltext": ["content", 0, "rich_text", "body"],
             "date": "date",
         },
         # "briefing": {

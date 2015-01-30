@@ -7,7 +7,7 @@
 	{% set date = result._source.date %}
 	{% set id = result._id %}
 {% else %}
-	{% set title = result.title %}
+	{% set title = result.title|escape %}
 	{% set date = result.date %}
 	{% set id = result.id %}
 {% endif %}
@@ -16,7 +16,7 @@
 	<div class="row">
 		<div class="col-xs-8">
 			<div class="title">
-				<a href="/bill/{{ id }}">{{ title }}</a>
+				<a href="/bill/{{ id }}">{{ title|safe }}</a>
 			</div>
 		</div>
 		<div class="col-xs-2">

@@ -214,22 +214,6 @@ def search():
     return json.dumps(result)
 
 
-@app.route('/hitlog/', methods=['GET', 'POST'])
-def hitlog():
-    """
-    Records a hit from the end-user. Should be called in a non-blocking manner
-    """
-    logger.debug("caught a hit")
-    hitlog = HitLog(
-        ip_addr=request.form["ip_addr"],
-        user_agent=request.form["user_agent"],
-        url=request.form["url"])
-    db.session.add(hitlog)
-    db.session.commit()
-
-    return ""
-
-
 @app.route('/bill/<int:bill_id>/')
 @app.route('/bill/<string:scope>/')
 @load_user('token', 'session')

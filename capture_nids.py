@@ -89,7 +89,7 @@ def capture_hansard_nids():
             i += 1
             try:
                 hansard = json.loads(line)
-                title = briefing["title"]
+                title = hansard["title"]
                 nid = hansard['nid']
                 try:
                     hansard_obj = Hansard.query.filter_by(title=title).one()

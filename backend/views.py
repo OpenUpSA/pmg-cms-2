@@ -333,5 +333,26 @@ def check_redirect():
                     hansard = Hansard.query.filter_by(nid=redirect_obj.nid).first()
                     if hansard:
                         out['redirect'] = '/hansard/' + str(hansard.id) + '/'
+            # look for other non-event records
+            if out['redirect'] is None:
+                question_reply = QuestionReply.query.filter_by(nid=redirect_obj.nid).first()
+                if question_reply:
+                    out['redirect'] = '/question_reply/' + str(question_reply.id) + '/'
+            if out['redirect'] is None:
+                call_for_comment = CallForComment.query.filter_by(nid=redirect_obj.nid).first()
+                if call_for_comment:
+                    out['redirect'] = '/call-for-comment/' + str(question_reply.id) + '/'
+            if out['redirect'] is None:
+                policy_doc = PolicyDocument.query.filter_by(nid=redirect_obj.nid).first()
+                if policy_doc:
+                    out['redirect'] = '/policy-document/' + str(policy_doc.id) + '/'
+            if out['redirect'] is None:
+                gazette = Gazette.query.filter_by(nid=redirect_obj.nid).first()
+                if gazette:
+                    out['redirect'] = '/gazette/' + str(gazette.id) + '/'
+            if out['redirect'] is None:
+                daily_schedule = DailySchedule.query.filter_by(nid=redirect_obj.nid).first()
+                if daily_schedule:
+                    out['redirect'] = '/daily-schedule/' + str(daily_schedule.id) + '/'
 
     return send_api_response(json.dumps(out, indent=4))

@@ -311,8 +311,6 @@ def check_redirect():
 
     out = {'redirect': None}
     old_url = request.json.get('url')
-    if old_url.startswith("/"):
-        old_url = old_url[1::]
     if old_url.endswith("/"):
         old_url = old_url[0:-1]
     redirect_obj = Redirect.query.filter_by(old_url=old_url).first()

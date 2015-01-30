@@ -394,7 +394,10 @@ class InlineContent(InlineFormAdmin):
             new_file.file_path = filename
             # set relation between content model and file model
             model.file = new_file
-            model.type = "related-doc"
+            if 'audio' in new_file.file_mime:
+                model.type = "audio"
+            else:
+                model.type = "related-doc"
             db.session.add(new_file)
 
 

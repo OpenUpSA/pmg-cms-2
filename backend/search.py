@@ -227,7 +227,10 @@ class Search:
                 size=0)]
 
     def reindex_everything(self):
-        for data_type in Transforms.data_types():
+        data_types = Transforms.data_types()
+        self.logger.info("Reindexing everything: %s" % data_types)
+
+        for data_type in data_types:
             self.reindex_all(data_type)
 
     def delete_everything(self):
@@ -236,23 +239,21 @@ class Search:
 
 if __name__ == "__main__":
     # print "ElasticSearch PMG library"
+    data_types = Transforms.data_types() + ['all']
+
     parser = argparse.ArgumentParser(description='ElasticSearch PMG library')
-    parser.add_argument(
-        '--import',
-        dest='import_data_type',
-        choices=Transforms.data_types(),
-        help='Imports the data from a content type to ElasticSearch')
-    parser.add_argument('--test', action="store_true")
+    parser.add_argument('data_type', metavar='DATA_TYPE', choices=data_types, help='Data type to manipulate: %s' % data_types)
     parser.add_argument('--reindex', action="store_true")
     parser.add_argument('--delete', action="store_true")
     args = parser.parse_args()
 
     search = Search()
-    if (args.test):
-        search.test()
-    if (args.import_data_type):
-        search.reindex_all(args.import_data_type)
-    if (args.reindex):
-        search.reindex_everything()
-    if (args.delete):
+
+    if args.reindex:
+        if args.data_type == 'all':
+            search.reindex_everything()
+        else:
+            search.reindex_all(args.data_type)
+
+    if args.delete:
         search.delete_everything()

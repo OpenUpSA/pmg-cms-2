@@ -498,7 +498,7 @@ class CommitteeMeeting(Event):
         return tmp
 
 
-class Plenary(Event):
+class Hansard(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'plenary'
     }

@@ -4,13 +4,17 @@ from backend.models import *
 from flask import url_for
 
 # read in json redirect dump
-with open('data/prod_url_alias.json', 'r') as f:
+with open('data/nid_url.json', 'r') as f:
 
     redirects = json.loads(f.read())
 
 print len(redirects)
 
 old_urls = []
+existing_redirects = Redirect.query.all()
+for redirect in existing_redirects:
+    old_urls.append(redirect.old_url)
+
 error_count = 0
 
 for i in range(len(redirects)):
@@ -34,7 +38,7 @@ for i in range(len(redirects)):
             db.session.add(redirect)
         else:
             error_count += 1
-            print nid, redirects[i]['url']
+            print nid, redirects[i]['url'].encode('utf8')
     if i % 500 == 0:
         print "saving 500 redirects (" + str(i) + " out of " + str(len(redirects)) + ")"
         db.session.commit()

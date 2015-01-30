@@ -852,6 +852,12 @@ class FeaturedContentView(MyModelView):
         model.start_date = model.start_date.replace(tzinfo=tz.tzlocal())
 
 
+class RedirectView(MyModelView):
+    column_list = ('old_url', 'new_url', 'nid')
+    column_searchable_list = ('old_url', 'new_url')
+    column_default_sort = 'old_url'
+
+
 # initialise admin instance
 admin = Admin(
     app,
@@ -998,7 +1004,7 @@ admin.add_view(
         name="Featured Content",
         endpoint='featured'))
 admin.add_view(
-    MyModelView(
+    RedirectView(
         Redirect,
         db.session,
         category='Other Content',

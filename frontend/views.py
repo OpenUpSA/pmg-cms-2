@@ -940,3 +940,10 @@ def page(pagename):
     return render_template(
         fname
     )
+
+
+# some old content contains links to a /docs/... which are
+# now all stored on S3
+@app.route('/docs/<path:path>')
+def docs(path):
+    return redirect(app.config['STATIC_HOST'] + "docs/" + path)

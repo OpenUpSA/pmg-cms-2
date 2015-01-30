@@ -69,10 +69,10 @@ def capture_meeting_report_nids():
 
 def db_date_from_utime(utime):
     try:
-        return datetime.datetime.fromtimestamp(float(utime))
+        return datetime.date.fromtimestamp(float(utime))
     except:
         try:
-            datetime.strptime(utime, '%Y-%m-%dT%H:%m:%s')
+            return datetime.strptime(utime, '%Y-%m-%dT%H:%m:%s')
         except:
             return None
 
@@ -153,9 +153,49 @@ def capture_briefing_nids():
     print json.dumps(not_found, indent=4)
 
 
+def capture_question_reply_nids():
+
+    duplicates = []
+    not_found = []
+    with open('data/questions_replies.json', 'r') as f:
+        i = 0
+        lines = f.readlines()
+        logger.debug("Found %i records" % (len(lines)))
+        for line in lines:
+            i += 1
+            try:
+                question_reply = json.loads(line)
+                title = question_reply["title"]
+                date = db_date_from_utime(question_reply["start_date"])
+                nid = question_reply['nid']
+                try:
+                    question_reply_obj = QuestionReply.query.filter_by(title=title).filter_by(start_date=date).one()
+                    if question_reply_obj:
+                        question_reply_obj.nid = nid
+                        db.session.add(question_reply_obj)
+                except MultipleResultsFound as e:
+                    duplicates.append((nid, title))
+                    pass
+                except NoResultFound as e:
+                    not_found.append((nid, title))
+                    pass
+                if i % 100 == 0:
+                    db.session.commit()
+                    logger.debug("Wrote 100 rows...")
+            except Exception as e:
+                print e
+                logger.warning("Error reading row")
+    db.session.commit()
+    print "\nduplicates: " + str(len(duplicates))
+    print json.dumps(duplicates, indent=4)
+    print "\nnot found: " + str(len(not_found))
+    print json.dumps(not_found, indent=4)
+
+
 if __name__ == '__main__':
 
     Search.reindex_changes = False
-    capture_hansard_nids()
+    # capture_hansard_nids()
     # capture_briefing_nids()
+    capture_question_reply_nids()
 

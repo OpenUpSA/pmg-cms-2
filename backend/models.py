@@ -781,7 +781,7 @@ class Featured(db.Model):
     title = db.Column(db.String(255))
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
-    start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
+    start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
     tabled_committee_report = db.relationship(
         'TabledCommitteeReport',
         secondary='featured_tabled_committee_report_join')

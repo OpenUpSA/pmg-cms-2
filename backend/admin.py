@@ -489,6 +489,7 @@ class HansardView(EventView):
     )
     form_columns = (
         'date',
+        'title',
         'body',
         'content',
     )

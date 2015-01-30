@@ -310,16 +310,13 @@ def bills_explained():
     return render_template('bills_explained.html')
 
 
-@app.route('/bills/<string:bill_type>/')
-@app.route('/bills/<string:bill_type>/<int:page>/')
+@app.route('/bills/<any(all, draft, current, pmb):bill_type>/')
+@app.route('/bills/<any(all, draft, current, pmb):bill_type>/<int:page>/')
 def bills(bill_type=None, page=0):
     """
     Page through all available bills.
     """
     
-    if not bill_type in ['all', 'draft', 'current', 'pmb']:
-        abort(404)
-
     url = "/bills/" + bill_type
 
     if bill_type != 'all':

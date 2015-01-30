@@ -65,16 +65,12 @@
 
     <div id="sidebar" class="col-md-3">  <!-- Sidebar -->
       <div class="space-bottom">
-        <h4><span class="fa fa-comment"></span> Featured Committee Meetings</h4>
-        <ul class="list-unstyled list">
-          {% if featured_content %}
-            {% for committee_meeting in featured_content.committee_meeting %}
-              <li>
-                <h5><a href="/committee-meeting/{{ committee_meeting.id }}/">{{ committee_meeting.title }}</a></h5>
-              </li>
-            {% endfor %}
-          {% endif %}
-        </ul>
+        <div class="pa-button">
+          <a href="http://www.pa.org.za/">
+            <img src="/static/resources/images/pa-logo.png">
+            <div>Connect with your representatives and find out more about them.</div>
+          </a>
+        </div>
       </div>
 
       <div class="space-bottom">

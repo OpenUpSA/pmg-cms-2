@@ -13,15 +13,15 @@ class Transforms:
             "title": "name",
             "description": ["info", "about"]
         },
-        # "committee_meeting": {
-        #     "id": "id",
-        #     "title": "title",
-        #     "description": "summary",
-        #     "fulltext": "body",
-        #     "date": "date",
-        #     "committee_name": ["committee", "name"],
-        #     "committee_id": ["committee", "id"],
-        # },
+        "committee_meeting": {
+            "id": "id",
+            "title": "title",
+            "description": ["content", 0, "rich_text", "summary"],
+            "fulltext": ["content", 0, "rich_text", "body"],
+            "date": "date",
+            "committee_name": ["committee", "name"],
+            "committee_id": ["committee", "id"],
+        },
         "member": {
             "id": "id",
             "title": "name",
@@ -35,18 +35,18 @@ class Transforms:
         "hansard": {
             "id": "id",
             "title": "title",
-            "fulltext": "body",
+            "fulltext": ["content", 0, "rich_text", "body"],
             "date": "date",
         },
-        # "briefing": {
-        #     "id": "id",
-        #     "title": "title",
-        #     "description": "summary",
-        #     "fulltext": "body",
-        #     "date": "date",
-        #     "committee_name": ["committee", "name"],
-        #     "committee_id": ["committee", "id"],
-        # },
+        "briefing": {
+            "id": "id",
+            "title": "title",
+            "description": ["content", 0, "rich_text", "summary"],
+            "fulltext": ["content", 0, "rich_text", "body"],
+            "date": "date",
+            "committee_name": ["committee", "name"],
+            "committee_id": ["committee", "id"],
+        },
         "question_reply": {
             "id": "id",
             "title": "title",

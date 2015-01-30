@@ -17,6 +17,8 @@ loggers:
     level: INFO
   rebuild_db:
     level: DEBUG
+  pyelasticsearch:
+    level: INFO
 root:
   handlers: [console]
   level: DEBUG

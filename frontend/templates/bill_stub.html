@@ -1,8 +1,22 @@
+{% if result._source %}
+	{% if result.highlight.title %}
+		{% set title = result.highlight.title[0]|search_snippet %}
+	{% else %}	
+		{% set title = result._source.title %}
+	{% endif %}
+	{% set date = result._source.date %}
+	{% set id = result._id %}
+{% else %}
+	{% set title = result.title %}
+	{% set date = result.date %}
+	{% set id = result.id %}
+{% endif %}
+
 <div class="bill-stub">
 	<div class="row">
 		<div class="col-xs-8">
 			<div class="title">
-				<a href="{{ url_for('bill', bill_id=result.id) }}">{{ result.title }}</a>
+				<a href="/bill/{{ id }}">{{ title }}</a>
 			</div>
 		</div>
 		<div class="col-xs-2">
@@ -15,7 +29,9 @@
 			{% endif %}
 		</div>
 		<div class="col-xs-2">
+			{% if result.code %}
 			[{{ result.code }}]
+			{% endif %}
 		</div>
 	</div>
 </div>

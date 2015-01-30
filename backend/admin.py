@@ -990,8 +990,6 @@ admin.add_view(
         name="Bill Type",
         endpoint='bill-type',
         category="Form Options"))
-
-# Featured content
 admin.add_view(
     FeaturedContentView(
         Featured,
@@ -999,6 +997,13 @@ admin.add_view(
         category='Other Content',
         name="Featured Content",
         endpoint='featured'))
+admin.add_view(
+    MyModelView(
+        Redirect,
+        db.session,
+        category='Other Content',
+        name="Legacy Redirects",
+        endpoint='redirects'))
 
 # Email alerts
 admin.add_view(

@@ -11,49 +11,17 @@ def virtualenv():
             yield
 
 
-def rebuild_db():
-    sudo("supervisorctl stop pmg_cms")
-    with virtualenv():
-        with cd(env.project_dir):
-            sudo('source production-env.sh && python rebuild_db.py')
-    sudo("supervisorctl start pmg_cms")
-
-
-def copy_db():
-    local("pg_dump -dpmg -Upmg --clean --no-owner --no-privileges > pmg.sql")
-    local("tar cvzf pmg.sql.tar.gz pmg.sql")
-    put('pmg.sql.tar.gz', '/tmp/pmg.sql.tar.gz')
-    sudo('tar xvzf /tmp/pmg.sql.tar.gz')
-    sudo('psql -dpmg -f pmg.sql', user="postgres")
-    local('rm pmg.sql')
-    # local('rm pmg.sql.tar.gz')
-    sudo('rm /tmp/pmg.sql.tar.gz')
-    sudo('rm pmg.sql')
-
-
 def setup_db():
     sudo("createuser pmg -S -D -R -e", user="postgres")
     sudo("createdb --locale=en_US.utf-8 -E utf-8 -O pmg pmg -T template0", user="postgres")
-    rebuild_db()
-    # sudo('echo "grant all privileges on database pmg to pmg;" | psql')
 
-def scrape_tabled_reports():
-    with virtualenv():
-        with shell_env(FLASK_ENV='production'):
-            with cd('/var/www/pmg-cms'):
-                run("source production-env.sh; python scrapers/scraper.py tabledreports")
-
-def scrape_schedule():
-    with virtualenv():
-        with shell_env(FLASK_ENV='production'):
-            with cd('/var/www/pmg-cms'):
-                run("source production-env.sh; python scrapers/scraper.py schedule")
 
 def index_search():
     with virtualenv():
         with shell_env(FLASK_ENV='production'):
             with cd('/var/www/pmg-cms'):
                 run('source production-env.sh; python backend/search.py --reindex')
+
 
 def restart():
     sudo("supervisorctl restart pmg_cms")
@@ -133,18 +101,4 @@ def deploy():
 
     set_permissions()
     restart()
-    return
-
-
-def upload_user_alert_script():
-
-    put('reload_user_alerts.py', '/tmp/reload_user_alerts.py')
-    sudo('mv /tmp/reload_user_alerts.py /var/www/pmg-cms/reload_user_alerts.py')
-    return
-
-
-def upload_redirect_script():
-
-    put('upload_redirects.py', '/tmp/upload_redirects.py')
-    sudo('mv /tmp/upload_redirects.py /var/www/pmg-cms/upload_redirects.py')
     return

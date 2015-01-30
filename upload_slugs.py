@@ -11,7 +11,14 @@ with open('data/prod_url_alias.json', 'r') as f:
 print len(redirects)
 
 old_urls = []
+
+existing_redirects = Redirect.query.all()
+for tmp in existing_redirects:
+    old_urls.append(tmp.old_url)
+
 error_count = 0
+no_nid_count = 0
+duplicate_count = 0
 
 for i in range(len(redirects)):
     nid = None
@@ -27,17 +34,21 @@ for i in range(len(redirects)):
                     break
                 except ValueError:
                     pass
-        url = redirects[i]['url']
-        if nid and not url in old_urls:
-            redirect = Redirect(nid=nid, old_url=url)
-            old_urls.append(url)
-            db.session.add(redirect)
-        else:
-            error_count += 1
-            print nid, redirects[i]['url']
+    url = redirects[i]['url']
+    if not nid:
+        no_nid_count += 1
+    elif url in old_urls:
+        duplicate_count += 1
+
+    else:
+        redirect = Redirect(nid=nid, old_url=url)
+        old_urls.append(url)
+        db.session.add(redirect)
+        # print nid, redirects[i]['url'].encode('utf8')
     if i % 500 == 0:
         print "saving 500 redirects (" + str(i) + " out of " + str(len(redirects)) + ")"
         db.session.commit()
 db.session.commit()
 
-print "Error count:", str(error_count)
+print duplicate_count, "duplicates found"
+print no_nid_count, "nids could not be parsed"

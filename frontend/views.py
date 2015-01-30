@@ -976,11 +976,12 @@ def page(pagename):
 
 # some old content contains links files which are in S3:
 #   /docs/foo
+#   /questions/foo
 #   /mp3/foo
 #   /files/foo
 #   /files/doc/foo
 #   /files/docs/foo
-@app.route('/<any(docs, mp3):dir>/<path:path>')
+@app.route('/<any(docs, mp3, questions):dir>/<path:path>')
 @app.route('/files/<path:path>')
 def docs(path, dir=''):
     if dir:

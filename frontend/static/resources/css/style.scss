@@ -52,11 +52,23 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 }
 
 nav.top-links {
-	padding: 10px;
 	background-color: #efefef;
 
 	ul {
+		padding: 10px 0px;
 		margin-bottom: 0px;
+		line-height: 1.5;
+	}
+
+	.btn {
+		margin-top: 6px;
+		.fa-twitter {
+			color: #4099FF;
+		}
+
+		.fa-facebook {
+			color: #3b5998;
+		}
 	}
 }
 

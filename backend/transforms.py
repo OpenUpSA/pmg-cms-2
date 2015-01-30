@@ -32,12 +32,12 @@ class Transforms:
             "id": "id",
             "title": "title",
         },
-        # "hansard": {
-        #     "id": "id",
-        #     "title": "title",
-        #     "fulltext": "body",
-        #     "date": "date",
-        # },
+        "hansard": {
+            "id": "id",
+            "title": "title",
+            "fulltext": "body",
+            "date": "date",
+        },
         # "briefing": {
         #     "id": "id",
         #     "title": "title",

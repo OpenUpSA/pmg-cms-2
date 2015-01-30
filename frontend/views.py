@@ -977,8 +977,9 @@ def page(pagename):
 # some old content contains links files which are in S3:
 #   /docs/foo
 #   /mp3/foo
+#   /files/doc/foo
 #   /files/docs/foo
 @app.route('/<any(docs, mp3):dir>/<path:path>')
-@app.route('/files/docs/<path:path>')
-def docs(path, dir='docs'):
+@app.route('/files/<any(doc, docs):dir>/<path:path>')
+def docs(path, dir):
     return redirect(app.config['STATIC_HOST'] + dir + '/' + path)

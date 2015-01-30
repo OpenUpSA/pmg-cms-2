@@ -15,7 +15,7 @@ $(function() {
 
 // handle 404 page
 $(function() {
-	if ($('#404-page').length > 0) {
-		ga('send', 'event', '404', document.location.pathname);
+	if ($('#page-404').length > 0) {
+		ga('send', 'event', '404', document.location.pathname, document.referrer);
 	}
 });

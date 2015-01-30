@@ -151,8 +151,6 @@ def page_not_found(error):
     tmp = send_to_api('check_redirect', json.dumps({'url': request.path}))
     if tmp and tmp.get('redirect'):
         target = tmp.get('redirect')
-        if not target.startswith('/'):
-            target = "/" + target
 
         logger.info("Legacy redirect from %s to %s" % (request.path, target))
         return redirect(target, code=302)
@@ -916,6 +914,22 @@ def search(page=0):
         yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
     committee_list = load_from_api('committee', return_everything=True)
     committees = committee_list['results']
+
+    search_types = [
+            ("committee", "Committees"),
+            ("committee_meeting", "Committee Meetings"),
+            ("bill", "Bills"),
+            ("member", "MPs"),
+            ("hansard", "Hansards"),
+            ("briefing", "Media Briefings"),
+            ("question_reply", "Question & Reply"),
+            ("tabled_committee_report", "Tabled Committee Reports"),
+            ("call_for_comment", "Calls for Comments"),
+            ("policy_document", "Policy Documents"),
+            ("gazette", "Gazettes"),
+            ("daily_schedule", "Daily Schedules"),
+            ]
+
     return render_template(
         'search.html',
         q=q,
@@ -930,7 +944,8 @@ def search(page=0):
         years=years,
         bincount=bincount,
         yearcount=yearcount,
-        committees=committees)
+        committees=committees,
+        search_types=search_types)
 
 @app.route('/page/<string:pagename>')
 def page(pagename):

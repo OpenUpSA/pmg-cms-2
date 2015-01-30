@@ -282,7 +282,7 @@ def index():
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
-    stock_pic = "stock" + str(random.randint(1, 18)) + ".jpg"
+    stock_pic = random.choice(["ncop.jpg", "na.jpg"])
     featured_list = load_from_api('featured')["results"]
     featured_content = None
     if len(featured_list) > 0:

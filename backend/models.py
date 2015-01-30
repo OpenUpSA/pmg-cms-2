@@ -930,3 +930,11 @@ class Redirect(db.Model):
     nid = db.Column(db.Integer)
     old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
     new_url = db.Column(db.String(250))
+
+    def __str__(self):
+        if self.nid:
+            target = "nid %s" % self.nid
+        else:
+            target = self.new_url
+
+        return u'<Redirect from %s to %s>' % (self.old_url, target)

@@ -926,4 +926,4 @@ class Redirect(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nid = db.Column(db.Integer)
     old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
-    new_url = db.Column(db.String(250), nullable=False)
+    new_url = db.Column(db.String(250))

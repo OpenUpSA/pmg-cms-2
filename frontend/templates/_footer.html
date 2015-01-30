@@ -8,6 +8,15 @@
           <li><a href="/page/what-is-pmg">About Us</a></li>
           <li><a href="{{ url_for('email_alerts') }}">Free Email Alerts</a></li>
         </ul>
+
+        <form action="/search" method="GET">
+          <div class="input-group">
+            <input class="form-control" type="text" name="q" placeholder="Search PMG">
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="submit">Go</button>
+            </span>
+          </div>
+        </form>
       </div>
       <div class="col-sm-3">
         <ul class="list-unstyled">
@@ -35,17 +44,8 @@
         <ul class="list-unstyled">
           <li><strong>Links</strong></li>
           <li><a href="http://www.pa.org.za">People's Assembly</a></li>
-          <li><a href="http://api.pmg.org.za">PMG API</a></li>
+          <li class="pa-link"><a href="http://www.pa.org.za"><img src="/static/resources/images/pa-logo.png" alt="People's Assembly"></a>
         </ul>
-
-        <form action="/search" method="GET">
-          <div class="input-group">
-            <input class="form-control" type="text" name="q" placeholder="Search PMG">
-            <span class="input-group-btn">
-              <button class="btn btn-success" type="submit">Go</button>
-            </span>
-          </div>
-        </form>
       </div>
     </div>
   </div>
@@ -53,19 +53,13 @@
 
 <footer class="footer-2">
   <div class="container">
-    <div class="row">
-      <div class="col-sm-9">
-        <ul class="list-unstyled">
-          <li><a href="/page/disclaimer-copyright">Copyright Parliamentary Monitoring Group</a></li>
-        </ul>
-      </div>
+    <ul class="list-unstyled">
+      <li><a href="/page/disclaimer-copyright">Copyright Parliamentary Monitoring Group</a></li>
+    </ul>
 
-      <div class="col-sm-3">
-        <ul class="list-unstyled">
-          <li>Built by <a href="http://code4sa.org">Code for South Africa</a></li>
-          <li><i class="fa fa-github"></i> <a href="https://github.com/Code4SA/pmg-cms-2">Source Code on GitHub</li>
-        </ul>
-      </div>
-    </div>
+    <ul class="list-unstyled">
+      <li>This site is <i class="fa fa-github"></i> <a href="https://github.com/Code4SA/pmg-cms-2">open source code</a> built by <a href="http://code4sa.org">Code for South Africa</a>.</li>
+      <li>PMG data is <a href="http://api.pmg.org.za">available through an PI</a>.</li>
+    </ul>
   </div>
 </footer>

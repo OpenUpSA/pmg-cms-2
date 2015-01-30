@@ -186,35 +186,37 @@ article.page {
 footer {
 	margin: 0px;
 	padding: 40px;
+	color: #dedede;
 
 	ul {
 		list-style: inline;
 	}
 
 	form {
-		margin-top: 35px;
+		margin-top: 20px;
+	}
+
+	a, a:hover {
+		color: lighten($link-color, 40%);
+	}
+
+	.pa-link {
+		margin-top: 10px;
+		img {
+			background-color: #efefef;
+			padding: 5px;
+			border-radius: 5px;
+		}
 	}
 }
 
 .footer-1 {
 	margin-top: 60px;
 	background-color: darken(#ddd, 40%);
-	color: #dedede;
-
-	a, a:hover {
-		color: #dedede;
-		text-decoration: underline;
-	}
 }
 
 .footer-2 {
 	background-color: darken(#ddd, 60%);
-	color: #dedede;
-
-	a, a:hover {
-		color: #dedede;
-		text-decoration: underline;
-	}
 }
 
 .bill-tiles {

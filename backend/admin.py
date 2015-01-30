@@ -847,7 +847,10 @@ class EmailTemplateView(MyModelView):
 
 
 class FeaturedContentView(MyModelView):
-    pass
+    def on_model_change(self, form, model, is_created):
+        # make sure the new date is timezone aware
+        model.start_date = model.start_date.replace(tzinfo=tz.tzlocal())
+
 
 # initialise admin instance
 admin = Admin(

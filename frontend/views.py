@@ -150,8 +150,13 @@ class ApiException(HTTPException):
 def page_not_found(error):
     tmp = send_to_api('check_redirect', json.dumps({'url': request.path}))
     if tmp and tmp.get('redirect'):
-        logger.debug("CAUGHT REDIRECT")
-        return redirect(tmp['redirect'], code=302)
+        target = tmp.get('redirect')
+        if not target.startswith('/'):
+            target = "/" + target
+
+        logger.info("Legacy redirect from %s to %s" % (request.path, target))
+        return redirect(target, code=302)
+
     return render_template('404.html'), 404
 
 

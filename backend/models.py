@@ -683,6 +683,9 @@ class TabledCommitteeReport(db.Model):
         "File",
         secondary='tabled_committee_report_file_join', backref='tabled_committee_report')
 
+    def __unicode__(self):
+        return self.title or ('<TabledCommitteeReport %s>' % self.id)
+
 tabled_committee_report_file_table = db.Table(
     'tabled_committee_report_file_join',
     db.Model.metadata,

@@ -321,9 +321,17 @@ def check_redirect():
             if not out['redirect'].startswith('/'):
                 out['redirect'] = "/" + out['redirect']
         elif redirect_obj.nid:
-            # look for record with this nid
+            # look for 'event' table record with this nid
             committee_meeting = CommitteeMeeting.query.filter_by(nid=redirect_obj.nid).first()
             if committee_meeting:
                 out['redirect'] = '/committee-meeting/' + str(committee_meeting.id) + '/'
+            else:
+                briefing = Briefing.query.filter_by(nid=redirect_obj.nid).first()
+                if briefing:
+                    out['redirect'] = '/briefing/' + str(briefing.id) + '/'
+                else:
+                    hansard = Hansard.query.filter_by(nid=redirect_obj.nid).first()
+                    if hansard:
+                        out['redirect'] = '/hansard/' + str(hansard.id) + '/'
 
     return send_api_response(json.dumps(out, indent=4))

@@ -341,7 +341,7 @@ def check_redirect():
             if out['redirect'] is None:
                 call_for_comment = CallForComment.query.filter_by(nid=redirect_obj.nid).first()
                 if call_for_comment:
-                    out['redirect'] = '/call-for-comment/' + str(question_reply.id) + '/'
+                    out['redirect'] = '/call-for-comment/' + str(call_for_comment.id) + '/'
             if out['redirect'] is None:
                 policy_doc = PolicyDocument.query.filter_by(nid=redirect_obj.nid).first()
                 if policy_doc:

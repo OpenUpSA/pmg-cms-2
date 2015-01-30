@@ -360,6 +360,7 @@ def bills(bill_type=None, page=0):
         title=title)
 
 
+@app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
     """
@@ -372,6 +373,7 @@ def bill(bill_id):
                            admin_edit_url=admin_url('bill', bill_id))
 
 
+@app.route('/committee/<int:committee_id>')
 @app.route('/committee/<int:committee_id>/')
 def committee_detail(committee_id):
     """
@@ -431,6 +433,7 @@ def committee_meetings(page=0):
         filters=filters)
 
 
+@app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
     """
@@ -495,6 +498,7 @@ def tabled_committee_reports(page=0):
         filters=filters)
 
 
+@app.route('/tabled-committee-report/<int:tabled_committee_report_id>')
 @app.route('/tabled-committee-report/<int:tabled_committee_report_id>/')
 def tabled_committee_report(tabled_committee_report_id):
     """
@@ -546,6 +550,7 @@ def calls_for_comments(page=0):
         filters=filters)
 
 
+@app.route('/call-for-comment/<int:call_for_comment_id>')
 @app.route('/call-for-comment/<int:call_for_comment_id>/')
 def call_for_comment(call_for_comment_id):
     """
@@ -587,6 +592,7 @@ def policy_documents(page=0):
         title="Policy Documents")
 
 
+@app.route('/policy-document/<int:policy_document_id>')
 @app.route('/policy-document/<int:policy_document_id>/')
 def policy_document(policy_document_id):
     """
@@ -626,6 +632,7 @@ def gazettes(page=0):
         title="Gazettes")
 
 
+@app.route('/gazette/<int:gazette_id>')
 @app.route('/gazette/<int:gazette_id>/')
 def gazette(gazette_id):
     """
@@ -666,6 +673,7 @@ def members(page=0):
 
 
 @app.route('/member/<int:member_id>')
+@app.route('/member/<int:member_id>/')
 def member(member_id):
     logger.debug("member page called")
     member = load_from_api('member', member_id)
@@ -676,6 +684,7 @@ def member(member_id):
 
 
 @app.route('/hansard/<int:event_id>')
+@app.route('/hansard/<int:event_id>/')
 def hansard(event_id):
     event = load_from_api('hansard', event_id)
     report = None
@@ -725,6 +734,7 @@ def hansards(page=0):
 
 
 @app.route('/briefing/<int:event_id>')
+@app.route('/briefing/<int:event_id>/')
 def briefing(event_id):
 
     event = load_from_api('briefing', event_id)
@@ -776,6 +786,7 @@ def briefings(page=0):
 
 
 @app.route('/daily-schedule/<int:daily_schedule_id>')
+@app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
     logger.debug("daily_schedule page called")
     daily_schedule = load_from_api('daily_schedule', daily_schedule_id)
@@ -811,6 +822,7 @@ def daily_schedules(page=0):
 
 
 @app.route('/question_reply/<int:question_reply_id>')
+@app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
     logger.debug("question_reply page called")
     question_reply = load_from_api('question_reply', question_reply_id)

@@ -413,6 +413,7 @@ class Event(db.Model):
     date = db.Column(db.DateTime(timezone=True))
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
+    nid = db.Column(db.Integer())
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
@@ -658,6 +659,7 @@ class QuestionReply(db.Model):
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
     question_number = db.Column(db.String(255))
+    nid = db.Column(db.Integer())
 
 
 # === Tabled Committee Report === #
@@ -922,5 +924,6 @@ class Redirect(db.Model):
     __tablename__ = 'redirect'
 
     id = db.Column(db.Integer, primary_key=True)
+    nid = db.Column(db.Integer)
     old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
-    new_url = db.Column(db.String(250), nullable=False)
+    new_url = db.Column(db.String(250))

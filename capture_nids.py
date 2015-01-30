@@ -67,7 +67,94 @@ def capture_meeting_report_nids():
     return
 
 
+def db_date_from_utime(utime):
+    try:
+        return datetime.datetime.fromtimestamp(float(utime))
+    except:
+        try:
+            datetime.strptime(utime, '%Y-%m-%dT%H:%m:%s')
+        except:
+            return None
+
+
+def capture_hansard_nids():
+
+    duplicates = []
+    not_found = []
+    with open('data/hansard.json', 'r') as f:
+        i = 0
+        lines = f.readlines()
+        logger.debug("Found %i records" % (len(lines)))
+        for line in lines:
+            i += 1
+            try:
+                hansard = json.loads(line)
+                nid = hansard['nid']
+                try:
+                    hansard_obj = Hansard.query.filter_by(title=title).one()
+                    if hansard_obj:
+                        hansard_obj.nid = nid
+                        db.session.add(hansard_obj)
+                except MultipleResultsFound as e:
+                    duplicates.append((nid, title))
+                    pass
+                except NoResultFound as e:
+                    not_found.append((nid, title))
+                    pass
+                if i % 100 == 0:
+                    db.session.commit()
+                    logger.debug("Wrote 100 rows...")
+            except Exception as e:
+                print e
+                logger.warning("Error reading row")
+    db.session.commit()
+    print "\nduplicates: " + str(len(duplicates))
+    print json.dumps(duplicates, indent=4)
+    print "\nnot found: " + str(len(not_found))
+    print json.dumps(not_found, indent=4)
+
+
+def capture_briefing_nids():
+
+    duplicates = []
+    not_found = []
+    with open('data/briefing.json', 'r') as f:
+        i = 0
+        lines = f.readlines()
+        logger.debug("Found %i records" % (len(lines)))
+        for line in lines:
+            i += 1
+            try:
+                briefing = json.loads(line)
+                title = briefing["title"]
+                nid = briefing['nid']
+                try:
+                    briefing_obj = Briefing.query.filter_by(title=title).one()
+                    if briefing_obj:
+                        briefing_obj.nid = nid
+                        db.session.add(briefing_obj)
+                except MultipleResultsFound as e:
+                    duplicates.append((nid, title))
+                    pass
+                except NoResultFound as e:
+                    not_found.append((nid, title))
+                    pass
+                if i % 100 == 0:
+                    db.session.commit()
+                    logger.debug("Wrote 100 rows...")
+            except Exception as e:
+                print e
+                logger.warning("Error reading row")
+    db.session.commit()
+    print "\nduplicates: " + str(len(duplicates))
+    print json.dumps(duplicates, indent=4)
+    print "\nnot found: " + str(len(not_found))
+    print json.dumps(not_found, indent=4)
+
+
 if __name__ == '__main__':
+
     Search.reindex_changes = False
-    capture_meeting_report_nids()
+    capture_hansard_nids()
+    capture_briefing_nids()
 

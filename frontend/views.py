@@ -940,30 +940,3 @@ def page(pagename):
     return render_template(
         fname
     )
-
-
-@app.route('/hitlog/')
-@app.route('/hitlog/<string:random>/')
-def hitlog(random=False):
-    """
-    Records a hit from the end-user. Should be called in a non-blocking manner
-    """
-    logger.debug("caught a hit")
-    print "Remote addr", request.remote_addr
-    print "User agent", request.user_agent
-    print "Url", request.url
-    hitlog = {}
-    hitlog["ip_addr"] = request.remote_addr
-    hitlog["user_agent"] = request.user_agent
-    if request.referrer:
-        hitlog["url"] = request.referrer
-    else:
-        hitlog["url"] = request.url
-    headers = {
-        # 'Accept': 'application/json',
-        # 'Content-Type': 'application/json'
-    }
-    url = API_HOST + "hitlog/"
-    response = requests.post(url, headers=headers, data=hitlog)
-    return response.content
-

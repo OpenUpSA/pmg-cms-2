@@ -210,6 +210,9 @@ def reset_password(token):
 def change_password():
     """View function which handles a change password request."""
 
+    if not session.get('current_user'):
+        return redirect(url_for('login', next=request.url))
+
     form = forms.ChangePasswordForm()
 
     if form.validate_on_submit():

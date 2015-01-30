@@ -311,7 +311,21 @@ def check_redirect():
 
     out = {'redirect': None}
     old_url = request.json.get('url')
-    redirect = Redirect.query.filter_by(old_url=old_url).first()
-    if redirect:
-        out['redirect'] = redirect.new_url
+    redirect_obj = Redirect.query.filter_by(old_url=old_url).first()
+    if not redirect_obj:
+        logger.debug("CAN'T FIND REDIRECT")
+    else:
+        logger.debug('CAUGHT REDIRECT')
+    logger.debug(redirect_obj)
+    if redirect_obj:
+        if redirect_obj.new_url:
+            out['redirect'] = redirect_obj.new_url
+            logger.debug("pass 1")
+        elif redirect_obj.nid:
+            logger.debug("pass 2")
+            # look for record with this nid
+            committee_meeting = CommitteeMeeting.query.filter_by(nid=redirect_obj.nid).first()
+            if committee_meeting:
+                logger.debug("pass 3")
+                out['redirect'] = 'committee-meeting/' + str(committee_meeting.id) + '/'
     return send_api_response(json.dumps(out, indent=4))

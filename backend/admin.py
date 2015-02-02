@@ -8,13 +8,12 @@ from dateutil.relativedelta import relativedelta
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.form import RenderTemplateWidget
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.contrib.sqla.form import InlineModelConverter
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
-from wtforms import fields, widgets
+from wtforms import fields
 from sqlalchemy import func
 from werkzeug import secure_filename
 from s3_upload import S3Bucket
@@ -23,6 +22,7 @@ from app import app, db
 from models import *
 from email_alerts import EmailAlertView
 from rbac import RBACMixin
+import widgets
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -82,18 +82,6 @@ def jinja2_filter_is_file(content_obj):
     if content_obj.file:
         return True
     return False
-
-
-# Define wtforms widget and field
-class CKTextAreaWidget(widgets.TextArea):
-
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('class_', 'ckeditor')
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
-
-
-class CKTextAreaField(fields.TextAreaField):
-    widget = CKTextAreaWidget()
 
 
 class MyIndexView(RBACMixin, AdminIndexView):
@@ -242,14 +230,16 @@ class OrganisationView(MyModelView):
             'fields': ('name', 'email'),
             'page_size': 25
         },
-        'subscriptions': {
-            'fields': ('name', ),
-            'page_size': 25
-        }
     }
     form_excluded_columns = [
         'created_at',
         ]
+    form_args = {
+        'subscriptions': {
+            'query_factory': Committee.premium_for_select,
+            'widget': widgets.CheckboxSelectWidget(multiple=True)
+            }
+        }
     column_labels = {'subscriptions': "Premium subscriptions"}
 
     def on_model_change(self, form, model, is_created):
@@ -257,19 +247,10 @@ class OrganisationView(MyModelView):
         model.expiry = model.expiry.replace(tzinfo=tz.tzlocal())
 
 
-# This widget uses custom template for inline field list
-class InlineMembershipsWidget(RenderTemplateWidget):
-
-    def __init__(self):
-        super(
-            InlineMembershipsWidget,
-            self).__init__('admin/inline_membership.html')
-
-
 # This InlineModelFormList will use our custom widget, when creating a
 # list of forms
 class MembershipsFormList(InlineModelFormList):
-    widget = InlineMembershipsWidget()
+    widget = widgets.InlineMembershipsWidget()
 
 
 # Create custom InlineModelConverter to link the form to its model
@@ -349,17 +330,10 @@ class EventView(MyModelView):
             .filter(self.model.type == self.type)
 
 
-# This widget uses custom template for inline field list
-class InlineContentWidget(RenderTemplateWidget):
-
-    def __init__(self):
-        super(InlineContentWidget, self).__init__('admin/inline_content.html')
-
-
 # This InlineModelFormList will use our custom widget, when creating a
 # list of forms
 class ContentFormList(InlineModelFormList):
-    widget = InlineContentWidget()
+    widget = widgets.InlineContentWidget()
 
 
 # Create custom InlineModelConverter to link the form to its model
@@ -429,8 +403,8 @@ class CommitteeMeetingView(EventView):
         'content',
     )
     form_extra_fields = {
-        'summary': CKTextAreaField('Summary'),
-        'body': CKTextAreaField('Body'),
+        'summary': widgets.CKTextAreaField('Summary'),
+        'body': widgets.CKTextAreaField('Body'),
         }
     form_widget_args = {
         'body': {
@@ -497,7 +471,7 @@ class HansardView(EventView):
         'content',
     )
     form_extra_fields = {
-        'body': CKTextAreaField('Body'),
+        'body': widgets.CKTextAreaField('Body'),
         }
     form_widget_args = {
         'body': {
@@ -561,8 +535,8 @@ class BriefingView(EventView):
         'content',
     )
     form_extra_fields = {
-        'summary': CKTextAreaField('Summary'),
-        'body': CKTextAreaField('Body'),
+        'summary': widgets.CKTextAreaField('Summary'),
+        'body': widgets.CKTextAreaField('Body'),
         }
     form_widget_args = {
         'summary': {
@@ -670,17 +644,10 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 
-# This widget uses custom template for inline field list
-class InlineFileWidget(RenderTemplateWidget):
-
-    def __init__(self):
-        super(InlineFileWidget, self).__init__('admin/inline_file.html')
-
-
 # This InlineModelFormList will use our custom widget, when creating a
 # list of forms
 class FileFormList(InlineModelFormList):
-    widget = InlineFileWidget()
+    widget = widgets.InlineFileWidget()
 
 
 # Create custom InlineModelConverter to link the form to its model

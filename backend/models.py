@@ -590,6 +590,12 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
+    @classmethod
+    def premium_for_select(cls):
+        return cls.query.filter(cls.premium == True)\
+                .order_by(cls.name)\
+                .all()
+
     def __unicode__(self):
         tmp = self.name
         if self.house:

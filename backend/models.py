@@ -482,7 +482,7 @@ class CommitteeMeeting(Event):
     def check_permission(self):
         # by default, all committee meetings are accessible
         if self.committee.premium:
-            if current_user.is_anonymous:
+            if not current_user.is_authenticated():
                 return False
 
             return current_user.subscribed_to_committee(self.committee)

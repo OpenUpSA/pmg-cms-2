@@ -2,7 +2,7 @@ Parliamentary Monitoring Group website (pmg-cms-2)
 ==================================================
 
 Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa. 
-When live, this will be hosted at http://www.pmg.org.za.
+See: https://www.pmg.org.za.
 
 ## What does this project do
 
@@ -21,10 +21,65 @@ The project consists of the following major components:
     * http://new.pmg.org.za
   * Database (PostgreSQL)
   * Search engine (Elastic Search)
-  * Admin interface (Flask-Admin, integration with MailChimp)
-    * http://api.pmg.org.za/admin
+  * Admin interface (Flask-Admin, integration with Mandrill for email notifications)
+    * https://api.pmg.org.za/admin
   * API (Flask)
-    * http://api.pmg.org.za
+    * https://api.pmg.org.za
+    
+## Making use of the API
+
+All of the data that is displayed through the frontend website, is served through an API (https://api.pmg.org.za), 
+which is freely accessible. 
+However, please note that access to some content on the frontend website is restricted, and the same restrictions 
+ apply for the API. 
+
+If you are a registered user, and you wish to have access to restricted content through the API, then please follow 
+these steps:
+
+1. Send a POST request to https://api.pmg.org.za/security/login with a JSON body containing your credentials, e.g:
+    
+        {
+          "email": "<email@example.com>",
+          "password": "<my-password>"
+        }
+            
+    please make sure that your `Content-Type` and `Accept` headers are set to `application/json`. The API should 
+    return a JSON response of the form:
+        
+        { 
+            "meta":  { 
+                "code": 200 
+            }, 
+            "response": { 
+                "user": { 
+                    "authentication_token": "<example-auth-token>", 
+                    "id": "<user-id>" 
+                }
+            } 
+        }
+        
+2. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
+
+    If you were authenticated successfully, you should see a 'current_user' field being mirrored back to you from the
+    API responses. E.g. for GET https://api.pmg.org.za:
+         
+        {
+            "endpoints": [
+                ...
+            ],
+            "current_user": {
+                "organisation_id": null,
+                "roles": [],
+                "name": null,
+                "subscribe_daily_schedule": false,
+                "confirmed": true,
+                "email": "<email@example.com>",
+                "committee_alerts": {},
+                "active": true,
+                "id": <user-id>
+            }
+        }
+    
 
 ## Contributing to the project
 

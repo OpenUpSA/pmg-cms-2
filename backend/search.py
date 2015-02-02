@@ -5,6 +5,8 @@ import logging
 
 import requests
 from pyelasticsearch import ElasticSearch
+from pyelasticsearch.exceptions import ElasticHttpNotFoundError
+
 from sqlalchemy import types
 from inflection import underscore, camelize
 

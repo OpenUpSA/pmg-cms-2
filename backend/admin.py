@@ -197,17 +197,12 @@ class UserView(MyModelView):
         'current_login_at': "Last seen",
         'subscriptions': "User's premium subscriptions",
         }
-    form_widget_args = {
+    form_args = {
         'subscriptions': {
-            'placeholder': 'Choose a committee',
+            'query_factory': Committee.premium_for_select,
+            'widget': widgets.CheckboxSelectWidget(multiple=True),
             }
         }
-    form_ajax_refs = {
-        'subscriptions': {
-            'fields': ('name', ),
-            'page_size': 25
-        }
-    }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     form_excluded_columns = [

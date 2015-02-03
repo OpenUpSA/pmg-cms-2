@@ -494,6 +494,7 @@ class CommitteeMeeting(Event):
         if not self.check_permission():
             if tmp['content']:
                 # remove premium content
+                tmp['premium_content_excluded'] = True
                 tmp['content'] = []
         return tmp
 

@@ -16,54 +16,76 @@
 {% block page %}
   <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
 
-  <div class="row">
-    <div class="col-sm-8 justify-p">
+  {% if event.premium_content_excluded %}
+    <p class="lead">
+    Access to this committee meeting report and those for the committees below is restricted. All other committees are freely accessible.
+    </p>
 
-      <h3>
-        Committee:
-        {% if event.committee %}
-          <a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></h3>
-        {% else %}
-          (unknown)
+    <p>The following users are exempt from a subscription fee. Please log in using an email address that identifies your affiliation to one of these:</p>
+
+    <ul>
+      <li>Non-government and community-based organisations</li>
+      <li>Public education institutions</li>
+    </ul>
+
+    <p>Email <a href="mailto:info@pmg.org.za">info@pmg.org.za</a> if you cannot get in and you belong to one of the above.</p>
+
+    <p>Business, government and other users need to subscribe to access meeting reports of these 15 National Assembly committees. <a href="{{ url_for('committee_subscriptions')}} ">Find out more about subscribing</a>.</p>
+
+    {% include '_premium_committees.html' %}
+
+  {% else %}
+
+    <div class="row">
+      <div class="col-sm-8 justify-p">
+
+        <h3>
+          Committee:
+          {% if event.committee %}
+            <a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></h3>
+          {% else %}
+            (unknown)
+          {% endif %}
+        </h3>
+
+        {% if event.chairperson %}
+          <h3>Chairperson: {{ event.chairperson }}</h3>
         {% endif %}
-      </h3>
 
-      {% if event.chairperson %}
-        <h3>Chairperson: {{ event.chairperson }}</h3>
-      {% endif %}
+        <h3>
+          Date of Meeting:
+          {% if event.date %}
+            {{ event.date | pretty_date }}
+          {% else %}
+            (unknown)
+          {% endif %}
+        </h3>
 
-      <h3>
-        Date of Meeting:
-        {% if event.date %}
-          {{ event.date | pretty_date }}
+        <h2>Summary</h2>
+        {% if report and report.summary %}
+          {{ report.summary | safe }}
         {% else %}
-          (unknown)
+          <p><em>No summary available for this committee meeting.</em></p>
         {% endif %}
-      </h3>
+        <hr>
 
-      <h2>Summary</h2>
-      {% if report and report.summary %}
-        {{ report.summary | safe }}
-      {% else %}
-        <p><em>No summary available for this committee meeting.</em></p>
-      {% endif %}
-      <hr>
+        <h2>Minutes</h2>
+        {% if report and report.body %}
+          {{ report.body | safe }}
+        {% else %}
+          <p><em>No minutes available for this committee meeting.</em></p>
+        {% endif %}
+        <hr>
+      </div>
 
-      <h2>Minutes</h2>
-      {% if report and report.body %}
-        {{ report.body | safe }}
-      {% else %}
-        <p><em>No minutes available for this committee meeting.</em></p>
-      {% endif %}
-      <hr>
+      <div class="col-sm-4">
+        {{ audio_attachments(audio) }}
+        {{ related_attachments(related_docs) }}
+      </div>
+
     </div>
 
-    <div class="col-sm-4">
-      {{ audio_attachments(audio) }}
-      {{ related_attachments(related_docs) }}
-    </div>
-
-  </div>
+  {% endif %}
 
 {% endblock %}
 

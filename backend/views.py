@@ -238,6 +238,12 @@ def current_bill_list(scope=None, bill_id=None):
 
     return api_resource_list('bill', None, query)
 
+@app.route('/committee/premium/')
+@load_user('token', 'session')
+def committee_list():
+    query = api_resources().get('committee').filter(Committee.premium == True)
+    return api_resource_list('committee', None, query)
+
 
 @app.route('/<string:resource>/', )
 @app.route('/<string:resource>/<int:resource_id>/', )

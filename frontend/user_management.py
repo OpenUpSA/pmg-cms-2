@@ -14,49 +14,43 @@ logger = logging.getLogger(__name__)
 
 # chat with backend API
 def user_management_api(endpoint, data=None):
-
     query_str = "security/" + endpoint
-
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
+
     if endpoint != 'login' and session and session.get('api_key'):
         headers['Authentication-Token'] = session['api_key']
+
     try:
-        response = requests.post(
-            API_HOST +
-            query_str,
-            data=data,
-            headers=headers,
-            allow_redirects=False)
+        response = requests.post(API_HOST + query_str, data=data, headers=headers, allow_redirects=False)
         try:
             out = response.json()
             if response.status_code != 200:
-                raise ApiException(
-                    response.status_code,
-                    out.get(
-                        'message',
-                        u"An unspecified error has occurred."))
-            if out.get('response') and out['response'].get('errors'):
+                raise ApiException(response.status_code,
+                                   out.get('message', u"An unspecified error has occurred."))
+
+            if out.get('response', {}).get('errors'):
                 for field, messages in out['response']['errors'].iteritems():
                     for message in messages:
                         flash(message, 'danger')
+
         except ValueError:
             logger.error("Error interpreting response from API. No JSON object could be decoded")
             flash(u"Error interpreting response from API.", 'danger')
             logger.debug(response.text)
             return
+
         try:
             logger.debug(json.dumps(out, indent=4))
         except Exception:
             logger.debug("Error logging response from API")
         return out['response']
 
-    except ConnectionError:
+    except ConnectionError as e:
+        logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash(u'Error connecting to backend service.', 'danger')
-        pass
-    return
 
 
 @app.route('/login/', methods=['GET', 'POST'])
@@ -73,6 +67,11 @@ def login():
             'password': form.password.data
         }
         response = user_management_api('login', json.dumps(data))
+        if response and 'errors' in response:
+            # clear the flashes, we do our own error handling.
+            session['_flashes'] = []
+            form.bad_email = 'email' in response['errors']
+            form.bad_password = 'password' in response['errors']
 
         # save auth token
         if response and response.get('user') and response['user'].get('authentication_token'):

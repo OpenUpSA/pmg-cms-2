@@ -190,6 +190,9 @@ class LoginForm(Form):
     next = HiddenField()
     submit = SubmitField(get_form_field_label('login'))
 
+    bad_email = False
+    bad_password = False
+
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
         if not self.next.data:

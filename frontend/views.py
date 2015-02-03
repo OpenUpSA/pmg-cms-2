@@ -146,6 +146,10 @@ class ApiException(HTTPException):
         return render_template('500.html', error=self)
 
 
+class AccessRestricted(Exception):
+    pass
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     tmp = send_to_api('check_redirect', json.dumps({'url': request.path}))
@@ -176,34 +180,20 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     # add auth header
     if session and session.get('api_key'):
         headers = {'Authentication-Token': session.get('api_key')}
+
     try:
-        response = requests.get(
-            API_HOST +
-            query_str,
-            headers=headers,
-            params=params)
+        response = requests.get(API_HOST + query_str, headers=headers, params=params)
 
         if response.status_code == 404:
             abort(404)
-        elif response.status_code == 403:
-            msg = "Your subscription doesn't give you access to this committee's meeting reports." + \
-                  " Please see <a href='" + url_for('committee_subscriptions') + "'>the subscriptions page</a>" + \
-                  " for more details."
-            flash(msg, "danger")
-        elif response.status_code == 401:
-            msg = "Access is restricted. You need to log in to view this committee's meeting reports." + \
-                  " Please <a href='" + url_for('login', next=request.base_url) + "'>log in</a>" + \
-                  " or <a href='" + url_for('register') + "'>create a new account</a>."
-            flash(msg, "danger")
-        elif response.status_code != 200:
+
+        if response.status_code != 200 and response.status_code not in [401, 403]:
             try:
                 msg = response.json().get('message')
             except Exception:
                 msg = None
 
-            raise ApiException(
-                response.status_code,
-                msg or "An unspecified error has occurred.")
+            raise ApiException(response.status_code, msg or "An unspecified error has occurred.")
 
         out = response.json()
         if return_everything:
@@ -218,13 +208,14 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
                 i += 1
             if out.get('next'):
                 out.pop('next')
+
         if out.get('current_user'):
             session['current_user'] = out['current_user']
+
         return out
-    except requests.ConnectionError:
-        flash('Error connecting to backend service.', 'danger')
-        pass
-    return
+    except requests.ConnectionError as e:
+        logger.error("Error connecting to backend service: %s" % e, exc_info=e)
+        flash(u'Error connecting to backend service.', 'danger')
 
 
 def send_to_api(endpoint, data=None):
@@ -438,6 +429,12 @@ def committee_meeting(event_id):
     """
 
     event = load_from_api('committee-meeting', event_id)
+
+    if event.get('premium_content_excluded'):
+        premium_committees = load_from_api('committee/premium', return_everything=True)['results']
+    else:
+        premium_committees = None
+
     report = None
     related_docs = []
     audio = []
@@ -456,6 +453,7 @@ def committee_meeting(event_id):
         report=report,
         audio=audio,
         related_docs=related_docs,
+        premium_committees=premium_committees,
         admin_edit_url=admin_url('committee_meeting', event_id))
 
 

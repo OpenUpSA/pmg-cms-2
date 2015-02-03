@@ -14,40 +14,20 @@
   {% set user = session.current_user %}
 {% endif %}
 
-{% macro check_subscribed(committee_id) %}
-  {% if user and user.organisation and
-  user.organisation.subscriptions and
-  user.organisation.subscriptions[committee_id|string] %}
-    <span class="label label-success">You have access</span>
-  {% else %}
-    <span class="label label-danger">You don't have access</span>
-  {% endif %}
-{% endmacro %}
-
-{% macro render_committee_row(committee) %}
-  <tr>
-    <td>{{ committee.name }}</td>
-    <td>{{ committee.house.name }}</td>
-    <td>{{ check_subscribed(committee.id) }}</td>
-  </tr>
-{% endmacro %}
-
 {% block page %}
 
   <h1>Committee subscriptions</h1>
-  <hr>
   <p class="lead">
-    Access to the following committee meeting reports are restricted to fee-paying customers.
-    All other committee minutes are freely accessible.*</p>
-  <h2>National Assembly committees</h2>
-  <table class="table table-bordered table-striped">
-    <tr>
-      <th>Committee</th>
-      <th>House</th>
-      <th>Subscription status</th>
-    </tr>
-    {% for committee in committees %}{{ render_committee_row(committee) }}{% endfor %}
-  </table>
+    Access to the committee reports of the committees below is restricted. All other committees are freely accessible.
+  </p>
+
+  <p>The following users are exempt from paying a subscription fee:</p>
+
+  <ul>
+    <li>Non-government and community-based organisations [this does not include umbrella non-profit associations for commercial organisations]</li>
+    <li>Public educational institutions [full-time staff and students]</li>
+    <li>Please send us an email to <a href="mailto:info@pmg.org.za"target="_blank">info@pmg.org.za</a> motivating for free access - using an email address that clearly identifies your affiliation to one of the above. If you do not have an email address, you will need to fax proof of your affiliation to: 021 465 8887</li>
+  </ul>
 
   {% if user and user.organisation %}
     {% if user.organisation.has_expired %}
@@ -60,9 +40,13 @@
       </div>
     {% endif %}
   {% endif %}
+
+  <hr>
+  {% include "_premium_committees.html" %}
   <hr>
 
   <h2>Subscription Options</h2>
+
   <p>
     <strong>Annual Subscription: R4 900</strong><br>
     Choose 4 of the above committees and receive comprehensive minutes and documents for 12 months.
@@ -133,61 +117,4 @@
   If you have any queries, phone (021) 465 8885 and speak to Pumza Mokorotlo <a href="mailto:subscribe@pmg.org.za"target="_blank">subscribe@pmg.org.za</a>
   </p>
 
-  <hr>
-  <p><span class="lead">* The following users are exempt from paying a subscription fee:</span><br>
-  <ul class="">
-    <li>Non-government and community-based organisations [this does not include umbrella non-profit associations for commercial organisations]</li>
-    <li>Public educational institutions [full-time staff and students]</li>
-    <li>Please send us an email to <a href="mailto:info@pmg.org.za"target="_blank">info@pmg.org.za</a> motivating for free access - using an email address that clearly identifies your affiliation to one of the above. If you do not have an email address, you will need to fax proof of your affiliation to: 021 465 8887</li>
-  </ul>
-  </p>
-
 {% endblock page %}
-
-{% block javascript %}
-  {{ super() }}
-  <script>
-    $( document ).ready(function(){
-
-      // set select-all value on page load
-      $(".select-all").each(function(){
-        var select_all = $(this);
-        var all_checked = true;
-        var parent_list = select_all.closest('ul');
-        parent_list.find(':checkbox.select-committee').each(function(){
-          var tmp_checkbox = $(this);
-          if(!tmp_checkbox.is(':checked'))
-          {
-            all_checked = false;
-            return false; // break out of 'each' loop
-          }
-        });
-        if(all_checked)
-          select_all.prop("checked", true);
-      });
-
-      // toggle list of checkboxes with select-all
-      $(".select-all").each(function(){
-        var select_all = $(this);
-        select_all.on('change', function(){
-          var parent_list = select_all.closest('ul');
-          if (select_all.is(':checked'))
-          {
-            // check all other boxes in the list
-            parent_list.find(':checkbox.select-committee').prop('checked', true);
-          }
-          else
-          {
-            // un-check all other boxes in the list
-            parent_list.find(':checkbox.select-committee').prop('checked', false);
-          }
-        })
-      });
-
-      $("input").on('change', function(){
-        $(".submit-btn-container").each(function(){$(this).show()});
-      });
-
-    });
-  </script>
-{% endblock javascript %}

@@ -289,6 +289,5 @@ def committee_subscriptions():
     Manage subscriptions to premium content.
     """
 
-    committee_list = load_from_api('committee', return_everything=True, params={'filter[premium]': 'True'})
-    committees = committee_list['results']
-    return render_template('user_management/committee_subscriptions.html', committees=committees, )
+    premium_committees = load_from_api('committee/premium', return_everything=True)['results']
+    return render_template('user_management/committee_subscriptions.html', premium_committees=premium_committees)

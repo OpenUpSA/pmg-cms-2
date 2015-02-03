@@ -3,6 +3,7 @@ from flask_wtf import Form as BaseForm
 from wtforms import TextField, PasswordField, validators, \
     SubmitField, HiddenField, BooleanField, ValidationError, Field, \
     SelectField
+from wtforms.fields.html5 import EmailField
 
 
 _default_field_labels = {
@@ -11,7 +12,7 @@ _default_field_labels = {
     'remember_me': 'Remember Me',
     'login': 'Login',
     'retype_password': 'Retype Password',
-    'register': 'Register',
+    'register': 'Sign up',
     'send_confirmation': 'Resend Confirmation Instructions',
     'recover_password': 'Recover Password',
     'reset_password': 'Reset Password',
@@ -134,21 +135,9 @@ class Form(BaseForm):
         super(Form, self).__init__(*args, **kwargs)
 
 
-class EmailFormMixin():
-    email = TextField(
-        get_form_field_label('email'),
-        validators=[email_required, email_validator])
-
-
 class UserEmailFormMixin():
     user = None
-    email = TextField(
-        get_form_field_label('email'),
-        validators=[email_required, email_validator])
-
-
-class UniqueEmailFormMixin():
-    email = TextField(
+    email = EmailField(
         get_form_field_label('email'),
         validators=[email_required, email_validator])
 
@@ -196,8 +185,8 @@ class LoginForm(Form):
 
     """The default login form"""
 
-    email = TextField(get_form_field_label('email'))
-    password = PasswordField(get_form_field_label('password'))
+    email = EmailField(get_form_field_label('email'), [validators.DataRequired()])
+    password = PasswordField(get_form_field_label('password'), [validators.DataRequired()])
     next = HiddenField()
     submit = SubmitField(get_form_field_label('login'))
 
@@ -209,8 +198,8 @@ class LoginForm(Form):
 
 class RegisterForm(Form, PasswordConfirmFormMixin):
 
-    email = TextField(get_form_field_label('email'))
-    password = PasswordField(get_form_field_label('password'))
+    email = EmailField(get_form_field_label('email'), [validators.DataRequired()])
+    password = PasswordField(get_form_field_label('password'), [validators.DataRequired()])
     next = HiddenField()
     submit = SubmitField(get_form_field_label('register'))
 

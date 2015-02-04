@@ -80,6 +80,7 @@ class Organisation(db.Model):
     paid_subscriber = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
     expiry = db.Column(db.DateTime(timezone=True), default=one_year_later)
+    contact = db.Column(db.String(255))
 
     # premium committee subscriptions
     subscriptions = db.relationship('Committee', secondary='organisation_committee')

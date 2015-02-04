@@ -1,7 +1,7 @@
 from os import environ as env
 
 DEBUG = True
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg'
+SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.dev:5001/"
 FRONTEND_HOST = "http://pmg.dev:5000/"

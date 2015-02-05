@@ -360,7 +360,7 @@ class Bill(db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['code'] = self.get_code()
-        tmp['uri'] = url_for('resource_list', resource='bill', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='bill', resource_id=self.id, _external=True)
         return tmp
 
     def __unicode__(self):
@@ -496,7 +496,7 @@ class CommitteeMeeting(Event):
             if tmp['content']:
                 # remove premium content
                 tmp['content'] = []
-        tmp['uri'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -506,7 +506,7 @@ class Hansard(Event):
     }
     def to_dict(self, include_related=False):
         tmp = super(Hansard, self).to_dict(include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='hansard', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='hansard', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -516,7 +516,7 @@ class Briefing(Event):
     }
     def to_dict(self, include_related=False):
         tmp = super(Briefing, self).to_dict(include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='briefing', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='briefing', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -583,7 +583,7 @@ class Member(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
-        tmp['uri'] = url_for('resource_list', resource='member', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='member', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -609,7 +609,7 @@ class Committee(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='committee', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='committee', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -679,7 +679,7 @@ class QuestionReply(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='question_reply', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='question_reply', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -709,7 +709,7 @@ class TabledCommitteeReport(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
         return tmp
 
 tabled_committee_report_file_table = db.Table(
@@ -745,7 +745,7 @@ class CallForComment(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -765,7 +765,7 @@ class PolicyDocument(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
         return tmp
 
 policy_document_file_table = db.Table(
@@ -798,7 +798,7 @@ class Gazette(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
         return tmp
 
 gazette_file_table = db.Table(
@@ -859,7 +859,7 @@ class DailySchedule(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['uri'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
         return tmp
 
 daily_schedule_file_table = db.Table(

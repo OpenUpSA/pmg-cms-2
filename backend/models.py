@@ -66,8 +66,7 @@ class Role(db.Model, RoleMixin):
 
 
 def one_year_later():
-
-    return datetime.datetime.now() + relativedelta(years=1)
+    return datetime.date.today() + relativedelta(years=1)
 
 
 class Organisation(db.Model):
@@ -79,7 +78,8 @@ class Organisation(db.Model):
     domain = db.Column(db.String(100), nullable=False)
     paid_subscriber = db.Column(db.Boolean)
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
-    expiry = db.Column(db.DateTime(timezone=True), default=one_year_later)
+    # when does this subscription expire?
+    expiry = db.Column(db.Date(), default=one_year_later)
     contact = db.Column(db.String(255))
 
     # premium committee subscriptions
@@ -91,7 +91,7 @@ class Organisation(db.Model):
         return not self.has_expired() and (committee in self.subscriptions)
 
     def has_expired(self):
-        return datetime.datetime.now(tz=tz.tzlocal()) > self.expiry
+        return self.expiry and (datetime.date.today() > self.expiry)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -125,6 +125,8 @@ class User(db.Model, UserMixin):
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
     subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
+    # when does this subscription expire?
+    expiry = db.Column(db.Date(), default=one_year_later)
 
     organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
@@ -140,6 +142,9 @@ class User(db.Model, UserMixin):
     def __unicode__(self):
         return unicode(self.email)
 
+    def has_expired(self):
+        return self.expiry and (datetime.date.today() > self.expiry)
+
     def subscribed_to_committee(self, committee):
         """ Does this user have an active subscription to `committee`? """
         # admin users have access to everything
@@ -150,8 +155,11 @@ class User(db.Model, UserMixin):
         if not self.active:
             return False
 
+        # expired users should go away
+        if self.has_expired():
+            return False
+
         # first see if this user has a subscription
-        # TODO: handle expired subscriptions
         if committee in self.subscriptions:
             return True
 
@@ -165,12 +173,10 @@ class User(db.Model, UserMixin):
         tmp.pop('current_login_ip')
         tmp.pop('last_login_at')
         tmp.pop('current_login_at')
-        if tmp.get('confirmed_at'):
-            tmp['confirmed'] = True
-        else:
-            tmp['confirmed'] = False
-        tmp.pop('confirmed_at')
+        tmp['confirmed'] = tmp.pop('confirmed_at') is not None
         tmp.pop('login_count')
+        tmp['has_expired'] = self.has_expired()
+
         # send committee alerts back as a dict
         alerts_dict = {}
         if tmp.get('committee_alerts'):

@@ -59,6 +59,8 @@
     {% endif %}
 
     {% if bill.events %}
+      <h2>Bill history</h2>
+
       <ul>
         {% for event in bill.events %}
           {% if event.type == "committee-meeting" %}

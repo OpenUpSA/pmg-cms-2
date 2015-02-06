@@ -300,12 +300,12 @@ def index():
 
 @app.route('/bills/')
 def bills_portal():
-    return render_template('bill_index.html')
+    return render_template('bills/index.html')
 
 
 @app.route('/bills/explained/')
 def bills_explained():
-    return render_template('bills_explained.html')
+    return render_template('bills/explained.html')
 
 
 @app.route('/bills/<any(all, draft, current, pmb):bill_type>/')
@@ -364,7 +364,7 @@ def bill(bill_id):
 
     logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    return render_template('bill_detail.html', bill=bill,
+    return render_template('bills/detail.html', bill=bill,
                            admin_edit_url=admin_url('bill', bill_id))
 
 

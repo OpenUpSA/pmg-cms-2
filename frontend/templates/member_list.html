@@ -1,22 +1,31 @@
 {% extends "base.html" %}
 
 {% block page %}
-<h1><i class="fa fa-icon fa-user"></i> Members of Parliament</h1>
+<div class="row">
+  <div class="col-sm-6">
+    <h1><i class="fa fa-icon fa-user"></i> Members of Parliament</h1>
 
-<form id="member-search-form" action="/search" method="GET">
-  <input type="hidden" name="filter[type]" value="member">
+    <form id="member-search-form" action="/search" method="GET">
+      <input type="hidden" name="filter[type]" value="member">
 
-  <div class="row">
-    <div class="col-sm-6">
       <div class="input-group">
         <input type="text" name="q" placeholder="Search for members" class="form-control" autocomplete="off">
         <span class="input-group-btn">
           <button type="submit" class="btn btn-success">Search</button>
         </span>
       </div>
+    </form>
+  </div>
+
+  <div class="col-sm-3 col-sm-offset-3">
+    <div class="pa-button">
+      <a href="http://www.pa.org.za">
+        <img src="/static/resources/images/pa-logo.png" alt="People's Assembly">
+        <div>Explore parliamentary members, their declared interests and more at PA.org.za.</div>
+      </a>
     </div>
   </div>
-</form>
+</div>
 
 <div class="row">
 {% for house, members in members_by_house|dictsort %}

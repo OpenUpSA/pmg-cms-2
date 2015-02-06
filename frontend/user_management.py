@@ -53,7 +53,7 @@ def user_management_api(endpoint, data=None):
         flash(u'Error connecting to backend service.', 'danger')
 
 
-@app.route('/login/', methods=['GET', 'POST'])
+@app.route('/user/login/', methods=['GET', 'POST'])
 def login():
     """View function for login view"""
 
@@ -84,7 +84,7 @@ def login():
     return render_template('user_management/login_user.html', form=form)
 
 
-@app.route('/logout/', methods=['GET', ])
+@app.route('/user/logout/', methods=['GET', ])
 def logout():
     """View function which handles a logout request."""
 
@@ -97,7 +97,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/register/', methods=['GET', 'POST'])
+@app.route('/user/register/', methods=['GET', 'POST'])
 def register():
     """View function which handles a registration request."""
 
@@ -126,7 +126,7 @@ def register():
     return render_template('user_management/register_user.html', form=form)
 
 
-@app.route('/send-confirmation/', methods=['GET', 'POST'])
+@app.route('/user/send-confirmation/', methods=['GET', 'POST'])
 def send_confirmation():
     """View function which sends confirmation instructions."""
 
@@ -151,7 +151,7 @@ def send_confirmation():
         send_confirmation_form=form)
 
 
-@app.route('/forgot-password/', methods=['GET', 'POST'])
+@app.route('/user/forgot-password/', methods=['GET', 'POST'])
 def forgot_password():
     """View function that handles a forgotten password request."""
 
@@ -205,7 +205,7 @@ def reset_password(token):
         reset_password_token=token)
 
 
-@app.route('/change-password/', methods=['GET', 'POST'])
+@app.route('/user/change-password/', methods=['GET', 'POST'])
 def change_password():
     """View function which handles a change password request."""
 
@@ -254,7 +254,7 @@ def update_current_user():
     return
 
 
-@app.route('/email_alerts/', methods=['GET', 'POST'])
+@app.route('/user/email-alerts/', methods=['GET', 'POST'])
 def email_alerts():
     """
     Allow a user to manage their notification alerts.

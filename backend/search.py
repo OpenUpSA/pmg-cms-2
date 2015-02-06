@@ -289,7 +289,7 @@ class Transforms:
         "question_reply": {
             "id": "id",
             "title": "title",
-            "fulltext": "content_body",
+            "fulltext": "body",
             "date": "start_date",
             "committee_name": ["committee", "name"],
             "committee_id": ["committee", "id"],
@@ -297,7 +297,7 @@ class Transforms:
         "tabled_committee_report": {
             "id": "id",
             "title": "title",
-            "fulltext": "content_body",
+            "fulltext": "body",
             "date": "start_date",
             "committee_name": ["committee", "name"],
             "committee_id": ["committee", "id"],
@@ -305,7 +305,7 @@ class Transforms:
         "call_for_comment": {
             "id": "id",
             "title": "title",
-            "fulltext": "content_body",
+            "fulltext": "body",
             "date": "start_date",
             "committee_name": ["committee", "name"],
             "committee_id": ["committee", "id"],
@@ -323,7 +323,7 @@ class Transforms:
         "daily_schedule": {
             "id": "id",
             "title": "title",
-            "fulltext": "content_body",
+            "fulltext": "body",
             "date": "start_date",
         },
     }

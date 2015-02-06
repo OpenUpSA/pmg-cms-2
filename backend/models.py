@@ -488,7 +488,23 @@ event_bills = db.Table(
         db.ForeignKey('bill.id')))
 
 
-class CommitteeMeeting(Event):
+class WithBodyContent(object):
+    """ Mixin that will find the first associated Content object
+    that has a body or summary attribute, and delegate to it. """
+    @property
+    def body(self):
+        for c in self.content:
+            if c.body:
+                return c.body
+
+    @property
+    def summary(self):
+        for c in self.content:
+            if c.summary:
+                return c.summary
+
+
+class CommitteeMeeting(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
@@ -514,13 +530,13 @@ class CommitteeMeeting(Event):
         return tmp
 
 
-class Hansard(Event):
+class Hansard(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'plenary'
     }
 
 
-class Briefing(Event):
+class Briefing(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }

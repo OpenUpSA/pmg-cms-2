@@ -255,8 +255,8 @@ class Transforms:
         "committee_meeting": {
             "id": "id",
             "title": "title",
-            "description": ["content", 0, "summary"],
-            "fulltext": ["content", 0, "body"],
+            "description": "summary",
+            "fulltext": "body",
             "date": "date",
             "committee_name": ["committee", "name"],
             "committee_id": ["committee", "id"],
@@ -274,14 +274,14 @@ class Transforms:
         "hansard": {
             "id": "id",
             "title": "title",
-            "fulltext": ["content", 0, "body"],
+            "fulltext": "body",
             "date": "date",
         },
         "briefing": {
             "id": "id",
             "title": "title",
-            "description": ["content", 0, "summary"],
-            "fulltext": ["content", 0, "body"],
+            "description": "summary",
+            "fulltext": "body",
             "date": "date",
             "committee_name": ["committee", "name"],
             "committee_id": ["committee", "id"],

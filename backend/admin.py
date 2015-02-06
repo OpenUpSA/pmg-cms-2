@@ -8,13 +8,15 @@ from dateutil.relativedelta import relativedelta
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.contrib.sqla.form import InlineModelConverter
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
+from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter
+from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
 from wtforms import fields
 from sqlalchemy import func
+from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
 from s3_upload import S3Bucket
 from xlsx import XLSXBuilder
@@ -181,6 +183,38 @@ class MyModelView(RBACMixin, ModelView):
         return None
 
 
+class HasExpiredFilter(BaseSQLAFilter):
+    def __init__(self, column, name):
+        options = (
+                ('expired', 'Expired'),
+                ('unexpired', 'Not expired'),
+                ('1month', 'Expiring in 1 month'),
+            )
+        super(HasExpiredFilter, self).__init__(column, name, options=options)
+
+    def apply(self, query, value):
+        if value == 'expired':
+            return query\
+                    .filter(self.column != None)\
+                    .filter(self.column < datetime.date.today())
+
+        elif value == 'unexpired':
+            return query.filter(or_(
+                        self.column == None,
+                        self.column >= datetime.date.today()))
+
+        elif value == '1month':
+            return query\
+                    .filter(self.column >= datetime.date.today())\
+                    .filter(self.column <= datetime.date.today() + relativedelta(months=1))
+
+        else:
+            return query
+
+    def operation(self):
+        return 'is'
+
+
 class UserView(MyModelView):
     required_roles = ['user-admin']
 
@@ -192,6 +226,7 @@ class UserView(MyModelView):
         'confirmed_at',
         'current_login_at',
         'login_count',
+        'expiry',
         ]
     column_labels = {
         'current_login_at': "Last seen",
@@ -205,6 +240,7 @@ class UserView(MyModelView):
         }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
+    column_filters = [HasExpiredFilter(User.expiry, 'Subscription expiry')]
     form_excluded_columns = [
         'password',
         'confirmed_at',
@@ -217,9 +253,16 @@ class UserView(MyModelView):
 
 
 class OrganisationView(MyModelView):
-
     can_create = True
+
+    column_list = [
+        'name',
+        'domain',
+        'paid_subscriber',
+        'expiry',
+        ]
     column_searchable_list = ('domain', 'name')
+    column_filters = [HasExpiredFilter(Organisation.expiry, 'Subscription expiry')]
     form_ajax_refs = {
         'users': {
             'fields': ('name', 'email'),

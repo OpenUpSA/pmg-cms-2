@@ -45,6 +45,7 @@ assets.register('js', Bundle(
     'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
     'chosen/chosen.jquery.js',
     'resources/javascript/users.js',
+    'resources/javascript/members.js',
     'resources/javascript/pmg.js',
     output='javascript/app.%(version)s.js'))
 

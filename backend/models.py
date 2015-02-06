@@ -882,6 +882,11 @@ class Content(db.Model):
     event = db.relationship('Event', backref=backref('content', lazy='joined'))
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True)
     file = db.relationship('File', lazy='joined')
+
+    # optional HTML summary and body of this content
+    summary = db.Column(db.Text())
+    body = db.Column(db.Text())
+
     rich_text_id = db.Column(db.Integer, db.ForeignKey('rich_text.id'), index=True)
     rich_text = db.relationship('RichText', lazy='joined')
 
@@ -898,10 +903,6 @@ class Content(db.Model):
                 tmp[key] = val
             tmp.pop('file')
         if tmp.get('rich_text'):
-            for key, val in tmp['rich_text'].iteritems():
-                if tmp.get(key):
-                    pass  # don't overwrite parent model attributes from the child model
-                tmp[key] = val
             tmp.pop('rich_text')
         return tmp
 

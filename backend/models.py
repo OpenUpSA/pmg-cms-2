@@ -375,7 +375,7 @@ class File(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
-    file_mime = db.Column(db.String(50))
+    file_mime = db.Column(db.String(100))
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
     duration = db.Column(db.Integer, default=0)

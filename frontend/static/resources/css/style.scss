@@ -256,3 +256,30 @@ footer {
 	max-width: 100px;
 	max-height: 150px;
 }
+
+// member listing page
+ul.member-list {
+	> li {
+		display: table;
+		width: 100%;
+		border-bottom: 1px solid #ccc;
+		padding: 5px;
+
+		.pic {
+			float: left;
+			width: 50px;
+			height: 75px;
+			margin-right: 5px;
+			background-color: #ccc;
+		}
+
+		.name {
+			margin-top: 0px;
+		}
+
+		.party,
+		.province {
+			display: block;
+		}
+	}
+}

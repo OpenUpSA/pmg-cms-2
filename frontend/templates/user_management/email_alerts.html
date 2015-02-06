@@ -27,9 +27,14 @@
 {% endmacro %}
 
 {% block page %}
-  <h1>Free Email Alerts</h1>
+<h1>Free Email Alerts</h1>
 
-  <p class="lead">Free email alerts are available for any Parliamentary Committee that PMG monitors.</p>
+<p class="lead">Free email alerts are available for any Parliamentary Committee that PMG monitors.</p>
+
+{% if not user %}
+  <p>To receive free alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
+
+{% else %}
 
   <p>Please choose which email alerts you wish to receive from us.</p>
 
@@ -145,5 +150,7 @@
       </div>
     </div>
   </form>
+
+{% endif %}
 
 {% endblock page %}

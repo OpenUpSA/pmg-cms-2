@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from dateutil import tz
 import logging
 
-from sqlalchemy import desc, Index, func
+from sqlalchemy import desc, Index, func, sql
 from sqlalchemy.orm import backref
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
@@ -567,6 +567,8 @@ class Member(db.Model):
     province = db.relationship(Province)
     start_date = db.Column(db.Date())
     pa_link = db.Column(db.String(255))
+    # is this person *currently* an MP?
+    current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
 
     def __unicode__(self):
         return u'%s' % self.name

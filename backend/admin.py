@@ -580,11 +580,15 @@ class MemberView(MyModelView):
         'party',
         'province',
         'memberships',
-        'bio',
+        'current',
         'pa_link',
         'profile_pic_url',
     )
-    column_labels = {'memberships': 'Committees', }
+    column_labels = {
+        'memberships': 'Committees',
+        'current': 'Currently active',
+        'pa_link': 'PA Link',
+        }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -600,8 +604,10 @@ class MemberView(MyModelView):
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
         )
+    column_filters = ['current', 'house.name', 'party.name', 'province.name']
     form_columns = (
         'name',
+        'current',
         'house',
         'party',
         'province',

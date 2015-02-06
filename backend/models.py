@@ -573,8 +573,13 @@ class Member(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
+
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
+
+        if tmp['pa_link']:
+            tmp['pa_url'] = 'http://pa.org.za' + tmp['pa_link']
+
         return tmp
 
 

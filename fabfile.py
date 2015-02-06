@@ -18,9 +18,8 @@ def setup_db():
 
 def index_search():
     with virtualenv():
-        with shell_env(FLASK_ENV='production'):
-            with cd('/var/www/pmg-cms'):
-                run('source production-env.sh; python backend/search.py --reindex')
+        with cd('/var/www/pmg-cms'):
+            run('source production-env.sh; python backend/search.py --reindex all')
 
 
 def restart():

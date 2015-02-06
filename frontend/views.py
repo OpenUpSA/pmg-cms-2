@@ -1,17 +1,20 @@
 import logging
-from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
-from werkzeug.exceptions import HTTPException
-from frontend import app
-import requests
 from datetime import datetime, date
 import dateutil.parser
 import urllib
 import math
 import random
-import arrow
 import re
 import json
 import os.path
+
+from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
+from werkzeug.exceptions import HTTPException
+import requests
+import arrow
+
+from frontend import app
+from frontend.bills import bill_history
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -358,13 +361,9 @@ def bills(bill_type=None, page=0):
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
-    """
-    With Bills, we try to send them to BillTracker if it exists. Else we serve the PDF. If that doesn't work, we Kill Bill
-    """
-
-    logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    return render_template('bills/detail.html', bill=bill,
+    history = bill_history(bill)
+    return render_template('bills/detail.html', bill=bill, history=history,
                            admin_edit_url=admin_url('bill', bill_id))
 
 

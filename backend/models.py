@@ -91,7 +91,7 @@ class Organisation(db.Model):
         return not self.has_expired() and (committee in self.subscriptions)
 
     def has_expired(self):
-        return self.expiry and (datetime.date.today() > self.expiry)
+        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
     def __unicode__(self):
         return unicode(self.name)
@@ -143,7 +143,7 @@ class User(db.Model, UserMixin):
         return unicode(self.email)
 
     def has_expired(self):
-        return self.expiry and (datetime.date.today() > self.expiry)
+        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
     def subscribed_to_committee(self, committee):
         """ Does this user have an active subscription to `committee`? """

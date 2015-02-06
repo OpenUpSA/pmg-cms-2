@@ -492,13 +492,13 @@ class WithBodyContent(object):
     """ Mixin that will find the first associated Content object
     that has a body or summary attribute, and delegate to it. """
     @property
-    def body(self):
+    def content_body(self):
         for c in self.content:
             if c.body:
                 return c.body
 
     @property
-    def summary(self):
+    def content_summary(self):
         for c in self.content:
             if c.summary:
                 return c.summary

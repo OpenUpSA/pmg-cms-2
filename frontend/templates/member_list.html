@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block page %}
+<h1><i class="fa fa-icon fa-user"></i> Members of Parliament</h1>
+
+<form id="member-search-form" action="/search" method="GET">
+  <input type="hidden" name="filter[type]" value="member">
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="input-group">
+        <input type="text" name="q" placeholder="Search for members" class="form-control" autocomplete="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn-success">Search</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div class="row">
+{% for house, members in members_by_house|dictsort %}
+
+  <div class="col-md-{{ colsize }}">
+    <h2>{{ house }}</h2>
+
+    <ul class="list-unstyled member-list">
+      {% for member in members %}
+        <li>
+          <div class="pic">
+            {% if member.profile_pic_url %}
+              <a href="{{ member|member_url }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="{{ member.name }}" ></a>
+            {% endif %}
+          </div>
+
+          <h3 class="name"><a href="{{ member|member_url }}">{{ member.name }}</a></h3>
+
+          {% if member.party %}
+          <span class="party">{{ member.party.name }}</span>
+          {% endif %}
+
+          {% if member.province %}
+          <span class="province">{{ member.province.name }}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endfor %}
+</div>
+
+{% endblock page %}

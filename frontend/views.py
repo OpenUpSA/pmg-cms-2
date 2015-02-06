@@ -649,28 +649,20 @@ def gazette(gazette_id):
 
 
 @app.route('/members/')
-@app.route('/members/<int:page>/')
 def members(page=0):
     """
     Page through all available members.
     """
+    members = load_from_api('member', return_everything=True, page=page)['results']
 
-    logger.debug("members page called")
-    members_list = load_from_api('member', page=page)
-    count = members_list["count"]
-    per_page = app.config['RESULTS_PER_PAGE']
-    num_pages = int(math.ceil(float(count) / float(per_page)))
-    members = members_list['results']
-    url = "/members"
-    return render_template(
-        'list.html',
-        results=members,
-        num_pages=num_pages,
-        page=page,
-        url=url,
-        icon="user",
-        content_type="member",
-        title="Parliamentary Members")
+    # partition by house
+    members_by_house = {}
+    for member in members:
+        if member.get('house'):
+            members_by_house.setdefault(member['house']['name'], []).append(member)
+    colsize = 12 / len(members_by_house)
+
+    return render_template('member_list.html', members_by_house=members_by_house, colsize=colsize)
 
 
 @app.route('/member/<int:member_id>')

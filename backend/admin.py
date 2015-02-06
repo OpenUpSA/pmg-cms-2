@@ -237,10 +237,6 @@ class OrganisationView(MyModelView):
         }
     column_labels = {'subscriptions': "Premium subscriptions"}
 
-    def on_model_change(self, form, model, is_created):
-        # make sure the new date is timezone aware
-        model.expiry = model.expiry.replace(tzinfo=tz.tzlocal())
-
 
 # This InlineModelFormList will use our custom widget, when creating a
 # list of forms

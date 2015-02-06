@@ -410,6 +410,14 @@ bill_event_table = db.Table(
 
 
 class Event(db.Model):
+    """ An event is a generic model which represents an event that took
+    place at a certain time and may have rich content associated with it.
+
+    An event can have an arbitrary amount of content associated with it
+    through associations with the Content model. In turn, a Content
+    instance can have multiple files attached to it, and optional
+    body and summary text.
+    """
 
     __tablename__ = "event"
     __mapper_args__ = {

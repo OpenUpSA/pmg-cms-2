@@ -175,7 +175,7 @@ def server_error(error):
 
 
 def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, params=None):
-    params = params or {}
+    params = {} if (params is None) else params
 
     query_str = resource_name + "/"
     if resource_id:
@@ -400,18 +400,17 @@ def committee_meetings(page=0):
     """
     Page through all available committee meetings.
     """
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
-    filters = {}
+    committees = load_from_api('committee', return_everything=True)['results']
+    filters = {'committee': None}
     params = {}
-    filters["committee"] = params[
-        'filter[committee_id]'] = request.args.get('filter[committee]')
-    committee_meetings_list = load_from_api(
-        'committee-meeting',
-        page=page,
-        params=params)
+
+    if request.args.get('filter[committee]'):
+        filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
+
+    committee_meetings_list = load_from_api('committee-meeting', page=page, params=params)
     committee_meetings = committee_meetings_list['results']
     count = committee_meetings_list["count"]
+
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/committee-meetings"

@@ -13,8 +13,8 @@
   {% set party = result.party %}
   {% set pic = result.profile_pic_url %}
 {% endif %}
-{% if result.pa_link %}
-	{% set link = "http://pa.org.za" + result.pa_link %}
+{% if result.pa_url %}
+	{% set link = result.pa_url %}
 {% else %}
 	{% set link = "/member/" + id|string %}
 {% endif %}

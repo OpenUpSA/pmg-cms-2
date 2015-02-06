@@ -5,7 +5,7 @@ SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.org.za/"
 FRONTEND_HOST = "https://new.pmg.org.za/"
 SESSION_COOKIE_DOMAIN = "pmg.org.za"
-RESULTS_PER_PAGE = 20
+RESULTS_PER_PAGE = 50
 
 ES_SERVER = "http://ec2-54-154-176-3.eu-west-1.compute.amazonaws.com:9200"
 SEARCH_REINDEX_CHANGES = True # reindex changes to models

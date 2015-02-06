@@ -39,7 +39,7 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
 def _jinja2_filter_member_url(member):
     if 'pa_url' in member:
         return member['pa_url']
-    return url_for('member', id=member['id'])
+    return url_for('member', member_id=member['id'])
 
 
 @app.template_filter('search_snippet')

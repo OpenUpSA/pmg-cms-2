@@ -129,34 +129,35 @@ def api_resources():
     current_time = datetime.datetime.utcnow()
     return {
         "committee": db.session.query(Committee)
-        .order_by(Committee.house_id, Committee.name),
+            .order_by(Committee.house_id, Committee.name),
         "committee-meeting": db.session.query(CommitteeMeeting)
-        .order_by(desc(CommitteeMeeting.date)),
+            .order_by(desc(CommitteeMeeting.date)),
         "bill": db.session.query(Bill)
-        .order_by(desc(Bill.year)),
+            .order_by(desc(Bill.year)),
         "member": db.session.query(Member)
-        .order_by(Member.name),
+            .filter(Member.current == True)
+            .order_by(Member.name),
         "hansard": db.session.query(Hansard)
-        .order_by(desc(Hansard.date)),
+            .order_by(desc(Hansard.date)),
         "briefing": db.session.query(Briefing)
-        .order_by(desc(Briefing.date)),
+            .order_by(desc(Briefing.date)),
         "question_reply": db.session.query(QuestionReply)
-        .order_by(desc(QuestionReply.start_date)),
+            .order_by(desc(QuestionReply.start_date)),
         "schedule": db.session.query(Schedule)
-        .order_by(desc(Schedule.meeting_date))
-        .filter(Schedule.meeting_date >= current_time),
+            .order_by(desc(Schedule.meeting_date))
+            .filter(Schedule.meeting_date >= current_time),
         "tabled_committee_report": db.session.query(TabledCommitteeReport)
-        .order_by(desc(TabledCommitteeReport.start_date)),
+            .order_by(desc(TabledCommitteeReport.start_date)),
         "call_for_comment": db.session.query(CallForComment)
-        .order_by(desc(CallForComment.start_date)),
+            .order_by(desc(CallForComment.start_date)),
         "policy_document": db.session.query(PolicyDocument)
-        .order_by(desc(PolicyDocument.start_date)),
+            .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
-        .order_by(desc(Gazette.start_date)),
+            .order_by(desc(Gazette.start_date)),
         "featured": db.session.query(Featured)
-        .order_by(desc(Featured.start_date)),
+            .order_by(desc(Featured.start_date)),
         "daily_schedule": db.session.query(DailySchedule)
-        .order_by(desc(DailySchedule.start_date)),
+            .order_by(desc(DailySchedule.start_date)),
     }
 
 # -------------------------------------------------------------------

@@ -457,23 +457,18 @@ class CommitteeMeetingView(EventView):
         event_obj = Event.query.get(id)
         committee_meeting_report = Content.query.filter_by(event=event_obj).filter_by(type="committee-meeting-report").one()
 
-        form.summary.data = committee_meeting_report.rich_text.summary
-        form.body.data = committee_meeting_report.rich_text.body
-        return
+        form.summary.data = committee_meeting_report.summary
+        form.body.data = committee_meeting_report.body
 
     def on_model_change(self, form, model, is_created):
         # create / update related CommitteeMeetingReport
         if is_created:
-            rich_text_obj = RichText()
-            db.session.add(rich_text_obj)
-            committee_meeting_report = Content(event=model, type="committee-meeting-report", rich_text=rich_text_obj)
+            report = Content(event=model, type="committee-meeting-report")
         else:
-            committee_meeting_report = Content.query.filter_by(event=model).filter_by(type="committee-meeting-report").one()
-            rich_text_obj = committee_meeting_report.rich_text
-        rich_text_obj.summary = form.summary.data
-        rich_text_obj.body = form.body.data
-        db.session.add(committee_meeting_report)
-        db.session.add(rich_text_obj)
+            report = Content.query.filter_by(event=model).filter_by(type="committee-meeting-report").one()
+        report.summary = form.summary.data
+        report.body = form.body.data
+        db.session.add(report)
         return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
 
 
@@ -520,22 +515,17 @@ class HansardView(EventView):
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
         hansard = Content.query.filter_by(event=event_obj).filter_by(type="hansard").one()
-        if hansard.rich_text:
-            form.body.data = hansard.rich_text.body
+        form.body.data = hansard.body
         return
 
     def on_model_change(self, form, model, is_created):
         # create / update related Hansard content record
         if is_created:
-            rich_text_obj = RichText()
-            db.session.add(rich_text_obj)
-            hansard = Content(event=model, type="hansard", rich_text=rich_text_obj)
+            hansard = Content(event=model, type="hansard")
         else:
             hansard = Content.query.filter_by(event=model).filter_by(type="hansard").one()
-            rich_text_obj = hansard.rich_text
-        rich_text_obj.body = form.body.data
+        hansard.body = form.body.data
         db.session.add(hansard)
-        db.session.add(rich_text_obj)
         return super(HansardView, self).on_model_change(form, model, is_created)
 
 
@@ -588,24 +578,18 @@ class BriefingView(EventView):
     def on_form_prefill(self, form, id):
         event_obj = Event.query.get(id)
         briefing = Content.query.filter_by(event=event_obj).filter_by(type="briefing").one()
-        if briefing.rich_text:
-            form.summary.data = briefing.rich_text.summary
-            form.body.data = briefing.rich_text.body
-        return
+        form.summary.data = briefing.summary
+        form.body.data = briefing.body
 
     def on_model_change(self, form, model, is_created):
         # create / update related briefing content record
         if is_created:
-            rich_text_obj = RichText()
-            db.session.add(rich_text_obj)
-            briefing = Content(event=model, type="briefing", rich_text=rich_text_obj)
+            briefing = Content(event=model, type="briefing")
         else:
             briefing = Content.query.filter_by(event=model).filter_by(type="briefing").one()
-            rich_text_obj = briefing.rich_text
-        rich_text_obj.summary = form.summary.data
-        rich_text_obj.body = form.body.data
+        briefing.summary = form.summary.data
+        briefing.body = form.body.data
         db.session.add(briefing)
-        db.session.add(rich_text_obj)
         return super(BriefingView, self).on_model_change(form, model, is_created)
 
 

@@ -26,7 +26,6 @@ def index_search():
 def restart():
     sudo("supervisorctl restart pmg_cms")
     sudo("supervisorctl restart pmg_frontend")
-    sudo('service nginx restart')
     return
 
 

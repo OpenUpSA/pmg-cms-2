@@ -1,5 +1,5 @@
 <select name="filter[committee]" id="" class="chosen  space-bottom-sm" onchange="form.submit()" >
-	<option value="None" {% if (filters.committee == None) %} selected="selected" {% endif %}>All Committees</option>
+	<option value="" {% if (filters.committee == None) %} selected="selected" {% endif %}>All Committees</option>
 	<optgroup label="National Assembly">
 	{% for committee in committees %}
 		{% if committee.house_id == 3 %}

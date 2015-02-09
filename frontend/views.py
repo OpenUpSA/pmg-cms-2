@@ -210,9 +210,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
             next_response_json = out
             i = 0
             while next_response_json.get('next') and i < 1000:
-                next_response = requests.get(
-                    next_response_json.get('next'),
-                    headers=headers)
+                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params)
                 next_response_json = next_response.json()
                 out['results'] += next_response_json['results']
                 i += 1

@@ -14,8 +14,10 @@
     {% endif %}
   </h1>
 
+  <p class="lead text-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+
   <div class="justify-p">
-    {% if bill.status %}
+    {% if bill.status and bill.status.name != 'act-commenced' %}
       <div class="bill-status-container">
         <p id="status-text" class="lead">
           {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
@@ -51,7 +53,6 @@
       </div>
     {% endif %}
 
-    <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
     <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
     {% if bill.date_of_introduction %}
@@ -75,7 +76,7 @@
               <div class="stage">
                 <h4>
                   {% if agent.url %}
-                  <a href="{{ agent.url }}" target="_blank">{{ agent.name }}</a>
+                  <a href="{{ agent.url }}">{{ agent.name }}</a>
                   {% else %}
                   {{ agent.name }}
                   {% endif %}

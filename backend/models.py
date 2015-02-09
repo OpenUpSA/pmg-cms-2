@@ -610,7 +610,10 @@ class Member(db.Model):
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
 
         if tmp['pa_link']:
-            tmp['pa_url'] = 'http://pa.org.za' + tmp['pa_link']
+            link = tmp['pa_link']
+            if not link.startswith('http://'):
+                link = 'http://www.pa.org.za' + link
+            tmp['pa_url'] = link
 
         return tmp
 

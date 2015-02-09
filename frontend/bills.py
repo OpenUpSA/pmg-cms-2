@@ -2,6 +2,8 @@ from itertools import groupby
 
 from flask import url_for
 
+MIN_YEAR = 2006
+
 
 ICONS = {
     "member": "bill-introduced.png",

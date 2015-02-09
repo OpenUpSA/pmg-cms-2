@@ -23,8 +23,8 @@ def index_search():
 
 
 def restart():
-    sudo("supervisorctl restart pmg_cms")
-    sudo("supervisorctl restart pmg_frontend")
+    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-cms.pid` || supervisorctl restart pmg_cms")
+    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-frontend.pid` || supervisorctl restart pmg_frontend")
     return
 
 

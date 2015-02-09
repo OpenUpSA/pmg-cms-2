@@ -15,6 +15,7 @@ PyYAML==3.11
 SQLAlchemy==0.8.2
 WTForms==1.0.5
 Werkzeug==0.9.6
+XlsxWriter==0.6.6
 alembic==0.7.4
 argparse==1.2.1
 arrow==0.4.4
@@ -25,7 +26,7 @@ cssselect==0.9.1
 docopt==0.4.0
 ecdsa==0.11
 enum34==1.0.4
-gunicorn==19.1.1
+gunicorn==19.2.1
 inflection==0.2.1
 itsdangerous==0.24
 lxml==3.4.1
@@ -45,4 +46,3 @@ simplejson==3.6.5
 six==1.8.0
 webassets==0.10.1
 wsgiref==0.1.2
-xlsxwriter

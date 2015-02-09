@@ -10,7 +10,7 @@ from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.contrib.sqla.form import InlineModelConverter
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
-from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter
+from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
@@ -189,6 +189,9 @@ class HasExpiredFilter(BaseSQLAFilter):
                 ('expired', 'Expired'),
                 ('unexpired', 'Not expired'),
                 ('1month', 'Expiring in 1 month'),
+                ('3month', 'Expiring in 3 months'),
+                ('6month', 'Expiring in 6 months'),
+                ('1year', 'Expiring in 1 year'),
             )
         super(HasExpiredFilter, self).__init__(column, name, options=options)
 
@@ -207,6 +210,21 @@ class HasExpiredFilter(BaseSQLAFilter):
             return query\
                     .filter(self.column >= datetime.date.today())\
                     .filter(self.column <= datetime.date.today() + relativedelta(months=1))
+
+        elif value == '3month':
+            return query\
+                    .filter(self.column >= datetime.date.today())\
+                    .filter(self.column <= datetime.date.today() + relativedelta(months=3))
+
+        elif value == '6month':
+            return query\
+                    .filter(self.column >= datetime.date.today())\
+                    .filter(self.column <= datetime.date.today() + relativedelta(months=6))
+
+        elif value == '1year':
+            return query\
+                    .filter(self.column >= datetime.date.today())\
+                    .filter(self.column <= datetime.date.today() + relativedelta(years=1))
 
         else:
             return query
@@ -240,7 +258,10 @@ class UserView(MyModelView):
         }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
-    column_filters = [HasExpiredFilter(User.expiry, 'Subscription expiry')]
+    column_filters = [
+            HasExpiredFilter(User.expiry, 'Subscription expiry'),
+            DateBetweenFilter(User.expiry, 'Expiry date'),
+            ]
     form_excluded_columns = [
         'password',
         'confirmed_at',
@@ -262,7 +283,10 @@ class OrganisationView(MyModelView):
         'expiry',
         ]
     column_searchable_list = ('domain', 'name')
-    column_filters = [HasExpiredFilter(Organisation.expiry, 'Subscription expiry')]
+    column_filters = [
+            HasExpiredFilter(Organisation.expiry, 'Subscription expiry'),
+            DateBetweenFilter(Organisation.expiry, 'Expiry date'),
+            ]
     form_ajax_refs = {
         'users': {
             'fields': ('name', 'email'),

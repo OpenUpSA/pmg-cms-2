@@ -1,8 +1,8 @@
 <h4>Premium Committees</h4>
 <div class="row">
-  {% for batch in premium_committees|batch(3) %}
-  <div class="col-sm-4">
-    <ul class="list-unstyled">
+  {% for batch in premium_committees|slice(2) %}
+  <div class="col-sm-6">
+    <ul>
       {% for committee in batch %}
       <li>{{ committee.name }}</li>
       {% endfor %}

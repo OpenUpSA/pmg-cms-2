@@ -23,8 +23,8 @@ def index_search():
 
 
 def restart():
-    sudo("supervisorctl restart pmg_cms")
-    sudo("supervisorctl restart pmg_frontend")
+    sudo("supervisorctl pid pmg_cms | xargs kill -HUP")
+    sudo("supervisorctl pid pmg_frontend | xargs kill -HUP")
     return
 
 

@@ -873,6 +873,19 @@ class BillsView(MyModelView):
         'type',
         'status',
     )
+    form_columns = (
+        'year',
+        'number',
+        'title',
+        'type',
+        'introduced_by',
+        'date_of_introduction',
+        'place_of_introduction',
+        'status',
+        'date_of_assent',
+        'effective_date',
+        'act_name',
+    )
     column_default_sort = ('year', True)
     column_searchable_list = ('title',)
 

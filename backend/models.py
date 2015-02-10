@@ -332,7 +332,7 @@ class BillStatus(db.Model):
         return cls.query.filter(cls.name.in_(["na", "ncop", "president"])).all()
 
     def __unicode__(self):
-        return unicode(self.name)
+        return u'%s (%s)' % (self.description, self.name)
 
 
 class Bill(db.Model):

@@ -649,7 +649,7 @@ class Membership(db.Model):
 
     type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
     type = db.relationship(MembershipType, lazy='joined')
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False)
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
     committee = db.relationship(
         Committee,
         backref="memberships",

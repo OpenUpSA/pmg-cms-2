@@ -630,7 +630,7 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
-    memberships = db.relationship('Membership', backref="committee", lazy='joined', cascade='all, delete-orphan', passive_deletes=True)
+    memberships = db.relationship('Membership', backref="committee", cascade='all, delete-orphan', passive_deletes=True)
 
     @classmethod
     def premium_for_select(cls):

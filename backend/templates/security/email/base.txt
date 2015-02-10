@@ -1,0 +1,6 @@
+Hello {{ user.name or user.email }},
+
+{% block content %}
+{% endblock %}
+
+The team at <a href="https://pmg.org.za">PMG.org.za</a>.

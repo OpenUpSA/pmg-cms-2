@@ -1,3 +1,8 @@
-<p>Please confirm your email through the link below:</p>
+{% extends "security/email/base.html" %}
+{% block content %}
+
+<p>Please confirm your email by clicking this link:</p>
 
 <p><a href="{{ confirmation_link }}">Confirm my account</a></p>
+
+{% endblock %}

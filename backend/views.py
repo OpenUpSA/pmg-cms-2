@@ -144,8 +144,9 @@ def api_resources():
         "bill": db.session.query(Bill)
             .order_by(desc(Bill.year)),
         "member": db.session.query(Member)
-            .options(joinedload(Member.house),
-                     joinedload(Member.province))
+            .options(joinedload('house'),
+                     joinedload('province'),
+                     joinedload('memberships.committee'))
             .filter(Member.current == True)
             .order_by(Member.name),
         "hansard": db.session.query(Hansard)

@@ -695,7 +695,7 @@ class QuestionReply(db.Model):
     __tablename__ = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('questions_replies'))
@@ -719,7 +719,7 @@ class TabledCommitteeReport(db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('tabled_committee_reports'))
@@ -750,7 +750,7 @@ class CallForComment(db.Model):
     __tablename__ = "call_for_comment"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('calls_for_comments'))

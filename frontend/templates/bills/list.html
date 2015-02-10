@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('bills_portal') }}">Bills</a></li>
+</ol>
+{% endblock %}
+
+{% block page %}
+<h1>
+  <i class="fa fa-icon fa-file-text-o"></i>
+  {% if bill_type == 'pmb' %}
+  Private Member Bills
+  {% else %}
+  {{ bill_type.capitalize() }}  Bills
+  {% endif %}
+
+  {% if year %}
+  from {{ year }}
+  {% endif %}
+</h1>
+
+<div class="space-bottom">
+  <div class="row">
+    <div class="col-sm-7">
+      <div class="btn-group">
+        {% for i in year_list %}
+        <a href="{{ url }}/year/{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="col-sm-5">
+      <form action="/search">
+        <input type="hidden" name="filter[type]" value="bill">
+        <div class="input-group">
+          <input type="text" name="q" placeholder="Search for bills" class="form-control">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="">
+
+<ul class="list-unstyled">
+  {% for result in results %}
+    <li>
+      {% include 'bill_stub.html' %}
+    </li>
+  {% endfor %}
+</ul>
+
+
+{% if not year %}
+  {% include 'pagination.html' %}
+{% endif %}
+
+{% endblock page %}

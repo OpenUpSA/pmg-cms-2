@@ -865,6 +865,18 @@ class EmailTemplateView(MyModelView):
         }
 
 
+class BillsView(MyModelView):
+    column_list = (
+        'year',
+        'number',
+        'title',
+        'type',
+        'status',
+    )
+    column_default_sort = ('year', True)
+    column_searchable_list = ('title',)
+
+
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
         # make sure the new date is timezone aware
@@ -937,7 +949,7 @@ admin.add_view(
         name="Members",
         endpoint='member'))
 admin.add_view(
-    MyModelView(
+    BillsView(
         Bill,
         db.session,
         name="Bills",

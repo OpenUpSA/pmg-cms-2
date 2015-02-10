@@ -14,8 +14,10 @@
     {% endif %}
   </h1>
 
+  <p class="lead text-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+
   <div class="justify-p">
-    {% if bill.status %}
+    {% if bill.status and bill.status.name != 'act-commenced' %}
       <div class="bill-status-container">
         <p id="status-text" class="lead">
           {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
@@ -51,7 +53,6 @@
       </div>
     {% endif %}
 
-    <p class="lead pull-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
     <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
     {% if bill.date_of_introduction %}
@@ -59,15 +60,53 @@
     {% endif %}
 
     {% if bill.events %}
-      <ul>
-        {% for event in bill.events %}
-          {% if event.type == "committee-meeting" %}
-            <li><a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.date }} - {{ event.title }}</a></li>
-          {% else %}
-            <li>{{ event.date }} - {{ event.title }}</li>
-          {% endif %}
+      <div class="bill-events">
+        <h2>Bill history</h2>
+
+        {% for location in history %}
+        <div class="panel panel-default bill-location">
+          <div class="panel-heading">
+            <h4 class="panel-title">{{ location.name }}</h4>
+          </div>
+          <div class="panel-body">
+
+            {% for agent in location.events %}
+              <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
+
+              <div class="stage">
+                <h4>
+                  {% if agent.url %}
+                  <a href="{{ agent.url }}">{{ agent.name }}</a>
+                  {% else %}
+                  {{ agent.name }}
+                  {% endif %}
+                </h4>
+
+                <ul class="list-unstyled">
+                {% for event in agent.events %}
+                  <li>
+                    <div class="row">
+                      <div class="col-xs-4 event-date">{{ event.date|pretty_date("long") }}</div>
+                      <div class="col-xs-8">
+                        {% if event.type == "committee-meeting" %}
+                        <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
+                        {% else %}
+                        {{ event.title}}
+                        {% endif %}
+                      </div>
+                    </div>
+                  </li>
+                {% endfor %}
+                </ul>
+
+              </div>
+            {% endfor %}
+
+          </div>
+        </div>
         {% endfor %}
-      </ul>
+      </div>
+
     {% else %}
       <p class="lead">So far, no events have been associated with this bill.</p>
     {% endif %}

@@ -1,7 +1,15 @@
-<p>Welcome {{ user.email }}!</p>
+{% extends "security/email/base.html" %}
+{% block content %}
+
+<p>Welcome to PMG and thanks for signing up.</p>
 
 {% if security.confirmable %}
-<p>You can confirm your email through the link below:</p>
-
-<p><a href="{{ confirmation_link }}">Confirm my account</a></p>
+<p>Please click here to <a href="{{ confirmation_link }}">confirm your email address</a>.</p>
 {% endif %}
+
+<ul>
+  <li><a href="https://pmg.org.za/email-alerts/">Sign up for free email alerts</a> to get the daily parliamentary schedule and alerts when committees are updated.</li>
+  <li><a href="https://pmg.org.za/committee-subscriptions/">Manage you subscription</a> for access to the activities of select premium committees.</li>
+<p>
+
+{% endblock %}

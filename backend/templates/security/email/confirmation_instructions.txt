@@ -1,3 +1,7 @@
-Please confirm your email through the link below:
+{% extends "security/email/base.txt" %}
+{% block content %}
+Please confirm your email by clicking this link:
 
 {{ confirmation_link }}
+
+{% endblock %}

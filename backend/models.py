@@ -431,10 +431,7 @@ class Event(db.Model):
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
-    committee_id = db.Column(
-        db.Integer,
-        db.ForeignKey('committee.id'),
-        index=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
     committee = db.relationship(
         'Committee',
         lazy=False,

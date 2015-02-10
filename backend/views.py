@@ -66,11 +66,20 @@ class ApiException(HTTPException):
 def get_filter():
     filters = []
     args = request.args.to_dict()
+
     for key in args:
         if "filter" in key:
             fieldname = re.search("filter\[(.*)\]", key).group(1)
+            value = args[key]
+
             if fieldname:
-                filters.append({fieldname: args[key]})
+                if fieldname.endswith('_id'):
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue
+                filters.append({fieldname: value})
+
     return filters
 
 

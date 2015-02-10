@@ -132,12 +132,11 @@ class User(db.Model, UserMixin):
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
     # premium committee subscriptions, in addition to any that the user's organisation might have
-    subscriptions = db.relationship('Committee', secondary='user_committee')
+    subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
     # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts')
-    roles = db.relationship('Role', secondary='roles_users',
-                            backref=db.backref('users', lazy='dynamic'))
+    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True)
+    roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):
         return unicode(self.email)
@@ -235,11 +234,11 @@ user_committee = db.Table(
     db.Column(
         'user_id',
         db.Integer(),
-        db.ForeignKey('user.id')),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 
 user_committee_alerts = db.Table(
@@ -247,11 +246,11 @@ user_committee_alerts = db.Table(
     db.Column(
         'user_id',
         db.Integer(),
-        db.ForeignKey('user.id')),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 
 # Setup Flask-Security

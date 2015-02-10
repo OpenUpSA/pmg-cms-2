@@ -264,21 +264,20 @@ def email_alerts():
     """
     committees = None
 
-    if g.current_user:
-        if request.method == 'POST':
-            out = {'committee_alerts': [], 'general_alerts': []}
-            general_notifications = ['select-daily-schedule', ]
-            for field_name in request.form.keys():
-                if field_name in general_notifications:
-                    key = "-".join(field_name.split('-')[1::])
-                    out['general_alerts'].append(key)
-                else:
-                    committee_id = int(field_name.split('-')[-1])
-                    out['committee_alerts'].append(committee_id)
-            tmp = send_to_api('update_alerts', json.dumps(out))
-            if tmp:
-                flash("Your notification settings have been updated successfully.", "success")
-                return redirect(url_for('email_alerts'))
+    if g.current_user and request.method == 'POST':
+        out = {'committee_alerts': [], 'general_alerts': []}
+        general_notifications = ['select-daily-schedule', ]
+        for field_name in request.form.keys():
+            if field_name in general_notifications:
+                key = "-".join(field_name.split('-')[1::])
+                out['general_alerts'].append(key)
+            else:
+                committee_id = int(field_name.split('-')[-1])
+                out['committee_alerts'].append(committee_id)
+        tmp = send_to_api('update_alerts', json.dumps(out))
+        if tmp:
+            flash("Your notification settings have been updated successfully.", "success")
+            return redirect(url_for('email_alerts'))
 
     committees = load_from_api('committee', return_everything=True)['results']
     return render_template('user_management/email_alerts.html', committees=committees)

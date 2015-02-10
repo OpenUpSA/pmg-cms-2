@@ -83,7 +83,7 @@ class Organisation(db.Model):
     contact = db.Column(db.String(255))
 
     # premium committee subscriptions
-    subscriptions = db.relationship('Committee', secondary='organisation_committee')
+    subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
 
 
     def subscribed_to_committee(self, committee):
@@ -222,11 +222,11 @@ organisation_committee = db.Table(
     db.Column(
         'organisation_id',
         db.Integer(),
-        db.ForeignKey('organisation.id')),
+        db.ForeignKey('organisation.id', ondelete='CASCADE')),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete='CASCADE')))
 
 
 user_committee = db.Table(

@@ -32,6 +32,10 @@ class CustomEncoder(json.JSONEncoder):
         return encoded_obj
 
 
+def to_json(obj):
+    return json.dumps(obj, cls=CustomEncoder)
+
+
 def model_to_dict(obj, include_related=False):
     """
     Convert a single model object to dict. Nest related resources.
@@ -110,4 +114,4 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
                 logger.exception("Error serializing current user.")
                 pass
 
-    return json.dumps(out, cls=CustomEncoder, indent=4)
+    return out

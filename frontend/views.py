@@ -1,17 +1,20 @@
 import logging
-from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
-from werkzeug.exceptions import HTTPException
-from frontend import app
-import requests
 from datetime import datetime, date
 import dateutil.parser
 import urllib
 import math
 import random
-import arrow
 import re
 import json
 import os.path
+
+from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
+from werkzeug.exceptions import HTTPException
+import requests
+import arrow
+
+from frontend import app
+from frontend.bills import bill_history, MIN_YEAR
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400
@@ -207,9 +210,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
             next_response_json = out
             i = 0
             while next_response_json.get('next') and i < 1000:
-                next_response = requests.get(
-                    next_response_json.get('next'),
-                    headers=headers)
+                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params)
                 next_response_json = next_response.json()
                 out['results'] += next_response_json['results']
                 i += 1
@@ -300,35 +301,34 @@ def index():
 
 @app.route('/bills/')
 def bills_portal():
-    return render_template('bill_index.html')
+    return render_template('bills/index.html')
 
 
 @app.route('/bills/explained/')
 def bills_explained():
-    return render_template('bills_explained.html')
+    return render_template('bills/explained.html')
 
 
 @app.route('/bills/<any(all, draft, current, pmb):bill_type>/')
+@app.route('/bills/<any(all, draft, current, pmb):bill_type>/year/<int:year>/')
 @app.route('/bills/<any(all, draft, current, pmb):bill_type>/<int:page>/')
-def bills(bill_type=None, page=0):
-    """
-    Page through all available bills.
-    """
-    
+def bills(bill_type, page=0, year=None):
     url = "/bills/" + bill_type
+    everything = False
+    params = {}
+    year_list = range(MIN_YEAR, date.today().year)
+    year_list.reverse()
+    api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
 
-    if bill_type != 'all':
-        if bill_type == 'pmb':
-            title = 'Private Member Bills'
-        else:
-            title = bill_type.capitalize() + ' Bills'
+    if year is not None:
+        if year not in year_list:
+            abort(404)
+        # we don't paginate when showing by year
+        page = None
+        everything = True
+        params = 'filter[year]=%d' % year
 
-        bill_type = 'bill/' + bill_type
-    else:
-        bill_type = 'bill'
-        title = "All Bills"
-
-    bill_list = load_from_api(bill_type, page=page)
+    bill_list = load_from_api(api_url, page=page, return_everything=everything, params=params)
     bills = bill_list['results']
     count = bill_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
@@ -344,27 +344,24 @@ def bills(bill_type=None, page=0):
         }
 
     return render_template(
-        'list.html',
+        'bills/list.html',
         results=bills,
         status_dict=status_dict,
         num_pages=num_pages,
+        per_page=per_page,
         page=page,
         url=url,
-        icon="file-text-o",
-        content_type="bill",
-        title=title)
+        year=year,
+        year_list=year_list,
+        bill_type=bill_type)
 
 
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
-    """
-    With Bills, we try to send them to BillTracker if it exists. Else we serve the PDF. If that doesn't work, we Kill Bill
-    """
-
-    logger.debug("bill page called")
     bill = load_from_api('bill', bill_id)
-    return render_template('bill_detail.html', bill=bill,
+    history = bill_history(bill)
+    return render_template('bills/detail.html', bill=bill, history=history,
                            admin_edit_url=admin_url('bill', bill_id))
 
 

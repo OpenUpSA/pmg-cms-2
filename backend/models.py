@@ -596,6 +596,8 @@ class Member(db.Model):
     # is this person *currently* an MP?
     current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
 
+    memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined')
+
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -628,6 +630,8 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
+    memberships = db.relationship('Membership', backref="committee", lazy='joined', cascade='all, delete-orphan', passive_deletes=True)
+
     @classmethod
     def premium_for_select(cls):
         return cls.query.filter(cls.premium == True)\
@@ -650,17 +654,7 @@ class Membership(db.Model):
     type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
     type = db.relationship(MembershipType, lazy='joined')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
-    committee = db.relationship(
-        Committee,
-        backref="memberships",
-        lazy='joined')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), nullable=False)
-    member = db.relationship(
-        Member,
-        backref=backref(
-            "memberships",
-            lazy="joined"),
-        lazy='joined')
 
     def __unicode__(self):
         tmp = u" - ".join([unicode(self.type),

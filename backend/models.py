@@ -83,7 +83,7 @@ class Organisation(db.Model):
     contact = db.Column(db.String(255))
 
     # premium committee subscriptions
-    subscriptions = db.relationship('Committee', secondary='organisation_committee')
+    subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
 
 
     def subscribed_to_committee(self, committee):
@@ -132,12 +132,11 @@ class User(db.Model, UserMixin):
     organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
     # premium committee subscriptions, in addition to any that the user's organisation might have
-    subscriptions = db.relationship('Committee', secondary='user_committee')
+    subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
     # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts')
-    roles = db.relationship('Role', secondary='roles_users',
-                            backref=db.backref('users', lazy='dynamic'))
+    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True)
+    roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):
         return unicode(self.email)
@@ -223,11 +222,11 @@ organisation_committee = db.Table(
     db.Column(
         'organisation_id',
         db.Integer(),
-        db.ForeignKey('organisation.id')),
+        db.ForeignKey('organisation.id', ondelete='CASCADE')),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete='CASCADE')))
 
 
 user_committee = db.Table(
@@ -235,11 +234,11 @@ user_committee = db.Table(
     db.Column(
         'user_id',
         db.Integer(),
-        db.ForeignKey('user.id')),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 
 user_committee_alerts = db.Table(
@@ -247,11 +246,11 @@ user_committee_alerts = db.Table(
     db.Column(
         'user_id',
         db.Integer(),
-        db.ForeignKey('user.id')),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
     db.Column(
         'committee_id',
         db.Integer(),
-        db.ForeignKey('committee.id')))
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 
 # Setup Flask-Security
@@ -432,10 +431,7 @@ class Event(db.Model):
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
-    committee_id = db.Column(
-        db.Integer,
-        db.ForeignKey('committee.id'),
-        index=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
     committee = db.relationship(
         'Committee',
         lazy=False,
@@ -600,6 +596,8 @@ class Member(db.Model):
     # is this person *currently* an MP?
     current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
 
+    memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined')
+
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -632,6 +630,8 @@ class Committee(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
+    memberships = db.relationship('Membership', backref="committee", cascade='all, delete-orphan', passive_deletes=True)
+
     @classmethod
     def premium_for_select(cls):
         return cls.query.filter(cls.premium == True)\
@@ -653,18 +653,8 @@ class Membership(db.Model):
 
     type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
     type = db.relationship(MembershipType, lazy='joined')
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False)
-    committee = db.relationship(
-        Committee,
-        backref="memberships",
-        lazy='joined')
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), nullable=False)
-    member = db.relationship(
-        Member,
-        backref=backref(
-            "memberships",
-            lazy="joined"),
-        lazy='joined')
 
     def __unicode__(self):
         tmp = u" - ".join([unicode(self.type),
@@ -699,7 +689,7 @@ class QuestionReply(db.Model):
     __tablename__ = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('questions_replies'))
@@ -723,7 +713,7 @@ class TabledCommitteeReport(db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('tabled_committee_reports'))
@@ -754,7 +744,7 @@ class CallForComment(db.Model):
     __tablename__ = "call_for_comment"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship(
         'Committee',
         backref=db.backref('calls_for_comments'))

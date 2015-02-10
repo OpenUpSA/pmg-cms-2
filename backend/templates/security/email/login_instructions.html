@@ -1,5 +1,8 @@
-<p>Welcome {{ user.email }}!</p>
+{% extends "security/email/base.html" %}
+{% block content %}
 
-<p>You can log into your through the link below:</p>
+<p>You can log into your account through the link below:</p>
 
 <p><a href="{{ login_link }}">Login now</a></p>
+
+{% endblock %}

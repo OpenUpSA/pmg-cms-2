@@ -1,1 +1,4 @@
-<p>Your password has been reset</p>
+{% extends "security/email/base.html" %}
+{% block content %}
+<p>Your password has been reset and you can <a href="https://pmg.org.za/user/login/">click here to log in</a>.</p>
+{% endblock %}

@@ -1,1 +1,8 @@
-<p><a href="{{ reset_link }}">Click here to reset your password</a></p>
+{% extends "security/email/base.html" %}
+{% block content %}
+
+<p><a href="{{ reset_link }}">Click here to reset your password</a>.</p>
+
+<p>If you didn't request this, you can simply ignore this email.</p>
+
+{% endblock %}

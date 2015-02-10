@@ -156,9 +156,6 @@ class ApiException(HTTPException):
         return render_template('500.html', error=self)
 
 
-class AccessRestricted(Exception):
-    pass
-
 
 @app.errorhandler(404)
 def page_not_found(error):

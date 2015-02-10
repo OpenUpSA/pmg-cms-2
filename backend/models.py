@@ -135,7 +135,7 @@ class User(db.Model, UserMixin):
     subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
     # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True)
+    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):

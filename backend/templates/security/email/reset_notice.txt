@@ -1,1 +1,4 @@
-Your password has been reset
+{% extends "security/email/base.txt" %}
+{% block content %}
+Your password has been reset, you can now login at https://pmg.org.za/user/login/.
+{% endblock %}

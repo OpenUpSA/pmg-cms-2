@@ -1,7 +1,13 @@
-Welcome {{ user.email }}!
+{% extends "security/email/base.txt" %}
+{% block content %}
 
+Welcome to PMG and thanks for signing up.
 {% if security.confirmable %}
-You can confirm your email through the link below:
-
-{{ confirmation_link }}
+Please confirm your email by clicking here {{ confirmation_link }}
 {% endif %}
+
+To sign up for free email alerts and get the daily parliamentary schedule and alerts when committees are updated, visit https://pmg.org.za/email-alerts/
+
+To manage you subscription for access to the activities of select premium committees, visit https://pmg.org.za/committee-subscriptions/
+
+{% endblock %}

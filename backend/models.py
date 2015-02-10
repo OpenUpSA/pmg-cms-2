@@ -873,19 +873,6 @@ daily_schedule_file_table = db.Table(
         db.ForeignKey('file.id')))
 
 
-class RichText(db.Model):
-
-    __tablename__ = "rich_text"
-
-    id = db.Column(db.Integer, index=True, primary_key=True)
-
-    body = db.Column(db.Text())
-    summary = db.Column(db.Text())
-
-    def __unicode__(self):
-        return unicode(self.id)
-
-
 class Content(db.Model):
 
     __tablename__ = "content"
@@ -902,23 +889,18 @@ class Content(db.Model):
     summary = db.Column(db.Text())
     body = db.Column(db.Text())
 
-    rich_text_id = db.Column(db.Integer, db.ForeignKey('rich_text.id'), index=True)
-    rich_text = db.relationship('RichText', lazy='joined')
-
     def __unicode__(self):
         return unicode(self.type + " - " + str(self.id))
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        # lift nested 'file' or 'rich_text' fields to look like attributes on this model
+        # lift nested 'file' fields to look like attributes on this model
         if tmp.get('file'):
             for key, val in tmp['file'].iteritems():
                 if tmp.get(key):
                     pass  # don't overwrite parent model attributes from the child model
                 tmp[key] = val
             tmp.pop('file')
-        if tmp.get('rich_text'):
-            tmp.pop('rich_text')
         return tmp
 
 

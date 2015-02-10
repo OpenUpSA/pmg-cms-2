@@ -28,17 +28,6 @@ app.add_url_rule('/static/<path:filename>',
 logger = logging.getLogger(__name__)
 
 
-@app.before_request
-def log_user_activity():
-    if not current_user.is_anonymous():
-        # log user's visit, but only once very hour
-        now = datetime.datetime.utcnow()
-        if current_user.current_login_at + datetime.timedelta(hours=1) < now:
-            current_user.current_login_at = now
-            db.session.add(current_user)
-            db.session.commit()
-
-
 class ApiException(HTTPException):
 
     """
@@ -180,6 +169,8 @@ def user():
     """ Info on the currently logged in user. """
     if current_user.is_anonymous():
         raise ApiException(401, "not authenticated")
+
+    current_user.update_current_login()
     return send_api_response({'current_user': serializers.to_dict(current_user)})
 
 

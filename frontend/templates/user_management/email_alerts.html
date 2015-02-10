@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
-{% set user = session.current_user %}
-
 {% macro check_subscribed(committee_id) %}
-  {% if user.committee_alerts and user.committee_alerts[committee_id|string] %}
+  {% if current_user.committee_alerts and current_user.committee_alerts[committee_id|string] %}
     checked
   {% endif %}
 {% endmacro %}
@@ -31,7 +29,7 @@
 
 <p class="lead">Free email alerts are available for any Parliamentary Committee that PMG monitors.</p>
 
-{% if not user %}
+{% if not current_user %}
   <p>To receive free alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
 
 {% else %}
@@ -45,7 +43,7 @@
     <ul class="list-unstyled">
       <li class="checkbox">
         <label>
-          <input type="checkbox" id="select-daily-schedule" name="select-daily-schedule"{% if user.subscribe_daily_schedule %} checked{% endif %}>
+          <input type="checkbox" id="select-daily-schedule" name="select-daily-schedule"{% if current_user.subscribe_daily_schedule %} checked{% endif %}>
           Daily schedule of parliament
         </label>
       </li>

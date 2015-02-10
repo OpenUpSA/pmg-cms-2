@@ -119,8 +119,7 @@ def api_resource_list(resource, resource_id, base_query):
     out = serializers.queryset_to_json(
         queryset,
         count=count,
-        next=next,
-        current_user=current_user)
+        next=next)
     return send_api_response(out, status_code=status_code)
 
 
@@ -175,7 +174,7 @@ def api_resources():
 # API endpoints:
 #
 
-@app.route('/user')
+@app.route('/user/')
 @load_user('token', 'session')
 def user():
     """ Info on the currently logged in user. """
@@ -292,12 +291,6 @@ def landing():
     out = {'endpoints': []}
     for resource in api_resources().keys():
         out['endpoints'].append(request.base_url + resource)
-    if current_user and current_user.is_active():
-        try:
-            out['current_user'] = serializers.to_dict(current_user)
-        except Exception:
-            logger.exception("Error serializing current user.")
-            pass
     return send_api_response(out)
 
 

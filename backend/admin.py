@@ -25,6 +25,7 @@ from models import *
 from email_alerts import EmailAlertView
 from rbac import RBACMixin
 import widgets
+import support
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
@@ -419,6 +420,7 @@ class CommitteeMeetingView(EventView):
         'summary',
         'body',
         'content',
+        'bills',
     )
     form_extra_fields = {
         'summary': widgets.CKTextAreaField('Summary'),
@@ -430,6 +432,12 @@ class CommitteeMeetingView(EventView):
         },
         'summary': {
             'class': 'ckeditor'
+        }
+    }
+    form_ajax_refs = {
+        'bills': {
+            'fields': ('title',),
+            'page_size': 50
         }
     }
     inline_models = (

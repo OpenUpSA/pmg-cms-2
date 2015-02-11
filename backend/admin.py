@@ -40,10 +40,9 @@ if not os.path.isdir(UPLOAD_PATH):
 
 
 def allowed_file(filename):
-    logger.debug(filename)
     tmp = '.' in filename and \
           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    logger.debug(tmp)
+    logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
 
 
@@ -653,7 +652,6 @@ class MemberView(MyModelView):
 
 class InlineFile(InlineFormAdmin):
     form_excluded_columns = (
-        'title',
         'file_mime',
         'origname',
         'description',

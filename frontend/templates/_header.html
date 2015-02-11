@@ -17,11 +17,10 @@
       <div class="col-sm-3">
 
         <ul class="nav navbar-nav pull-right">
-          {% if session.current_user %}
-            {% set user = session.current_user %}
+          {% if current_user %}
             <div class="btn-group">
               {% if admin_edit_url %}
-                {% for role in user.roles %}
+                {% for role in current_user.roles %}
                   {% if role.name == 'editor' %}
                   <a class="btn navbar-btn btn-primary btn-sm" href="{{ admin_edit_url }}">
                     <i class="fa fa-pencil"></i>
@@ -32,16 +31,16 @@
               {% endif %}
 
               <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-user"></i> {{ user.email }} <span class="caret"></span>
+                <i class="fa fa-user"></i> {{ current_user.email }} <span class="caret"></span>
               </button>
               <ul class="dropdown-menu pull-right" role="menu">
                 <li><a href="{{ url_for('change_password') }}">Change password</a></li>
-                {% if not user.confirmed %}
+                {% if not current_user.confirmed %}
                   <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
                 {% endif %}
                 <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
                 <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
-                {% for role in user.roles %}
+                {% for role in current_user.roles %}
                   {% if role.name == 'editor' %}
                     </li><li class="divider"></li>
                     <li><a href="{{ config.API_HOST + "admin/" }}">Admin interface</a></li>

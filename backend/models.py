@@ -135,7 +135,7 @@ class User(db.Model, UserMixin):
     subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
     # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True)
+    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):
@@ -143,6 +143,12 @@ class User(db.Model, UserMixin):
 
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
+
+    def update_current_login(self):
+        now = datetime.datetime.utcnow()
+        if self.current_login_at + datetime.timedelta(hours=1) < now:
+            self.current_login_at = now
+            db.session.commit()
 
     def subscribed_to_committee(self, committee):
         """ Does this user have an active subscription to `committee`? """

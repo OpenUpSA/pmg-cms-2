@@ -28,17 +28,6 @@ app.add_url_rule('/static/<path:filename>',
 logger = logging.getLogger(__name__)
 
 
-@app.before_request
-def before_request():
-    if not current_user.is_anonymous():
-        # log user's visit, but only once very hour
-        now = datetime.datetime.utcnow()
-        if current_user.current_login_at + datetime.timedelta(hours=1) < now:
-            current_user.current_login_at = now
-            db.session.add(current_user)
-            db.session.commit()
-
-
 class ApiException(HTTPException):
 
     """
@@ -119,15 +108,13 @@ def api_resource_list(resource, resource_id, base_query):
     out = serializers.queryset_to_json(
         queryset,
         count=count,
-        next=next,
-        current_user=current_user)
+        next=next)
     return send_api_response(out, status_code=status_code)
 
 
 
-def send_api_response(data_json, status_code=200):
-
-    response = flask.make_response(data_json)
+def send_api_response(data, status_code=200):
+    response = flask.make_response(serializers.to_json(data))
     response.headers['Access-Control-Allow-Origin'] = "*"
     response.headers['Content-Type'] = "application/json"
     response.status_code = status_code
@@ -175,6 +162,17 @@ def api_resources():
 # -------------------------------------------------------------------
 # API endpoints:
 #
+
+@app.route('/user/')
+@load_user('token', 'session')
+def user():
+    """ Info on the currently logged in user. """
+    if current_user.is_anonymous():
+        raise ApiException(401, "not authenticated")
+
+    current_user.update_current_login()
+    return send_api_response({'current_user': serializers.to_dict(current_user)})
+
 
 @app.route('/search/')
 def search():
@@ -224,7 +222,8 @@ def search():
             str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
         result["first"] = request.url_root + "search/?q=" + \
             q + "&page=0" + "&per_page=" + str(per_page)
-    return json.dumps(result)
+
+    return send_api_response(result)
 
 
 @app.route('/bill/<int:bill_id>/')
@@ -283,13 +282,7 @@ def landing():
     out = {'endpoints': []}
     for resource in api_resources().keys():
         out['endpoints'].append(request.base_url + resource)
-    if current_user and current_user.is_active():
-        try:
-            out['current_user'] = serializers.to_dict(current_user)
-        except Exception:
-            logger.exception("Error serializing current user.")
-            pass
-    return send_api_response(json.dumps(out, cls=serializers.CustomEncoder, indent=4))
+    return send_api_response(out)
 
 
 @app.route('/update_alerts/', methods=['POST', ])
@@ -319,7 +312,7 @@ def update_alerts():
         except Exception:
             logger.exception("Error serializing current user.")
             pass
-    return send_api_response(json.dumps(out, indent=4))
+    return send_api_response(out)
 
 
 @app.route('/check_redirect/', methods=['POST', ])
@@ -374,4 +367,4 @@ def check_redirect():
                 if daily_schedule:
                     out['redirect'] = '/daily-schedule/' + str(daily_schedule.id) + '/'
 
-    return send_api_response(json.dumps(out, indent=4))
+    return send_api_response(out)

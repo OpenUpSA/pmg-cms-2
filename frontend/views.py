@@ -8,7 +8,7 @@ import re
 import json
 import os.path
 
-from flask import request, flash, make_response, url_for, session, render_template, abort, redirect
+from flask import request, flash, make_response, url_for, session, render_template, abort, redirect, g
 from werkzeug.exceptions import HTTPException
 import requests
 import arrow
@@ -156,9 +156,6 @@ class ApiException(HTTPException):
         return render_template('500.html', error=self)
 
 
-class AccessRestricted(Exception):
-    pass
-
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -217,9 +214,6 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
             if out.get('next'):
                 out.pop('next')
 
-        if out.get('current_user'):
-            session['current_user'] = out['current_user']
-
         return out
     except requests.ConnectionError as e:
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
@@ -263,11 +257,6 @@ def send_to_api(endpoint, data=None):
 
 @app.route('/')
 def index():
-    """
-
-    """
-
-    logger.debug("index page called")
     committee_meetings_api = load_from_api('committee-meeting')
     committee_meetings = []
     for committee_meeting in committee_meetings_api["results"]:
@@ -280,7 +269,6 @@ def index():
     scheduledates = []
     curdate = False
     for item in schedule:
-        print item
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)

@@ -32,6 +32,10 @@ class CustomEncoder(json.JSONEncoder):
         return encoded_obj
 
 
+def to_json(obj):
+    return json.dumps(obj, cls=CustomEncoder)
+
+
 def model_to_dict(obj, include_related=False):
     """
     Convert a single model object to dict. Nest related resources.
@@ -83,7 +87,7 @@ def to_dict(obj, include_related=False):
         raise e
 
 
-def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
+def queryset_to_json(obj_or_list, count=None, next=None):
     """
     Convert a single model object, or a list of model objects to dicts, before
     serializing the results as a json string.
@@ -103,11 +107,5 @@ def queryset_to_json(obj_or_list, count=None, next=None, current_user=None):
             'next': next,
             'results': results
         }
-        if current_user and current_user.is_active():
-            try:
-                out['current_user'] = to_dict(current_user, include_related=True)
-            except Exception:
-                logger.exception("Error serializing current user.")
-                pass
 
-    return json.dumps(out, cls=CustomEncoder, indent=4)
+    return out

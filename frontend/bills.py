@@ -21,6 +21,9 @@ def get_location(event):
         return {'name': event['house']['name']}
 
     if 'committee' in event:
+        if 'house' in event['committee']:
+            return {'name': event['committee']['house']['name']}
+
         return {
             'name': event['committee']['name'],
             'url': url_for('committee_detail', committee_id=event['committee']['id']),

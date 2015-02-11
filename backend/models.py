@@ -423,7 +423,7 @@ class Event(db.Model):
     }
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    date = db.Column(db.DateTime(timezone=True))
+    date = db.Column(db.DateTime(timezone=True), nullable=False)
     title = db.Column(db.String(256))
     type = db.Column(db.String(50), index=True, nullable=False)
     nid = db.Column(db.Integer())

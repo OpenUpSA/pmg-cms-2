@@ -1,4 +1,4 @@
-"""empty message
+"""Drop rich_text table
 
 Revision ID: 1bc74869f9f0
 Revises: 122a38429a58

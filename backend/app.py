@@ -29,3 +29,4 @@ app.extensions.get('mail').send = send_email_with_subaccount
 
 import views
 import admin
+import helpers

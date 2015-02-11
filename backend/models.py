@@ -336,14 +336,8 @@ class BillStatus(db.Model):
 
 
 class Bill(db.Model):
-
     __tablename__ = "bill"
-    __table_args__ = (
-        db.UniqueConstraint(
-            'number',
-            'year',
-            'type_id'),
-        {})
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id'), {})
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
@@ -361,6 +355,7 @@ class Bill(db.Model):
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
+    files = db.relationship("File", secondary='bill_files', backref='bills')
 
     def get_code(self):
         out = self.type.prefix if self.type else "X"
@@ -378,6 +373,11 @@ class Bill(db.Model):
         if self.title:
             out += " - " + self.title
         return unicode(out)
+
+bill_files_table = db.Table(
+    'bill_files',
+    db.Column('bill_id', db.Integer, db.ForeignKey('bill.id')),
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id')))
 
 
 class File(db.Model):

@@ -316,7 +316,7 @@ class BillType(db.Model):
         return cls.query.filter(cls.name == "Private Member Bill").one()
 
     def __unicode__(self):
-        return unicode(self.name)
+        return unicode(self.description)
 
 
 class BillStatus(db.Model):
@@ -406,13 +406,6 @@ class File(db.Model):
         return u'%s' % self.file_path
 
 
-# M2M table
-bill_event_table = db.Table(
-    'bill_event', db.Model.metadata,
-    db.Column('event_id', db.Integer, db.ForeignKey('event.id')),
-    db.Column('bill_id', db.Integer, db.ForeignKey('bill.id'))
-)
-
 
 class Event(db.Model):
     """ An event is a generic model which represents an event that took
@@ -480,14 +473,8 @@ class Event(db.Model):
 
 event_bills = db.Table(
     'event_bills',
-    db.Column(
-        'event_id',
-        db.Integer(),
-        db.ForeignKey('event.id')),
-    db.Column(
-        'bill_id',
-        db.Integer(),
-        db.ForeignKey('bill.id')))
+    db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
+    db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id')))
 
 
 class WithBodyContent(object):

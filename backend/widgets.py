@@ -63,3 +63,16 @@ class InlineFileWidget(RenderTemplateWidget):
 
     def __init__(self):
         super(InlineFileWidget, self).__init__('admin/inline_file.html')
+
+# Custom widget for showing inline events for bills
+class InlineBillEventsWidget(RenderTemplateWidget):
+    def __init__(self):
+        super(InlineBillEventsWidget, self).__init__('admin/inline_bill_events.html')
+
+    def is_committee_meeting(self, event):
+        """ This hides inline deletion and other editing for committee meeting events. """
+        return not (event.object_data and event.object_data.type == 'committee-meeting')
+
+    def __call__(self, field, **kwargs):
+        kwargs['check'] = self.is_committee_meeting
+        return super(InlineBillEventsWidget, self).__call__(field, **kwargs)

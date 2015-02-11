@@ -845,6 +845,8 @@ class InlineBillEventsForm(InlineFormAdmin):
         'date',
         'type',
         'title',
+        'house',
+        'member',
         )
     form_choices = {
         'type': [
@@ -854,6 +856,13 @@ class InlineBillEventsForm(InlineFormAdmin):
             ('bill-enacted', 'Bill enacted'),
         ]
     }
+    form_ajax_refs = {
+        'member': {
+            'fields': ('name',),
+            'page_size': 25
+        },
+    }
+
     def on_model_change(self, form, model):
         # make sure the new date is timezone aware
         model.date = model.date.replace(tzinfo=tz.tzlocal())

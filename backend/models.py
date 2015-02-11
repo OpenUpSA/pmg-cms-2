@@ -348,7 +348,7 @@ class Bill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
     number = db.Column(db.Integer)
-    year = db.Column(db.Integer)
+    year = db.Column(db.Integer, nullable=False)
     date_of_introduction = db.Column(db.Date)
     date_of_assent = db.Column(db.Date)
     effective_date = db.Column(db.Date)

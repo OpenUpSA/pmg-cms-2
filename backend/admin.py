@@ -400,7 +400,7 @@ class ContentModelConverter(InlineModelConverter):
 
 
 class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('type', 'file', 'rich_text')
+    form_excluded_columns = ('type', 'file', 'body', 'summary')
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload

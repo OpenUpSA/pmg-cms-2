@@ -9,11 +9,6 @@
   </style>
 {% endblock %}
 
-{% set user = None %}
-{% if session.current_user %}
-  {% set user = session.current_user %}
-{% endif %}
-
 {% block page %}
 
   <h1>Committee subscriptions</h1>
@@ -32,14 +27,14 @@
 
   <p>Business, government and other users need to subscribe to access meeting reports of these 15 National Assembly committees.</p>
 
-  {% if user and user.organisation %}
-    {% if user.organisation.has_expired %}
+  {% if current_user and current_user.organisation %}
+    {% if current_user.organisation.has_expired %}
       <div class="alert alert-danger" role="alert">
         <strong>Note:</strong> Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.
       </div>
     {% else %}
       <div class="alert alert-warning" role="alert">
-        <strong>Note:</strong> Your access is set to expire on {{ user.organisation.expiry | pretty_date(format_option="long") }}
+        <strong>Note:</strong> Your access is set to expire on {{ current_user.organisation.expiry | pretty_date(format_option="long") }}
       </div>
     {% endif %}
   {% endif %}

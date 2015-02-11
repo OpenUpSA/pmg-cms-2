@@ -12,6 +12,19 @@ API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)
 
 
+@app.before_request
+def load_current_user():
+    g.current_user = None
+    user = load_from_api('user')
+    if user and 'current_user' in user:
+        g.current_user = user['current_user']
+
+
+@app.context_processor
+def current_user_context():
+    return {'current_user': g.current_user}
+
+
 # chat with backend API
 def user_management_api(endpoint, data=None):
     query_str = "security/" + endpoint
@@ -76,7 +89,7 @@ def login():
         # save auth token
         if response and response.get('user') and response['user'].get('authentication_token'):
             session['api_key'] = response['user']['authentication_token']
-            update_current_user()
+            load_current_user()
 
             if request.values.get('next'):
                 return redirect(request.values['next'])
@@ -116,7 +129,7 @@ def register():
         if response and response.get('user') and response['user'].get('authentication_token'):
             logger.debug("saving authentication_token to the session")
             session['api_key'] = response['user']['authentication_token']
-            update_current_user()
+            load_current_user()
             flash(
                 u'You have been registered. Please check your email for a confirmation.',
                 'success')
@@ -192,7 +205,7 @@ def reset_password(token):
             flash(u'Your password has been changed successfully.', 'success')
             logger.debug("saving authentication_token to the session")
             session['api_key'] = response['user']['authentication_token']
-            update_current_user()
+            load_current_user()
             # redirect user
             if request.values.get('next'):
                 return redirect(request.values['next'])
@@ -209,7 +222,7 @@ def reset_password(token):
 def change_password():
     """View function which handles a change password request."""
 
-    if not session.get('current_user'):
+    if g.current_user:
         return redirect(url_for('login', next=request.url))
 
     form = forms.ChangePasswordForm()
@@ -243,16 +256,6 @@ def confirm_email(confirmation_key):
     return redirect(url_for('index'))
 
 
-def update_current_user():
-    """
-    Hit the API, and update our session's 'current_user' if necessary.
-    """
-
-    tmp = load_from_api("")  # hit the API's index page
-    if tmp.get('current_user'):
-        session['current_user'] = tmp['current_user']
-    return
-
 
 @app.route('/email-alerts/', methods=['GET', 'POST'])
 def email_alerts():
@@ -261,24 +264,22 @@ def email_alerts():
     """
     committees = None
 
-    if session.get('current_user'):
-        if request.method == 'POST':
-            out = {'committee_alerts': [], 'general_alerts': []}
-            general_notifications = ['select-daily-schedule', ]
-            for field_name in request.form.keys():
-                if field_name in general_notifications:
-                    key = "-".join(field_name.split('-')[1::])
-                    out['general_alerts'].append(key)
-                else:
-                    committee_id = int(field_name.split('-')[-1])
-                    out['committee_alerts'].append(committee_id)
-            tmp = send_to_api('update_alerts', json.dumps(out))
-            if tmp:
-                flash("Your notification settings have been updated successfully.", "success")
-                return redirect(url_for('email_alerts'))
+    if g.current_user and request.method == 'POST':
+        out = {'committee_alerts': [], 'general_alerts': []}
+        general_notifications = ['select-daily-schedule', ]
+        for field_name in request.form.keys():
+            if field_name in general_notifications:
+                key = "-".join(field_name.split('-')[1::])
+                out['general_alerts'].append(key)
+            else:
+                committee_id = int(field_name.split('-')[-1])
+                out['committee_alerts'].append(committee_id)
+        tmp = send_to_api('update_alerts', json.dumps(out))
+        if tmp:
+            flash("Your notification settings have been updated successfully.", "success")
+            return redirect(url_for('email_alerts'))
 
-        committees = load_from_api('committee', return_everything=True)['results']
-
+    committees = load_from_api('committee', return_everything=True)['results']
     return render_template('user_management/email_alerts.html', committees=committees)
 
 

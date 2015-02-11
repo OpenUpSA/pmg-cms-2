@@ -833,6 +833,32 @@ class EmailTemplateView(MyModelView):
         }
 
 
+class BillEventsFormList(InlineModelFormList):
+    widget = widgets.InlineBillEventsWidget()
+
+class BillEventsModelConverter(InlineModelConverter):
+    inline_field_list_type = BillEventsFormList
+
+class InlineBillEventsForm(InlineFormAdmin):
+    form_columns = (
+        'id',
+        'date',
+        'type',
+        'title',
+        )
+    form_choices = {
+        'type': [
+            ('bill-introduced', 'Bill introduced'),
+            ('bill-passed', 'Bill passed'),
+            ('bill-signed', 'Bill signed'),
+            ('bill-enacted', 'Bill enacted'),
+        ]
+    }
+    def on_model_change(self, form, model):
+        # make sure the new date is timezone aware
+        model.date = model.date.replace(tzinfo=tz.tzlocal())
+
+
 class BillsView(MyModelView):
     column_list = (
         'year',
@@ -856,6 +882,8 @@ class BillsView(MyModelView):
     )
     column_default_sort = ('year', True)
     column_searchable_list = ('title',)
+    inline_models = [InlineBillEventsForm(Event)]
+    inline_model_form_converter = BillEventsModelConverter
 
 
 class FeaturedContentView(MyModelView):

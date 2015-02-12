@@ -209,10 +209,8 @@ def search():
     result["count"] = searchresult["hits"]["total"]
     result["max_score"] = searchresult["hits"]["max_score"]
     result["bincount"] = {}
-    result["bincount"]["types"] = bincounts[
-        0]["aggregations"]["types"]["buckets"]
-    result["bincount"]["years"] = bincounts[
-        1]["aggregations"]["years"]["buckets"]
+    result["bincount"]["types"] = bincounts[0]["aggregations"]["types"]["buckets"]
+    result["bincount"]["years"] = bincounts[1]["aggregations"]["years"]["buckets"]
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
 
     if result["count"] > (page + 1) * per_page:

@@ -4,6 +4,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from dateutil import tz
 import logging
+import os
 
 from sqlalchemy import desc, Index, func, sql
 from sqlalchemy.orm import backref
@@ -15,13 +16,23 @@ from flask.ext.security import UserMixin, RoleMixin, \
 from flask.ext.sqlalchemy import models_committed
 from flask_security import current_user
 
+from werkzeug import secure_filename
+
 from app import app, db
 import serializers
 from search import Search
+from s3_upload import S3Bucket
 
 STATIC_HOST = app.config['STATIC_HOST']
 
 logger = logging.getLogger(__name__)
+s3_bucket = S3Bucket()
+
+
+def allowed_file(filename):
+    tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
+    return tmp
 
 
 class ApiKey(db.Model):
@@ -355,7 +366,7 @@ class Bill(db.Model):
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
-    files = db.relationship("File", secondary='bill_files', backref='bills')
+    versions = db.relationship("BillVersion", backref='bill')
 
     def get_code(self):
         out = self.type.prefix if self.type else "X"
@@ -374,10 +385,15 @@ class Bill(db.Model):
             out += " - " + self.title
         return unicode(out)
 
-bill_files_table = db.Table(
-    'bill_files',
-    db.Column('bill_id', db.Integer, db.ForeignKey('bill.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id')))
+class BillVersion(db.Model):
+    __tablename__ = "bill_versions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date(), nullable=False)
+    title = db.Column(db.String(), nullable=False)
+    bill_id = db.Column(db.Integer, db.ForeignKey('bill.id', ondelete='CASCADE'), nullable=False)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete='CASCADE'))
+    file = db.relationship('File', backref='bill_version', lazy=False)
 
 
 class File(db.Model):
@@ -401,6 +417,21 @@ class File(db.Model):
     @property
     def file_url(self):
         return STATIC_HOST + self.file_path
+
+    def from_upload(self, file_data):
+        """ Handle a POST-based file upload and use it as the content for this file. """
+        if not allowed_file(file_data.filename):
+            raise Exception("File type not allowed.")
+
+        # save file to disk
+        filename = secure_filename(file_data.filename)
+        logger.debug('saving uploaded file: ' + filename)
+        file_data.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+
+        # upload saved file to S3
+        self.file_path = s3_bucket.upload_file(filename)
+        self.file_mime = file_data.mimetype
+
 
     def __unicode__(self):
         return u'%s' % self.file_path

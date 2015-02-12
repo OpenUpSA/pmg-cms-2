@@ -18,7 +18,6 @@ from wtforms import fields
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
-from s3_upload import S3Bucket
 from xlsx import XLSXBuilder
 from app import app, db
 from models import *
@@ -29,21 +28,8 @@ import support
 
 
 FRONTEND_HOST = app.config['FRONTEND_HOST']
-UPLOAD_PATH = app.config['UPLOAD_PATH']
-ALLOWED_EXTENSIONS = app.config['ALLOWED_EXTENSIONS']
 
-s3_bucket = S3Bucket()
 logger = logging.getLogger(__name__)
-
-if not os.path.isdir(UPLOAD_PATH):
-    os.mkdir(UPLOAD_PATH)
-
-
-def allowed_file(filename):
-    tmp = '.' in filename and \
-          filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
-    return tmp
 
 
 class MyIndexView(RBACMixin, AdminIndexView):
@@ -363,25 +349,14 @@ class InlineContent(InlineFormAdmin):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
-            if not allowed_file(file_data.filename):
-                raise Exception("File type not allowed.")
-            # create file object
-            new_file = File(file_mime=file_data.content_type)
-            new_file.title = form.title.data
-            filename = secure_filename(file_data.filename)
-            # save file to disc
-            logger.debug('saving uploaded file: ' + filename)
-            file_data.save(os.path.join(UPLOAD_PATH, filename))
-            # upload saved file to S3
-            filename = s3_bucket.upload_file(filename)
-            new_file.file_path = filename
-            # set relation between content model and file model
-            model.file = new_file
-            if 'audio' in new_file.file_mime:
+            model.file = File()
+            model.file.from_upload(file_data)
+            model.file.title = form.title.data
+
+            if 'audio' in model.file.file_mime:
                 model.type = "audio"
             else:
                 model.type = "related-doc"
-            db.session.add(new_file)
 
 
 class CommitteeMeetingView(EventView):
@@ -641,13 +616,9 @@ class MemberView(MyModelView):
         # save profile pic, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
-            if not allowed_file(file_data.filename):
-                raise Exception("File type not allowed.")
-            filename = secure_filename(file_data.filename)
-            logger.debug('saving uploaded file: ' + filename)
-            file_data.save(os.path.join(UPLOAD_PATH, filename))
-            filename = s3_bucket.upload_file(filename)
-            model.profile_pic_url = filename
+            tmp = File()
+            tmp.from_upload(file_data)
+            model.profile_pic_url = tmp.filename
 
 
 class InlineFile(InlineFormAdmin):
@@ -674,18 +645,7 @@ class InlineFile(InlineFormAdmin):
         # save file, if it is present
         file_data = request.files.get(form.upload.name)
         if file_data:
-            if not allowed_file(file_data.filename):
-                raise Exception("File type not allowed.")
-            # create file object
-            model.file_mime=file_data.mimetype
-            filename = secure_filename(file_data.filename)
-            # save file to disc
-            logger.debug('saving uploaded file: ' + filename)
-            file_data.save(os.path.join(UPLOAD_PATH, filename))
-            # upload saved file to S3
-            filename = s3_bucket.upload_file(filename)
-            model.file_path = filename
-
+            model.from_upload(file_data)
 
 
 class QuestionReplyView(MyModelView):
@@ -841,6 +801,35 @@ class InlineBillEventsForm(InlineFormAdmin):
         model.date = model.date.replace(tzinfo=tz.tzlocal())
 
 
+class InlineBillVersionForm(InlineFormAdmin):
+    form_columns = (
+        'id',
+        'date',
+        'title',
+        'file',
+        )
+    form_ajax_refs = {
+        'file': {
+            'fields': ('title',),
+            'page_size': 25
+            }
+        }
+
+    def postprocess_form(self, form_class):
+        # TODO: hide this for existing versions
+        form_class.upload = fields.FileField('Upload a new file')
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            if not model.file:
+                model.file = File()
+
+            model.file.from_upload(file_data)
+
+
 class BillsView(MyModelView):
     column_list = (
         'year',
@@ -861,19 +850,17 @@ class BillsView(MyModelView):
         'date_of_assent',
         'effective_date',
         'act_name',
-        'files',
+        'versions',
     )
     column_default_sort = ('year', True)
     column_searchable_list = ('title',)
     inline_models = [
         InlineBillEventsForm(Event),
-        InlineFile(File),
+        InlineBillVersionForm(BillVersion),
         ]
     form_args = {
         'events': {'widget': widgets.InlineBillEventsWidget()},
-        'files': {'widget': widgets.InlineFileWidget()},
     }
-
 
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):

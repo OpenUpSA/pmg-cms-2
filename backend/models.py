@@ -368,7 +368,8 @@ class Bill(db.Model):
     place_of_introduction = db.relationship('House')
     versions = db.relationship("BillVersion", backref='bill')
 
-    def get_code(self):
+    @property
+    def code(self):
         out = self.type.prefix if self.type else "X"
         out += str(self.number) if self.number else ""
         out += "-" + str(self.year)
@@ -376,11 +377,11 @@ class Bill(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['code'] = self.get_code()
+        tmp['code'] = self.code
         return tmp
 
     def __unicode__(self):
-        out = self.get_code()
+        out = self.code
         if self.title:
             out += " - " + self.title
         return unicode(out)

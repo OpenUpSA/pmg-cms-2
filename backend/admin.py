@@ -182,7 +182,7 @@ class HasExpiredFilter(BaseSQLAFilter):
 class UserView(MyModelView):
     required_roles = ['user-admin']
 
-    can_create = False
+    can_create = True
     can_delete = True
     column_list = [
         'email',
@@ -196,6 +196,17 @@ class UserView(MyModelView):
         'current_login_at': "Last seen",
         'subscriptions': "User's premium subscriptions",
         }
+    form_columns = [
+        'email',
+        'name',
+        'active',
+        'roles',
+        'organisation',
+        'expiry',
+        'subscribe_daily_schedule',
+        'subscriptions',
+        'committee_alerts',
+        ]
     form_args = {
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
@@ -208,15 +219,6 @@ class UserView(MyModelView):
             HasExpiredFilter(User.expiry, 'Subscription expiry'),
             DateBetweenFilter(User.expiry, 'Expiry date'),
             ]
-    form_excluded_columns = [
-        'password',
-        'confirmed_at',
-        'last_login_at',
-        'current_login_at',
-        'last_login_ip',
-        'current_login_ip',
-        'login_count',
-        ]
 
 
 class OrganisationView(MyModelView):

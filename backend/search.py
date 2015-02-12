@@ -32,6 +32,7 @@ class Search:
         """ Index all content of a data_type """
         try:
             self.drop_index(data_type)
+            self.mapping(data_type)
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
 
@@ -225,7 +226,6 @@ class Search:
         self.create_index()
 
         for data_type in data_types:
-            self.mapping(data_type)
             self.reindex_all(data_type)
 
     def delete_everything(self):
@@ -268,6 +268,7 @@ class Transforms:
             "title": "title",
             "year": "year",
             "number": "number",
+            "code": "code",
         },
         "hansard": {
             "id": "id",

@@ -464,23 +464,12 @@ class Event(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
-    committee = db.relationship(
-        'Committee',
-        lazy=False,
-        backref=backref(
-            'events',
-            order_by=desc('Event.date')))
-    house_id = db.Column(
-        db.Integer,
-        db.ForeignKey('house.id'),
-        index=True)
-    house = db.relationship(
-        'House',
-        lazy=False,
-        backref=backref(
-            'events',
-            order_by=desc('Event.date')))
+    committee = db.relationship('Committee', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
+    house = db.relationship('House', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
+
+    featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

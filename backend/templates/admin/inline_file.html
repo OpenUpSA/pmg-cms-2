@@ -5,6 +5,7 @@
   {% set model = field.object_data %}
   <div class="row">
     {% if model.file_path %}
+      {{ field.form.id }}
       <div class="col-md-10">
         <a href="{{ model.file_url }}" target="_blank">
           {{ macros.file_type_icon(model.type) }}

@@ -16,14 +16,14 @@
 
   <p class="lead">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
 
-  {% if bill.files %}
+  {% if bill.versions %}
   <ul class="list-inline bill-versions">
     <li><h3>Bill versions:</h3></li>
-    {% for file in bill.files %}
+    {% for version in bill.versions %}
     <li>
-      <a href="{{ file.url }}" target="_blank">
-        <span class="label label-info">
-          <i class="fa fa-file-text"></i> {{ file.title or file.origname }}
+      <a href="{{ version.file.url }}" target="_blank">
+        <span class="label label-info" title="{{ version.date }}">
+          <i class="fa fa-file-text"></i> {{ version.title }}
         </span>
       </a>
     </li>

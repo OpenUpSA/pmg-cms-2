@@ -14,7 +14,22 @@
     {% endif %}
   </h1>
 
-  <p class="lead text-right">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+  <p class="lead">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+
+  {% if bill.files %}
+  <ul class="list-inline bill-versions">
+    <li><h3>Bill versions:</h3></li>
+    {% for file in bill.files %}
+    <li>
+      <a href="{{ file.url }}" target="_blank">
+        <span class="label label-info">
+          <i class="fa fa-file-text"></i> {{ file.title or file.origname }}
+        </span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 
   <div class="justify-p">
     {% if bill.status and bill.status.name != 'act-commenced' %}

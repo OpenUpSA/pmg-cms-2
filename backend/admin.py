@@ -362,7 +362,7 @@ class InlineContent(InlineFormAdmin):
 class CommitteeMeetingView(EventView):
     frontend_url_format = 'committee-meeting/%d'
 
-    column_list = ('date', 'title', 'committee', 'content')
+    column_list = ('date', 'title', 'committee', 'content', 'featured')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
@@ -382,6 +382,7 @@ class CommitteeMeetingView(EventView):
         'title',
         'date',
         'chairperson',
+        'featured',
         'summary',
         'body',
         'content',

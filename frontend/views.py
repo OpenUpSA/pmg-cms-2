@@ -273,10 +273,9 @@ def index():
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
     stock_pic = random.choice(["ncop.jpg", "na.jpg"])
-    featured_list = load_from_api('featured')["results"]
-    featured_content = None
-    if len(featured_list) > 0:
-        featured_content = load_from_api('featured', featured_list[0]["id"])
+
+    featured_content = load_from_api('featured')
+
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,

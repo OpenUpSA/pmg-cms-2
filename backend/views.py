@@ -153,8 +153,6 @@ def api_resources():
             .order_by(desc(PolicyDocument.start_date)),
         "gazette": db.session.query(Gazette)
             .order_by(desc(Gazette.start_date)),
-        "featured": db.session.query(Featured)
-            .order_by(desc(Featured.start_date)),
         "daily_schedule": db.session.query(DailySchedule)
             .order_by(desc(DailySchedule.start_date)),
     }
@@ -222,6 +220,22 @@ def search():
             q + "&page=0" + "&per_page=" + str(per_page)
 
     return send_api_response(result)
+
+@app.route('/featured/')
+def featured():
+    info = {}
+
+    feature = db.session.query(Featured).order_by(desc(Featured.start_date)).first()
+    if feature:
+        info['feature'] = serializers.to_dict(feature)
+
+    info['committee_meetings'] = CommitteeMeeting.query\
+            .filter(CommitteeMeeting.featured == True)\
+            .order_by(desc(CommitteeMeeting.date))\
+            .all()
+    info['committee_meetings'] = [serializers.to_dict(c) for c in info['committee_meetings']]
+
+    return send_api_response(info)
 
 
 @app.route('/bill/<int:bill_id>/')

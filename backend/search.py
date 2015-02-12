@@ -113,7 +113,13 @@ class Search:
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets"
-                }
+                },
+                "number": {
+                    "type": "integer",
+                },
+                "year": {
+                    "type": "integer",
+                },
             }
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
@@ -253,6 +259,8 @@ class Transforms:
         "bill": {
             "id": "id",
             "title": "title",
+            "year": "year",
+            "number": "number",
         },
         "hansard": {
             "id": "id",

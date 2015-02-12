@@ -126,6 +126,12 @@
 // bill history
 
 .bill-events {
+	.stage {
+		display: table;
+		margin-bottom: 20px;
+		width: 100%;
+	}
+
 	.stage-icon {
 		background: #ccc;
 		padding: 5px;
@@ -134,7 +140,7 @@
 		float: left;
 	}
 
-	.stage {
+	.stage-detail {
 		margin-left: 75px;
 
 		h4 {

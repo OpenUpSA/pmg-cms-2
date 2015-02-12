@@ -85,37 +85,41 @@
           </div>
           <div class="panel-body">
 
+            <ul class="list-unstyled">
             {% for agent in location.events %}
-              <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
+              <li class="stage">
+                <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
 
-              <div class="stage">
-                <h4>
-                  {% if agent.url %}
-                  <a href="{{ agent.url }}">{{ agent.name }}</a>
-                  {% else %}
-                  {{ agent.name }}
-                  {% endif %}
-                </h4>
+                <div class="stage-detail">
+                  <h4>
+                    {% if agent.url %}
+                    <a href="{{ agent.url }}">{{ agent.name }}</a>
+                    {% else %}
+                    {{ agent.name }}
+                    {% endif %}
+                  </h4>
 
-                <ul class="list-unstyled">
-                {% for event in agent.events %}
-                  <li>
-                    <div class="row">
-                      <div class="col-xs-4 event-date">{{ event.date|pretty_date("long") }}</div>
-                      <div class="col-xs-8">
-                        {% if event.type == "committee-meeting" %}
-                        <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
-                        {% else %}
-                        {{ event.title}}
-                        {% endif %}
+                  <ul class="list-unstyled">
+                  {% for event in agent.events %}
+                    <li>
+                      <div class="row">
+                        <div class="col-xs-4 event-date">{{ event.date|pretty_date("long") }}</div>
+                        <div class="col-xs-8">
+                          {% if event.type == "committee-meeting" %}
+                          <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
+                          {% else %}
+                          {{ event.title}}
+                          {% endif %}
+                        </div>
                       </div>
-                    </div>
-                  </li>
-                {% endfor %}
-                </ul>
+                    </li>
+                  {% endfor %}
+                  </ul>
+                </div>
 
-              </div>
+              </li>
             {% endfor %}
+            </ul>
 
           </div>
         </div>

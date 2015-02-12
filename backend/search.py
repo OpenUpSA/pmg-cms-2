@@ -219,13 +219,20 @@ class Search:
 
     def reindex_everything(self):
         data_types = Transforms.data_types()
+
         self.logger.info("Reindexing everything: %s" % data_types)
+        self.delete_everything()
+        self.create_index()
 
         for data_type in data_types:
+            self.mapping(data_type)
             self.reindex_all(data_type)
 
     def delete_everything(self):
         self.es.delete_index(self.index_name)        
+
+    def create_index(self):
+        self.es.create_index(self.index_name)
 
 
 class Transforms:

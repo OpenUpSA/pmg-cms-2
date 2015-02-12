@@ -18,38 +18,35 @@
 
         <ul class="nav navbar-nav pull-right">
           {% if current_user %}
-            <div class="btn-group">
-              {% if admin_edit_url %}
-                {% for role in current_user.roles %}
-                  {% if role.name == 'editor' %}
-                  <a class="btn navbar-btn btn-primary btn-sm" href="{{ admin_edit_url }}">
-                    <i class="fa fa-pencil"></i>
-                    Edit Page
-                  </a>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-
-              <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-user"></i> {{ current_user.email }} <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu pull-right" role="menu">
-                <li><a href="{{ url_for('change_password') }}">Change password</a></li>
-                {% if not current_user.confirmed %}
-                  <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
+            {% if admin_edit_url %}
+              {% for role in current_user.roles %}
+                {% if role.name == 'editor' %}
+                <a class="btn navbar-btn btn-primary btn-sm" href="{{ admin_edit_url }}">
+                  <i class="fa fa-pencil"></i> Edit Page
+                </a>
                 {% endif %}
-                <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
-                <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
-                {% for role in current_user.roles %}
-                  {% if role.name == 'editor' %}
-                    </li><li class="divider"></li>
-                    <li><a href="{{ config.API_HOST + "admin/" }}">Admin interface</a></li>
-                  {% endif %}
-                {% endfor %}
-                <li class="divider"></li>
-                <li><a href="{{ url_for('logout') }}">Log Out</a>
-              </ul>
-            </div>
+              {% endfor %}
+            {% endif %}
+
+            <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
+              <i class="fa fa-user"></i> {{ current_user.email }} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu pull-right" role="menu">
+              <li><a href="{{ url_for('change_password') }}">Change password</a></li>
+              {% if not current_user.confirmed %}
+                <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
+              {% endif %}
+              <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
+              <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
+              {% for role in current_user.roles %}
+                {% if role.name == 'editor' %}
+                  </li><li class="divider"></li>
+                  <li><a href="{{ config.API_HOST + "admin/" }}">Admin interface</a></li>
+                {% endif %}
+              {% endfor %}
+              <li class="divider"></li>
+              <li><a href="{{ url_for('logout') }}">Log Out</a>
+            </ul>
           {% else %}
             <a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="{{ url_for('login') }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
           {% endif %}

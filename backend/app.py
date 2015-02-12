@@ -27,6 +27,11 @@ def send_email_with_subaccount(message):
 app.extensions.get('mail').send = send_email_with_subaccount
 
 
+UPLOAD_PATH = app.config['UPLOAD_PATH']
+if not os.path.isdir(UPLOAD_PATH):
+    os.mkdir(UPLOAD_PATH)
+
+
 import views
 import admin
 import helpers

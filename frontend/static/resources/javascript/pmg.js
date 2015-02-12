@@ -13,6 +13,7 @@ $(function() {
 	});
 
 	$(".chosen").chosen({width: "100%"});
+	$('[title]').tooltip();
 });
 
 // handle 404 page

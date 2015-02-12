@@ -619,7 +619,7 @@ class MemberView(MyModelView):
         if file_data:
             tmp = File()
             tmp.from_upload(file_data)
-            model.profile_pic_url = tmp.filename
+            model.profile_pic_url = tmp.file_path
 
 
 class InlineFile(InlineFormAdmin):

@@ -122,6 +122,7 @@ class Search:
         q = {
             "from": es_from,
             "size": size,
+            "sort": {'_score': {'order': 'desc'}},
             "query": {
                 "filtered": {
                     "filter": {},

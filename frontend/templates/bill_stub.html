@@ -4,11 +4,11 @@
 	{% else %}	
 		{% set title = result._source.title %}
 	{% endif %}
-	{% set date = result._source.date %}
+	{% set code = result._source.code %}
 	{% set id = result._id %}
 {% else %}
 	{% set title = result.title|escape %}
-	{% set date = result.date %}
+	{% set code = result.code %}
 	{% set id = result.id %}
 {% endif %}
 
@@ -29,8 +29,8 @@
 			{% endif %}
 		</div>
 		<div class="col-xs-2">
-			{% if result.code %}
-			[{{ result.code }}]
+			{% if code %}
+			[{{ code }}]
 			{% endif %}
 		</div>
 	</div>

@@ -40,10 +40,9 @@ if not os.path.isdir(UPLOAD_PATH):
 
 
 def allowed_file(filename):
-    logger.debug(filename)
     tmp = '.' in filename and \
           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-    logger.debug(tmp)
+    logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
 
 
@@ -266,17 +265,6 @@ class OrganisationView(MyModelView):
     column_labels = {'subscriptions': "Premium subscriptions"}
 
 
-# This InlineModelFormList will use our custom widget, when creating a
-# list of forms
-class MembershipsFormList(InlineModelFormList):
-    widget = widgets.InlineMembershipsWidget()
-
-
-# Create custom InlineModelConverter to link the form to its model
-class MembershipModelConverter(InlineModelConverter):
-    inline_field_list_type = MembershipsFormList
-
-
 class CommitteeView(MyModelView):
     frontend_url_format = 'committee/%s'
 
@@ -304,8 +292,10 @@ class CommitteeView(MyModelView):
         'house',
         'memberships',
     )
+    form_args = {
+        'memberships': {'widget': widgets.InlineMembershipsWidget()},
+    }
     inline_models = (Membership, )
-    inline_model_form_converter = MembershipModelConverter
 
 
 class EventView(MyModelView):
@@ -660,20 +650,8 @@ class MemberView(MyModelView):
             model.profile_pic_url = filename
 
 
-# This InlineModelFormList will use our custom widget, when creating a
-# list of forms
-class FileFormList(InlineModelFormList):
-    widget = widgets.InlineFileWidget()
-
-
-# Create custom InlineModelConverter to link the form to its model
-class FileModelConverter(InlineModelConverter):
-    inline_field_list_type = FileFormList
-
-
 class InlineFile(InlineFormAdmin):
     form_excluded_columns = (
-        'title',
         'file_mime',
         'origname',
         'description',
@@ -684,6 +662,7 @@ class InlineFile(InlineFormAdmin):
         'gazette',
         'tabled_committee_report',
         'policy_document',
+        'bills',
     )
 
     def postprocess_form(self, form_class):
@@ -756,12 +735,12 @@ class DailyScheduleView(MyModelView):
         'body': {
             'class': 'ckeditor'
         },
-        }
+    }
     form_excluded_columns = ('nid', )
-    inline_models = (
-        InlineFile(File),
-    )
-    inline_model_form_converter = FileModelConverter
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+    inline_models = [InlineFile(File)]
 
 
 class GazetteView(MyModelView):
@@ -770,10 +749,10 @@ class GazetteView(MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    inline_models = (
-        InlineFile(File),
-    )
-    inline_model_form_converter = FileModelConverter
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+    inline_models = [InlineFile(File)]
 
 
 class PolicyDocumentView(MyModelView):
@@ -782,10 +761,10 @@ class PolicyDocumentView(MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    inline_models = (
-        InlineFile(File),
-    )
-    inline_model_form_converter = FileModelConverter
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+    inline_models = [InlineFile(File)]
 
 
 class TabledReportView(MyModelView):
@@ -806,10 +785,10 @@ class TabledReportView(MyModelView):
         },
         }
     form_excluded_columns = ('nid', )
-    inline_models = (
-        InlineFile(File),
-    )
-    inline_model_form_converter = FileModelConverter
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+    inline_models = [InlineFile(File)]
 
 
 class EmailTemplateView(MyModelView):
@@ -833,6 +812,35 @@ class EmailTemplateView(MyModelView):
         }
 
 
+class InlineBillEventsForm(InlineFormAdmin):
+    form_columns = (
+        'id',
+        'date',
+        'type',
+        'title',
+        'house',
+        'member',
+        )
+    form_choices = {
+        'type': [
+            ('bill-introduced', 'Bill introduced'),
+            ('bill-passed', 'Bill passed'),
+            ('bill-signed', 'Bill signed'),
+            ('bill-enacted', 'Bill enacted'),
+        ]
+    }
+    form_ajax_refs = {
+        'member': {
+            'fields': ('name',),
+            'page_size': 25
+        },
+    }
+
+    def on_model_change(self, form, model):
+        # make sure the new date is timezone aware
+        model.date = model.date.replace(tzinfo=tz.tzlocal())
+
+
 class BillsView(MyModelView):
     column_list = (
         'year',
@@ -853,9 +861,18 @@ class BillsView(MyModelView):
         'date_of_assent',
         'effective_date',
         'act_name',
+        'files',
     )
     column_default_sort = ('year', True)
     column_searchable_list = ('title',)
+    inline_models = [
+        InlineBillEventsForm(Event),
+        InlineFile(File),
+        ]
+    form_args = {
+        'events': {'widget': widgets.InlineBillEventsWidget()},
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
 
 
 class FeaturedContentView(MyModelView):

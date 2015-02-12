@@ -355,7 +355,7 @@ class Bill(db.Model):
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
-    files = db.relationship("File", secondary='bill_files', backref='bills')
+    versions = db.relationship("BillVersion", backref='bill')
 
     def get_code(self):
         out = self.type.prefix if self.type else "X"
@@ -374,10 +374,15 @@ class Bill(db.Model):
             out += " - " + self.title
         return unicode(out)
 
-bill_files_table = db.Table(
-    'bill_files',
-    db.Column('bill_id', db.Integer, db.ForeignKey('bill.id')),
-    db.Column('file_id', db.Integer, db.ForeignKey('file.id')))
+class BillVersion(db.Model):
+    __tablename__ = "bill_versions"
+
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date(), nullable=False)
+    title = db.Column(db.String(), nullable=False)
+    bill_id = db.Column(db.Integer, db.ForeignKey('bill.id', ondelete='CASCADE'), nullable=False)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete='CASCADE'))
+    file = db.relationship('File', backref='bill_version', lazy=False)
 
 
 class File(db.Model):

@@ -140,7 +140,7 @@ class Search:
             "multi_match": {
                 "query": query,
                 "fields": self.search_fields,
-                "type": "phrase"
+                "type": "cross_fields"
             },
         }
         if start_date and end_date:

@@ -385,6 +385,7 @@ class Bill(db.Model):
             out += " - " + self.title
         return unicode(out)
 
+
 class BillVersion(db.Model):
     __tablename__ = "bill_versions"
 

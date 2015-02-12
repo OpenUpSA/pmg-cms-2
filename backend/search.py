@@ -19,6 +19,7 @@ class Search:
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
     search_fields = ["title^3", "description^2", "fulltext"]
+    search_type = "cross_fields"
     es = ElasticSearch(esserver)
     per_batch = 50
     logger = logging.getLogger(__name__)
@@ -117,15 +118,7 @@ class Search:
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
 
-    def search(
-            self,
-            query,
-            size=10,
-            es_from=0,
-            start_date=False,
-            end_date=False,
-            content_type=False,
-            committee=False):
+    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False, committee=False):
         q = {
             "from": es_from,
             "size": size,
@@ -140,7 +133,7 @@ class Search:
             "multi_match": {
                 "query": query,
                 "fields": self.search_fields,
-                "type": "cross_fields"
+                "type": self.search_type,
             },
         }
         if start_date and end_date:
@@ -179,18 +172,13 @@ class Search:
         else:
             return self.es.search(q, index=self.index_name)
 
-    def count(
-            self,
-            query,
-            content_type=False,
-            start_date=False,
-            end_date=False):
+    def count(self, query, content_type=False, start_date=False, end_date=False):
         q1 = {
             "query": {
                 "multi_match": {
                     "query": query,
                     "fields": self.search_fields,
-                    "type": "phrase"
+                    "type": self.search_type,
                 },
             },
             "aggregations": {
@@ -206,7 +194,7 @@ class Search:
                 "multi_match": {
                     "query": query,
                     "fields": self.search_fields,
-                    "type": "phrase"
+                    "type": self.search_type,
                 },
             },
             "aggregations": {
@@ -219,14 +207,8 @@ class Search:
             }
         }
         return [
-            self.es.search(
-                q1,
-                index=self.index_name,
-                size=0),
-            self.es.search(
-                q2,
-                index=self.index_name,
-                size=0)]
+            self.es.search(q1, index=self.index_name, size=0),
+            self.es.search(q2, index=self.index_name, size=0)]
 
     def reindex_everything(self):
         data_types = Transforms.data_types()

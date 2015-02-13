@@ -5,7 +5,7 @@ $(function() {
     self.init = function() {
       self.form = $('#new_alert_form');
       self.form.on('submit', function(e) {
-        if (self.form.find('[name=previewed]').val() != "1") {
+        if (self.form.find('[name=previewed]').val() == "0") {
           e.preventDefault();
           self.preview();
         }
@@ -37,6 +37,7 @@ $(function() {
         })
         .fail(function() {
           // validation failed, submit the form normally to get errors
+          self.form.find('[name=previewed]').val('-1');
           self.form.submit();
         });
     };

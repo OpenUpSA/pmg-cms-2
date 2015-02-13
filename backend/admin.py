@@ -493,10 +493,9 @@ class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
 
     column_list = (
-        'committee',
         'title',
         'date',
-        'content',
+        'committee',
     )
     column_sortable_list = (
         'title',
@@ -512,8 +511,9 @@ class BriefingView(EventView):
         'member',
     )
     form_columns = (
-        'committee',
+        'title',
         'date',
+        'committee',
         'summary',
         'body',
         'content',

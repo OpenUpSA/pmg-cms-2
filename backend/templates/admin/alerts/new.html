@@ -56,28 +56,44 @@
 
       <div class="committee-list">
         <h4>Committees</h4>
-        {% for choice in form.committee_ids %}
-          {% if not choice.data in form.ad_hoc_mapper %}
-            <div class="checkbox">
-              <label>
-                <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
-                {{ choice.label() }}
-              </label>
-            </div>
-          {% endif %}
-        {% endfor %}
+        <div class="committee-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="all1" class="check-all"><label for="all1"><b>All committees</b></label>
+            </label>
+          </div>
+
+          {% for choice in form.committee_ids %}
+            {% if not choice.data in form.ad_hoc_mapper %}
+              <div class="checkbox">
+                <label>
+                  <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
+                  {{ choice.label() }}
+                </label>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
 
         <h4>Ad-Hoc Committees:</h4>
-        {% for choice in form.committee_ids %}
-          {% if choice.data in form.ad_hoc_mapper %}
-            <div class="checkbox">
-              <label>
-                <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
-                {{ choice.label() }}
-              </label>
-            </div>
-          {% endif %}
-        {% endfor %}
+        <div class="committee-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="all2" class="check-all"><label for="all2"><b>All ad-hoc committees</b></label>
+            </label>
+          </div>
+
+          {% for choice in form.committee_ids %}
+            {% if choice.data in form.ad_hoc_mapper %}
+              <div class="checkbox">
+                <label>
+                  <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
+                  {{ choice.label() }}
+                </label>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
       </div>
 
     </fieldset>

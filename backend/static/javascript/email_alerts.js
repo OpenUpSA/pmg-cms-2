@@ -12,8 +12,15 @@ $(function() {
       });
       $('.btn.send').on('click', self.send);
 
+      $('input.check-all').on('change', self.toggleAllCommittees);
+
       self.editor = CKEDITOR.replace('body');
     };
+
+    self.toggleAllCommittees = function(e) {
+      var checked = $(this).prop('checked');
+      $(this).parents('.committee-group').find('[name=committee_ids]').prop('checked', checked);
+    },
 
     self.preview = function() {
       $('.btn.preview').prop('disabled', true);

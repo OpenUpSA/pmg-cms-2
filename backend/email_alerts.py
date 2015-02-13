@@ -9,9 +9,10 @@ from wtforms import StringField, TextAreaField, validators, HiddenField, Boolean
 from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
 from sqlalchemy.orm import lazyload
+from sqlalchemy.sql.expression import distinct
 import mandrill
 
-from models import EmailTemplate, User, Committee
+from models import EmailTemplate, User, Committee, user_committee
 from app import app, db, mail
 from rbac import RBACMixin
 
@@ -143,14 +144,28 @@ class EmailAlertForm(Form):
 
         if self.daily_schedule_subscribers.data:
             log.info("Email recipients includes daily schedule subscribers")
-            groups.append(User.query.filter(User.subscribe_daily_schedule == True).all())
+            groups.append(User.query
+                    .options(
+                        lazyload(User.organisation),
+                        lazyload(User.committee_alerts),
+                    )\
+                    .filter(User.subscribe_daily_schedule == True)
+                    .all())
 
         if self.committee_ids.data:
             log.info("Email recipients includes subscribers for these committees: %s" % self.committee_ids.data)
+            user_ids = db.session\
+                    .query(distinct(user_committee.c.user_id))\
+                    .filter(user_committee.c.committee_id.in_(self.committee_ids.data))\
+                    .all()
+            user_ids = [u[0] for u in user_ids]
+
             groups.append(User.query
-                    .join(User.committee_alerts)
-                    .options(lazyload(User.organisation))
-                    .filter(Committee.id.in_(self.committee_ids.data))
+                    .options(
+                        lazyload(User.organisation),
+                        lazyload(User.committee_alerts),
+                    )\
+                    .filter(User.id.in_(user_ids))
                     .all())
 
         return set(u for u in chain(*groups))

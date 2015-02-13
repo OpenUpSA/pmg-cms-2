@@ -204,20 +204,12 @@ class User(db.Model, UserMixin):
 
 def set_organisation(target, value, oldvalue, initiator):
     """Set a user's organisation, based on the domain of their email address."""
+    if not target.organisation and value:
+        user_domain = value.split("@")[-1]
+        org = Organisation.query.filter_by(domain=user_domain).first()
+        if org:
+            target.organisation = org
 
-    if not target.organisation:
-        try:
-            user_domain = value.split("@")[-1]
-            org = Organisation.query.filter_by(domain=user_domain).first()
-            if org:
-                target.organisation = org
-            db.session.add(target)
-            db.session.commit()
-        except Exception as e:
-            # fail silently, but log the exception
-            logger.exception(e)
-            pass
-    return
 
 # setup listener on User.email attribute
 listen(User.email, 'set', set_organisation)

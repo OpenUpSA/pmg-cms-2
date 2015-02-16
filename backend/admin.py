@@ -605,19 +605,9 @@ class MemberView(MyModelView):
 
 
 class InlineFile(InlineFormAdmin):
-    form_excluded_columns = (
-        'file_mime',
-        'origname',
-        'description',
-        'duration',
-        'playtime',
-        'file_path',
-        'daily_schedule',
-        'gazette',
-        'tabled_committee_report',
-        'policy_document',
-        'bills',
-    )
+    form_columns = (
+        'title',
+        )
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload

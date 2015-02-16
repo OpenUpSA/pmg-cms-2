@@ -496,21 +496,26 @@ class WithBodyContent(object):
     that has a body or summary attribute, and delegate to it. """
     @property
     def content_body(self):
-        for c in self.content:
-            if c.body:
-                return c.body
+        return self.main_content.body
 
     @property
     def content_summary(self):
+        return self.main_content.summary
+
+    @property
+    def main_content(self):
         for c in self.content:
-            if c.summary:
-                return c.summary
+            if c.type == self._content_type:
+                return c
+
+        return Content(event=self, type=self._content_type)
 
 
 class CommitteeMeeting(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
+    _content_type = 'committee-meeting-report'
     chairperson = db.Column(db.String(256))
 
     def check_permission(self):
@@ -521,6 +526,7 @@ class CommitteeMeeting(WithBodyContent, Event):
 
             return current_user.subscribed_to_committee(self.committee)
         return True
+
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
@@ -537,12 +543,14 @@ class Hansard(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'plenary'
     }
+    _content_type = 'hansard'
 
 
 class Briefing(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }
+    _content_type = 'briefing'
 
 
 class BillIntroduction(Event):

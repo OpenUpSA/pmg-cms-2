@@ -127,7 +127,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     name = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255))
+    password = db.Column(db.String(255), default='', server_default='', nullable=False)
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
     confirmed_at = db.Column(db.DateTime(timezone=True))
     last_login_at = db.Column(db.DateTime(timezone=True))

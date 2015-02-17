@@ -11,6 +11,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
+from flask import url_for
 from flask.ext.security import UserMixin, RoleMixin, \
     Security, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import models_committed
@@ -370,6 +371,7 @@ class Bill(db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['code'] = self.code
+        tmp['url'] = url_for('resource_list', resource='bill', resource_id=self.id, _external=True)
         return tmp
 
     def __unicode__(self):
@@ -523,7 +525,6 @@ class CommitteeMeeting(WithBodyContent, Event):
         if self.committee and self.committee.premium:
             if not current_user.is_authenticated():
                 return False
-
             return current_user.subscribed_to_committee(self.committee)
         return True
 
@@ -536,6 +537,7 @@ class CommitteeMeeting(WithBodyContent, Event):
                 # remove premium content
                 tmp['premium_content_excluded'] = True
                 tmp['content'] = []
+        tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -545,12 +547,22 @@ class Hansard(WithBodyContent, Event):
     }
     _content_type = 'hansard'
 
+    def to_dict(self, include_related=False):
+        tmp = super(Hansard, self).to_dict(include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='hansard', resource_id=self.id, _external=True)
+        return tmp
+
 
 class Briefing(WithBodyContent, Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }
     _content_type = 'briefing'
+
+    def to_dict(self, include_related=False):
+        tmp = super(Briefing, self).to_dict(include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='briefing', resource_id=self.id, _external=True)
+        return tmp
 
 
 class BillIntroduction(Event):
@@ -618,6 +630,7 @@ class Member(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='member', resource_id=self.id, _external=True)
 
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
@@ -658,6 +671,11 @@ class Committee(db.Model):
         if self.house:
             tmp = self.house.name_short + " " + tmp
         return unicode(tmp)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='committee', resource_id=self.id, _external=True)
+        return tmp
 
 
 class Membership(db.Model):
@@ -714,6 +732,11 @@ class QuestionReply(db.Model):
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='question_reply', resource_id=self.id, _external=True)
+        return tmp
+
 
 # === Tabled Committee Report === #
 
@@ -738,6 +761,11 @@ class TabledCommitteeReport(db.Model):
 
     def __unicode__(self):
         return self.title or ('<TabledCommitteeReport %s>' % self.id)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
+        return tmp
 
 tabled_committee_report_file_table = db.Table(
     'tabled_committee_report_file_join',
@@ -770,6 +798,11 @@ class CallForComment(db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
+        return tmp
+
 
 # === Policy document === #
 
@@ -783,8 +816,12 @@ class PolicyDocument(db.Model):
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
 
-
     files = db.relationship("File", secondary='policy_document_file_join', backref='policy_document')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
+        return tmp
 
 policy_document_file_table = db.Table(
     'policy_document_file_join',
@@ -813,6 +850,11 @@ class Gazette(db.Model):
     nid = db.Column('nid', db.Integer())
 
     files = db.relationship("File", secondary='gazette_file_join', backref="gazette")
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
+        return tmp
 
 gazette_file_table = db.Table(
     'gazette_file_join',
@@ -867,7 +909,13 @@ class DailySchedule(db.Model):
     schedule_date = db.Column(db.Date())
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
+
     files = db.relationship("File", secondary='daily_schedule_file_join', backref='daily_schedule')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
+        return tmp
 
 daily_schedule_file_table = db.Table(
     'daily_schedule_file_join',

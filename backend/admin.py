@@ -937,7 +937,7 @@ admin.add_view(
         category="Other Content"))
 admin.add_view(
     HansardView(
-        Event,
+        Hansard,
         db.session,
         type="plenary",
         name="Hansards",
@@ -959,7 +959,7 @@ admin.add_view(
         category="Other Content"))
 admin.add_view(
     BriefingView(
-        Event,
+        Briefing,
         db.session,
         type="media-briefing",
         name="Media Briefings",

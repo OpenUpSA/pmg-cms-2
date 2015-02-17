@@ -606,6 +606,7 @@ class MemberView(MyModelView):
 
 class InlineFile(InlineFormAdmin):
     form_columns = (
+        'id',
         'title',
         )
 

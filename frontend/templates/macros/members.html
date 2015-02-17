@@ -1,0 +1,14 @@
+{% macro member_badge(member, chairperson=False) -%}
+  {%- if member.profile_pic_url %}
+    <a href="{{ member|member_url }}"><img class="member-profile-pic {% if chairperson %}chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+  {% else %}
+    <p class="text-muted">No image available</p>
+  {% endif %}
+  <h4><a href="{{ member|member_url }}">{{ member.name }}</a></h4>
+  {% if chairperson %}
+  <div class="label label-success">Chairperson</div>
+  {% endif %}
+  {% if member.party %}
+    <span class="label label-warning">{{ member.party.name }}</span>
+  {% endif %}
+{%- endmacro %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros/members.html' import member_badge %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
@@ -118,18 +119,7 @@
               {% for membership in committee.memberships %}
                 {% set member = membership.member %}
                 {% if membership.type == 'chairperson'%}
-                  <li class="clearfix">
-                    {%- if member.profile_pic_url %}
-                      <a href="{{ member|member_url }}"><img class="member-profile-pic chairperson" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
-                    {% else %}
-                      <p class="text-muted">No image available</p>
-                    {% endif %}
-                    <h4><a href="{{ member|member_url }}">{{ member.name }}</a></h4>
-                    <div class="label label-success">Chairperson</div>
-                    {% if member.party %}
-                      <span class="label label-warning">{{ member.party.name }}</span>
-                    {% endif %}
-                  </li>
+                  <li class="clearfix">{{ member_badge(member, chairperson=True) }}</li>
                   <hr>
                 {% endif %}
               {% endfor %}
@@ -143,17 +133,7 @@
               {% for membership in committee.memberships[0:break] %}
                 {% set member = membership.member %}
                 {% if not membership.type or membership.type != 'chairperson'%}
-                  <li class="clearfix">
-                    {%- if member.profile_pic_url %}
-                      <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
-                    {% else %}
-                      <p class="text-muted">No image available</p>
-                    {% endif %}
-                    <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
-                    {% if member.party %}
-                      <span class="label label-warning">{{ member.party.name }}</span>
-                    {% endif %}
-                  </li>
+                  <li class="clearfix">{{ member_badge(member) }}</li>
                 {% endif %}
               {% endfor %}
             </ul>
@@ -163,13 +143,7 @@
               {% for membership in committee.memberships[break::] %}
                 {% set member = membership.member %}
                 {% if not membership.type or membership.type != 'chairperson'%}
-                  <li class="clearfix">
-                    <a href="/member/{{ member.id }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
-                    <h4><a href="/member/{{ member.id }}">{{ member.name }}</a></h4>
-                    {% if member.party %}
-                      <span class="label label-warning">{{ member.party.name }}</span>
-                    {% endif %}
-                  </li>
+                  <li class="clearfix">{{ member_badge(member) }}</li>
                 {% endif %}
               {% endfor %}
             </ul>

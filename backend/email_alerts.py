@@ -10,9 +10,10 @@ from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
 from sqlalchemy.orm import lazyload
 from sqlalchemy.sql.expression import distinct
+from sqlalchemy.sql.functions import count
 import mandrill
 
-from models import EmailTemplate, User, Committee, user_committee
+from models import EmailTemplate, User, Committee, user_committee_alerts
 from app import app, db, mail
 from rbac import RBACMixin
 
@@ -87,7 +88,21 @@ class EmailAlertForm(Form):
     def __init__(self, *args, **kwargs):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
         committee_list = Committee.query.order_by(Committee.house_id.desc()).order_by(Committee.name).all()
-        self.committee_ids.choices = [(c.id, c.name + " (" + c.house.name_short + ")") for c in committee_list]
+
+        # count of daily schedule subscribers
+        subs = User.query.filter(User.subscribe_daily_schedule == True).count()
+        self.daily_schedule_subscribers.label.text += " (%d)" % subs
+
+        # count subscribers for committees
+        subscriber_counts = {t[0]: t[1]
+                for t in db.session\
+                    .query(user_committee_alerts.c.committee_id,
+                           count(1))\
+                    .group_by(user_committee_alerts.c.committee_id)\
+                    .all()}
+
+        self.committee_ids.choices = [(c.id, "%s - %s (%d)" % (c.house.name, c.name, subscriber_counts.get(c.id, 0))) for c in committee_list]
+
         self.message = None
         self.ad_hoc_mapper = []
         for committee in committee_list:
@@ -155,8 +170,8 @@ class EmailAlertForm(Form):
         if self.committee_ids.data:
             log.info("Email recipients includes subscribers for these committees: %s" % self.committee_ids.data)
             user_ids = db.session\
-                    .query(distinct(user_committee.c.user_id))\
-                    .filter(user_committee.c.committee_id.in_(self.committee_ids.data))\
+                    .query(distinct(user_committee_alerts.c.user_id))\
+                    .filter(user_committee_alerts.c.committee_id.in_(self.committee_ids.data))\
                     .all()
             user_ids = [u[0] for u in user_ids]
 

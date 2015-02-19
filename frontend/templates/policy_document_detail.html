@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros/attachments.html' import attachments_panel %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
@@ -20,12 +21,10 @@
 <h2>Effective Date: {{ policy_document.effective_date }}</h2>
 {% endif %}
   
-{% for file in policy_document.files %}
-  {% if file.description %}
-  <a href="{{ file.url }}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
-  {% else %}
-  <a href="{{ file.url }}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
-  {% endif %}
-{% endfor %}
+<div class="row">
+  <div class="col-sm-6">
+    {{ attachments_panel("Documents", policy_document.files, 'fa-file-pdf-o') }}
+  </div>
+</div>
 
 {% endblock %}

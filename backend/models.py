@@ -7,7 +7,7 @@ import logging
 import os
 
 from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref
+from sqlalchemy.orm import backref, validates
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
@@ -1022,3 +1022,18 @@ class Redirect(db.Model):
             target = self.new_url
 
         return u'<Redirect from %s to %s>' % (self.old_url, target)
+
+class Page(db.Model):
+    """ A basic CMS page. """
+    __tablename__ = 'page'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String, nullable=False)
+    slug = db.Column(db.String, nullable=False, unique=True, index=True)
+    body = db.Column(db.Text)
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
+
+    @validates('slug')
+    def validate_slug(self, key, value):
+        return value.strip('/')

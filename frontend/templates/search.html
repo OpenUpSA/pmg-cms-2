@@ -15,24 +15,25 @@
 			{% include 'committee_select.html' %}
 		</form>
 
-		<ul class="nav nav-pills nav-stacked" role="tablist">
-			<li role="presentation" {% if (filters.type == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a></li>
+		<div class="list-group">
+			<a class="list-group-item {% if (filters.type == None) %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">All Types</a>
 
 			{% for data_type, name in search_types %}
 				{% if bincount[data_type] %}
-				<li role="presentation" {% if (filters.type == data_type) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{ data_type }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">{{ name }} <span class="label label-default bincount">{{ bincount[data_type] }}</span></a></li>
+				<a class="list-group-item {% if (filters.type == data_type) %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[type]={{ data_type }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}">{{ name }}<span class="badge">{{ bincount[data_type] }}</span></a>
 				{% endif %}
 			{% endfor %}
-		</ul>
+		</div>
 
-		<ul class="nav nav-pills nav-stacked" role="tablist">
-			<li role="presentation" {% if (filters["start_date"] == None) %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Dates</a></li>
+		<div class="list-group">
+			<a class="list-group-item {% if (filters["start_date"] == None) %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}">All Years</a>
+
 			{% for year in years %}
-			{% if yearcount[year] %}
-			<li role="presentation" {% if (filters["start_date"] == year|string + "-01-01") %}class="active"{% endif %}><a href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}&amp;filter[start_date]={{year}}-01-01&amp;filter[end_date]={{year}}-12-31">{{year}} <span class="label label-default bincount">{{ yearcount[year] }}</span></a></li>
-			{% endif %}
+				{% if yearcount[year] %}
+					<a class="list-group-item {% if (filters["start_date"] == year|string + "-01-01") %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}&amp;filter[start_date]={{year}}-01-01&amp;filter[end_date]={{year}}-12-31">{{year}} <span class="badge">{{ yearcount[year] }}</span></a>
+				{% endif %}
 			{% endfor %}
-		</ul>
+		</div>
 		{% endblock %}
 	</div>
 

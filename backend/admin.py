@@ -857,6 +857,9 @@ class PageView(MyModelView):
         'body': {'class': 'ckeditor'},
         }
 
+    def frontend_url(self, model):
+        return FRONTEND_HOST + 'page/%s' % model.slug
+
 
 # initialise admin instance
 admin = Admin(

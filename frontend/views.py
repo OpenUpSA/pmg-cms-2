@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def admin_url(model_name, id):
-    return API_HOST + 'admin/%s/edit/?id=%s' % (model_name, id)
+    return API_HOST.replace('http', 'https') + 'admin/%s/edit/?id=%s' % (model_name, id)
 
 
 @app.template_filter('pretty_date')

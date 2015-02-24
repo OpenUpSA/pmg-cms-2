@@ -949,7 +949,7 @@ def page(pagename):
 
     return render_template('page.html',
         page=page,
-        admin_edit_url=admin_url('page', page['id']))
+        admin_edit_url=admin_url('pages', page['id']))
 
 
 # some old content contains links files which are in S3:

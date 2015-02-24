@@ -140,11 +140,28 @@ class Search:
             },
         }
         q["query"]["filtered"]["query"] = {
-            "multi_match": {
-                "query": query,
-                "fields": self.search_fields,
-                "type": self.search_type,
-            },
+            "bool": {
+                # best across all the fields
+                "must": {
+                    "multi_match": {
+                        "query": query,
+                        "fields": self.search_fields,
+                        "type": "best_fields",
+                        # this helps skip stopwords, see
+                        # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
+                        "cutoff_frequency": 0.001,
+                    },
+                },
+                # try to match to a phrase
+                "should": {
+                    "multi_match": {
+                        "query": query,
+                        "fields": self.search_fields,
+                        "type": "phrase"
+                    },
+                }
+            }
+
         }
         if start_date and end_date:
             q["query"]["filtered"]["filter"]["range"] = {

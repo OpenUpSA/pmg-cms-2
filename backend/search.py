@@ -18,7 +18,7 @@ class Search:
 
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
-    search_fields = ["title^3", "description^2", "fulltext"]
+    search_fields = ["title^2", "description", "fulltext"]
     search_type = "cross_fields"
     es = ElasticSearch(esserver)
     per_batch = 50
@@ -130,6 +130,8 @@ class Search:
             "from": es_from,
             "size": size,
             "sort": {'_score': {'order': 'desc'}},
+            # don't return big fields
+            "_source": {"exclude": ["fulltext", "description"]},
             "query": {
                 "filtered": {
                     "filter": {},

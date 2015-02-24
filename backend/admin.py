@@ -391,16 +391,12 @@ class CommitteeMeetingView(EventView):
         'bills',
     )
     form_extra_fields = {
-        'summary': widgets.CKTextAreaField('Summary'),
-        'body': widgets.CKTextAreaField('Body'),
-        }
+        'summary': fields.TextAreaField('Summary'),
+        'body': fields.TextAreaField('Body'),
+    }
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        }
+        'body': {'class': 'custom-ckeditor'},
+        'summary': {'class': 'custom-ckeditor'}
     }
     form_ajax_refs = {
         'bills': {
@@ -453,12 +449,10 @@ class HansardView(EventView):
         'content',
     )
     form_extra_fields = {
-        'body': widgets.CKTextAreaField('Body'),
+        'body': fields.TextAreaField('Body'),
         }
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
+        'body': {'class': 'custom-ckeditor'},
         }
     inline_models = (
         InlineContent(Content),
@@ -505,16 +499,12 @@ class BriefingView(EventView):
         'content',
     )
     form_extra_fields = {
-        'summary': widgets.CKTextAreaField('Summary'),
-        'body': widgets.CKTextAreaField('Body'),
+        'summary': fields.TextAreaField('Summary'),
+        'body': fields.TextAreaField('Body'),
         }
     form_widget_args = {
-        'summary': {
-            'class': 'ckeditor'
-        },
-        'body': {
-            'class': 'ckeditor'
-        },
+        'summary': {'class': 'custom-ckeditor'},
+        'body': {'class': 'custom-ckeditor'},
         }
     inline_models = (
         InlineContent(Content),
@@ -632,9 +622,7 @@ class QuestionReplyView(MyModelView):
     column_searchable_list = ('title', 'question_number')
     form_excluded_columns = ('nid', )
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
+        'body': {'class': 'custom-ckeditor'},
         }
 
 
@@ -648,12 +636,8 @@ class CallForCommentView(MyModelView):
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        },
+        'body': {'class': 'custom-ckeditor'},
+        'summary': {'class': 'custom-ckeditor'},
         }
 
 
@@ -667,7 +651,7 @@ class DailyScheduleView(MyModelView):
     column_searchable_list = ('title', )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'custom-ckeditor'
         },
     }
     form_excluded_columns = ('nid', )
@@ -711,12 +695,8 @@ class TabledReportView(MyModelView):
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
-        'summary': {
-            'class': 'ckeditor'
-        },
+        'body': {'class': 'custom-ckeditor'},
+        'summary': {'class': 'custom-ckeditor'},
         }
     form_excluded_columns = ('nid', )
     form_args = {
@@ -740,9 +720,7 @@ class EmailTemplateView(MyModelView):
         'body',
     )
     form_widget_args = {
-        'body': {
-            'class': 'ckeditor'
-        },
+        'body': {'class': 'custom-ckeditor'},
         }
 
 
@@ -854,7 +832,7 @@ class PageView(MyModelView):
 
     form_excluded_columns = ('created_at', 'updated_at')
     form_widget_args = {
-        'body': {'class': 'ckeditor'},
+        'body': {'class': 'custom-ckeditor'},
         }
 
     def frontend_url(self, model):

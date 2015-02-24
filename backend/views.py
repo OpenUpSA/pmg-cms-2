@@ -380,3 +380,18 @@ def check_redirect():
                     out['redirect'] = '/daily-schedule/' + str(daily_schedule.id) + '/'
 
     return send_api_response(out)
+
+
+@app.route('/page/')
+def page():
+    slug = request.args.get('slug', '').strip()
+    if not slug:
+        raise ApiException(404, "No such page")
+
+    slug = Page().validate_slug(None, slug)
+
+    page = Page.query.filter(Page.slug == slug).first()
+    if not page:
+        raise ApiException(404, "No such page")
+
+    return send_api_response(serializers.queryset_to_json(page))

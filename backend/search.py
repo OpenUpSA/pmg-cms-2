@@ -164,15 +164,15 @@ class Search:
             "fields": {
                 "title": {},
                 "description": {
-                    "fragment_size": 500,
+                    "fragment_size": 80,
                     "number_of_fragments": 1,
                     "no_match_size": 0,
-                    "tag_schema": "styled"},
+                    },
                 "fulltext": {
-                    "fragment_size": 500,
+                    "fragment_size": 80,
                     "number_of_fragments": 1,
                     "no_match_size": 0,
-                    "tag_schema": "styled"}}}
+                    }}}
         self.logger.debug("query_statement: %s" % q)
         if (content_type):
             return self.es.search(

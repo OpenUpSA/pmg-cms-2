@@ -847,6 +847,16 @@ class RedirectView(MyModelView):
     column_searchable_list = ('old_url', 'new_url')
     column_default_sort = 'old_url'
 
+class PageView(MyModelView):
+    column_list = ('slug', 'title')
+    column_searchable_list = ('slug', 'title')
+    column_default_sort = 'slug'
+
+    form_excluded_columns = ('created_at', 'updated_at')
+    form_widget_args = {
+        'body': {'class': 'ckeditor'},
+        }
+
 
 # initialise admin instance
 admin = Admin(
@@ -1000,6 +1010,13 @@ admin.add_view(
         category='Other Content',
         name="Legacy Redirects",
         endpoint='redirects'))
+admin.add_view(
+    PageView(
+        Page,
+        db.session,
+        category='Other Content',
+        name="Static Pages",
+        endpoint='pages'))
 
 # Email alerts
 admin.add_view(

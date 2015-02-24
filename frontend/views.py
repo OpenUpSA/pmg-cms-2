@@ -936,19 +936,20 @@ def search(page=0):
         committees=committees,
         search_types=search_types)
 
-@app.route('/page/<string:pagename>')
+@app.route('/page/<path:pagename>')
 def page(pagename):
     """
     Serves a page from templates/pages
     """
     logger.debug("Attempting to serve page: " + pagename)
-    fname = "pages/" + re.sub(r'[^\w+_-]', '', pagename) + ".html"
-    full_fname = os.path.join(app.root_path, "templates", fname)
-    if not os.path.isfile(full_fname):
-       return abort(404)
-    return render_template(
-        fname
-    )
+    page = load_from_api('page', params={'slug': pagename})
+
+    if page['slug'] != pagename:
+        return redirect(url_for('page', pagename=page['slug']))
+
+    return render_template('page.html',
+        page=page,
+        admin_edit_url=admin_url('page', page['id']))
 
 
 # some old content contains links files which are in S3:

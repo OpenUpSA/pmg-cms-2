@@ -157,8 +157,8 @@ class Search:
             }
 
         q["highlight"] = {
-            "pre_tags": ["<strong>"],
-            "post_tags": ["</strong>"],
+            "pre_tags": ["<mark>"],
+            "post_tags": ["</mark>"],
             "fields": {
                 "title": {},
                 "description": {

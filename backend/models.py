@@ -880,21 +880,6 @@ class Featured(db.Model):
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
     start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
-    tabled_committee_report = db.relationship(
-        'TabledCommitteeReport',
-        secondary='featured_tabled_committee_report_join')
-
-featured_tabled_committee_report_join = db.Table(
-    'featured_tabled_committee_report_join',
-    db.Model.metadata,
-    db.Column(
-        'featured_id',
-        db.Integer,
-        db.ForeignKey('featured.id')),
-    db.Column(
-        'tabled_committee_report_id',
-        db.Integer,
-        db.ForeignKey('tabled_committee_report.id')))
 
 # === Daily schedules === #
 

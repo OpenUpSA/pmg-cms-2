@@ -46,18 +46,6 @@ class InlineContentWidget(RenderTemplateWidget):
         super(InlineContentWidget, self).__init__('admin/inline_content.html')
 
 
-# Define wtforms widget and field
-class CKTextAreaWidget(widgets.TextArea):
-
-    def __call__(self, field, **kwargs):
-        kwargs.setdefault('class_', 'ckeditor')
-        return super(CKTextAreaWidget, self).__call__(field, **kwargs)
-
-
-class CKTextAreaField(fields.TextAreaField):
-    widget = CKTextAreaWidget()
-
-
 # This widget uses custom template for inline field list
 class InlineFileWidget(RenderTemplateWidget):
 

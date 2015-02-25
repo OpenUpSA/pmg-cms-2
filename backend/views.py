@@ -177,45 +177,51 @@ def search():
     """
     Search through ElasticSearch
     """
-
-    search = Search()
-    filters = {}
     logger.debug("Search args: %s" % request.args)
-    q = request.args.get('q')
-    page = 0
-    if (request.args.get('page')):
-        page = int(request.args.get('page'))
-    per_page = app.config['RESULTS_PER_PAGE']
-    if (request.args.get('per_page')):
-        per_page = int(request.args.get('per_page'))
-    filters["start_date"] = request.args.get('filter[start_date]')
-    filters["end_date"] = request.args.get('filter[end_date]')
-    filters["type"] = request.args.get('filter[type]')
-    filters["committee"] = request.args.get('filter[committee]')
-    searchresult = search.search(
+    q = request.args.get('q', '').strip()
+
+    try:
+        page = int(request.args.get('page', ''))
+    except ValueError:
+        page = 0
+
+    try:
+        per_page = int(request.args.get('per_page', ''))
+    except ValueError:
+        per_page = app.config['SEARCH_RESULTS_PER_PAGE']
+
+    searchresult = Search().search(
         q,
         per_page,
         page * per_page,
-        content_type=filters["type"],
-        start_date=filters["start_date"],
-        end_date=filters["end_date"],
-        committee=filters["committee"])
-    bincounts = search.count(q)
+        document_type=request.args.get('type'),
+        start_date=request.args.get('start_date'),
+        end_date=request.args.get('end_date'),
+        committee=request.args.get('committee'))
 
-    result = {}
-    result["result"] = searchresult["hits"]["hits"]
-    result["count"] = searchresult["hits"]["total"]
-    result["max_score"] = searchresult["hits"]["max_score"]
-    result["bincount"] = {}
-    result["bincount"]["types"] = bincounts[0]["aggregations"]["types"]["buckets"]
-    result["bincount"]["years"] = bincounts[1]["aggregations"]["years"]["buckets"]
-    logger.debug("Pages %i", math.ceil(result["count"] / per_page))
+    aggs = searchresult["aggregations"]
 
-    if result["count"] > (page + 1) * per_page:
+    result = {
+        "took": searchresult["took"],
+        "results": searchresult["hits"]["hits"],
+        "page": page,
+        "per_page": per_page,
+        "pages": int(math.ceil(searchresult["hits"]["total"] / float(per_page))),
+        "hits": searchresult["hits"]["total"],
+        "max_score": searchresult["hits"]["max_score"],
+        "bincount": {
+            "types": aggs["types"]["types"]["buckets"],
+            "years": aggs["years"]["years"]["buckets"],
+        }
+    }
+
+    logger.debug("Pages %i", math.ceil(result["hits"] / per_page))
+
+    if result["hits"] > (page + 1) * per_page:
         result["next"] = request.url_root + "search/?q=" + q + \
             "&page=" + str(page + 1) + "&per_page=" + str(per_page)
         result["last"] = request.url_root + "search/?q=" + q + "&page=" + \
-            str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
+            str(int(math.ceil(result["hits"] / per_page))) + "&per_page=" + str(per_page)
         result["first"] = request.url_root + "search/?q=" + \
             q + "&page=0" + "&per_page=" + str(per_page)
 

@@ -190,27 +190,24 @@ def search():
     except ValueError:
         per_page = app.config['SEARCH_RESULTS_PER_PAGE']
 
-    filters = {}
-    filters["start_date"] = request.args.get('filter[start_date]')
-    filters["end_date"] = request.args.get('filter[end_date]')
-    filters["type"] = request.args.get('filter[type]')
-    filters["committee"] = request.args.get('filter[committee]')
-
     searchresult = Search().search(
         q,
         per_page,
         page * per_page,
-        document_type=filters["type"],
-        start_date=filters["start_date"],
-        end_date=filters["end_date"],
-        committee=filters["committee"])
+        document_type=request.args.get('type'),
+        start_date=request.args.get('start_date'),
+        end_date=request.args.get('end_date'),
+        committee=request.args.get('committee'))
 
     aggs = searchresult["aggregations"]
 
     result = {
         "took": searchresult["took"],
-        "result": searchresult["hits"]["hits"],
-        "count": searchresult["hits"]["total"],
+        "results": searchresult["hits"]["hits"],
+        "page": page,
+        "per_page": per_page,
+        "pages": int(math.ceil(searchresult["hits"]["total"] / float(per_page))),
+        "hits": searchresult["hits"]["total"],
         "max_score": searchresult["hits"]["max_score"],
         "bincount": {
             "types": aggs["types"]["types"]["buckets"],
@@ -218,13 +215,13 @@ def search():
         }
     }
 
-    logger.debug("Pages %i", math.ceil(result["count"] / per_page))
+    logger.debug("Pages %i", math.ceil(result["hits"] / per_page))
 
-    if result["count"] > (page + 1) * per_page:
+    if result["hits"] > (page + 1) * per_page:
         result["next"] = request.url_root + "search/?q=" + q + \
             "&page=" + str(page + 1) + "&per_page=" + str(per_page)
         result["last"] = request.url_root + "search/?q=" + q + "&page=" + \
-            str(int(math.ceil(result["count"] / per_page))) + "&per_page=" + str(per_page)
+            str(int(math.ceil(result["hits"] / per_page))) + "&per_page=" + str(per_page)
         result["first"] = request.url_root + "search/?q=" + \
             q + "&page=0" + "&per_page=" + str(per_page)
 

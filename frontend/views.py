@@ -871,7 +871,6 @@ def search(page=0):
     # do the search
     search = load_from_api('search', params=params)
 
-    search_url = request.url_root + "search"
     years = range(1997, datetime.now().year + 1)
     years.reverse()
 

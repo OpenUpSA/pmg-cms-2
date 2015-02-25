@@ -899,6 +899,12 @@ def search(page=0):
             ("daily_schedule", "Daily Schedules"),
             ]
 
+    def search_url(**kwargs):
+        args = dict(filters)
+        args.update(kwargs)
+        args = {('filter[%s]' % k): v for k, v in args.iteritems() if v}
+        return url_for('search', q=q, **args)
+
     return render_template(
         'search.html',
         q=q,
@@ -906,7 +912,8 @@ def search(page=0):
         num_pages=search["pages"],
         page=search["page"],
         per_page=search["per_page"],
-        url=search_url,
+        search_url=search_url,
+        url=url_for('search')[:-1],
         query_string=request.query_string,
         filters=filters,
         years=years,

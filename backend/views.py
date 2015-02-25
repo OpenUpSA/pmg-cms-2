@@ -177,38 +177,47 @@ def search():
     """
     Search through ElasticSearch
     """
-
-    search = Search()
-    filters = {}
     logger.debug("Search args: %s" % request.args)
-    q = request.args.get('q')
-    page = 0
-    if (request.args.get('page')):
-        page = int(request.args.get('page'))
-    per_page = app.config['RESULTS_PER_PAGE']
-    if (request.args.get('per_page')):
-        per_page = int(request.args.get('per_page'))
+    q = request.args.get('q', '').strip()
+
+    try:
+        page = int(request.args.get('page', ''))
+    except ValueError:
+        page = 0
+
+    try:
+        per_page = int(request.args.get('per_page', ''))
+    except ValueError:
+        per_page = app.config['SEARCH_RESULTS_PER_PAGE']
+
+    filters = {}
     filters["start_date"] = request.args.get('filter[start_date]')
     filters["end_date"] = request.args.get('filter[end_date]')
     filters["type"] = request.args.get('filter[type]')
     filters["committee"] = request.args.get('filter[committee]')
-    searchresult = search.search(
+
+    searchresult = Search().search(
         q,
         per_page,
         page * per_page,
-        content_type=filters["type"],
+        document_type=filters["type"],
         start_date=filters["start_date"],
         end_date=filters["end_date"],
         committee=filters["committee"])
-    bincounts = search.count(q)
 
-    result = {}
-    result["result"] = searchresult["hits"]["hits"]
-    result["count"] = searchresult["hits"]["total"]
-    result["max_score"] = searchresult["hits"]["max_score"]
-    result["bincount"] = {}
-    result["bincount"]["types"] = bincounts[0]["aggregations"]["types"]["buckets"]
-    result["bincount"]["years"] = bincounts[1]["aggregations"]["years"]["buckets"]
+    aggs = searchresult["aggregations"]
+
+    result = {
+        "took": searchresult["took"],
+        "result": searchresult["hits"]["hits"],
+        "count": searchresult["hits"]["total"],
+        "max_score": searchresult["hits"]["max_score"],
+        "bincount": {
+            "types": aggs["types"]["types"]["buckets"],
+            "years": aggs["years"]["years"]["buckets"],
+        }
+    }
+
     logger.debug("Pages %i", math.ceil(result["count"] / per_page))
 
     if result["count"] > (page + 1) * per_page:

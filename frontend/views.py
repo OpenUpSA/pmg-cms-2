@@ -851,58 +851,38 @@ def search(page=0):
     """
     Display search page
     """
-    logger.debug("search page called")
-
-    params = {}
     filters = {}
-    q = params["q"] = request.args.get('q')
+    filters["type"] = request.args.get('filter[type]', '')
+    filters["start_date"] = request.args.get('filter[start_date]', '')
+    filters["end_date"] = request.args.get('filter[end_date]', '')
+    filters["committee"] = request.args.get('filter[committee]', '')
+
+    # support legacy search URLs that allowed "None" as a value
+    for k, v in filters.iteritems():
+        if v == "None":
+            filters[k] = None
+
+    q = request.args.get('q', '').strip()
+
+    params = dict(filters)
+    params["q"] = q
     params["page"] = page
 
-    filters["type"] = params['filter[type]'] = request.args.get('filter[type]')
-    filters["start_date"] = params[
-        'filter[start_date]'] = request.args.get('filter[start_date]')
-    filters["end_date"] = params[
-        'filter[end_date]'] = request.args.get('filter[end_date]')
-    filters["committee"] = params[
-        'filter[committee]'] = request.args.get('filter[committee]')
+    # do the search
+    search = load_from_api('search', params=params)
 
-    if (filters["type"] == "None"):
-        params['filter[type]'] = filters["type"] = None
-    if (filters["start_date"] == "None"):
-        params['filter[start_date]'] = filters["start_date"] = None
-    if (filters["end_date"] == "None"):
-        params['filter[end_date]'] = filters["end_date"] = None
-    if (filters["committee"] == "None"):
-        params['filter[committee]'] = filters["committee"] = None
-
-    query_string = request.query_string
-
-    per_page = app.config['RESULTS_PER_PAGE']
-    if (request.args.get('per_page')):
-        per_page = int(request.args.get('per_page'))
-    print params
-    searchresult = load_from_api('search', params=params)
-
-    result = {}
-
-    result = searchresult["result"]
-    count = searchresult["count"]
     search_url = request.url_root + "search"
     years = range(1997, datetime.now().year + 1)
     years.reverse()
 
-    num_pages = int(math.ceil(float(count) / float(per_page)))
-    # bincounts = search.count(q)
-    # bincount_array = bincounts[0]["aggregations"]["types"]["buckets"]
-    # print "query_statement", bincounts[1]["aggregations"]["years"]["buckets"]
     bincount = {}
-    for bin in searchresult["bincount"]["types"]:
+    for bin in search["bincount"]["types"]:
         bincount[bin["key"]] = bin["doc_count"]
     yearcount = {}
-    for year in searchresult["bincount"]["years"]:
+    for year in search["bincount"]["years"]:
         yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
+
+    committees = load_from_api('committee', return_everything=True)['results']
 
     search_types = [
             ("committee", "Committees"),
@@ -922,13 +902,12 @@ def search(page=0):
     return render_template(
         'search.html',
         q=q,
-        results=result,
-        count=count,
-        num_pages=num_pages,
-        page=page,
-        per_page=per_page,
+        search=search,
+        num_pages=search["pages"],
+        page=search["page"],
+        per_page=search["per_page"],
         url=search_url,
-        query_string=query_string,
+        query_string=request.query_string,
         filters=filters,
         years=years,
         bincount=bincount,

@@ -16,7 +16,7 @@
 		</form>
 
 		<div class="list-group">
-			<a class="list-group-item {% if (filters.type == None) %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}"><b>All Types</b></a>
+			<a class="list-group-item {% if not filters.type %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[start_date]={{filters['start_date']}}&amp;filter[end_date]={{filters['end_date']}}"><b>All Types</b></a>
 
 			{% for data_type, name in search_types %}
 				{% if bincount[data_type] %}
@@ -26,7 +26,7 @@
 		</div>
 
 		<div class="list-group">
-			<a class="list-group-item {% if (filters["start_date"] == None) %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}"><b>All Years</b></a>
+			<a class="list-group-item {% if not filters["start_date"] %}active{% endif %}" href="{{ url }}/?q={{ q }}&amp;filter[type]={{filters.type}}"><b>All Years</b></a>
 
 			{% for year in years %}
 				{% if yearcount[year] %}
@@ -38,9 +38,9 @@
 	</div>
 
 	<div class="col-sm-9 justify-p">
-		<h5>Total Results: {{ count }}</h5>
+		<h5>Total Results: {{ search.hits }}</h5>
 		<table class="table table-striped table-bordered">
-			{% for result in results %}
+			{% for result in search.results %}
 			<tr>
 				<td>
 					{% include result._type + '_stub.html' %}

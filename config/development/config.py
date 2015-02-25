@@ -7,6 +7,7 @@ API_HOST = "http://api.pmg.dev:5001/"
 FRONTEND_HOST = "http://pmg.dev:5000/"
 SESSION_COOKIE_DOMAIN = "pmg.dev"
 RESULTS_PER_PAGE = 50
+SEARCH_RESULTS_PER_PAGE = 20
 SQLALCHEMY_ECHO = False
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET

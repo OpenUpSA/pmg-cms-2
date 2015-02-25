@@ -2,6 +2,7 @@ import sys
 import math
 import argparse
 import logging
+import json
 
 import requests
 from pyelasticsearch import ElasticSearch
@@ -125,24 +126,43 @@ class Search:
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
 
-    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, content_type=False, committee=False):
+    def build_filters(self, start_date, end_date, document_type, committee):
+        filters = {}
+
+        if start_date and end_date:
+            filters["date"] = {
+                "range": {
+                    "date": {
+                        "gte": start_date,
+                        "lte": end_date,
+                    }
+                }
+            }
+
+        if committee:
+            filters["committe"] = {
+                "term": {"committee_id": committee}
+            }
+
+        if document_type:
+            filters["document_type"] = {
+                "term": {"_type": document_type},
+            }
+
+        return filters
+
+
+    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False):
+        filters = self.build_filters(start_date, end_date, document_type, committee)
+
         q = {
-            "from": es_from,
-            "size": size,
-            "sort": {'_score': {'order': 'desc'}},
-            # don't return big fields
-            "_source": {"exclude": ["fulltext", "description"]},
-            "query": {
-                "filtered": {
-                    "filter": {},
-                    "query": {},
-                },
-            },
-        }
-        q["query"]["filtered"]["query"] = {
+            # We do two queries, one is a general term query across the fields,
+            # the other is a phrase query. At the very least, items *must*
+            # match the term search, and items are preferred if they
+            # also match the phrase search.
             "bool": {
-                # best across all the fields
                 "must": {
+                    # best across all the fields
                     "multi_match": {
                         "query": query,
                         "fields": self.search_fields,
@@ -152,8 +172,8 @@ class Search:
                         "cutoff_frequency": 0.001,
                     },
                 },
-                # try to match to a phrase
                 "should": {
+                    # try to match to a phrase
                     "multi_match": {
                         "query": query,
                         "fields": self.search_fields,
@@ -161,81 +181,59 @@ class Search:
                     },
                 }
             }
-
         }
-        if start_date and end_date:
-            q["query"]["filtered"]["filter"]["range"] = {
-                "date": {
-                    "gte": start_date,
-                    "lte": end_date,
-                }
-            }
-        if committee:
-            q["query"]["filtered"]["filter"]["term"] = {
-                "committee_id": committee
-            }
 
-        q["highlight"] = {
-            "pre_tags": ["<mark>"],
-            "post_tags": ["</mark>"],
-            "fields": {
-                "title": {},
-                "description": {
-                    "fragment_size": 80,
-                    "number_of_fragments": 1,
-                    "no_match_size": 0,
-                    },
-                "fulltext": {
-                    "fragment_size": 80,
-                    "number_of_fragments": 1,
-                    "no_match_size": 0,
-                    }}}
-        self.logger.debug("query_statement: %s" % q)
-        if (content_type):
-            return self.es.search(
-                q,
-                index=self.index_name,
-                doc_type=content_type)
-        else:
-            return self.es.search(q, index=self.index_name)
-
-    def count(self, query, content_type=False, start_date=False, end_date=False):
-        q1 = {
-            "query": {
-                "multi_match": {
-                    "query": query,
-                    "fields": self.search_fields,
-                    "type": self.search_type,
-                },
+        aggs = {
+            "types": {
+                "filter": {"and": {"filters": [v for k, v in filters.iteritems() if k != "document_type"]}},
+                "aggs": {"types": {
+                    "terms": {"field": "_type"}
+                }},
             },
-            "aggregations": {
-                "types": {
-                    "terms": {
-                        "field": "_type"
-                    }
-                }
-            }
-        }
-        q2 = {
-            "query": {
-                "multi_match": {
-                    "query": query,
-                    "fields": self.search_fields,
-                    "type": self.search_type,
-                },
-            },
-            "aggregations": {
-                "years": {
+            "years": {
+                "filter": {"and": {"filters": [v for k, v in filters.iteritems() if k != "date"]}},
+                "aggs": {"years": {
                     "date_histogram": {
                         "field": "date",
                         "interval": "year"
+                    },
+                }},
+            }
+        }
+
+        q = {
+            "from": es_from,
+            "size": size,
+            "sort": {'_score': {'order': 'desc'}},
+            # don't return big fields
+            "_source": {"exclude": ["fulltext", "description"]},
+            "query": q,
+            # filter the results after the query, so that the per-aggregation filters
+            # aren't impacted by these filters. See
+            # http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_post_filter.html
+            "post_filter": {"and": {"filters": filters.values()}},
+            "aggs": aggs,
+            "highlight": {
+                "pre_tags": ["<mark>"],
+                "post_tags": ["</mark>"],
+                "fields": {
+                    "title": {},
+                    "description": {
+                        "fragment_size": 80,
+                        "number_of_fragments": 1,
+                        "no_match_size": 0,
+                    },
+                    "fulltext": {
+                        "fragment_size": 80,
+                        "number_of_fragments": 1,
+                        "no_match_size": 0,
                     }
                 }
             }
         }
-        return [
-            self.es.search(q1, index=self.index_name, size=0),
-            self.es.search(q2, index=self.index_name, size=0)]
+
+        self.logger.debug("query_statement: %s" % json.dumps(q))
+        return self.es.search(q, index=self.index_name)
 
     def reindex_everything(self):
         data_types = Transforms.data_types()

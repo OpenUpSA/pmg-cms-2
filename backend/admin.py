@@ -830,13 +830,20 @@ class PageView(MyModelView):
     column_searchable_list = ('slug', 'title')
     column_default_sort = 'slug'
 
-    form_excluded_columns = ('created_at', 'updated_at')
+    form_columns = ('title', 'slug', 'path', 'body')
+    form_extra_fields = {
+        'path': fields.TextField('Path'),
+    }
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
+        'path': {'readonly': True},
         }
 
     def frontend_url(self, model):
         return FRONTEND_HOST + 'page/%s' % model.slug
+
+    def on_form_prefill(self, form, id):
+        form.path.data = '/page/%s' % form.slug.data
 
 
 # initialise admin instance

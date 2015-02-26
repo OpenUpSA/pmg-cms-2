@@ -1,6 +1,6 @@
 {% if result._source %}
   {% if result.highlight.title %}
-    {% set title = result.highlight.title[0]|search_snippet %}
+    {% set title = result.highlight.title|search_snippet %}
   {% else %}  
     {% set title = result._source.title %}
   {% endif %}
@@ -39,11 +39,11 @@
   {% if result.highlight %}
   {% if result.highlight.description %}
   <div>
-    {{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+    {{ result.highlight.description|search_snippet|ellipse|safe }}
   </div>
   {% elif result.highlight.fulltext %}
   <div>
-    {{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
   </div>
   {% endif %}
   {% endif %}

@@ -49,23 +49,8 @@ def _jinja2_filter_member_url(member):
 def _jinja2_filter_search_snippet(snippet):
     if not snippet:
         return ""
-    # snippet = re.sub('<[^<]+?>', '', snippet)
-    # snippet = snippet.strip()
-    # if (len(snippet) > 180):
-    #     pos = re.match("\*\*(.*)/\*\*", snippet)
-    #     print "query_statement", pos
-    #     if pos:
-    #         snippet = snippet.replace("/**", "")
-    #         snippet = snippet.replace("**", "")
-    #         words = re.split('\s', snippet)
-    #         startpos = pos.start() - 75
-    #         wc = 0
-    #         tmp = ""
-    #         while (words and wc < 150):
-    #             tmp = tmp + words.pop() + " "
-    #         snippet = str(pos.start()) + tmp[:pos.start()] + "*" + tmp[pos.start():]
-    # snippet = snippet.replace("/**", "</strong>")
-    # snippet = snippet.replace("**", "<strong>")
+    if isinstance(snippet, list):
+        snippet = ' ... '.join(snippet)
     return snippet
 
 

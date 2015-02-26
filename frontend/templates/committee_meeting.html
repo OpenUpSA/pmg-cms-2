@@ -69,11 +69,9 @@
         {% endif %}
         <hr>
 
-        <h2>Minutes</h2>
         {% if report and report.body %}
+          <h2>Minutes</h2>
           {{ report.body | safe }}
-        {% else %}
-          <p><em>No minutes available for this committee meeting.</em></p>
         {% endif %}
         <hr>
       </div>

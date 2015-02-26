@@ -169,7 +169,8 @@ class Search:
                         "type": "best_fields",
                         # this helps skip stopwords, see
                         # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
-                        "cutoff_frequency": 0.001,
+                        "cutoff_frequency": 0.0007,
+                        "operator": "and",
                     },
                 },
                 "should": {
@@ -216,23 +217,24 @@ class Search:
             "highlight": {
                 "pre_tags": ["<mark>"],
                 "post_tags": ["</mark>"],
+                "order" : "score",
+                "fragment_size": 80,
+                "no_match_size": 0,
                 "fields": {
-                    "title": {},
+                    "title": {
+                        "number_of_fragments": 0,
+                    },
                     "description": {
-                        "fragment_size": 80,
-                        "number_of_fragments": 1,
-                        "no_match_size": 0,
+                        "number_of_fragments": 2,
                     },
                     "fulltext": {
-                        "fragment_size": 80,
-                        "number_of_fragments": 1,
-                        "no_match_size": 0,
+                        "number_of_fragments": 2,
                     }
                 }
             }
         }
 
-        self.logger.debug("query_statement: %s" % json.dumps(q))
+        self.logger.debug("query_statement: %s" % json.dumps(q, indent=2))
         return self.es.search(q, index=self.index_name)
 
     def reindex_everything(self):

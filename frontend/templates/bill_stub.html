@@ -1,6 +1,6 @@
 {% if result._source %}
 	{% if result.highlight.title %}
-		{% set title = result.highlight.title[0]|search_snippet %}
+		{% set title = result.highlight.title|search_snippet %}
 	{% else %}	
 		{% set title = result._source.title %}
 	{% endif %}

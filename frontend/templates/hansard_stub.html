@@ -1,6 +1,6 @@
 {% if result._source %}
 	{% if result.highlight.title %}
-		{% set title = result.highlight.title[0]|search_snippet %}
+		{% set title = result.highlight.title|search_snippet %}
 	{% else %}	
 		{% set title = result._source.title %}
 	{% endif %}
@@ -24,13 +24,13 @@
 	{% if result.highlight.description %}
 	<div class="row">
 		<div class="col-md-12">
-			{{ result.highlight.description[0]|search_snippet|ellipse|safe }}
+			{{ result.highlight.description|search_snippet|ellipse|safe }}
 		</div>
 	</div>
 	{% elif result.highlight.fulltext %}
 	<div class="row">
 		<div class="col-md-12">
-			{{ result.highlight.fulltext[0]|search_snippet|ellipse|safe }}
+			{{ result.highlight.fulltext|search_snippet|ellipse|safe }}
 		</div>
 	</div>
 	{% endif %}

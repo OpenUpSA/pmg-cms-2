@@ -281,33 +281,29 @@ def bills_explained():
     return render_template('bills/explained.html')
 
 
-@app.route('/bills/<any(all, draft, current, pmb):bill_type>/')
-@app.route('/bills/<any(all, draft, current, pmb):bill_type>/year/<int:year>/')
-@app.route('/bills/<any(all, draft, current, pmb):bill_type>/<int:page>/')
-def bills(bill_type, page=0, year=None):
-    url = "/bills/" + bill_type
-    everything = False
-    params = {}
-    year_list = range(MIN_YEAR, date.today().year+1)
-    year_list.reverse()
-    api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
+@app.route('/bills/<any(current):bill_type>/')
+@app.route('/bills/<any(all, draft, pmb):bill_type>/')
+@app.route('/bills/<any(all, draft, pmb):bill_type>/year/<int:year>/')
+def bills(bill_type, year=None):
+    if bill_type == 'current':
+        # don't paginate by year
+        year_list = None
+        params = {}
 
-    if not year:
-        return redirect(url_for('bills', bill_type=bill_type, year=year_list[0]))
+    else:
+        year_list = range(MIN_YEAR, date.today().year+1)
+        year_list.reverse()
+        params = {}
 
-    if year is not None:
+        if not year:
+            return redirect(url_for('bills', bill_type=bill_type, year=year_list[0]))
+
         if year not in year_list:
             abort(404)
-        # we don't paginate when showing by year
-        page = None
-        everything = True
         params = 'filter[year]=%d' % year
 
-    bill_list = load_from_api(api_url, page=page, return_everything=everything, params=params)
-    bills = bill_list['results']
-    count = bill_list["count"]
-    per_page = app.config['RESULTS_PER_PAGE']
-    num_pages = int(math.ceil(float(count) / float(per_page)))
+    api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
+    bills = load_from_api(api_url, return_everything=True, params=params)['results']
 
     status_dict = {
         "na": ("in progress", "label-primary"),
@@ -322,10 +318,6 @@ def bills(bill_type, page=0, year=None):
         'bills/list.html',
         results=bills,
         status_dict=status_dict,
-        num_pages=num_pages,
-        per_page=per_page,
-        page=page,
-        url=url,
         year=year,
         year_list=year_list,
         bill_type=bill_type)

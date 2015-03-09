@@ -23,11 +23,13 @@
 <div class="space-bottom">
   <div class="row">
     <div class="col-sm-7">
-      <div class="btn-group">
-        {% for i in year_list %}
-        <a href="{{ url }}/year/{{ i }}/" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
-        {% endfor %}
-      </div>
+      {% if year_list %}
+        <div class="btn-group">
+          {% for i in year_list %}
+          <a href="{{ url_for('bills', year=i, bill_type=bill_type) }}" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
+          {% endfor %}
+        </div>
+      {% endif %}
     </div>
     <div class="col-sm-5">
       <form action="/search">
@@ -60,10 +62,5 @@
     </li>
   {% endfor %}
 </ul>
-
-
-{% if not year %}
-  {% include 'pagination.html' %}
-{% endif %}
 
 {% endblock page %}

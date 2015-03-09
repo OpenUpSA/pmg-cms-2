@@ -30,6 +30,10 @@
           {% endfor %}
         </div>
       {% endif %}
+
+      {% if bill_type == 'current' %}
+      <a href="{{ url_for('page', pagename='current-bills-status') }}">Weekly update for all current bills</a>
+      {% endif %}
     </div>
     <div class="col-sm-5">
       <form action="/search">

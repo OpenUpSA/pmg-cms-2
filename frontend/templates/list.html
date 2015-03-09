@@ -23,7 +23,13 @@
 			</form>
 		</div>
 		{% endif %}
-  	</div>
+
+		{% if content_type == 'hansard' %}
+		<div class="col-md-6">
+			<a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
+		</div>
+		{% endif %}
+	</div>
 </div>
 
 <ul class="list-unstyled">

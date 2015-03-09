@@ -784,12 +784,15 @@ class InlineBillVersionForm(InlineFormAdmin):
 
 class BillsView(MyModelView):
     column_list = (
-        'year',
-        'number',
+        'code',
         'title',
-        'type',
-        'status',
+        'type.name',
+        'status.name',
     )
+    column_labels = {
+        'type.name': 'Type',
+        'status.name': 'Status',
+    }
     form_columns = (
         'year',
         'number',

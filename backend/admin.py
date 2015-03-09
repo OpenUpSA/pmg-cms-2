@@ -385,6 +385,7 @@ class CommitteeMeetingView(EventView):
         'date',
         'chairperson',
         'featured',
+        'public_participation',
         'summary',
         'body',
         'content',

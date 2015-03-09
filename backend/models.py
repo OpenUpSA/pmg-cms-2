@@ -463,6 +463,9 @@ class Event(db.Model):
     house = db.relationship('House', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
 
+    # did this meeting involve public participation
+    public_participation = db.Column(db.Boolean, default=False, server_default=sql.expression.false())
+
     featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
 
     def to_dict(self, include_related=False):

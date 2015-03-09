@@ -84,13 +84,17 @@
               <ul class="list-unstyled">
               {% for event in agent.events %}
                 <li>
-                  <div class="row">
+                  <div class="row {% if event.public_participation %}public-participation{% endif %}">
                     <div class="col-xs-4 col-md-2 text-muted">{{ event.date|pretty_date("long") }}</div>
                     <div class="col-xs-8 col-md-10">
                       {% if event.type == "committee-meeting" %}
                       <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
                       {% else %}
                       {{ event.title}}
+                      {% endif %}
+
+                      {% if event.public_participation %}
+                      <span class="label label-success">public participation</span>
                       {% endif %}
                     </div>
                   </div>

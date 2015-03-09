@@ -14,7 +14,7 @@ ICONS = {
     }
 
 def get_location(event):
-    if event['type'] == 'bill-signed':
+    if event['type'] in ['bill-signed', 'bill-act-commenced']:
         return {
             'name': 'Office of the President',
             'class': 'president',
@@ -44,7 +44,7 @@ def get_location(event):
 def get_agent(event, bill):
     info = None
 
-    if event['type'] == 'bill-signed':
+    if event['type'] in ['bill-signed', 'bill-act-commenced']:
         info = {
             'name': 'The President',
             'type': 'president',

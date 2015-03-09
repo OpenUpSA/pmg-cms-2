@@ -300,22 +300,15 @@ mark {
 // bill history
 
 .bill-events {
-  .stage {
-    display: table;
-    width: 100%;
-  }
-
   .stage-icon {
-    background: #ccc;
+    width: 64px;
+    height: 64px;
     padding: 5px;
-    width: 65px;
     border-radius: 5px;
-    float: left;
+    background: #ccc;
   }
 
-  .stage-detail {
-    margin-left: 75px;
-
+  .media-body {
     h5 {
       margin-top: 0px;
     }

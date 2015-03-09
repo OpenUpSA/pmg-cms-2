@@ -308,11 +308,39 @@ mark {
     background: #ccc;
   }
 
-  .media-body {
-    h5 {
-      margin-top: 0px;
-    }
+  .panel-title {
+    text-transform: uppercase;
+  }
 
+  .bill-location.NA {
+    border-color: cornflowerblue;
+
+    .panel-heading {
+      border-color: cornflowerblue;
+      background-color: cornflowerblue;
+      color: white;
+    }
+  }
+
+  .bill-location.NCOP {
+    border-color: lightgreen;
+
+    .panel-heading {
+      border-color: lightgreen;
+      background-color: lightgreen;
+    }
+  }
+
+  .bill-location.president {
+    border-color: greenyellow;
+
+    .panel-heading {
+      border-color: greenyellow;
+      background-color: greenyellow;
+    }
+  }
+
+  .media-body {
     li {
       display: table;
       width: 100%;

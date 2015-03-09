@@ -245,14 +245,11 @@ def featured():
 
 
 @app.route('/bill/<int:bill_id>/')
-@app.route('/bill/<string:scope>/')
+@app.route('/bill/<any(current, draft, pmb, tabled):scope>/')
 @load_user('token', 'session')
 def current_bill_list(scope=None, bill_id=None):
     if bill_id:
         return api_resource_list('bill', bill_id, api_resources().get('bill'))
-
-    if not scope in ['current', 'draft', 'pmb']:
-        raise ApiException(404, "The specified resource group does not exist.")
 
     query = api_resources().get('bill')
 
@@ -265,6 +262,9 @@ def current_bill_list(scope=None, bill_id=None):
 
     elif scope == 'pmb':
         query = query.filter(Bill.type == BillType.private_member_bill())
+
+    elif scope == 'tabled':
+        query = query.filter(Bill.type != BillType.draft())
 
     return api_resource_list('bill', None, query)
 

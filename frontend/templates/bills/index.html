@@ -14,21 +14,21 @@
         <div class="col-sm-4 col-sm-offset-2">
             <a class="thumbnail" href="/bills/current/">
                 <div class="caption">
-                    <h3>Current bills</h3>
+                    <h3>Current Bills</h3>
                     <p>See which bills are currently making their way through Parliament.</p>
                     <div class="text-right">
-                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View current bills</div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-sm-4">
-            <a class="thumbnail" href="/bills/all/">
+            <a class="thumbnail" href="/bills/tabled/">
                 <div class="caption">
-                    <h3>All Bills</h3>
-                    <p>Find bills from our archive.</p>
+                    <h3>Tabled Bills</h3>
+                    <p>All non-draft Tabled bills.</p>
                     <div class="text-right">
-                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View tabled bills</div>
                     </div>
                 </div>
             </a>
@@ -42,18 +42,18 @@
                     <h3>Private Member Bills</h3>
                     <p>Bills introduced by individual Members of Parliament.</p>
                     <div class="text-right">
-                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View private member bills</div>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-sm-4">
-            <a class="thumbnail" href="{{ url_for('bills_explained') }}">
+            <a class="thumbnail" href="/bills/all/">
                 <div class="caption">
-                    <h3>Bills Explained</h3>
-                    <p>Find out more about the legislative process.</p>
+                    <h3>All Bills</h3>
+                    <p>Find bills from our archive.</p>
                     <div class="text-right">
-                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> Read more</div>
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all bills</div>
                     </div>
                 </div>
             </a>
@@ -67,7 +67,18 @@
                     <h3>Draft Bills</h3>
                     <p>See which bills are waiting to be introduced.</p>
                     <div class="text-right">
-                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View all</div>
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> View draft bills</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-sm-4">
+            <a class="thumbnail" href="{{ url_for('bills_explained') }}">
+                <div class="caption">
+                    <h3>Bills Explained</h3>
+                    <p>Find out more about the legislative process.</p>
+                    <div class="text-right">
+                        <div class="btn btn-primary btn-sm"><i class="fa fa-chevron-right"></i> Read more</div>
                     </div>
                 </div>
             </a>

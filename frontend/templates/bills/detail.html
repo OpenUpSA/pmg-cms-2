@@ -7,123 +7,106 @@
 {% endblock %}
 
 {% block page %}
-  <h1>
-    <i class="fa fa-file-text-o"></i> {{ bill.title }}
-    {% if bill.code %}
-      <span class="text-muted">({{ bill.code }})</span>
-    {% endif %}
-  </h1>
-
-  <p class="lead">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
-
-  {% if bill.versions %}
-  <ul class="list-inline bill-versions">
-    <li><h3>Bill versions:</h3></li>
-    {% for version in bill.versions %}
-    <li>
-      <a href="{{ version.file.url }}" target="_blank">
-        <span class="label label-info" title="{{ version.date }}">
-          <i class="fa fa-file-text"></i> {{ version.title }}
-        </span>
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
+<h1>
+  <i class="fa fa-file-text-o"></i> {{ bill.title }}
+  {% if bill.code %}
+    <span class="text-muted">({{ bill.code }})</span>
   {% endif %}
+</h1>
 
-  <div class="justify-p">
-    {% if bill.status and bill.status.name != 'act-commenced' %}
-      <div class="bill-status-container">
-        <p id="status-text" class="lead">
-          {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
-            <div class="c4sa-container">
-            <div class="c4sa-grey c4sa-progress"></div>
-            {% if bill.status.name == "enacted" %}
-              <div class="c4sa-stage stage5">
-            {% elif bill.status.name == "president" %}
-              <div class="c4sa-stage stage4">
-            {% elif bill.status.name == "ncop" %}
-              <div class="c4sa-stage stage3">
-            {% elif bill.status.name == "na" %}
-              <div class="c4sa-stage stage2">
-            {% elif bill.status.name == "returned-to-na" %}
-              <div class="c4sa-stage stage3">
-            {% elif bill.status.name == "introduced" %}
-              <div class="c4sa-stage stage1">
-            {% endif %}
-          <div class="c4sa-green c4sa-progress stage"></div>
-          <div class="c4sa-dot dot1"></div>
-          <div class="c4sa-dot dot2"></div>
-          <div class="c4sa-dot dot3"></div>
-          <div class="c4sa-dot dot4"></div>
-          <div class="process_dot"></div>
-          <div class="c4sa-label label1"></div>
-          <div class="c4sa-label label2"></div>
-          <div class="c4sa-label label3"></div>
-          <div class="c4sa-label label4"></div>
-          </div>
-          </div>
-          {%- endif %}
-        </p>
+<p class="lead">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
+
+{% if bill.versions %}
+<ul class="list-inline bill-versions">
+  <li><h3>Bill versions:</h3></li>
+  {% for version in bill.versions %}
+  <li>
+    <a href="{{ version.file.url }}" target="_blank">
+      <span class="label label-info" title="{{ version.date }}">
+        <i class="fa fa-file-text"></i> {{ version.title }}
+      </span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if bill.status %}
+  {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
+    <div class="bill-status-container">
+      <div class="c4sa-grey c4sa-progress"></div>
+
+      <div class="c4sa-stage stage{{ stages[bill.status.name] }}">
+        <div class="c4sa-green c4sa-progress stage"></div>
+        <div class="c4sa-dot dot1"></div>
+        <div class="c4sa-dot dot2"></div>
+        <div class="c4sa-dot dot3"></div>
+        <div class="c4sa-dot dot4"></div>
+        <div class="process_dot"></div>
+        <div class="c4sa-label label1"></div>
+        <div class="c4sa-label label2"></div>
+        <div class="c4sa-label label3"></div>
+        <div class="c4sa-label label4"></div>
       </div>
-    {% endif %}
+    </div>
+  {%- endif %}
 
-    <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
+  <p class="lead text-center">{{ bill.status.description }}</p>
+{% endif %}
 
-    {% if bill.events %}
-      <div class="bill-events">
-        <h2>Bill history</h2>
+{% if bill.events %}
+  <div class="bill-events">
+    <h2>Bill history</h2>
 
-        {% for location in history %}
-        <div class="panel panel-default bill-location">
-          <div class="panel-heading">
-            <h4 class="panel-title">{{ location.name }}</h4>
-          </div>
-
-          <ul class="list-group">
-          {% for agent in location.events %}
-            <li class="list-group-item stage">
-              <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
-
-              <div class="stage-detail">
-                <h4>
-                  {% if agent.url %}
-                  <a href="{{ agent.url }}">{{ agent.name }}</a>
-                  {% else %}
-                  {{ agent.name }}
-                  {% endif %}
-                </h4>
-
-                <ul class="list-unstyled">
-                {% for event in agent.events %}
-                  <li>
-                    <div class="row">
-                      <div class="col-xs-4 text-muted">{{ event.date|pretty_date("long") }}</div>
-                      <div class="col-xs-8">
-                        {% if event.type == "committee-meeting" %}
-                        <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
-                        {% else %}
-                        {{ event.title}}
-                        {% endif %}
-                      </div>
-                    </div>
-                  </li>
-                {% endfor %}
-                </ul>
-              </div>
-
-            </li>
-          {% endfor %}
-          </ul>
-
-        </div>
-        {% endfor %}
+    {% for location in history %}
+    <div class="panel panel-default bill-location">
+      <div class="panel-heading">
+        <h4 class="panel-title">{{ location.name }}</h4>
       </div>
 
-    {% else %}
-      <p class="lead">So far, no events have been associated with this bill.</p>
-    {% endif %}
+      <ul class="list-group">
+      {% for agent in location.events %}
+        <li class="list-group-item stage">
+          <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
 
+          <div class="stage-detail">
+            <h5>
+              {% if agent.url %}
+              <a href="{{ agent.url }}">{{ agent.name }}</a>
+              {% else %}
+              {{ agent.name }}
+              {% endif %}
+            </h5>
+
+            <ul class="list-unstyled">
+            {% for event in agent.events %}
+              <li>
+                <div class="row">
+                  <div class="col-xs-4 text-muted">{{ event.date|pretty_date("long") }}</div>
+                  <div class="col-xs-8">
+                    {% if event.type == "committee-meeting" %}
+                    <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
+                    {% else %}
+                    {{ event.title}}
+                    {% endif %}
+                  </div>
+                </div>
+              </li>
+            {% endfor %}
+            </ul>
+          </div>
+
+        </li>
+      {% endfor %}
+      </ul>
+
+    </div>
+    {% endfor %}
   </div>
+
+{% else %}
+  <p class="lead">So far, no events have been associated with this bill.</p>
+{% endif %}
+
 {% endblock %}
 

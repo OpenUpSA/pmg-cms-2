@@ -14,23 +14,25 @@
 
 <div class="bill-stub">
 	<div class="row">
-		<div class="col-xs-8">
+		<div class="col-xs-6 col-md-8">
 			<div class="title">
 				<a href="/bill/{{ id }}">{{ title|safe }}</a>
 			</div>
 		</div>
-		<div class="col-xs-2">
+		<div class="col-xs-3 col-md-2">
+			{% if code %}
+			{{ code }}
+			{% endif %}
+		</div>
+		<div class="col-xs-3 col-md-2">
 			{% if result.status %}
 				{% if status_dict[result.status.name] %}
 				<span class="label {{ status_dict[result.status.name][1] }}">{{ status_dict[result.status.name][0] }}</span>
 				{% else %}
 				<span class="label label-default">{{ result.status.name }}</span>
 				{% endif %}
-			{% endif %}
-		</div>
-		<div class="col-xs-2">
-			{% if code %}
-			[{{ code }}]
+			{% elif result.type and result.type.name == 'Draft' %}
+				<span class="label label-default">draft</span>
 			{% endif %}
 		</div>
 	</div>

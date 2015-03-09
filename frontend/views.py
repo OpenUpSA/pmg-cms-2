@@ -327,9 +327,20 @@ def bills(bill_type, year=None):
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
     bill = load_from_api('bill', bill_id)
+    stages = {
+        'enacted': '5',
+        'president': '4',
+        'ncop': '3',
+        'returned-to-na': '3',
+        'na': '2',
+        'introduced': 1,
+    }
     history = bill_history(bill)
-    return render_template('bills/detail.html', bill=bill, history=history,
-                           admin_edit_url=admin_url('bill', bill_id))
+    return render_template('bills/detail.html',
+            bill=bill,
+            history=history,
+            stages=stages,
+            admin_edit_url=admin_url('bill', bill_id))
 
 
 @app.route('/committee/<int:committee_id>')

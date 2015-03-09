@@ -55,12 +55,12 @@
 </i></p>
 {% endif %}
 
-<ul class="list-unstyled">
+<table class="table table-condensed table-hover table-striped">
   {% for result in results %}
-    <li>
-      {% include 'bill_stub.html' %}
-    </li>
+    <tr>
+      <td>{% include 'bill_stub.html' %}</td>
+    </tr>
   {% endfor %}
-</ul>
+</table>
 
 {% endblock page %}

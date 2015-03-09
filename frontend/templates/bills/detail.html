@@ -59,7 +59,7 @@
     <h2>Bill history</h2>
 
     {% for location in history %}
-    <div class="panel panel-default bill-location">
+    <div class="panel panel-default bill-location {{ location.class }}">
       <div class="panel-heading">
         <h4 class="panel-title">{{ location.name }}</h4>
       </div>

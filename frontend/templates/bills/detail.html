@@ -79,45 +79,43 @@
           <div class="panel-heading">
             <h4 class="panel-title">{{ location.name }}</h4>
           </div>
-          <div class="panel-body">
 
-            <ul class="list-unstyled">
-            {% for agent in location.events %}
-              <li class="stage">
-                <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
+          <ul class="list-group">
+          {% for agent in location.events %}
+            <li class="list-group-item stage">
+              <img class="stage-icon" src="/static/resources/images/bills/{{ agent.icon }}">
 
-                <div class="stage-detail">
-                  <h4>
-                    {% if agent.url %}
-                    <a href="{{ agent.url }}">{{ agent.name }}</a>
-                    {% else %}
-                    {{ agent.name }}
-                    {% endif %}
-                  </h4>
+              <div class="stage-detail">
+                <h4>
+                  {% if agent.url %}
+                  <a href="{{ agent.url }}">{{ agent.name }}</a>
+                  {% else %}
+                  {{ agent.name }}
+                  {% endif %}
+                </h4>
 
-                  <ul class="list-unstyled">
-                  {% for event in agent.events %}
-                    <li>
-                      <div class="row">
-                        <div class="col-xs-4 event-date">{{ event.date|pretty_date("long") }}</div>
-                        <div class="col-xs-8">
-                          {% if event.type == "committee-meeting" %}
-                          <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
-                          {% else %}
-                          {{ event.title}}
-                          {% endif %}
-                        </div>
+                <ul class="list-unstyled">
+                {% for event in agent.events %}
+                  <li>
+                    <div class="row">
+                      <div class="col-xs-4 text-muted">{{ event.date|pretty_date("long") }}</div>
+                      <div class="col-xs-8">
+                        {% if event.type == "committee-meeting" %}
+                        <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
+                        {% else %}
+                        {{ event.title}}
+                        {% endif %}
                       </div>
-                    </li>
-                  {% endfor %}
-                  </ul>
-                </div>
+                    </div>
+                  </li>
+                {% endfor %}
+                </ul>
+              </div>
 
-              </li>
-            {% endfor %}
-            </ul>
+            </li>
+          {% endfor %}
+          </ul>
 
-          </div>
         </div>
         {% endfor %}
       </div>

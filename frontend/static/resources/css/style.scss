@@ -295,3 +295,35 @@ mark {
 	font-weight: bold;
 	background-color: #ff0;
 }
+
+
+// bill history
+
+.bill-events {
+	.stage {
+		display: table;
+		width: 100%;
+	}
+
+	.stage-icon {
+		background: #ccc;
+		padding: 5px;
+		width: 65px;
+		border-radius: 5px;
+		float: left;
+	}
+
+	.stage-detail {
+		margin-left: 75px;
+
+		h4 {
+			margin-top: 0px;
+		}
+
+		li {
+			display: table;
+			width: 100%;
+		}
+	}
+
+}

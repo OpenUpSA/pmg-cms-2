@@ -43,7 +43,15 @@
   </div>
 </div>
 
-<div class="">
+{% if not results %}
+<p><i>
+  {% if year %}
+  There are no bills to show for {{ year }}.
+  {% else %}
+  There are no bills to show.
+  {% endif %}
+</i></p>
+{% endif %}
 
 <ul class="list-unstyled">
   {% for result in results %}

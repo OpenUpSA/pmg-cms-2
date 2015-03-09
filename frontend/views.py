@@ -288,9 +288,12 @@ def bills(bill_type, page=0, year=None):
     url = "/bills/" + bill_type
     everything = False
     params = {}
-    year_list = range(MIN_YEAR, date.today().year)
+    year_list = range(MIN_YEAR, date.today().year+1)
     year_list.reverse()
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
+
+    if not year:
+        return redirect(url_for('bills', bill_type=bill_type, year=year_list[0]))
 
     if year is not None:
         if year not in year_list:

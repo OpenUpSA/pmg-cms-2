@@ -737,9 +737,11 @@ class InlineBillEventsForm(InlineFormAdmin):
     form_choices = {
         'type': [
             ('bill-introduced', 'Bill introduced'),
+            ('bill-updated', 'Bill updated'),
             ('bill-passed', 'Bill passed'),
             ('bill-signed', 'Bill signed'),
             ('bill-enacted', 'Bill enacted'),
+            ('bill-act-commenced', 'Act commenced'),
         ]
     }
     form_ajax_refs = {

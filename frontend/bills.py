@@ -31,13 +31,19 @@ def get_location(event):
 
     return {'name': 'Unknown'}
 
-def get_agent(event):
+def get_agent(event, bill):
     info = None
 
     if event['type'] == 'bill-signed':
         info = {
             'name': 'The President',
             'type': 'president',
+        }
+
+    elif event['type'] == 'bill-introduced':
+        info = {
+            'name': bill['introduced_by'] or bill.get('place_of_introduction', {}).get('name'),
+            'type': 'member',
         }
 
     elif 'member' in event:
@@ -73,12 +79,12 @@ def bill_history(bill):
     history = []
 
     events = bill.get('events', [])
-    events.sort(key=lambda e: [e['date'], get_location(e), get_agent(e)])
+    events.sort(key=lambda e: [e['date'], get_location(e), get_agent(e, bill)])
 
     for location, location_events in groupby(events, get_location):
         location_history = []
 
-        for agent, agent_events in groupby(location_events, get_agent):
+        for agent, agent_events in groupby(location_events, lambda e: get_agent(e, bill)):
             info = {'events': list(agent_events)}
             info.update(agent)
             location_history.append(info)

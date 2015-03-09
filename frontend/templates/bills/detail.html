@@ -70,10 +70,6 @@
 
     <p class="lead">{% if bill.status %}{{ bill.status.description }}{% endif %}</p>
 
-    {% if bill.date_of_introduction %}
-      <p>Introduced on {{ bill.date_of_introduction }}{% if bill.place_of_introduction %} in the {{ bill.place_of_introduction.name }}{% endif %}.</p>
-    {% endif %}
-
     {% if bill.events %}
       <div class="bill-events">
         <h2>Bill history</h2>

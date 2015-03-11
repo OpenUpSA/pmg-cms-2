@@ -52,7 +52,7 @@ class ApiException(HTTPException):
         return response
 
 
-def get_filter():
+def get_filters():
     filters = []
     args = request.args.to_dict()
 
@@ -81,10 +81,10 @@ def api_resource_list(resource, resource_id, base_query):
             page = int(request.args.get('page'))
         except ValueError:
             raise ApiException(422, "Please specify a valid 'page'.")
-    filters = get_filter()
-    if filters:
-        for f in filters:
-            base_query = base_query.filter_by(**f)
+
+    for f in get_filters():
+        base_query = base_query.filter_by(**f)
+
     if resource_id:
         try:
             queryset = base_query.filter_by(id=resource_id).one()
@@ -94,9 +94,16 @@ def api_resource_list(resource, resource_id, base_query):
     else:
         queryset = base_query.limit(per_page).offset(page * per_page).all()
         count = base_query.count()
+
     next = None
     if count > (page + 1) * per_page:
-        next = request.url_root + resource + "/?page=" + str(page + 1)
+        args = request.args.to_dict()
+        args.update(request.view_args)
+        args['page'] = page+1
+        # TODO: this isn't great, it allows users to pass in keyword params just by passing
+        # in query params
+        next = url_for(request.endpoint, _external=True, **args)
+
     status_code = 200
     if resource == "committee-meeting" and resource_id:
         committee_meeting_obj = queryset
@@ -105,6 +112,7 @@ def api_resource_list(resource, resource_id, base_query):
                 status_code = 401  # Unauthorized, i.e. authentication is required
             else:
                 status_code = 403  # Forbidden, i.e. the user is not subscribed
+
     out = serializers.queryset_to_json(
         queryset,
         count=count,

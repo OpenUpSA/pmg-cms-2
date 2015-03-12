@@ -48,7 +48,8 @@
               <li><a href="{{ url_for('logout') }}">Log Out</a>
             </ul>
           {% else %}
-            <a href="{{ url_for('register') }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a> <a href="{{ url_for('login') }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
+            <a href="{{ url_for('register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a>
+            <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
           {% endif %}
         </ul>
       </div>

@@ -69,6 +69,8 @@ def user_management_api(endpoint, data=None):
 @app.route('/user/login/', methods=['GET', 'POST'])
 def login():
     """View function for login view"""
+    if g.current_user:
+        return redirect(request.args.get('next', '/'))
 
     form = forms.LoginForm(request.form)
     if request.args.get('next'):
@@ -100,7 +102,6 @@ def login():
 @app.route('/user/logout/', methods=['GET', ])
 def logout():
     """View function which handles a logout request."""
-
     response = user_management_api('logout')
     session.clear()
     if response:
@@ -113,6 +114,8 @@ def logout():
 @app.route('/user/register/', methods=['GET', 'POST'])
 def register():
     """View function which handles a registration request."""
+    if g.current_user:
+        return redirect(request.args.get('next', '/'))
 
     form = forms.RegisterForm(request.form)
     if request.args.get('next'):
@@ -221,8 +224,7 @@ def reset_password(token):
 @app.route('/user/change-password/', methods=['GET', 'POST'])
 def change_password():
     """View function which handles a change password request."""
-
-    if g.current_user:
+    if not g.current_user:
         return redirect(url_for('login', next=request.url))
 
     form = forms.ChangePasswordForm()

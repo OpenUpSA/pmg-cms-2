@@ -364,8 +364,7 @@ def committees():
     """
 
     logger.debug("committees page called")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
+    committees = load_from_api('committee', return_everything=True)['results']
     return render_template('committee_list.html', committees=committees, )
 
 
@@ -446,8 +445,7 @@ def tabled_committee_reports(page=0):
     """
 
     logger.debug("tabled-committee-reports page called")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
+    committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
     filters["committee"] = params[
@@ -498,8 +496,7 @@ def calls_for_comments(page=0):
     """
 
     logger.debug("calls-for-comments page called")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
+    committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
     filters["committee"] = params[
@@ -808,8 +805,7 @@ def question_replies(page=0):
     """
 
     logger.debug("question_replies page called")
-    committee_list = load_from_api('committee', return_everything=True)
-    committees = committee_list['results']
+    committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
     filters["committee"] = params[
@@ -833,6 +829,7 @@ def question_replies(page=0):
         title="Questions and Replies",
         content_type="question_reply",
         committees=committees,
+        all_committees_option="All Ministers",
         filters=filters)
 
 

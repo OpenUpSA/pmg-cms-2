@@ -11,8 +11,10 @@
   <i class="fa fa-icon fa-file-text-o"></i>
   {% if bill_type == 'pmb' %}
   Private Member Bills
+  {% elif bill_type == 'all' %}
+  All Tabled &amp; Draft Bills
   {% else %}
-  {{ bill_type.capitalize() }}  Bills
+  {{ bill_type.capitalize() }} Bills
   {% endif %}
 
   {% if year %}

@@ -640,15 +640,23 @@ class QuestionReplyView(MyModelView):
 class CallForCommentView(MyModelView):
     frontend_url_format = 'call-for-comment/%s'
 
-    column_exclude_list = (
-        'body',
-        'summary',
+    column_list = (
+        'committee',
+        'title',
+        'start_date',
+        'end_date',
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
+    form_columns = (
+        'committee',
+        'title',
+        'start_date',
+        'end_date',
+        'body',
+    )
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
-        'summary': {'class': 'custom-ckeditor'},
         }
 
 

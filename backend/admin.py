@@ -387,10 +387,10 @@ class CommitteeMeetingView(EventView):
         'chairperson',
         'featured',
         'public_participation',
+        'bills',
         'summary',
         'body',
         'content',
-        'bills',
     )
     form_extra_fields = {
         'summary': fields.TextAreaField('Summary'),

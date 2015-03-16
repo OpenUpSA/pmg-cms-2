@@ -738,9 +738,7 @@ class QuestionReply(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship(
-        'Committee',
-        backref=db.backref('questions_replies'))
+    committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)

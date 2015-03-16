@@ -617,12 +617,21 @@ class InlineFile(InlineFormAdmin):
 class QuestionReplyView(MyModelView):
     frontend_url_format = 'question_reply/%d'
 
-    column_exclude_list = (
-        'body',
+    column_list = (
+        'committee',
+        'title',
+        'start_date',
+        'question_number',
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', 'question_number')
-    form_excluded_columns = ('nid', )
+    form_columns = (
+        'committee',
+        'title',
+        'start_date',
+        'question_number',
+        'body',
+    )
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
         }

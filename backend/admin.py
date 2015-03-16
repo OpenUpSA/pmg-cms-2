@@ -255,6 +255,7 @@ class OrganisationView(MyModelView):
 
 class CommitteeView(MyModelView):
     frontend_url_format = 'committee/%s'
+    can_delete = False
 
     column_list = (
         'name',

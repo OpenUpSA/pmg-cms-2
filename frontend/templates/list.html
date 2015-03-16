@@ -32,13 +32,15 @@
 	</div>
 </div>
 
-<ul class="list-unstyled">
+<table class="table table-condensed table-hover table-striped">
 	{% for result in results %}
-		<li>
-			{% include content_type | replace("-", "_") + '_stub.html' %}
-		</li>
+		<tr>
+			<td>
+				{% include content_type | replace("-", "_") + '_stub.html' %}
+			</td>
+		</tr>
 	{% endfor %}
-</ul>
+</table>
 
 {% include 'pagination.html' %}
 

@@ -801,9 +801,7 @@ class CallForComment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship(
-        'Committee',
-        backref=db.backref('calls_for_comments'))
+    committee = db.relationship('Committee', backref=db.backref('calls_for_comments'), lazy='joined')
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     end_date = db.Column(db.Date())

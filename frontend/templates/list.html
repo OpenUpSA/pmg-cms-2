@@ -32,7 +32,8 @@
 	</div>
 </div>
 
-<table class="table table-condensed table-hover table-striped">
+<table class="table table-condensed table-hover table-striped content-list {{content_type}}-list">
+	<tbody>
 	{% for result in results %}
 		<tr>
 			<td>
@@ -40,6 +41,7 @@
 			</td>
 		</tr>
 	{% endfor %}
+	</tbody>
 </table>
 
 {% include 'pagination.html' %}

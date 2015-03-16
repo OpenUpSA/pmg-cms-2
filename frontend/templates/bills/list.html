@@ -22,20 +22,17 @@
 
 <div class="space-bottom">
   <div class="row">
-    <div class="col-sm-7">
-      {% if year_list %}
+    {% if year_list %}
+      <div class="col-sm-7">
         <div class="btn-group">
           {% for i in year_list %}
           <a href="{{ url_for('bills', year=i, bill_type=bill_type) }}" role="button" class="btn btn-default{% if year == i %} active{% endif %}">{{ i }}</a>
           {% endfor %}
         </div>
-      {% endif %}
+      </div>
+    {% endif %}
 
-      {% if bill_type == 'current' %}
-      <a href="{{ url_for('page', pagename='current-bills-status') }}">Weekly update for all current bills</a>
-      {% endif %}
-    </div>
-    <div class="col-sm-5">
+    <div class="col-sm-{% if year_list %}5{% else %}6{% endif %}">
       <form action="/search">
         <input type="hidden" name="filter[type]" value="bill">
         <div class="input-group">
@@ -45,6 +42,12 @@
           </span>
         </div>
       </form>
+    </div>
+
+    <div class="col-sm-6">
+      {% if bill_type == 'current' %}
+      <a href="{{ url_for('page', pagename='current-bills-status') }}">Weekly update for all current bills</a>
+      {% endif %}
     </div>
   </div>
 </div>

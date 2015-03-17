@@ -518,26 +518,6 @@ class EventFile(db.Model):
         return self.file.to_dict(include_related)
 
 
-class WithBodyContent(object):
-    """ Mixin that will find the first associated Content object
-    that has a body or summary attribute, and delegate to it. """
-    @property
-    def content_body(self):
-        return self.main_content.body
-
-    @property
-    def content_summary(self):
-        return self.main_content.summary
-
-    @property
-    def main_content(self):
-        for c in self.content:
-            if c.type == self._content_type:
-                return c
-
-        return Content(event=self, type=self._content_type)
-
-
 class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
@@ -570,7 +550,7 @@ class CommitteeMeeting(Event):
         return tmp
 
 
-class Hansard(WithBodyContent, Event):
+class Hansard(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'plenary'
     }
@@ -582,7 +562,7 @@ class Hansard(WithBodyContent, Event):
         return tmp
 
 
-class Briefing(WithBodyContent, Event):
+class Briefing(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }

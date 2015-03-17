@@ -425,8 +425,7 @@ class File(db.Model):
         file_data.save(os.path.join(app.config['UPLOAD_PATH'], filename))
 
         # upload saved file to S3
-        #self.file_path = s3_bucket.upload_file(filename)
-        self.file_path = filename
+        self.file_path = s3_bucket.upload_file(filename)
         self.file_mime = file_data.mimetype
 
 

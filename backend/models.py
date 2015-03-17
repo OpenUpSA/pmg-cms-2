@@ -667,8 +667,8 @@ class Committee(db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     about = db.Column(db.Text())
     contact_details = db.Column(db.Text())
-    ad_hoc = db.Column(db.Boolean())
-    premium = db.Column(db.Boolean())
+    ad_hoc = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    premium = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')

@@ -242,6 +242,20 @@ def send_to_api(endpoint, data=None):
     return
 
 
+def classify_attachments(files):
+    """ Return an (audio_files, related_docs) tuple. """
+    audio = []
+    related = []
+
+    for f in files:
+        if 'audio' in f['file_mime']:
+            audio.append(f)
+        else:
+            related.append(f)
+
+    return audio, related
+
+
 @app.route('/')
 def index():
     committee_meetings_api = load_from_api('committee-meeting')
@@ -417,22 +431,11 @@ def committee_meeting(event_id):
     else:
         premium_committees = None
 
-    report = None
-    related_docs = []
-    audio = []
-    if event.get('content'):
-        for item in event['content']:
-            if "audio" in item['type']:
-                audio.append(item)
-            elif item['type'] == "committee-meeting-report":
-                report = item
-            else:
-                related_docs.append(item)
+    audio, related_docs = classify_attachments(event.get('files', []))
 
     return render_template(
         'committee_meeting.html',
         event=event,
-        report=report,
         audio=audio,
         related_docs=related_docs,
         premium_committees=premium_committees,
@@ -654,22 +657,11 @@ def member(member_id):
 @app.route('/hansard/<int:event_id>/')
 def hansard(event_id):
     event = load_from_api('hansard', event_id)
-    report = None
-    related_docs = []
-    audio = []
-    if event.get('content'):
-        for item in event['content']:
-            if "audio" in item['type']:
-                audio.append(item)
-            elif item['type'] == "hansard":
-                report = item
-            else:
-                related_docs.append(item)
+    audio, related_docs = classify_attachments(event.get('files', []))
 
     return render_template(
         'hansard_detail.html',
         event=event,
-        report=report,
         audio=audio,
         related_docs=related_docs,
         admin_edit_url=admin_url('hansard', event_id))
@@ -705,22 +697,11 @@ def hansards(page=0):
 def briefing(event_id):
 
     event = load_from_api('briefing', event_id)
-    report = None
-    related_docs = []
-    audio = []
-    if event.get('content'):
-        for item in event['content']:
-            if "audio" in item['type']:
-                audio.append(item)
-            elif item['type'] == "briefing":
-                report = item
-            else:
-                related_docs.append(item)
+    audio, related_docs = classify_attachments(event.get('files', []))
 
     return render_template(
         'briefing_detail.html',
         event=event,
-        report=report,
         audio=audio,
         related_docs=related_docs,
         admin_edit_url=admin_url('briefing', event_id))

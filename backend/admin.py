@@ -15,7 +15,7 @@ from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
 from wtforms import fields
-from wtforms.validators import required
+from wtforms.validators import required, optional
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
@@ -293,7 +293,6 @@ class InlineEventFile(InlineFormAdmin):
         'id',
         'file',
         )
-
     column_labels = {'file': 'Existing file', }
     form_ajax_refs = {
         'file': {
@@ -304,11 +303,11 @@ class InlineEventFile(InlineFormAdmin):
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
-        form_class.upload = fields.FileField('File')
+        form_class.upload = fields.FileField('Upload a file')
+        form_class.file.kwargs['validators'] = []
+        form_class.file.kwargs['allow_blank'] = True
+        form_class.title = fields.TextField('Title')
         return form_class
-
-    def on_form_prefill(self, form, id):
-        form.title.data = File.query.get(id).title
 
     def on_model_change(self, form, model):
         # save file, if it is present
@@ -317,6 +316,7 @@ class InlineEventFile(InlineFormAdmin):
             # always create a new file, don't overwrite
             model.file = File()
             model.file.from_upload(file_data)
+            model.file.title = form.title.data
 
 
 class EventView(MyModelView):
@@ -380,7 +380,6 @@ class CommitteeMeetingView(EventView):
         'committee': {'validators': [required()]},
     }
     form_widget_args = {
-        'committee': {'required': True},
         'body': {'class': 'custom-ckeditor'},
         'summary': {'class': 'custom-ckeditor'}
     }
@@ -389,6 +388,9 @@ class CommitteeMeetingView(EventView):
             'fields': ('title',),
             'page_size': 50
         }
+    }
+    form_args = {
+        'files': {'widget': widgets.InlineEventFileWidget()},
     }
     inline_models = [InlineEventFile(EventFile)]
 
@@ -415,6 +417,9 @@ class HansardView(EventView):
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
         }
+    form_args = {
+        'files': {'widget': widgets.InlineEventFileWidget()},
+    }
     inline_models = [InlineEventFile(EventFile)]
 
 class BriefingView(EventView):
@@ -443,6 +448,9 @@ class BriefingView(EventView):
         'summary': {'class': 'custom-ckeditor'},
         'body': {'class': 'custom-ckeditor'},
         }
+    form_args = {
+        'files': {'widget': widgets.InlineEventFileWidget()},
+    }
     inline_models = [InlineEventFile(EventFile)]
 
 

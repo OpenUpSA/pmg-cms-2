@@ -1,0 +1,23 @@
+{% import '/admin/model/inline_list_base.html' as base with context %}
+{% import '_macros.html' as macros %}
+
+{% macro render_file_field(field) %}
+  {% set model = field.object_data %}
+  <div class="row">
+    {% if model.id %}
+      {{ field.form.id }}
+      <div class="col-md-10">
+        <a href="{{ model.file.file_url }}" target="_blank">
+          {{ macros.file_type_icon(model.file.type) }}
+          {{ model.file }}
+        </a>
+      </div>
+    {% else %}
+      <div class="col-md-8">
+        {{ field }}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{{ base.render_inline_fields(field, template, render_file_field) }}

@@ -509,11 +509,13 @@ class EventFile(db.Model):
     __tablename__ = "event_files"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    type = db.Column(db.Enum('related', name='event_file_type_enum'), nullable=False, default='related')
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True, nullable=False)
     event = db.relationship('Event')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
+
+    def to_dict(self, include_related=False):
+        return self.file.to_dict(include_related)
 
 
 class WithBodyContent(object):

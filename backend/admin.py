@@ -15,6 +15,7 @@ from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
 from wtforms import fields
+from wtforms.validators import required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
@@ -287,17 +288,42 @@ class CommitteeView(MyModelView):
     inline_models = (Membership, )
 
 
+class InlineEventFile(InlineFormAdmin):
+    form_columns = (
+        'id',
+        'type',
+        'file',
+        )
+
+    column_labels = {'file': 'Existing file', }
+    form_ajax_refs = {
+        'file': {
+            'fields': ('title', 'file_path'),
+            'page_size': 10,
+        }
+    }
+
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField('File')
+        return form_class
+
+    def on_form_prefill(self, form, id):
+        form.title.data = File.query.get(id).title
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            # always create a new file, don't overwrite
+            model.file = File()
+            model.file.from_upload(file_data)
+
+
 class EventView(MyModelView):
 
     form_excluded_columns = ('type', )
     column_exclude_list = ('type', )
-
-    form_ajax_refs = {
-        'content': {
-            'fields': ('type', ),
-            'page_size': 25
-        }
-    }
 
     def __init__(self, model, session, **kwargs):
         self.type = kwargs.pop('type')
@@ -328,44 +354,10 @@ class EventView(MyModelView):
             .filter(self.model.type == self.type)
 
 
-# This InlineModelFormList will use our custom widget, when creating a
-# list of forms
-class ContentFormList(InlineModelFormList):
-    widget = widgets.InlineContentWidget()
-
-
-# Create custom InlineModelConverter to link the form to its model
-class ContentModelConverter(InlineModelConverter):
-    inline_field_list_type = ContentFormList
-
-
-class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('type', 'file', 'body', 'summary')
-
-    def postprocess_form(self, form_class):
-        # add a field for handling the file upload
-        form_class.upload = fields.FileField('File')
-        form_class.title = fields.StringField('Title')
-        return form_class
-
-    def on_model_change(self, form, model):
-        # save file, if it is present
-        file_data = request.files.get(form.upload.name)
-        if file_data:
-            model.file = File()
-            model.file.from_upload(file_data)
-            model.file.title = form.title.data
-
-            if 'audio' in model.file.file_mime:
-                model.type = "audio"
-            else:
-                model.type = "related-doc"
-
-
 class CommitteeMeetingView(EventView):
     frontend_url_format = 'committee-meeting/%d'
 
-    column_list = ('date', 'title', 'committee', 'content', 'featured')
+    column_list = ('date', 'title', 'committee', 'featured')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
@@ -373,13 +365,6 @@ class CommitteeMeetingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'committee',
         'title',
@@ -390,13 +375,13 @@ class CommitteeMeetingView(EventView):
         'bills',
         'summary',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'summary': fields.TextAreaField('Summary'),
-        'body': fields.TextAreaField('Body'),
+    form_args = {
+        'committee': {'validators': [required()]},
     }
     form_widget_args = {
+        'committee': {'required': True},
         'body': {'class': 'custom-ckeditor'},
         'summary': {'class': 'custom-ckeditor'}
     }
@@ -406,21 +391,7 @@ class CommitteeMeetingView(EventView):
             'page_size': 50
         }
     }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.summary.data = event.main_content.summary
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.summary = form.summary.data
-        model.main_content.body = form.body.data
-        return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
+    inline_models = [InlineEventFile(EventFile)]
 
 
 class HansardView(EventView):
@@ -429,7 +400,6 @@ class HansardView(EventView):
     column_list = (
         'title',
         'date',
-        'content',
     )
     column_sortable_list = (
         'title',
@@ -437,39 +407,16 @@ class HansardView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('title', )
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'date',
         'title',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'body': fields.TextAreaField('Body'),
-        }
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
         }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.body = form.body.data
-        return super(HansardView, self).on_model_change(form, model, is_created)
-
+    inline_models = [InlineEventFile(EventFile)]
 
 class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
@@ -485,45 +432,19 @@ class BriefingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('title', )
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'title',
         'date',
         'committee',
         'summary',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'summary': fields.TextAreaField('Summary'),
-        'body': fields.TextAreaField('Body'),
-        }
     form_widget_args = {
         'summary': {'class': 'custom-ckeditor'},
         'body': {'class': 'custom-ckeditor'},
         }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.summary.data = event.main_content.summary
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.body = form.body.data
-        model.main_content.summary = form.summary.data
-        return super(BriefingView, self).on_model_change(form, model, is_created)
-
+    inline_models = [InlineEventFile(EventFile)]
 
 
 class MemberView(MyModelView):

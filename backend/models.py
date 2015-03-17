@@ -425,23 +425,22 @@ class File(db.Model):
         file_data.save(os.path.join(app.config['UPLOAD_PATH'], filename))
 
         # upload saved file to S3
-        self.file_path = s3_bucket.upload_file(filename)
+        #self.file_path = s3_bucket.upload_file(filename)
+        self.file_path = filename
         self.file_mime = file_data.mimetype
 
 
     def __unicode__(self):
+        if self.title:
+            return u'%s (%s)' % (self.title, self.file_path)
         return u'%s' % self.file_path
 
 
 
 class Event(db.Model):
     """ An event is a generic model which represents an event that took
-    place at a certain time and may have rich content associated with it.
-
-    An event can have an arbitrary amount of content associated with it
-    through associations with the Content model. In turn, a Content
-    instance can have multiple files attached to it, and optional
-    body and summary text.
+    place in Parliament at a certain time and may have rich content associated
+    with it.
     """
 
     __tablename__ = "event"
@@ -451,22 +450,32 @@ class Event(db.Model):
 
     id = db.Column(db.Integer, index=True, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), nullable=False)
-    title = db.Column(db.String(1024))
+    title = db.Column(db.String(1024), nullable=False)
     type = db.Column(db.String(50), index=True, nullable=False)
+
+    # this is the legacy node id from the old drupal database and is used
+    # in conjunction with the Redirect class to work out redirects
+    # from legacy URLs to new URLs
     nid = db.Column(db.Integer())
+
+    # optional content
+    body = db.Column(db.Text())
+    summary = db.Column(db.Text())
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
     committee = db.relationship('Committee', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
-    house = db.relationship('House', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
+    house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
 
-    # did this meeting involve public participation
+    # did this meeting involve public participation?
     public_participation = db.Column(db.Boolean, default=False, server_default=sql.expression.false())
-
+    # feature this on the front page?
     featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
+    # optional file attachments
+    files = db.relationship('EventFile', lazy=True)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -496,6 +505,17 @@ event_bills = db.Table(
     db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id')))
 
 
+class EventFile(db.Model):
+    __tablename__ = "event_files"
+
+    id = db.Column(db.Integer, index=True, primary_key=True)
+    type = db.Column(db.Enum('related', name='event_file_type_enum'), nullable=False, default='related')
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
+    event = db.relationship('Event')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True)
+    file = db.relationship('File', lazy='joined')
+
+
 class WithBodyContent(object):
     """ Mixin that will find the first associated Content object
     that has a body or summary attribute, and delegate to it. """
@@ -516,7 +536,7 @@ class WithBodyContent(object):
         return Content(event=self, type=self._content_type)
 
 
-class CommitteeMeeting(WithBodyContent, Event):
+class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
@@ -539,6 +559,10 @@ class CommitteeMeeting(WithBodyContent, Event):
             if tmp['content']:
                 # remove premium content
                 tmp['premium_content_excluded'] = True
+                del tmp['body']
+                del tmp['summary']
+                # TODO:
+                # del tmp['files']
                 tmp['content'] = []
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp

@@ -52,14 +52,13 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
+            ('Uploaded Files', 'files.index_view', File.query.count()),
             ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
-        file_count = Content.query.count()
 
         return self.render(
             'admin/my_index.html',
-            record_counts=record_counts,
-            file_count=file_count)
+            record_counts=record_counts)
 
 
 class UsageReportView(RBACMixin, BaseView):

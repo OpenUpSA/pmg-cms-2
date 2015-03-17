@@ -510,9 +510,9 @@ class EventFile(db.Model):
     __tablename__ = "event_files"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True, nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete="CASCADE"), index=True, nullable=False)
     event = db.relationship('Event')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True, nullable=False)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
 
     def to_dict(self, include_related=False):

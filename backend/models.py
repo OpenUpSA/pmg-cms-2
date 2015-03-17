@@ -957,18 +957,6 @@ class Content(db.Model):
         return tmp
 
 
-class HitLog(db.Model):
-
-    __tablename__ = "hit_log"
-
-    id = db.Column(db.Integer, index=True, primary_key=True)
-    timestamp = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
-    ip_addr = db.Column(db.String(40), index=True)
-    user_agent = db.Column(db.String(255))
-    url = db.Column(db.String(255))
-
-
-
 class EmailTemplate(db.Model):
     __tablename__ = 'email_template'
 

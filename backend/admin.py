@@ -315,8 +315,8 @@ class InlineEventFile(InlineFormAdmin):
             # always create a new file, don't overwrite
             model.file = File()
             model.file.from_upload(file_data)
-
-        model.file.title = form.title.data
+        if form.title.data:
+            model.file.title = form.title.data
 
 
 class EventView(MyModelView):

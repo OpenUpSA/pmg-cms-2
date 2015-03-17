@@ -778,6 +778,24 @@ class FeaturedContentView(MyModelView):
         model.start_date = model.start_date.replace(tzinfo=tz.tzlocal())
 
 
+class FileView(MyModelView):
+    can_create = False
+
+    column_list = ('title', 'file_path')
+    column_searchable_list = ('title', 'file_path')
+    column_default_sort = 'file_path'
+    form_columns = (
+        'title',
+        'description',
+        'file_path',
+        'file_mime',
+    )
+    form_widget_args = {
+        'file_path': {'disabled': True},
+        'file_mime': {'disabled': True}
+    }
+
+
 class RedirectView(MyModelView):
     column_list = ('old_url', 'new_url', 'nid')
     column_searchable_list = ('old_url', 'new_url')
@@ -963,6 +981,13 @@ admin.add_view(
         category='Other Content',
         name="Static Pages",
         endpoint='pages'))
+admin.add_view(
+    FileView(
+        File,
+        db.session,
+        category='Other Content',
+        name="Uploaded Files",
+        endpoint='files'))
 
 # Email alerts
 admin.add_view(

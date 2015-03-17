@@ -316,7 +316,8 @@ class InlineEventFile(InlineFormAdmin):
             # always create a new file, don't overwrite
             model.file = File()
             model.file.from_upload(file_data)
-            model.file.title = form.title.data
+
+        model.file.title = form.title.data
 
 
 class EventView(MyModelView):
@@ -335,6 +336,11 @@ class EventView(MyModelView):
         # make sure the new date is timezone aware
         if model.date:
             model.date = model.date.replace(tzinfo=tz.tzlocal())
+
+    def on_form_prefill(self, form, id):
+        if hasattr(form, 'files'):
+            for f in form.files:
+                f.title.data = f.object_data.file.title
 
     def get_query(self):
         """

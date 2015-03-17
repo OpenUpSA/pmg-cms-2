@@ -291,7 +291,6 @@ class CommitteeView(MyModelView):
 class InlineEventFile(InlineFormAdmin):
     form_columns = (
         'id',
-        'type',
         'file',
         )
 

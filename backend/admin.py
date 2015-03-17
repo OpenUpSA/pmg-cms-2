@@ -359,7 +359,7 @@ class EventView(MyModelView):
 
 
 class CommitteeMeetingView(EventView):
-    frontend_url_format = 'committee-meeting/%d'
+    frontend_url_format = 'committee-meeting/%s'
 
     column_list = ('date', 'title', 'committee', 'featured')
     column_labels = {'committee': 'Committee', }
@@ -401,7 +401,7 @@ class CommitteeMeetingView(EventView):
 
 
 class HansardView(EventView):
-    frontend_url_format = 'hansard/%d'
+    frontend_url_format = 'hansard/%s'
 
     column_list = (
         'title',
@@ -460,7 +460,7 @@ class BriefingView(EventView):
 
 
 class MemberView(MyModelView):
-    frontend_url_format = 'member/%d'
+    frontend_url_format = 'member/%s'
 
     column_list = (
         'name',
@@ -548,7 +548,7 @@ class InlineFile(InlineFormAdmin):
 
 
 class QuestionReplyView(MyModelView):
-    frontend_url_format = 'question_reply/%d'
+    frontend_url_format = 'question_reply/%s'
 
     column_list = (
         'committee',
@@ -594,7 +594,7 @@ class CallForCommentView(MyModelView):
 
 
 class DailyScheduleView(MyModelView):
-    frontend_url_format = 'daily_schedule/%d'
+    frontend_url_format = 'daily_schedule/%s'
 
     column_exclude_list = (
         'body',
@@ -614,7 +614,7 @@ class DailyScheduleView(MyModelView):
 
 
 class GazetteView(MyModelView):
-    frontend_url_format = 'gazette/%d'
+    frontend_url_format = 'gazette/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
@@ -626,7 +626,7 @@ class GazetteView(MyModelView):
 
 
 class PolicyDocumentView(MyModelView):
-    frontend_url_format = 'policy-document/%d'
+    frontend_url_format = 'policy-document/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
@@ -638,7 +638,7 @@ class PolicyDocumentView(MyModelView):
 
 
 class TabledReportView(MyModelView):
-    frontend_url_format = 'tabled-committee-report/%d'
+    frontend_url_format = 'tabled-committee-report/%s'
 
     column_exclude_list = (
         'body',

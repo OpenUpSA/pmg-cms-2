@@ -469,6 +469,7 @@ class Event(db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
     house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
+    chairperson = db.Column(db.String(256))
 
     # did this meeting involve public participation?
     public_participation = db.Column(db.Boolean, default=False, server_default=sql.expression.false())
@@ -523,7 +524,6 @@ class CommitteeMeeting(Event):
         'polymorphic_identity': 'committee-meeting'
     }
     _content_type = 'committee-meeting-report'
-    chairperson = db.Column(db.String(256))
 
     def check_permission(self):
         # by default, all committee meetings are accessible
@@ -543,8 +543,8 @@ class CommitteeMeeting(Event):
                 tmp['premium_content_excluded'] = True
                 del tmp['body']
                 del tmp['summary']
-                # TODO:
-                # del tmp['files']
+                if 'files' in tmp:
+                    del tmp['files']
                 tmp['content'] = []
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp

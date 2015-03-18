@@ -7,6 +7,7 @@ import requests
 from requests import ConnectionError
 import json
 import logging
+from ga import ga_event
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)
@@ -131,13 +132,13 @@ def register():
         # save Api Key and redirect user
         if response and response.get('user') and response['user'].get('authentication_token'):
             logger.debug("saving authentication_token to the session")
-            session['api_key'] = response['user']['authentication_token']
             load_current_user()
-            flash(
-                u'You have been registered. Please check your email for a confirmation.',
-                'success')
-            if request.values.get('next'):
-                return redirect(request.values['next'])
+
+            # set a google analytics event that will be sent when the page loads
+            ga_event('user', 'register')
+            flash(u'You have been registered. Please check your email for a confirmation.', 'success')
+
+            return redirect(request.values.get('next', '/'))
 
     return render_template('user_management/register_user.html', form=form)
 
@@ -282,6 +283,8 @@ def email_alerts():
                 out['committee_alerts'].append(committee_id)
         tmp = send_to_api('update_alerts', json.dumps(out))
         if tmp:
+            # register a google analytics event
+            ga_event('user', 'set-alerts')
             flash("Your notification settings have been updated successfully.", "success")
             return redirect(url_for('email_alerts'))
 

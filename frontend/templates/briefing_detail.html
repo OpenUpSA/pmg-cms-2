@@ -15,13 +15,13 @@
 
   <div class="row">
     <div class="col-sm-8">
-      {% if (report.summary) %}
-        <div class="summary">{{ report.summary|safe }}</div>
+      {% if (event.summary) %}
+        <div class="summary">{{ event.summary|safe }}</div>
       {% endif %}
 
-      {% if (report.body) %}
+      {% if (event.body) %}
         <h3>Minutes</h3>
-        <div>{{ report.body|safe }}</div>
+        <div>{{ event.body|safe }}</div>
       {% endif %}
 
     </div>

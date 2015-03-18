@@ -1,6 +1,4 @@
 from flask import render_template, g, request, redirect, session, url_for, abort, flash
-from frontend import app
-from views import ApiException, load_from_api, send_to_api
 import os
 import forms
 import requests
@@ -8,6 +6,9 @@ from requests import ConnectionError
 import json
 import logging
 from ga import ga_event
+
+from frontend import app
+from frontend.api import ApiException, load_from_api, send_to_api
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)

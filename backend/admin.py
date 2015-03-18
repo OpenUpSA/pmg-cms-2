@@ -627,16 +627,16 @@ class GazetteView(ViewWithFiles, MyModelView):
     inline_models = [InlineEventFile(GazetteFile)]
 
 
-class PolicyDocumentView(MyModelView):
+class PolicyDocumentView(ViewWithFiles, MyModelView):
     frontend_url_format = 'policy-document/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
     form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
+        'files': {'widget': widgets.InlineEventFileWidget()},
     }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineEventFile(PolicyDocumentFile)]
 
 
 class TabledReportView(MyModelView):

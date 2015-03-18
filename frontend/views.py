@@ -60,13 +60,7 @@ def classify_attachments(files):
 
 @app.route('/')
 def index():
-    committee_meetings_api = load_from_api('committee-meeting')
-    committee_meetings = []
-    for committee_meeting in committee_meetings_api["results"]:
-        if committee_meeting.get('committee'):
-            committee_meetings.append(committee_meeting)
-            if len(committee_meetings) == 10:
-                break
+    committee_meetings = load_from_api('committee-meeting')['results'][:10]
     bills = load_from_api('bill')["results"][:10]
     schedule = load_from_api('schedule')["results"]
     scheduledates = []

@@ -1,4 +1,3 @@
-from . import app
 from flask import session
 
 def ga_event(category, action, label=None, value=None):
@@ -13,7 +12,3 @@ def get_ga_events():
     """ Get (and clear) Google Analytics events stored with :func:`ga_event`.
     """
     return session.pop('_gaevents', [])
-
-@app.context_processor
-def get_ga_events_helper():
-    return {'get_ga_events': get_ga_events}

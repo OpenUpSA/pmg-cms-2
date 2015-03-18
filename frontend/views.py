@@ -9,17 +9,14 @@ import json
 import os.path
 
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect, g
-from werkzeug.exceptions import HTTPException
-import requests
-import arrow
 
 from frontend import app
 import forms
 from frontend.bills import bill_history, MIN_YEAR
-from ga import ga_event
+from frontend.ga import ga_event
+from frontend.api import load_from_api, send_to_api
 
 API_HOST = app.config['API_HOST']
-error_bad_request = 400
 app.session = session
 
 logger = logging.getLogger(__name__)
@@ -27,121 +24,6 @@ logger = logging.getLogger(__name__)
 
 def admin_url(model_name, id):
     return API_HOST.replace('http', 'https') + 'admin/%s/edit/?id=%s' % (model_name, id)
-
-
-@app.template_filter('pretty_date')
-def _jinja2_filter_datetime(iso_str, format_option=None):
-    if not iso_str:
-        return ""
-    format = '%d %b %Y'
-    if format_option == "long":
-        format = '%d %B %Y'
-    date = dateutil.parser.parse(iso_str)
-    return date.strftime(format)
-
-
-@app.template_filter('member_url')
-def _jinja2_filter_member_url(member):
-    if member.get('pa_url'):
-        return member['pa_url']
-    return url_for('member', member_id=member['id'])
-
-
-@app.template_filter('search_snippet')
-def _jinja2_filter_search_snippet(snippet):
-    if not snippet:
-        return ""
-    if isinstance(snippet, list):
-        snippet = ' ... '.join(snippet)
-    return snippet
-
-
-@app.template_filter('ellipse')
-def _jinja2_filter_ellipse(snippet):
-    return "...&nbsp;" + snippet.strip() + "&nbsp;..."
-
-
-@app.template_filter('nbsp')
-def _jinja2_nbsp(str):
-    return str.replace(" ", "&nbsp;")
-
-
-@app.template_filter('human_date')
-def _jinja2_filter_humandate(iso_str):
-    if not iso_str:
-        return ""
-    return arrow.get(iso_str).humanize()
-
-
-@app.context_processor
-def pagination_processor():
-    def pagination(page_count, current_page, per_page, url):
-        # Source:
-        # https://github.com/jmcclell/django-bootstrap-pagination/blob/master/bootstrap_pagination/templatetags/bootstrap_pagination.py#L154
-        range_length = 15
-        logger.debug("Building pagination")
-        if range_length is None:
-            range_min = 1
-            range_max = page_count
-        else:
-            if range_length < 1:
-                raise Exception(
-                    "Optional argument \"range\" expecting integer greater than 0")
-            elif range_length > page_count:
-                range_length = page_count
-            range_length -= 1
-            range_min = max(current_page - (range_length / 2) + 1, 1)
-            range_max = min(current_page + (range_length / 2) + 1, page_count)
-            range_diff = range_max - range_min
-            if range_diff < range_length:
-                shift = range_length - range_diff
-                if range_min - shift > 0:
-                    range_min -= shift
-                else:
-                    range_max += shift
-        page_range = range(range_min, range_max + 1)
-        s = ""
-        for i in page_range:
-            active = ""
-            if ((i - 1) == current_page):
-                active = "active"
-            query_string = ""
-            if (request.query_string):
-                query_string = "?" + request.query_string
-            s += "<li class='{0}'><a href='{1}/{2}/{4}'>{3}</a></li>".format(
-                active,
-                url,
-                i -
-                1,
-                i,
-                query_string)
-        return s
-    return dict(pagination=pagination)
-
-
-class ApiException(HTTPException):
-    """
-    Class for handling all of our expected API errors.
-    """
-
-    def __init__(self, status_code, message):
-        super(ApiException, self).__init__(message)
-        self.code = status_code
-        self.message = self.description
-
-    def get_response(self, environ=None):
-        logger.error("API error: %s" % self.description)
-        flash(self.description + " (" + str(self.code) + ")", "danger")
-
-        if self.code == 401:
-            session.clear()
-            return redirect(url_for('login') + "?next=" + urllib.quote_plus(request.path))
-
-        return super(ApiException, self).get_response(environ)
-
-    def get_body(self, environ):
-        return render_template('500.html', error=self)
-
 
 
 @app.errorhandler(404)
@@ -160,86 +42,6 @@ def page_not_found(error):
 def server_error(error):
     return render_template('500.html', error=error), 500
 
-
-def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, params=None):
-    params = {} if (params is None) else params
-
-    query_str = resource_name + "/"
-    if resource_id:
-        query_str += str(resource_id) + "/"
-    if page:
-        params["page"] = str(page)
-
-    headers = {}
-    # add auth header
-    if session and session.get('api_key'):
-        headers = {'Authentication-Token': session.get('api_key')}
-
-    try:
-        response = requests.get(API_HOST + query_str, headers=headers, params=params)
-
-        if response.status_code == 404:
-            abort(404)
-
-        if response.status_code != 200 and response.status_code not in [401, 403]:
-            try:
-                msg = response.json().get('message')
-            except Exception:
-                msg = None
-
-            raise ApiException(response.status_code, msg or "An unspecified error has occurred.")
-
-        out = response.json()
-        if return_everything:
-            next_response_json = out
-            i = 0
-            while next_response_json.get('next') and i < 1000:
-                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params)
-                next_response_json = next_response.json()
-                out['results'] += next_response_json['results']
-                i += 1
-            if out.get('next'):
-                out.pop('next')
-
-        return out
-    except requests.ConnectionError as e:
-        logger.error("Error connecting to backend service: %s" % e, exc_info=e)
-        flash(u'Error connecting to backend service.', 'danger')
-
-
-def send_to_api(endpoint, data=None):
-
-    query_str = endpoint + "/"
-
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-    # add auth header
-    if session and session.get('api_key'):
-        headers['Authentication-Token'] = session.get('api_key')
-    try:
-        response = requests.post(
-            API_HOST +
-            query_str,
-            headers=headers,
-            data=data)
-        out = response.json()
-
-        if response.status_code != 200:
-            try:
-                msg = response.json().get('message')
-            except Exception:
-                msg = None
-
-            raise ApiException(
-                response.status_code,
-                msg or "An unspecified error has occurred.")
-        return out
-    except requests.ConnectionError:
-        flash('Error connecting to backend service.', 'danger')
-        pass
-    return
 
 
 def classify_attachments(files):

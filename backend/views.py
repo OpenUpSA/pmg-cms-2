@@ -422,7 +422,7 @@ def page():
 
 @app.route('/correct-this-page/', methods=['POST'])
 def correct_this_page():
-    msg = Message("Correct This Page feedback", recipients=["greg@code4sa.org"], sender='info@pmg.org.za')
+    msg = Message("Correct This Page feedback", recipients=["info@pmg.org.za"], sender='info@pmg.org.za')
     msg.html = render_template('correct_this_page.html', submission=request.json)
     mail.send(msg)
     return send_api_response({})

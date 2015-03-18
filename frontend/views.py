@@ -805,7 +805,7 @@ def question_replies(page=0):
     """
 
     logger.debug("question_replies page called")
-    committees = load_from_api('committee', return_everything=True)['results']
+    committees = load_from_api('committee/question_reply', return_everything=True)['results']
     filters = {}
     params = {}
     filters["committee"] = params[

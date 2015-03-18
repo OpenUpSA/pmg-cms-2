@@ -297,6 +297,15 @@ def resource_list(resource, resource_id=None):
 
     return api_resource_list(resource, resource_id, base_query)
 
+@app.route('/committee/question_reply/')
+def question_reply_committees():
+    """
+    A list of those committees that have received questions and replies.
+    We might want to generalise this at some point
+    """
+    items = Committee.for_related(QuestionReply).all()
+    return send_api_response(serializers.queryset_to_json(items, count=len(items)))
+
 
 @app.route('/', )
 @load_user('token', 'session')

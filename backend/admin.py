@@ -797,182 +797,49 @@ class PageView(MyModelView):
 
 
 # initialise admin instance
-admin = Admin(
-    app,
-    name='PMG-CMS',
-    base_template='admin/my_base.html',
-    index_view=MyIndexView(
-        name='Home'),
-    template_mode='bootstrap3')
+admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
-# usage reports
-admin.add_view(
-    UsageReportView(
-        name="Usage report",
-        endpoint='usage_report',
-        category='Users'))
+# ---------------------------------------------------------------------------------
+# Users
+admin.add_view(UsageReportView(name="Usage report", endpoint='usage_report', category='Users'))
+admin.add_view(UserView(User, db.session, name="Users", endpoint='user', category='Users'))
+admin.add_view(OrganisationView(Organisation, db.session, name="Organisations", endpoint='organisation', category='Users'))
 
-# add admin views for each model
-admin.add_view(
-    UserView(
-        User,
-        db.session,
-        name="Users",
-        endpoint='user',
-        category='Users'))
-admin.add_view(
-    OrganisationView(
-        Organisation,
-        db.session,
-        name="Organisations",
-        endpoint='organisation',
-        category='Users'))
-admin.add_view(
-    CommitteeView(
-        Committee,
-        db.session,
-        name="Committees",
-        endpoint='committee',
-        category="Committees"))
-admin.add_view(
-    CommitteeMeetingView(
-        CommitteeMeeting,
-        db.session,
-        type="committee-meeting",
-        name="Committee Meetings",
-        endpoint='committee_meeting',
-        category="Committees"))
-admin.add_view(
-    TabledCommitteeReportView(
-        TabledCommitteeReport,
-        db.session,
-        name="Tabled Committee Reports",
-        endpoint='tabled_report',
-        category="Committees"))
-admin.add_view(
-    MemberView(
-        Member,
-        db.session,
-        name="Members",
-        endpoint='member'))
-admin.add_view(
-    BillsView(
-        Bill,
-        db.session,
-        name="Bills",
-        endpoint='bill',
-        frontend_url_format='bill/%s'))
-admin.add_view(
-    QuestionReplyView(
-        QuestionReply,
-        db.session,
-        name="Questions & Replies",
-        endpoint='question',
-        category="Other Content"))
-admin.add_view(
-    CallForCommentView(
-        CallForComment,
-        db.session,
-        name="Calls for Comment",
-        endpoint='call_for_comment',
-        category="Other Content"))
-admin.add_view(
-    GazetteView(
-        Gazette,
-        db.session,
-        name="Gazettes",
-        endpoint='gazette',
-        category="Other Content"))
-admin.add_view(
-    HansardView(
-        Hansard,
-        db.session,
-        type="plenary",
-        name="Hansards",
-        endpoint='hansard',
-        category="Other Content"))
-admin.add_view(
-    PolicyDocumentView(
-        PolicyDocument,
-        db.session,
-        name="Policy Document",
-        endpoint='policy',
-        category="Other Content"))
-admin.add_view(
-    DailyScheduleView(
-        DailySchedule,
-        db.session,
-        name="Daily Schedules",
-        endpoint='schedule',
-        category="Other Content"))
-admin.add_view(
-    BriefingView(
-        Briefing,
-        db.session,
-        type="media-briefing",
-        name="Media Briefings",
-        endpoint='briefing',
-        category="Other Content"))
-admin.add_view(
-    MyModelView(
-        MembershipType,
-        db.session,
-        name="Membership Type",
-        endpoint='membership-type',
-        category="Form Options"))
-admin.add_view(
-    MyModelView(
-        BillStatus,
-        db.session,
-        name="Bill Status",
-        endpoint='bill-status',
-        category="Form Options"))
-admin.add_view(
-    MyModelView(
-        BillType,
-        db.session,
-        name="Bill Type",
-        endpoint='bill-type',
-        category="Form Options"))
-admin.add_view(
-    FeaturedContentView(
-        Featured,
-        db.session,
-        category='Other Content',
-        name="Featured Content",
-        endpoint='featured'))
-admin.add_view(
-    RedirectView(
-        Redirect,
-        db.session,
-        category='Other Content',
-        name="Legacy Redirects",
-        endpoint='redirects'))
-admin.add_view(
-    PageView(
-        Page,
-        db.session,
-        category='Other Content',
-        name="Static Pages",
-        endpoint='pages'))
-admin.add_view(
-    FileView(
-        File,
-        db.session,
-        category='Other Content',
-        name="Uploaded Files",
-        endpoint='files'))
+# ---------------------------------------------------------------------------------
+# Committees
+admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
+admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
 
+# ---------------------------------------------------------------------------------
+# Members
+admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+
+# ---------------------------------------------------------------------------------
+# Bills
+admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint='bill', frontend_url_format='bill/%s'))
+
+# ---------------------------------------------------------------------------------
+# Other Content
+admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
+admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
+admin.add_view(HansardView(Hansard, db.session, type="plenary", name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(BriefingView(Briefing, db.session, type="media-briefing", name="Media Briefings", endpoint='briefing', category="Other Content"))
+admin.add_view(FeaturedContentView(Featured, db.session, category='Other Content', name="Featured Content", endpoint='featured'))
+admin.add_view(RedirectView(Redirect, db.session, category='Other Content', name="Legacy Redirects", endpoint='redirects'))
+admin.add_view(PageView(Page, db.session, category='Other Content', name="Static Pages", endpoint='pages'))
+admin.add_view(FileView(File, db.session, category='Other Content', name="Uploaded Files", endpoint='files'))
+
+# ---------------------------------------------------------------------------------
+# Form options
+admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
+admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
+admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
+
+# ---------------------------------------------------------------------------------
 # Email alerts
-admin.add_view(
-    EmailAlertView(
-        category='Email Alerts',
-        name="Send Emails",
-        endpoint='alerts'))
-admin.add_view(
-    EmailTemplateView(
-        EmailTemplate,
-        db.session,
-        name="Email Templates",
-        category='Email Alerts',
-        endpoint='email-templates'))
+admin.add_view(EmailAlertView(category='Email Alerts', name="Send Emails", endpoint='alerts'))
+admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Templates", category='Email Alerts', endpoint='email-templates'))

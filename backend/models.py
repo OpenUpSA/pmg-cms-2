@@ -435,6 +435,15 @@ class File(db.Model):
         return u'%s' % self.file_path
 
 
+class FileLinkMixin(object):
+    """ Mixin for models that link a content type to a File object
+    in a many-to-many relationship.
+    """
+
+    def to_dict(self, include_related=False):
+        """ Delegate to the file's to_dict completely. """
+        return self.file.to_dict(include_related)
+
 
 class Event(db.Model):
     """ An event is a generic model which represents an event that took
@@ -505,7 +514,7 @@ event_bills = db.Table(
     db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id')))
 
 
-class EventFile(db.Model):
+class EventFile(FileLinkMixin, db.Model):
     __tablename__ = "event_files"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
@@ -513,9 +522,6 @@ class EventFile(db.Model):
     event = db.relationship('Event')
     file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
-
-    def to_dict(self, include_related=False):
-        return self.file.to_dict(include_related)
 
 
 class CommitteeMeeting(Event):
@@ -872,24 +878,22 @@ class Gazette(db.Model):
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
 
-    files = db.relationship("File", secondary='gazette_file_join', backref="gazette")
+    files = db.relationship("GazetteFile", lazy='joined')
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
         return tmp
 
-gazette_file_table = db.Table(
-    'gazette_file_join',
-    db.Model.metadata,
-    db.Column(
-        'gazette_id',
-        db.Integer,
-        db.ForeignKey('gazette.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
+
+class GazetteFile(FileLinkMixin, db.Model):
+    __tablename__ = "gazette_file_join"
+
+    id = db.Column(db.Integer, primary_key=True)
+    gazette_id = db.Column(db.Integer, db.ForeignKey('gazette.id', ondelete='CASCADE'), index=True, nullable=False)
+    gazette = db.relationship('Gazette')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 # === Featured Content === #
@@ -918,24 +922,22 @@ class DailySchedule(db.Model):
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    files = db.relationship("File", secondary='daily_schedule_file_join', backref='daily_schedule')
+    files = db.relationship("DailyScheduleFile", lazy='joined')
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
         return tmp
 
-daily_schedule_file_table = db.Table(
-    'daily_schedule_file_join',
-    db.Model.metadata,
-    db.Column(
-        'daily_schedule_id',
-        db.Integer,
-        db.ForeignKey('daily_schedule.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
+
+class DailyScheduleFile(FileLinkMixin, db.Model):
+    __tablename__ = "daily_schedule_file_join"
+
+    id = db.Column(db.Integer, primary_key=True)
+    daily_schedule_id = db.Column(db.Integer, db.ForeignKey('daily_schedule.id', ondelete='CASCADE'), index=True, nullable=False)
+    daily_schedule = db.relationship('DailySchedule')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 class Content(db.Model):

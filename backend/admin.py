@@ -289,12 +289,23 @@ class CommitteeView(MyModelView):
 
 class ViewWithFiles(object):
     """ Mixin to pre-fill inline file forms. """
+
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+
     def on_form_prefill(self, form, id):
         if hasattr(form, 'files'):
             for f in form.files:
                 f.title.data = f.object_data.file.title
 
-class InlineEventFile(InlineFormAdmin):
+
+class InlineFile(InlineFormAdmin):
+    """ Inline file admin for all views that allow file attachments.
+    It allows the user to choose an existing file to link as
+    an attachment, or upload a new one. It also allows the user
+    to edit the title of an already-attached file.
+    """
     form_columns = (
         'id',
         'file',
@@ -385,6 +396,7 @@ class CommitteeMeetingView(EventView):
     )
     form_args = {
         'committee': {'validators': [required()]},
+        'files': {'widget': widgets.InlineFileWidget()},
     }
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
@@ -396,10 +408,7 @@ class CommitteeMeetingView(EventView):
             'page_size': 50
         }
     }
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(EventFile)]
+    inline_models = [InlineFile(EventFile)]
 
 
 class HansardView(EventView):
@@ -424,10 +433,7 @@ class HansardView(EventView):
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
         }
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(EventFile)]
+    inline_models = [InlineFile(EventFile)]
 
 class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
@@ -455,10 +461,7 @@ class BriefingView(EventView):
         'summary': {'class': 'custom-ckeditor'},
         'body': {'class': 'custom-ckeditor'},
         }
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(EventFile)]
+    inline_models = [InlineFile(EventFile)]
 
 
 class MemberView(MyModelView):
@@ -531,24 +534,6 @@ class MemberView(MyModelView):
             model.profile_pic_url = tmp.file_path
 
 
-class InlineFile(InlineFormAdmin):
-    form_columns = (
-        'id',
-        'title',
-        )
-
-    def postprocess_form(self, form_class):
-        # add a field for handling the file upload
-        form_class.upload = fields.FileField('File')
-        return form_class
-
-    def on_model_change(self, form, model):
-        # save file, if it is present
-        file_data = request.files.get(form.upload.name)
-        if file_data:
-            model.from_upload(file_data)
-
-
 class QuestionReplyView(MyModelView):
     frontend_url_format = 'question_reply/%s'
 
@@ -609,10 +594,7 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
         },
     }
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(DailyScheduleFile)]
+    inline_models = [InlineFile(DailyScheduleFile)]
 
 
 class GazetteView(ViewWithFiles, MyModelView):
@@ -621,10 +603,7 @@ class GazetteView(ViewWithFiles, MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(GazetteFile)]
+    inline_models = [InlineFile(GazetteFile)]
 
 
 class PolicyDocumentView(ViewWithFiles, MyModelView):
@@ -633,13 +612,10 @@ class PolicyDocumentView(ViewWithFiles, MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineEventFileWidget()},
-    }
-    inline_models = [InlineEventFile(PolicyDocumentFile)]
+    inline_models = [InlineFile(PolicyDocumentFile)]
 
 
-class TabledReportView(MyModelView):
+class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     frontend_url_format = 'tabled-committee-report/%s'
 
     column_exclude_list = (
@@ -653,10 +629,7 @@ class TabledReportView(MyModelView):
         'summary': {'class': 'custom-ckeditor'},
         }
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
-    }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineFile(TabledCommitteeReportFile)]
 
 
 class EmailTemplateView(MyModelView):
@@ -870,7 +843,7 @@ admin.add_view(
         endpoint='committee_meeting',
         category="Committees"))
 admin.add_view(
-    TabledReportView(
+    TabledCommitteeReportView(
         TabledCommitteeReport,
         db.session,
         name="Tabled Committee Reports",

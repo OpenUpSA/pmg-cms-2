@@ -783,12 +783,8 @@ class TabledCommitteeReport(db.Model):
     nid = db.Column(db.Integer())
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship(
-        'Committee',
-        backref=db.backref('tabled_committee_reports'))
-    files = db.relationship(
-        "File",
-        secondary='tabled_committee_report_file_join', backref='tabled_committee_report')
+    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports'))
+    files = db.relationship("TabledCommitteeReportFile", lazy='joined')
 
     def __unicode__(self):
         return self.title or ('<TabledCommitteeReport %s>' % self.id)
@@ -798,17 +794,15 @@ class TabledCommitteeReport(db.Model):
         tmp['url'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
         return tmp
 
-tabled_committee_report_file_table = db.Table(
-    'tabled_committee_report_file_join',
-    db.Model.metadata,
-    db.Column(
-        'tabled_committee_report_id',
-        db.Integer,
-        db.ForeignKey('tabled_committee_report.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')))
+
+class TabledCommitteeReportFile(FileLinkMixin, db.Model):
+    __tablename__ = 'tabled_committee_report_file_join'
+
+    id = db.Column(db.Integer, primary_key=True)
+    tabled_committee_report_id = db.Column(db.Integer, db.ForeignKey('tabled_committee_report.id', ondelete='CASCADE'), index=True, nullable=False)
+    tabled_committee_report = db.relationship('TabledCommitteeReport')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 # === Calls for comment === #

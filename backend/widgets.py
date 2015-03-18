@@ -37,15 +37,10 @@ class InlineMembershipsWidget(RenderTemplateWidget):
             InlineMembershipsWidget,
             self).__init__('admin/inline_membership.html')
 
-# This widget uses custom template for inline field list
+# This widget uses custom template for event files
 class InlineFileWidget(RenderTemplateWidget):
     def __init__(self):
         super(InlineFileWidget, self).__init__('admin/inline_file.html')
-
-# This widget uses custom template for event files
-class InlineEventFileWidget(RenderTemplateWidget):
-    def __init__(self):
-        super(InlineEventFileWidget, self).__init__('admin/inline_event_file.html')
 
 # Custom widget for showing inline events for bills
 class InlineBillEventsWidget(RenderTemplateWidget):

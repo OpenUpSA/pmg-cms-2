@@ -32,23 +32,13 @@ class CheckboxSelectWidget(widgets.Select):
 
 # This widget uses custom template for inline field list
 class InlineMembershipsWidget(RenderTemplateWidget):
-
     def __init__(self):
         super(
             InlineMembershipsWidget,
             self).__init__('admin/inline_membership.html')
 
-
-# This widget uses custom template for inline field list
-class InlineContentWidget(RenderTemplateWidget):
-
-    def __init__(self):
-        super(InlineContentWidget, self).__init__('admin/inline_content.html')
-
-
-# This widget uses custom template for inline field list
+# This widget uses custom template for event files
 class InlineFileWidget(RenderTemplateWidget):
-
     def __init__(self):
         super(InlineFileWidget, self).__init__('admin/inline_file.html')
 

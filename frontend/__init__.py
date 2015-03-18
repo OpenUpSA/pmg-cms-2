@@ -53,5 +53,6 @@ assets.register('js', Bundle(
     output='javascript/app.%(version)s.js'))
 
 
+import helpers
 import views
 import user_management

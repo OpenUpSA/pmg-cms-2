@@ -15,6 +15,7 @@ from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
 from wtforms import fields
+from wtforms.validators import required, optional
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
@@ -51,14 +52,13 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
+            ('Uploaded Files', 'files.index_view', File.query.count()),
             ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
-        file_count = Content.query.count()
 
         return self.render(
             'admin/my_index.html',
-            record_counts=record_counts,
-            file_count=file_count)
+            record_counts=record_counts)
 
 
 class UsageReportView(RBACMixin, BaseView):
@@ -287,17 +287,60 @@ class CommitteeView(MyModelView):
     inline_models = (Membership, )
 
 
-class EventView(MyModelView):
+class ViewWithFiles(object):
+    """ Mixin to pre-fill inline file forms. """
+
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
+
+    def on_form_prefill(self, form, id):
+        if hasattr(form, 'files'):
+            for f in form.files:
+                f.title.data = f.object_data.file.title
+
+
+class InlineFile(InlineFormAdmin):
+    """ Inline file admin for all views that allow file attachments.
+    It allows the user to choose an existing file to link as
+    an attachment, or upload a new one. It also allows the user
+    to edit the title of an already-attached file.
+    """
+    form_columns = (
+        'id',
+        'file',
+        )
+    column_labels = {'file': 'Existing file', }
+    form_ajax_refs = {
+        'file': {
+            'fields': ('title', 'file_path'),
+            'page_size': 10,
+        }
+    }
+
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField('Upload a file')
+        form_class.file.kwargs['validators'] = []
+        form_class.file.kwargs['allow_blank'] = True
+        form_class.title = fields.TextField('Title')
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            # always create a new file, don't overwrite
+            model.file = File()
+            model.file.from_upload(file_data)
+        if form.title.data:
+            model.file.title = form.title.data
+
+
+class EventView(ViewWithFiles, MyModelView):
 
     form_excluded_columns = ('type', )
     column_exclude_list = ('type', )
-
-    form_ajax_refs = {
-        'content': {
-            'fields': ('type', ),
-            'page_size': 25
-        }
-    }
 
     def __init__(self, model, session, **kwargs):
         self.type = kwargs.pop('type')
@@ -328,44 +371,10 @@ class EventView(MyModelView):
             .filter(self.model.type == self.type)
 
 
-# This InlineModelFormList will use our custom widget, when creating a
-# list of forms
-class ContentFormList(InlineModelFormList):
-    widget = widgets.InlineContentWidget()
-
-
-# Create custom InlineModelConverter to link the form to its model
-class ContentModelConverter(InlineModelConverter):
-    inline_field_list_type = ContentFormList
-
-
-class InlineContent(InlineFormAdmin):
-    form_excluded_columns = ('type', 'file', 'body', 'summary')
-
-    def postprocess_form(self, form_class):
-        # add a field for handling the file upload
-        form_class.upload = fields.FileField('File')
-        form_class.title = fields.StringField('Title')
-        return form_class
-
-    def on_model_change(self, form, model):
-        # save file, if it is present
-        file_data = request.files.get(form.upload.name)
-        if file_data:
-            model.file = File()
-            model.file.from_upload(file_data)
-            model.file.title = form.title.data
-
-            if 'audio' in model.file.file_mime:
-                model.type = "audio"
-            else:
-                model.type = "related-doc"
-
-
 class CommitteeMeetingView(EventView):
-    frontend_url_format = 'committee-meeting/%d'
+    frontend_url_format = 'committee-meeting/%s'
 
-    column_list = ('date', 'title', 'committee', 'content', 'featured')
+    column_list = ('date', 'title', 'committee', 'featured')
     column_labels = {'committee': 'Committee', }
     column_sortable_list = (
         'date',
@@ -373,13 +382,6 @@ class CommitteeMeetingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'committee',
         'title',
@@ -390,11 +392,11 @@ class CommitteeMeetingView(EventView):
         'bills',
         'summary',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'summary': fields.TextAreaField('Summary'),
-        'body': fields.TextAreaField('Body'),
+    form_args = {
+        'committee': {'validators': [required()]},
+        'files': {'widget': widgets.InlineFileWidget()},
     }
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
@@ -406,30 +408,15 @@ class CommitteeMeetingView(EventView):
             'page_size': 50
         }
     }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.summary.data = event.main_content.summary
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.summary = form.summary.data
-        model.main_content.body = form.body.data
-        return super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
+    inline_models = [InlineFile(EventFile)]
 
 
 class HansardView(EventView):
-    frontend_url_format = 'hansard/%d'
+    frontend_url_format = 'hansard/%s'
 
     column_list = (
         'title',
         'date',
-        'content',
     )
     column_sortable_list = (
         'title',
@@ -437,39 +424,16 @@ class HansardView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('title', )
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'date',
         'title',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'body': fields.TextAreaField('Body'),
-        }
     form_widget_args = {
         'body': {'class': 'custom-ckeditor'},
         }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.body = form.body.data
-        return super(HansardView, self).on_model_change(form, model, is_created)
-
+    inline_models = [InlineFile(EventFile)]
 
 class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
@@ -485,49 +449,23 @@ class BriefingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('title', )
-    column_formatters = dict(
-        content=macro('render_event_content'),
-        )
-    form_excluded_columns = (
-        'event',
-        'member',
-    )
     form_columns = (
         'title',
         'date',
         'committee',
         'summary',
         'body',
-        'content',
+        'files',
     )
-    form_extra_fields = {
-        'summary': fields.TextAreaField('Summary'),
-        'body': fields.TextAreaField('Body'),
-        }
     form_widget_args = {
         'summary': {'class': 'custom-ckeditor'},
         'body': {'class': 'custom-ckeditor'},
         }
-    inline_models = (
-        InlineContent(Content),
-    )
-    inline_model_form_converter = ContentModelConverter
-
-    def on_form_prefill(self, form, id):
-        event = Event.query.get(id)
-        form.summary.data = event.main_content.summary
-        form.body.data = event.main_content.body
-
-    def on_model_change(self, form, model, is_created):
-        # create / update related content
-        model.main_content.body = form.body.data
-        model.main_content.summary = form.summary.data
-        return super(BriefingView, self).on_model_change(form, model, is_created)
-
+    inline_models = [InlineFile(EventFile)]
 
 
 class MemberView(MyModelView):
-    frontend_url_format = 'member/%d'
+    frontend_url_format = 'member/%s'
 
     column_list = (
         'name',
@@ -596,26 +534,8 @@ class MemberView(MyModelView):
             model.profile_pic_url = tmp.file_path
 
 
-class InlineFile(InlineFormAdmin):
-    form_columns = (
-        'id',
-        'title',
-        )
-
-    def postprocess_form(self, form_class):
-        # add a field for handling the file upload
-        form_class.upload = fields.FileField('File')
-        return form_class
-
-    def on_model_change(self, form, model):
-        # save file, if it is present
-        file_data = request.files.get(form.upload.name)
-        if file_data:
-            model.from_upload(file_data)
-
-
 class QuestionReplyView(MyModelView):
-    frontend_url_format = 'question_reply/%d'
+    frontend_url_format = 'question_reply/%s'
 
     column_list = (
         'committee',
@@ -660,8 +580,8 @@ class CallForCommentView(MyModelView):
         }
 
 
-class DailyScheduleView(MyModelView):
-    frontend_url_format = 'daily_schedule/%d'
+class DailyScheduleView(ViewWithFiles, MyModelView):
+    frontend_url_format = 'daily_schedule/%s'
 
     column_exclude_list = (
         'body',
@@ -674,38 +594,29 @@ class DailyScheduleView(MyModelView):
         },
     }
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
-    }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineFile(DailyScheduleFile)]
 
 
-class GazetteView(MyModelView):
-    frontend_url_format = 'gazette/%d'
+class GazetteView(ViewWithFiles, MyModelView):
+    frontend_url_format = 'gazette/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
-    }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineFile(GazetteFile)]
 
 
-class PolicyDocumentView(MyModelView):
-    frontend_url_format = 'policy-document/%d'
+class PolicyDocumentView(ViewWithFiles, MyModelView):
+    frontend_url_format = 'policy-document/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
-    }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineFile(PolicyDocumentFile)]
 
 
-class TabledReportView(MyModelView):
-    frontend_url_format = 'tabled-committee-report/%d'
+class TabledCommitteeReportView(ViewWithFiles, MyModelView):
+    frontend_url_format = 'tabled-committee-report/%s'
 
     column_exclude_list = (
         'body',
@@ -718,10 +629,7 @@ class TabledReportView(MyModelView):
         'summary': {'class': 'custom-ckeditor'},
         }
     form_excluded_columns = ('nid', )
-    form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
-    }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineFile(TabledCommitteeReportFile)]
 
 
 class EmailTemplateView(MyModelView):
@@ -844,6 +752,24 @@ class FeaturedContentView(MyModelView):
         model.start_date = model.start_date.replace(tzinfo=tz.tzlocal())
 
 
+class FileView(MyModelView):
+    can_create = False
+
+    column_list = ('title', 'file_path')
+    column_searchable_list = ('title', 'file_path')
+    column_default_sort = 'file_path'
+    form_columns = (
+        'title',
+        'description',
+        'file_path',
+        'file_mime',
+    )
+    form_widget_args = {
+        'file_path': {'disabled': True},
+        'file_mime': {'disabled': True}
+    }
+
+
 class RedirectView(MyModelView):
     column_list = ('old_url', 'new_url', 'nid')
     column_searchable_list = ('old_url', 'new_url')
@@ -871,175 +797,49 @@ class PageView(MyModelView):
 
 
 # initialise admin instance
-admin = Admin(
-    app,
-    name='PMG-CMS',
-    base_template='admin/my_base.html',
-    index_view=MyIndexView(
-        name='Home'),
-    template_mode='bootstrap3')
+admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
-# usage reports
-admin.add_view(
-    UsageReportView(
-        name="Usage report",
-        endpoint='usage_report',
-        category='Users'))
+# ---------------------------------------------------------------------------------
+# Users
+admin.add_view(UsageReportView(name="Usage report", endpoint='usage_report', category='Users'))
+admin.add_view(UserView(User, db.session, name="Users", endpoint='user', category='Users'))
+admin.add_view(OrganisationView(Organisation, db.session, name="Organisations", endpoint='organisation', category='Users'))
 
-# add admin views for each model
-admin.add_view(
-    UserView(
-        User,
-        db.session,
-        name="Users",
-        endpoint='user',
-        category='Users'))
-admin.add_view(
-    OrganisationView(
-        Organisation,
-        db.session,
-        name="Organisations",
-        endpoint='organisation',
-        category='Users'))
-admin.add_view(
-    CommitteeView(
-        Committee,
-        db.session,
-        name="Committees",
-        endpoint='committee',
-        category="Committees"))
-admin.add_view(
-    CommitteeMeetingView(
-        CommitteeMeeting,
-        db.session,
-        type="committee-meeting",
-        name="Committee Meetings",
-        endpoint='committee_meeting',
-        category="Committees"))
-admin.add_view(
-    TabledReportView(
-        TabledCommitteeReport,
-        db.session,
-        name="Tabled Committee Reports",
-        endpoint='tabled_report',
-        category="Committees"))
-admin.add_view(
-    MemberView(
-        Member,
-        db.session,
-        name="Members",
-        endpoint='member'))
-admin.add_view(
-    BillsView(
-        Bill,
-        db.session,
-        name="Bills",
-        endpoint='bill',
-        frontend_url_format='bill/%s'))
-admin.add_view(
-    QuestionReplyView(
-        QuestionReply,
-        db.session,
-        name="Questions & Replies",
-        endpoint='question',
-        category="Other Content"))
-admin.add_view(
-    CallForCommentView(
-        CallForComment,
-        db.session,
-        name="Calls for Comment",
-        endpoint='call_for_comment',
-        category="Other Content"))
-admin.add_view(
-    GazetteView(
-        Gazette,
-        db.session,
-        name="Gazettes",
-        endpoint='gazette',
-        category="Other Content"))
-admin.add_view(
-    HansardView(
-        Hansard,
-        db.session,
-        type="plenary",
-        name="Hansards",
-        endpoint='hansard',
-        category="Other Content"))
-admin.add_view(
-    PolicyDocumentView(
-        PolicyDocument,
-        db.session,
-        name="Policy Document",
-        endpoint='policy',
-        category="Other Content"))
-admin.add_view(
-    DailyScheduleView(
-        DailySchedule,
-        db.session,
-        name="Daily Schedules",
-        endpoint='schedule',
-        category="Other Content"))
-admin.add_view(
-    BriefingView(
-        Briefing,
-        db.session,
-        type="media-briefing",
-        name="Media Briefings",
-        endpoint='briefing',
-        category="Other Content"))
-admin.add_view(
-    MyModelView(
-        MembershipType,
-        db.session,
-        name="Membership Type",
-        endpoint='membership-type',
-        category="Form Options"))
-admin.add_view(
-    MyModelView(
-        BillStatus,
-        db.session,
-        name="Bill Status",
-        endpoint='bill-status',
-        category="Form Options"))
-admin.add_view(
-    MyModelView(
-        BillType,
-        db.session,
-        name="Bill Type",
-        endpoint='bill-type',
-        category="Form Options"))
-admin.add_view(
-    FeaturedContentView(
-        Featured,
-        db.session,
-        category='Other Content',
-        name="Featured Content",
-        endpoint='featured'))
-admin.add_view(
-    RedirectView(
-        Redirect,
-        db.session,
-        category='Other Content',
-        name="Legacy Redirects",
-        endpoint='redirects'))
-admin.add_view(
-    PageView(
-        Page,
-        db.session,
-        category='Other Content',
-        name="Static Pages",
-        endpoint='pages'))
+# ---------------------------------------------------------------------------------
+# Committees
+admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
+admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
 
+# ---------------------------------------------------------------------------------
+# Members
+admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+
+# ---------------------------------------------------------------------------------
+# Bills
+admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint='bill', frontend_url_format='bill/%s'))
+
+# ---------------------------------------------------------------------------------
+# Other Content
+admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
+admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
+admin.add_view(HansardView(Hansard, db.session, type="plenary", name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
+admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(BriefingView(Briefing, db.session, type="media-briefing", name="Media Briefings", endpoint='briefing', category="Other Content"))
+admin.add_view(FeaturedContentView(Featured, db.session, category='Other Content', name="Featured Content", endpoint='featured'))
+admin.add_view(RedirectView(Redirect, db.session, category='Other Content', name="Legacy Redirects", endpoint='redirects'))
+admin.add_view(PageView(Page, db.session, category='Other Content', name="Static Pages", endpoint='pages'))
+admin.add_view(FileView(File, db.session, category='Other Content', name="Uploaded Files", endpoint='files'))
+
+# ---------------------------------------------------------------------------------
+# Form options
+admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
+admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
+admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
+
+# ---------------------------------------------------------------------------------
 # Email alerts
-admin.add_view(
-    EmailAlertView(
-        category='Email Alerts',
-        name="Send Emails",
-        endpoint='alerts'))
-admin.add_view(
-    EmailTemplateView(
-        EmailTemplate,
-        db.session,
-        name="Email Templates",
-        category='Email Alerts',
-        endpoint='email-templates'))
+admin.add_view(EmailAlertView(category='Email Alerts', name="Send Emails", endpoint='alerts'))
+admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Templates", category='Email Alerts', endpoint='email-templates'))

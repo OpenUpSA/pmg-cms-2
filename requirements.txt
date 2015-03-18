@@ -1,6 +1,6 @@
 Fabric==1.10.0
 Flask==0.10.1
-Flask-Admin==1.0.9
+Flask-Admin==1.1.0
 Flask-Assets==0.10
 Flask-Login==0.2.10
 Flask-Mail==0.9.1
@@ -13,10 +13,11 @@ Mako==1.0.1
 MarkupSafe==0.23
 PyYAML==3.11
 SQLAlchemy==0.8.2
-WTForms==1.0.5
-Werkzeug==0.9.6
+WTForms==2.0.2
+Werkzeug==0.10.1
 XlsxWriter==0.6.6
 alembic==0.7.4
+argh==0.26.1
 argparse==1.2.1
 arrow==0.4.4
 beautifulsoup4==4.3.2
@@ -36,6 +37,7 @@ nltk==2.0.4
 paramiko==1.15.1
 passlib==1.6.2
 pathlib==1.0.1
+pathtools==0.1.2
 psycopg2==2.5.4
 pyScss==1.3.4
 pycrypto==2.6.1
@@ -44,5 +46,6 @@ python-dateutil==2.3
 requests==2.0.1
 simplejson==3.6.5
 six==1.8.0
+watchdog==0.8.3
 webassets==0.10.1
 wsgiref==0.1.2

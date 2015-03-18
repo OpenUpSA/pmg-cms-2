@@ -6,6 +6,7 @@ import arrow
 from flask import request, url_for
 
 from frontend import app
+from frontend.ga import get_ga_events
 
 logger = logging.getLogger(__name__)
 
@@ -97,3 +98,7 @@ def _jinja2_filter_humandate(iso_str):
     if not iso_str:
         return ""
     return arrow.get(iso_str).humanize()
+
+@app.context_processor
+def get_ga_events_helper():
+    return {'get_ga_events': get_ga_events}

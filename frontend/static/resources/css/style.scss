@@ -87,6 +87,14 @@ article.page {
 }
 
 
+.block-xs {
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+  }
+}
+
+
 
 #news {
   .news-pic {
@@ -198,7 +206,11 @@ article.page {
   }
 }
 
-footer {
+.correct-this-page-footer {
+  margin-top: 40px;
+}
+
+.footer {
   margin: 0px;
   padding-top: 40px;
   padding-bottom: 40px;
@@ -214,6 +226,10 @@ footer {
 
   a, a:hover {
     color: lighten($link-color, 40%);
+  }
+
+  a.btn, a.btn:hover {
+    color: #333;
   }
 
   .pa-link {

@@ -1,8 +1,8 @@
 import logging
-from app import db, app
+from app import db, app, mail
 from models import *
 import flask
-from flask import g, request, abort, redirect, url_for, session, make_response
+from flask import g, request, abort, redirect, url_for, session, make_response, render_template
 import json
 from sqlalchemy import func, or_, distinct, desc
 from sqlalchemy.orm import joinedload
@@ -17,6 +17,7 @@ from search import Search
 import math
 from flask_security import current_user
 from flask_security.decorators import load_user
+from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 
 # handling static files (only relevant during development)
@@ -418,3 +419,10 @@ def page():
         raise ApiException(404, "No such page")
 
     return send_api_response(serializers.queryset_to_json(page))
+
+@app.route('/correct-this-page/', methods=['POST'])
+def correct_this_page():
+    msg = Message("Correct This Page feedback", recipients=["greg@code4sa.org"], sender='info@pmg.org.za')
+    msg.html = render_template('correct_this_page.html', submission=request.json)
+    mail.send(msg)
+    return send_api_response({})

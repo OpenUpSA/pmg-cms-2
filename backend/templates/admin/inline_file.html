@@ -1,21 +1,31 @@
 {% import '/admin/model/inline_list_base.html' as base with context %}
+{% import '/admin/lib.html' as lib with context %}
 {% import '_macros.html' as macros %}
 
 {% macro render_file_field(field) %}
   {% set model = field.object_data %}
   <div class="row">
-    {% if model.file_path %}
+    {% if model.id %}
+
       {{ field.form.id }}
       <div class="col-md-10">
-        <a href="{{ model.file_url }}" target="_blank">
-          {{ macros.file_type_icon(model.type) }}
-          {{ model.file_path }}
-        </a>
+        {{ lib.render_field(field.form, field.form.title) }}
+        <div class="row">
+          <div class="col-md-10 col-md-offset-2">
+            {{ macros.file_type_icon(model.file.type) }}
+            <a href="{{ model.file.file_url }}" target="_blank">
+              {{ model.file.file_path }}
+            </a>
+          </div>
+        </div>
       </div>
+
     {% else %}
+
       <div class="col-md-8">
         {{ field }}
       </div>
+
     {% endif %}
   </div>
 {% endmacro %}

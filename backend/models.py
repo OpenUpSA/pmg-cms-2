@@ -681,6 +681,13 @@ class Committee(db.Model):
                 .order_by(cls.name)\
                 .all()
 
+    @classmethod
+    def for_related(cls, other):
+        """ Those Committees that are linked to `other` via a foreign key.
+        """
+        ids = set(x[0] for x in db.session.query(func.distinct(other.committee_id)).all())
+        return cls.query.filter(cls.id.in_(ids)).order_by(cls.name)
+
     def __unicode__(self):
         tmp = self.name
         if self.house:

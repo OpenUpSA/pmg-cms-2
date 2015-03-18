@@ -16,6 +16,7 @@ import arrow
 from frontend import app
 import forms
 from frontend.bills import bill_history, MIN_YEAR
+from ga import ga_event
 
 API_HOST = app.config['API_HOST']
 error_bad_request = 400

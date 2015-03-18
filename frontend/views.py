@@ -829,7 +829,7 @@ def question_replies(page=0):
         title="Questions and Replies",
         content_type="question_reply",
         committees=committees,
-        all_committees_option="All Ministers",
+        all_committees_option="All Ministries",
         filters=filters)
 
 

@@ -287,6 +287,13 @@ class CommitteeView(MyModelView):
     inline_models = (Membership, )
 
 
+class ViewWithFiles(object):
+    """ Mixin to pre-fill inline file forms. """
+    def on_form_prefill(self, form, id):
+        if hasattr(form, 'files'):
+            for f in form.files:
+                f.title.data = f.object_data.file.title
+
 class InlineEventFile(InlineFormAdmin):
     form_columns = (
         'id',
@@ -319,7 +326,7 @@ class InlineEventFile(InlineFormAdmin):
             model.file.title = form.title.data
 
 
-class EventView(MyModelView):
+class EventView(ViewWithFiles, MyModelView):
 
     form_excluded_columns = ('type', )
     column_exclude_list = ('type', )
@@ -335,11 +342,6 @@ class EventView(MyModelView):
         # make sure the new date is timezone aware
         if model.date:
             model.date = model.date.replace(tzinfo=tz.tzlocal())
-
-    def on_form_prefill(self, form, id):
-        if hasattr(form, 'files'):
-            for f in form.files:
-                f.title.data = f.object_data.file.title
 
     def get_query(self):
         """
@@ -593,7 +595,7 @@ class CallForCommentView(MyModelView):
         }
 
 
-class DailyScheduleView(MyModelView):
+class DailyScheduleView(ViewWithFiles, MyModelView):
     frontend_url_format = 'daily_schedule/%s'
 
     column_exclude_list = (
@@ -608,21 +610,21 @@ class DailyScheduleView(MyModelView):
     }
     form_excluded_columns = ('nid', )
     form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
+        'files': {'widget': widgets.InlineEventFileWidget()},
     }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineEventFile(DailyScheduleFile)]
 
 
-class GazetteView(MyModelView):
+class GazetteView(ViewWithFiles, MyModelView):
     frontend_url_format = 'gazette/%s'
 
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
     form_excluded_columns = ('nid', )
     form_args = {
-        'files': {'widget': widgets.InlineFileWidget()},
+        'files': {'widget': widgets.InlineEventFileWidget()},
     }
-    inline_models = [InlineFile(File)]
+    inline_models = [InlineEventFile(GazetteFile)]
 
 
 class PolicyDocumentView(MyModelView):

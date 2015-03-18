@@ -845,25 +845,22 @@ class PolicyDocument(db.Model):
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
 
-    files = db.relationship("File", secondary='policy_document_file_join', backref='policy_document')
+    files = db.relationship("PolicyDocumentFile", lazy='joined')
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
         return tmp
 
-policy_document_file_table = db.Table(
-    'policy_document_file_join',
-    db.Model.metadata,
-    db.Column(
-        'policy_document_id',
-        db.Integer,
-        db.ForeignKey('policy_document.id')),
-    db.Column(
-        'file_id',
-        db.Integer,
-        db.ForeignKey('file.id')),
-    )
+
+class PolicyDocumentFile(FileLinkMixin, db.Model):
+    __tablename__ = 'policy_document_file_join'
+
+    id = db.Column(db.Integer, primary_key=True)
+    policy_document_id = db.Column(db.Integer, db.ForeignKey('policy_document.id', ondelete='CASCADE'), index=True, nullable=False)
+    policy_document = db.relationship('PolicyDocument')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 # === Gazette === #

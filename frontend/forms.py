@@ -247,3 +247,12 @@ class ChangePasswordForm(Form, PasswordFormMixin):
         super(ChangePasswordForm, self).__init__(*args, **kwargs)
         if not self.next.data:
             self.next.data = request.args.get('next', url_for('index'))
+
+class CorrectThisPageForm(Form):
+    email = TextField('Email', [validators.Optional()])
+    details = TextField('Details', [validators.Optional()])
+    url = TextField('URL', [validators.Optional()])
+
+    def save(self):
+        pass
+

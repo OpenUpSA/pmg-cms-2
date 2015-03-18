@@ -268,8 +268,12 @@ def email_alerts():
 
     if g.current_user and request.method == 'POST':
         out = {'committee_alerts': [], 'general_alerts': []}
-        general_notifications = ['select-daily-schedule', ]
+        general_notifications = ['select-daily-schedule']
+
         for field_name in request.form.keys():
+            if field_name == 'csrf_token':
+                continue
+
             if field_name in general_notifications:
                 key = "-".join(field_name.split('-')[1::])
                 out['general_alerts'].append(key)

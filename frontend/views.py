@@ -14,6 +14,7 @@ import requests
 import arrow
 
 from frontend import app
+import forms
 from frontend.bills import bill_history, MIN_YEAR
 
 API_HOST = app.config['API_HOST']
@@ -938,3 +939,16 @@ def docs(path, dir=''):
     if dir:
         dir = dir + '/'
     return redirect(app.config['STATIC_HOST'] + dir + path)
+
+@app.route('/correct-this-page', methods=['POST'])
+def correct_this_page():
+    form = forms.CorrectThisPageForm(request.form)
+    if form.validate_on_submit():
+        tmp = send_to_api('correct-this-page', json.dumps({
+            'url': form.url.data,
+            'details': form.details.data,
+            'email': form.email.data,
+            }))
+        flash('Thanks for your feedback.', 'info')
+
+    return redirect(request.form.get('url', '/'))

@@ -1,8 +1,10 @@
 import logging
 import logging.config
+import os
+
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
-import os
+from flask_wtf.csrf import CsrfProtect
 
 os.environ['PMG_LAYER'] = 'frontend'
 
@@ -12,6 +14,7 @@ app = Flask(__name__, static_folder="static")
 app.config.from_pyfile('../config/%s/config.py' % env)
 
 db = SQLAlchemy(app)
+CsrfProtect(app)
 
 # setup logging
 with open('config/%s/logging.yaml' % env) as f:

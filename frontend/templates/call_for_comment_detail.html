@@ -25,4 +25,6 @@
 		<h2><a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a></h2>
 	{% endif %}
 	{{ call_for_comment.body|safe }}
+
+{% include "_correct_this_page.html" %}
 {% endblock %}

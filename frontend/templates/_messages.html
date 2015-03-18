@@ -4,12 +4,7 @@
       <div class="flashed_msg">
         <div class="alert alert-{% if category %}{{ category }}{% else %}danger{% endif %} alert-dismissable fade in">
           <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-          <strong>
-            {% if category in ["success", "info"] %}
-              {{ category | title }}
-            {% else %}
-              Error
-            {% endif %}: </strong> {{ message | safe}}
+          {{ message | safe }}
         </div>
       </div>
     {% endfor %}

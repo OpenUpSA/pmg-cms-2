@@ -39,6 +39,8 @@
   <hr>
 
   <form method="post" action="{{ url_for('email_alerts') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
     <h2>General updates</h2>
     <ul class="list-unstyled">
       <li class="checkbox">

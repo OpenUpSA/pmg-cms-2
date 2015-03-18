@@ -39,7 +39,7 @@
   ga('send', 'pageview');
 
   {% for cat, action, label, value in get_ga_events() %}
-	ga_('send', 'event', '{{ cat }}', '{{ action }}' 
+	ga('send', 'event', '{{ cat }}', '{{ action }}'
 			{%if label -%}
 				, '{{ label }}'
 				{% if value -%}

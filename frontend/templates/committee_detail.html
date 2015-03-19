@@ -8,9 +8,15 @@
 {% endblock %}
 
 {% block page %}
-  <h1>{{ committee.name }}</h1>
-
-  <h4 class="light-red">{{ committee.house.name }} Committee</h4>
+  <div class="row">
+    <div class="col-sm-9">
+      <h1>{{ committee.name }}</h1>
+      <h4 class="light-red">{{ committee.house.name }} Committee</h4>
+    </div>
+    <div class="col-sm-3">
+      {% include 'user_management/_committee_alerts_signup.html' %}
+    </div>
+  </div>
 
   {% if committee.about %}
     <h3 class="collapse-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>

@@ -374,3 +374,17 @@ mark {
     font-weight: bold;
   }
 }
+
+// email alert signup quick-box
+.email-alert-box {
+  margin-top: 10px;
+  text-align: center;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #efefef;
+
+  button {
+    white-space: normal;
+    height: auto;
+  }
+}

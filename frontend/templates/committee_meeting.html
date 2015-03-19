@@ -14,7 +14,18 @@
 {% endblock %}
 
 {% block page %}
-  <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
+  <div class="row">
+    <div class="col-sm-9">
+      <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
+    </div>
+
+    {% if event.committee %}
+      <div class="col-sm-3">
+        {% set committee = event.committee %}
+        {% include 'user_management/_committee_alerts_signup.html' %}
+      </div>
+    {% endif %}
+  </div>
 
   {% if event.premium_content_excluded %}
     <p class="lead">

@@ -20,6 +20,8 @@ from flask_security.decorators import load_user
 from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 
+from backend.base import resource_slugs
+
 # handling static files (only relevant during development)
 app.static_folder = 'static'
 app.add_url_rule('/static/<path:filename>',
@@ -131,40 +133,10 @@ def send_api_response(data, status_code=200):
 
 
 def api_resources():
-    current_time = datetime.datetime.utcnow()
-    return {
-        "committee": db.session.query(Committee)
-            .order_by(Committee.house_id, Committee.name),
-        "committee-meeting": db.session.query(CommitteeMeeting)
-            .order_by(desc(CommitteeMeeting.date)),
-        "bill": db.session.query(Bill)
-            .order_by(desc(Bill.year)),
-        "member": db.session.query(Member)
-            .options(joinedload('house'),
-                     joinedload('province'),
-                     joinedload('memberships.committee'))
-            .filter(Member.current == True)
-            .order_by(Member.name),
-        "hansard": db.session.query(Hansard)
-            .order_by(desc(Hansard.date)),
-        "briefing": db.session.query(Briefing)
-            .order_by(desc(Briefing.date)),
-        "question_reply": db.session.query(QuestionReply)
-            .order_by(desc(QuestionReply.start_date)),
-        "schedule": db.session.query(Schedule)
-            .order_by(desc(Schedule.meeting_date))
-            .filter(Schedule.meeting_date >= current_time),
-        "tabled_committee_report": db.session.query(TabledCommitteeReport)
-            .order_by(desc(TabledCommitteeReport.start_date)),
-        "call_for_comment": db.session.query(CallForComment)
-            .order_by(desc(CallForComment.start_date)),
-        "policy_document": db.session.query(PolicyDocument)
-            .order_by(desc(PolicyDocument.start_date)),
-        "gazette": db.session.query(Gazette)
-            .order_by(desc(Gazette.start_date)),
-        "daily_schedule": db.session.query(DailySchedule)
-            .order_by(desc(DailySchedule.start_date)),
-    }
+    d = {}
+    for slug, model in resource_slugs.iteritems():
+        d[slug] = model.list()
+    return d
 
 # -------------------------------------------------------------------
 # API endpoints:
@@ -351,59 +323,13 @@ def update_alerts():
     return send_api_response(out)
 
 
-@app.route('/check_redirect/', methods=['POST', ])
+@app.route('/check_redirect/', methods=['POST'])
 def check_redirect():
     """
     Check if a given URL should be redirected.
     """
-
-    out = {'redirect': None}
-    old_url = request.json.get('url')
-    if old_url.endswith("/"):
-        old_url = old_url[0:-1]
-    redirect_obj = Redirect.query.filter_by(old_url=old_url).first()
-
-    if redirect_obj:
-        if redirect_obj.new_url:
-            out['redirect'] = redirect_obj.new_url
-            if not out['redirect'].startswith('/'):
-                out['redirect'] = "/" + out['redirect']
-        elif redirect_obj.nid:
-            # look for 'event' table record with this nid
-            committee_meeting = CommitteeMeeting.query.filter_by(nid=redirect_obj.nid).first()
-            if committee_meeting:
-                out['redirect'] = '/committee-meeting/' + str(committee_meeting.id) + '/'
-            else:
-                briefing = Briefing.query.filter_by(nid=redirect_obj.nid).first()
-                if briefing:
-                    out['redirect'] = '/briefing/' + str(briefing.id) + '/'
-                else:
-                    hansard = Hansard.query.filter_by(nid=redirect_obj.nid).first()
-                    if hansard:
-                        out['redirect'] = '/hansard/' + str(hansard.id) + '/'
-            # look for other non-event records
-            if out['redirect'] is None:
-                question_reply = QuestionReply.query.filter_by(nid=redirect_obj.nid).first()
-                if question_reply:
-                    out['redirect'] = '/question_reply/' + str(question_reply.id) + '/'
-            if out['redirect'] is None:
-                call_for_comment = CallForComment.query.filter_by(nid=redirect_obj.nid).first()
-                if call_for_comment:
-                    out['redirect'] = '/call-for-comment/' + str(call_for_comment.id) + '/'
-            if out['redirect'] is None:
-                policy_doc = PolicyDocument.query.filter_by(nid=redirect_obj.nid).first()
-                if policy_doc:
-                    out['redirect'] = '/policy-document/' + str(policy_doc.id) + '/'
-            if out['redirect'] is None:
-                gazette = Gazette.query.filter_by(nid=redirect_obj.nid).first()
-                if gazette:
-                    out['redirect'] = '/gazette/' + str(gazette.id) + '/'
-            if out['redirect'] is None:
-                daily_schedule = DailySchedule.query.filter_by(nid=redirect_obj.nid).first()
-                if daily_schedule:
-                    out['redirect'] = '/daily-schedule/' + str(daily_schedule.id) + '/'
-
-    return send_api_response(out)
+    dest = Redirect.for_url(request.json.get('url', ''))
+    return send_api_response({'redirect': dest})
 
 
 @app.route('/page/')

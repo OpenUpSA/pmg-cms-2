@@ -315,6 +315,35 @@ def update_alerts():
     return send_api_response(out)
 
 
+@app.route('/user/alerts/committees/<int:committee_id>/', methods=['GET', 'POST', 'DELETE'])
+@load_user('token')
+def user_committee_alert(committee_id):
+    if current_user and current_user.is_active():
+        cte = Committee.query.get(committee_id)
+        if not cte:
+            raise ApiException(404, "No such committee")
+
+        if request.method == 'GET':
+            subscribed = cte in current_user.committee_alerts
+
+        elif request.method == 'DELETE':
+            try:
+                current_user.committee_alerts.remove(cte)
+            except ValueError:
+                pass
+            subscribed = False
+            db.session.commit()
+
+        elif request.method == 'POST':
+            current_user.committee_alerts.append(cte)
+            subscribed = True
+            db.session.commit()
+
+        return send_api_response({'alerts': subscribed})
+    else:
+        raise ApiException(401, "Authentication required")
+
+
 @app.route('/check_redirect/', methods=['POST'])
 def check_redirect():
     """

@@ -296,8 +296,16 @@ def email_alerts():
     committees = load_from_api('committee', return_everything=True)['results']
     return render_template('user_management/email_alerts.html',
             committees=committees,
-            after_signup=(next_url is not None),
+            after_signup=bool(next_url),
             next_url=next_url)
+
+
+@app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])
+def user_committee_alert(committee_id):
+    res = send_to_api('user/alerts/committees/%s' % committee_id)
+    if res.get('alerts'):
+        flash("We'll send you email alerts for updates on this committee.", 'success')
+    return redirect(request.values.get('next', '/'))
 
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])

@@ -135,6 +135,7 @@ class EmailAlertForm(Form):
             "track_opens": True,
             "track_clicks": True,
             "preserve_recipients": False,
+            "google_analytics_campaign": self.template.utm_campaign,
             "subaccount": app.config['MANDRILL_ALERTS_SUBACCOUNT'],
         }
 

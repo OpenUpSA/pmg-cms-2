@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import desc, func
 
 from backend.app import db
@@ -14,3 +16,7 @@ class EmailTemplate(db.Model):
 
     created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
+
+    @property
+    def utm_campaign(self):
+        return re.sub(r'[^a-z0-9 -]+', '', self.name.lower()).replace(' ', '-')

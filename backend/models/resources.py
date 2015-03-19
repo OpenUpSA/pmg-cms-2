@@ -1,28 +1,25 @@
-from random import random
-import string
+import re
 import datetime
-from dateutil.relativedelta import relativedelta
-from dateutil import tz
 import logging
 import os
 
 from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref, validates
+from sqlalchemy.orm import backref, validates, joinedload
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
 from flask import url_for
-from flask.ext.security import UserMixin, RoleMixin, \
-    Security, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import models_committed
 from flask_security import current_user
 
 from werkzeug import secure_filename
 
-from app import app, db
-import serializers
-from search import Search
-from s3_upload import S3Bucket
+from backend.app import app, db
+import backend.serializers as serializers
+from backend.search import Search
+from backend.s3_upload import S3Bucket
+
+from .base import ApiResource, resource_slugs
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -34,239 +31,6 @@ def allowed_file(filename):
     tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
-
-
-class ApiKey(db.Model):
-
-    __tablename__ = "api_key"
-
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(128), unique=True, nullable=False)
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('user.id'),
-        unique=True,
-        nullable=False)
-    user = db.relationship('User')
-
-    def generate_key(self):
-        self.key = ''.join(
-            random.choice(
-                string.ascii_uppercase +
-                string.digits) for _ in range(128))
-        return
-
-    def __unicode__(self):
-        s = u'%s' % self.key
-        return s
-
-    def to_dict(self, include_related=False):
-        return {'user_id': self.user_id, 'key': self.key}
-
-
-class Role(db.Model, RoleMixin):
-
-    __tablename__ = "role"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-def one_year_later():
-    return datetime.date.today() + relativedelta(years=1)
-
-
-class Organisation(db.Model):
-
-    __tablename__ = "organisation"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    domain = db.Column(db.String(100), nullable=False)
-    paid_subscriber = db.Column(db.Boolean)
-    created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
-    # when does this subscription expire?
-    expiry = db.Column(db.Date(), default=one_year_later)
-    contact = db.Column(db.String(255))
-
-    # premium committee subscriptions
-    subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
-
-
-    def subscribed_to_committee(self, committee):
-        """ Does this organisation have an active subscription to `committee`? """
-        return not self.has_expired() and (committee in self.subscriptions)
-
-    def has_expired(self):
-        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        # send subscriptions back as a dict
-        subscription_dict = {}
-        if tmp.get('subscriptions'):
-            for committee in tmp['subscriptions']:
-                subscription_dict[committee['id']] = committee.get('name')
-        tmp['subscriptions'] = subscription_dict
-        # set 'has_expired' flag as appropriate
-        tmp['has_expired'] = self.has_expired()
-        return tmp
-
-
-class User(db.Model, UserMixin):
-
-    __tablename__ = "user"
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    name = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255), default='', server_default='', nullable=False)
-    active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
-    confirmed_at = db.Column(db.DateTime(timezone=True))
-    last_login_at = db.Column(db.DateTime(timezone=True))
-    current_login_at = db.Column(db.DateTime(timezone=True))
-    last_login_ip = db.Column(db.String(100))
-    current_login_ip = db.Column(db.String(100))
-    login_count = db.Column(db.Integer)
-    subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
-    # when does this subscription expire?
-    expiry = db.Column(db.Date(), default=one_year_later)
-
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
-
-    # premium committee subscriptions, in addition to any that the user's organisation might have
-    subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
-
-    # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
-    roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
-
-    def __unicode__(self):
-        return unicode(self.email)
-
-    def has_expired(self):
-        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
-
-    def update_current_login(self):
-        now = datetime.datetime.utcnow()
-        if self.current_login_at + datetime.timedelta(hours=1) < now:
-            self.current_login_at = now
-            db.session.commit()
-
-    def subscribed_to_committee(self, committee):
-        """ Does this user have an active subscription to `committee`? """
-        # admin users have access to everything
-        if self.has_role('editor'):
-            return True
-
-        # inactive users should go away
-        if not self.active:
-            return False
-
-        # expired users should go away
-        if self.has_expired():
-            return False
-
-        # first see if this user has a subscription
-        if committee in self.subscriptions:
-            return True
-
-        # now check if our organisation has access
-        return self.organisation and self.organisation.subscribed_to_committee(committee)
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp.pop('password')
-        tmp.pop('last_login_ip')
-        tmp.pop('current_login_ip')
-        tmp.pop('last_login_at')
-        tmp.pop('current_login_at')
-        tmp['confirmed'] = tmp.pop('confirmed_at') is not None
-        tmp.pop('login_count')
-        tmp['has_expired'] = self.has_expired()
-
-        # send committee alerts back as a dict
-        alerts_dict = {}
-        if tmp.get('committee_alerts'):
-            for committee in tmp['committee_alerts']:
-                alerts_dict[committee['id']] = committee.get('name')
-        tmp['committee_alerts'] = alerts_dict
-        return tmp
-
-
-def set_organisation(target, value, oldvalue, initiator):
-    """Set a user's organisation, based on the domain of their email address."""
-    if not target.organisation and value:
-        user_domain = value.split("@")[-1]
-        org = Organisation.query.filter_by(domain=user_domain).first()
-        if org:
-            target.organisation = org
-
-
-# setup listener on User.email attribute
-listen(User.email, 'set', set_organisation)
-
-
-roles_users = db.Table(
-    'roles_users',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id')),
-    db.Column(
-        'role_id',
-        db.Integer(),
-        db.ForeignKey('role.id')))
-
-organisation_committee = db.Table(
-    'organisation_committee',
-    db.Column(
-        'organisation_id',
-        db.Integer(),
-        db.ForeignKey('organisation.id', ondelete='CASCADE')),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete='CASCADE')))
-
-
-user_committee = db.Table(
-    'user_committee',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id', ondelete="CASCADE")),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete="CASCADE")))
-
-
-user_committee_alerts = db.Table(
-    'user_committee_alerts',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id', ondelete="CASCADE")),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete="CASCADE")))
-
-
-# Setup Flask-Security
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
-
 
 class House(db.Model):
 
@@ -339,7 +103,7 @@ class BillStatus(db.Model):
         return u'%s (%s)' % (self.description, self.name)
 
 
-class Bill(db.Model):
+class Bill(ApiResource, db.Model):
     __tablename__ = "bill"
     __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id'), {})
 
@@ -379,6 +143,10 @@ class Bill(db.Model):
         if self.title:
             out += " - " + self.title
         return unicode(out)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.year))
 
 
 class BillVersion(db.Model):
@@ -445,7 +213,7 @@ class FileLinkMixin(object):
         return self.file.to_dict(include_related)
 
 
-class Event(db.Model):
+class Event(ApiResource, db.Model):
     """ An event is a generic model which represents an event that took
     place in Parliament at a certain time and may have rich content associated
     with it.
@@ -554,6 +322,10 @@ class CommitteeMeeting(Event):
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
+
 
 class Hansard(Event):
     __mapper_args__ = {
@@ -566,6 +338,10 @@ class Hansard(Event):
         tmp['url'] = url_for('resource_list', resource='hansard', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
+
 
 class Briefing(Event):
     __mapper_args__ = {
@@ -577,6 +353,10 @@ class Briefing(Event):
         tmp = super(Briefing, self).to_dict(include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='briefing', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
 
 
 class BillIntroduction(Event):
@@ -615,7 +395,7 @@ class BillUpdate(Event):
     }
 
 
-class MembershipType(db.Model):
+class MembershipType(ApiResource, db.Model):
 
     __tablename__ = "membership_type"
 
@@ -630,7 +410,7 @@ class MembershipType(db.Model):
         return unicode(self.name)
 
 
-class Member(db.Model):
+class Member(ApiResource, db.Model):
 
     __tablename__ = "member"
 
@@ -669,8 +449,17 @@ class Member(db.Model):
 
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query\
+            .options(joinedload('house'),
+                     joinedload('province'),
+                     joinedload('memberships.committee'))\
+            .filter(Member.current == True)\
+            .order_by(Member.name)
 
-class Committee(db.Model):
+
+class Committee(ApiResource, db.Model):
 
     __tablename__ = "committee"
 
@@ -698,6 +487,10 @@ class Committee(db.Model):
         """
         ids = set(x[0] for x in db.session.query(func.distinct(other.committee_id)).all())
         return cls.query.filter(cls.id.in_(ids)).order_by(cls.name)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(cls.house_id, cls.name)
 
     def __unicode__(self):
         tmp = self.name
@@ -731,7 +524,7 @@ class Membership(db.Model):
 
 # === Schedule === #
 
-class Schedule(db.Model):
+class Schedule(ApiResource, db.Model):
 
     __tablename__ = "schedule"
 
@@ -740,6 +533,13 @@ class Schedule(db.Model):
     meeting_date = db.Column(db.Date())
     meeting_time = db.Column(db.Text())
     houses = db.relationship("House", secondary='schedule_house_join')
+
+    @classmethod
+    def list(cls):
+        current_time = datetime.datetime.utcnow()
+        return cls.query\
+                .order_by(desc(cls.meeting_date))\
+                .filter(Schedule.meeting_date >= current_time)
 
 schedule_house_table = db.Table(
     'schedule_house_join', db.Model.metadata,
@@ -750,9 +550,12 @@ schedule_house_table = db.Table(
 
 # === Questions Replies === #
 
-class QuestionReply(db.Model):
+class QuestionReply(ApiResource, db.Model):
 
     __tablename__ = "question_reply"
+
+    # override the default of question-reply for legacy reasons
+    slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
@@ -768,10 +571,14 @@ class QuestionReply(db.Model):
         tmp['url'] = url_for('resource_list', resource='question_reply', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 # === Tabled Committee Report === #
 
-class TabledCommitteeReport(db.Model):
+class TabledCommitteeReport(ApiResource, db.Model):
 
     __tablename__ = "tabled_committee_report"
 
@@ -794,6 +601,10 @@ class TabledCommitteeReport(db.Model):
         tmp['url'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 class TabledCommitteeReportFile(FileLinkMixin, db.Model):
     __tablename__ = 'tabled_committee_report_file_join'
@@ -807,7 +618,7 @@ class TabledCommitteeReportFile(FileLinkMixin, db.Model):
 
 # === Calls for comment === #
 
-class CallForComment(db.Model):
+class CallForComment(ApiResource, db.Model):
 
     __tablename__ = "call_for_comment"
 
@@ -826,10 +637,14 @@ class CallForComment(db.Model):
         tmp['url'] = url_for('resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 # === Policy document === #
 
-class PolicyDocument(db.Model):
+class PolicyDocument(ApiResource, db.Model):
 
     __tablename__ = "policy_document"
 
@@ -846,6 +661,10 @@ class PolicyDocument(db.Model):
         tmp['url'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 class PolicyDocumentFile(FileLinkMixin, db.Model):
     __tablename__ = 'policy_document_file_join'
@@ -859,7 +678,7 @@ class PolicyDocumentFile(FileLinkMixin, db.Model):
 
 # === Gazette === #
 
-class Gazette(db.Model):
+class Gazette(ApiResource, db.Model):
 
     __tablename__ = "gazette"
 
@@ -875,6 +694,10 @@ class Gazette(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
 
 
 class GazetteFile(FileLinkMixin, db.Model):
@@ -902,7 +725,7 @@ class Featured(db.Model):
 # === Daily schedules === #
 
 
-class DailySchedule(db.Model):
+class DailySchedule(ApiResource, db.Model):
 
     __tablename__ = "daily_schedule"
 
@@ -919,6 +742,10 @@ class DailySchedule(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
 
 
 class DailyScheduleFile(FileLinkMixin, db.Model):
@@ -962,20 +789,6 @@ class Content(db.Model):
         return tmp
 
 
-class EmailTemplate(db.Model):
-    __tablename__ = 'email_template'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(1024))
-    subject = db.Column(db.String(100))
-    body = db.Column(db.Text)
-
-    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
-
-
 
 # Listen for model updates
 @models_committed.connect_via(app)
@@ -996,33 +809,17 @@ def on_models_changed(sender, changes):
                 searcher.add_obj(obj)
 
 
-class Redirect(db.Model):
-    __tablename__ = 'redirect'
-
-    id = db.Column(db.Integer, primary_key=True)
-    nid = db.Column(db.Integer)
-    old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
-    new_url = db.Column(db.String(250))
-
-    def __str__(self):
-        if self.nid:
-            target = "nid %s" % self.nid
-        else:
-            target = self.new_url
-
-        return u'<Redirect from %s to %s>' % (self.old_url, target)
-
-class Page(db.Model):
-    """ A basic CMS page. """
-    __tablename__ = 'page'
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    slug = db.Column(db.String, nullable=False, unique=True, index=True)
-    body = db.Column(db.Text)
-    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
-
-    @validates('slug')
-    def validate_slug(self, key, value):
-        return value.strip('/')
+# Register all the resource types. This ensures they show up in the API and are searchable
+ApiResource.register(Bill)
+ApiResource.register(Briefing)
+ApiResource.register(CallForComment)
+ApiResource.register(Committee)
+ApiResource.register(CommitteeMeeting)
+ApiResource.register(DailySchedule)
+ApiResource.register(Gazette)
+ApiResource.register(Hansard)
+ApiResource.register(Member)
+ApiResource.register(PolicyDocument)
+ApiResource.register(QuestionReply)
+ApiResource.register(Schedule)
+ApiResource.register(TabledCommitteeReport)

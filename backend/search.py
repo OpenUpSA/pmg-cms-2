@@ -9,7 +9,7 @@ from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
 
 from sqlalchemy import types
-from inflection import underscore, camelize
+from inflection import camelize
 from bs4 import BeautifulSoup
 
 from app import db, app
@@ -76,7 +76,7 @@ class Search:
 
     def data_type_for_obj(self, obj):
         # QuestionReply -> question_reply
-        return underscore(type(obj).__name__)
+        return obj.resource_content_type
 
     def model_for_data_type(self, data_type):
         # question_reply -> QuestionReply class

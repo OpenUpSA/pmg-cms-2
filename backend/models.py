@@ -1,3 +1,4 @@
+import re
 from random import random
 import string
 import datetime
@@ -7,7 +8,7 @@ import logging
 import os
 
 from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref, validates
+from sqlalchemy.orm import backref, validates, joinedload
 from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
@@ -20,6 +21,7 @@ from flask_security import current_user
 from werkzeug import secure_filename
 
 from app import app, db
+from base import ApiResource, resource_slugs
 import serializers
 from search import Search
 from s3_upload import S3Bucket
@@ -34,7 +36,6 @@ def allowed_file(filename):
     tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
-
 
 class ApiKey(db.Model):
 
@@ -339,7 +340,7 @@ class BillStatus(db.Model):
         return u'%s (%s)' % (self.description, self.name)
 
 
-class Bill(db.Model):
+class Bill(ApiResource, db.Model):
     __tablename__ = "bill"
     __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id'), {})
 
@@ -379,6 +380,10 @@ class Bill(db.Model):
         if self.title:
             out += " - " + self.title
         return unicode(out)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.year))
 
 
 class BillVersion(db.Model):
@@ -445,7 +450,7 @@ class FileLinkMixin(object):
         return self.file.to_dict(include_related)
 
 
-class Event(db.Model):
+class Event(ApiResource, db.Model):
     """ An event is a generic model which represents an event that took
     place in Parliament at a certain time and may have rich content associated
     with it.
@@ -554,6 +559,10 @@ class CommitteeMeeting(Event):
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
+
 
 class Hansard(Event):
     __mapper_args__ = {
@@ -566,6 +575,10 @@ class Hansard(Event):
         tmp['url'] = url_for('resource_list', resource='hansard', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
+
 
 class Briefing(Event):
     __mapper_args__ = {
@@ -577,6 +590,10 @@ class Briefing(Event):
         tmp = super(Briefing, self).to_dict(include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='briefing', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
 
 
 class BillIntroduction(Event):
@@ -615,7 +632,7 @@ class BillUpdate(Event):
     }
 
 
-class MembershipType(db.Model):
+class MembershipType(ApiResource, db.Model):
 
     __tablename__ = "membership_type"
 
@@ -630,7 +647,7 @@ class MembershipType(db.Model):
         return unicode(self.name)
 
 
-class Member(db.Model):
+class Member(ApiResource, db.Model):
 
     __tablename__ = "member"
 
@@ -669,8 +686,17 @@ class Member(db.Model):
 
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query\
+            .options(joinedload('house'),
+                     joinedload('province'),
+                     joinedload('memberships.committee'))\
+            .filter(Member.current == True)\
+            .order_by(Member.name)
 
-class Committee(db.Model):
+
+class Committee(ApiResource, db.Model):
 
     __tablename__ = "committee"
 
@@ -698,6 +724,10 @@ class Committee(db.Model):
         """
         ids = set(x[0] for x in db.session.query(func.distinct(other.committee_id)).all())
         return cls.query.filter(cls.id.in_(ids)).order_by(cls.name)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(cls.house_id, cls.name)
 
     def __unicode__(self):
         tmp = self.name
@@ -731,7 +761,7 @@ class Membership(db.Model):
 
 # === Schedule === #
 
-class Schedule(db.Model):
+class Schedule(ApiResource, db.Model):
 
     __tablename__ = "schedule"
 
@@ -740,6 +770,13 @@ class Schedule(db.Model):
     meeting_date = db.Column(db.Date())
     meeting_time = db.Column(db.Text())
     houses = db.relationship("House", secondary='schedule_house_join')
+
+    @classmethod
+    def list(cls):
+        current_time = datetime.datetime.utcnow()
+        return cls.query\
+                .order_by(desc(cls.meeting_date))\
+                .filter(Schedule.meeting_date >= current_time)
 
 schedule_house_table = db.Table(
     'schedule_house_join', db.Model.metadata,
@@ -750,9 +787,12 @@ schedule_house_table = db.Table(
 
 # === Questions Replies === #
 
-class QuestionReply(db.Model):
+class QuestionReply(ApiResource, db.Model):
 
     __tablename__ = "question_reply"
+
+    # override the default of question-reply for legacy reasons
+    slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
@@ -768,10 +808,14 @@ class QuestionReply(db.Model):
         tmp['url'] = url_for('resource_list', resource='question_reply', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 # === Tabled Committee Report === #
 
-class TabledCommitteeReport(db.Model):
+class TabledCommitteeReport(ApiResource, db.Model):
 
     __tablename__ = "tabled_committee_report"
 
@@ -794,6 +838,10 @@ class TabledCommitteeReport(db.Model):
         tmp['url'] = url_for('resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 class TabledCommitteeReportFile(FileLinkMixin, db.Model):
     __tablename__ = 'tabled_committee_report_file_join'
@@ -807,7 +855,7 @@ class TabledCommitteeReportFile(FileLinkMixin, db.Model):
 
 # === Calls for comment === #
 
-class CallForComment(db.Model):
+class CallForComment(ApiResource, db.Model):
 
     __tablename__ = "call_for_comment"
 
@@ -826,10 +874,14 @@ class CallForComment(db.Model):
         tmp['url'] = url_for('resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 # === Policy document === #
 
-class PolicyDocument(db.Model):
+class PolicyDocument(ApiResource, db.Model):
 
     __tablename__ = "policy_document"
 
@@ -846,6 +898,10 @@ class PolicyDocument(db.Model):
         tmp['url'] = url_for('resource_list', resource='policy_document', resource_id=self.id, _external=True)
         return tmp
 
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
+
 
 class PolicyDocumentFile(FileLinkMixin, db.Model):
     __tablename__ = 'policy_document_file_join'
@@ -859,7 +915,7 @@ class PolicyDocumentFile(FileLinkMixin, db.Model):
 
 # === Gazette === #
 
-class Gazette(db.Model):
+class Gazette(ApiResource, db.Model):
 
     __tablename__ = "gazette"
 
@@ -875,6 +931,10 @@ class Gazette(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='gazette', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
 
 
 class GazetteFile(FileLinkMixin, db.Model):
@@ -902,7 +962,7 @@ class Featured(db.Model):
 # === Daily schedules === #
 
 
-class DailySchedule(db.Model):
+class DailySchedule(ApiResource, db.Model):
 
     __tablename__ = "daily_schedule"
 
@@ -919,6 +979,10 @@ class DailySchedule(db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = url_for('resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
         return tmp
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.start_date))
 
 
 class DailyScheduleFile(FileLinkMixin, db.Model):
@@ -1012,6 +1076,47 @@ class Redirect(db.Model):
 
         return u'<Redirect from %s to %s>' % (self.old_url, target)
 
+    @classmethod
+    def object_for_nid(cls, nid):
+        for cls in resource_slugs.itervalues():
+            if hasattr(cls, 'nid'):
+                obj = cls.query.filter(cls.nid == nid).first()
+                if obj:
+                    return obj
+
+    @classmethod
+    def for_url(cls, old_url):
+        dest = None
+        nid = None
+
+        if old_url.endswith("/"):
+            old_url = old_url[:-1]
+
+        # check for /node/1234
+        match = re.match('^/node/(\d+)$', old_url)
+        if match:
+            nid = match.group(1)
+
+        else:
+            redirect = cls.query.filter(cls.old_url == old_url).first()
+            if redirect:
+                if redirect.new_url:
+                    dest = redirect.new_url
+                elif redirect.nid:
+                    nid = redirect_obj.nid
+
+        if nid:
+            # lookup based on nid
+            obj = cls.object_for_nid(nid)
+            if obj:
+                dest = obj.url_path()
+
+        if dest and not dest.startswith('/'):
+            dest = '/' + dest
+
+        return dest
+
+
 class Page(db.Model):
     """ A basic CMS page. """
     __tablename__ = 'page'
@@ -1026,3 +1131,19 @@ class Page(db.Model):
     @validates('slug')
     def validate_slug(self, key, value):
         return value.strip('/')
+
+
+# Register all the resource types. This ensures they show up in the API and are searchable
+ApiResource.register(Bill)
+ApiResource.register(Briefing)
+ApiResource.register(CallForComment)
+ApiResource.register(Committee)
+ApiResource.register(CommitteeMeeting)
+ApiResource.register(DailySchedule)
+ApiResource.register(Gazette)
+ApiResource.register(Hansard)
+ApiResource.register(Member)
+ApiResource.register(PolicyDocument)
+ApiResource.register(QuestionReply)
+ApiResource.register(Schedule)
+ApiResource.register(TabledCommitteeReport)

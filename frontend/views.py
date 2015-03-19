@@ -235,7 +235,7 @@ def committee_meeting(event_id):
         audio=audio,
         related_docs=related_docs,
         premium_committees=premium_committees,
-        admin_edit_url=admin_url('committee_meeting', event_id))
+        admin_edit_url=admin_url('committee-meeting', event_id))
 
 
 @app.route('/tabled-committee-reports/')
@@ -252,7 +252,7 @@ def tabled_committee_reports(page=0):
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
     tabled_committee_reports_list = load_from_api(
-        'tabled_committee_report',
+        'tabled-committee-report',
         page=page,
         params=params)
     count = tabled_committee_reports_list["count"]
@@ -281,13 +281,13 @@ def tabled_committee_report(tabled_committee_report_id):
     """
     logger.debug("tabled-committee-report page called")
     tabled_committee_report = load_from_api(
-        'tabled_committee_report',
+        'tabled-committee-report',
         tabled_committee_report_id)
     logger.debug(tabled_committee_report)
     return render_template(
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
-        admin_edit_url=admin_url('tabled_report', tabled_committee_report_id))
+        admin_edit_url=admin_url('tabled-committee-report', tabled_committee_report_id))
 
 @app.route('/calls-for-comments/')
 @app.route('/calls-for-comments/<int:page>/')
@@ -303,7 +303,7 @@ def calls_for_comments(page=0):
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
     call_for_comment_list = load_from_api(
-        'call_for_comment',
+        'call-for-comment',
         page=page,
         params=params)
     count = call_for_comment_list["count"]
@@ -332,13 +332,13 @@ def call_for_comment(call_for_comment_id):
     """
     logger.debug("call-for-comment page called")
     call_for_comment = load_from_api(
-        'call_for_comment',
+        'call-for-comment',
         call_for_comment_id)
     logger.debug(call_for_comment)
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,
-        admin_edit_url=admin_url('call_for_comment', call_for_comment_id))
+        admin_edit_url=admin_url('call-for-comment', call_for_comment_id))
 
 
 @app.route('/policy-documents/')
@@ -349,7 +349,7 @@ def policy_documents(page=0):
     """
 
     logger.debug("policy-documents page called")
-    policy_documents_list = load_from_api('policy_document', page=page)
+    policy_documents_list = load_from_api('policy-document', page=page)
     count = policy_documents_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -373,7 +373,7 @@ def policy_document(policy_document_id):
     Policy Document
     """
     logger.debug("policy-document page called")
-    policy_document = load_from_api('policy_document', policy_document_id)
+    policy_document = load_from_api('policy-document', policy_document_id)
     logger.debug(policy_document)
     return render_template(
         'policy_document_detail.html',
@@ -533,7 +533,7 @@ def briefings(page=0):
 @app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
     logger.debug("daily_schedule page called")
-    daily_schedule = load_from_api('daily_schedule', daily_schedule_id)
+    daily_schedule = load_from_api('daily-schedule', daily_schedule_id)
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
@@ -548,7 +548,7 @@ def daily_schedules(page=0):
     """
 
     logger.debug("daily_schedules page called")
-    daily_schedules_list = load_from_api('daily_schedule', page=page)
+    daily_schedules_list = load_from_api('daily-schedule', page=page)
     count = daily_schedules_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))

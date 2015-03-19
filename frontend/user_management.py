@@ -133,13 +133,14 @@ def register():
         # save Api Key and redirect user
         if response and response.get('user') and response['user'].get('authentication_token'):
             logger.debug("saving authentication_token to the session")
+            session['api_key'] = response['user']['authentication_token']
             load_current_user()
 
             # set a google analytics event that will be sent when the page loads
             ga_event('user', 'register')
             flash(u'You have been registered. Please check your email for a confirmation.', 'success')
 
-            return redirect(request.values.get('next', '/'))
+            return redirect(url_for('email_alerts', next=request.values.get('next', '/')))
 
     return render_template('user_management/register_user.html', form=form)
 
@@ -267,13 +268,14 @@ def email_alerts():
     Allow a user to manage their notification alerts.
     """
     committees = None
+    next_url = request.values.get('next')
 
     if g.current_user and request.method == 'POST':
         out = {'committee_alerts': [], 'general_alerts': []}
         general_notifications = ['select-daily-schedule']
 
         for field_name in request.form.keys():
-            if field_name == 'csrf_token':
+            if field_name in ['csrf_token', 'next']:
                 continue
 
             if field_name in general_notifications:
@@ -287,10 +289,15 @@ def email_alerts():
             # register a google analytics event
             ga_event('user', 'set-alerts')
             flash("Your notification settings have been updated successfully.", "success")
+            if next_url:
+                return redirect(next_url)
             return redirect(url_for('email_alerts'))
 
     committees = load_from_api('committee', return_everything=True)['results']
-    return render_template('user_management/email_alerts.html', committees=committees)
+    return render_template('user_management/email_alerts.html',
+            committees=committees,
+            after_signup=(next_url is not None),
+            next_url=next_url)
 
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])

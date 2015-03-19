@@ -36,10 +36,15 @@
 
   <p>Please choose which email alerts you wish to receive from us.</p>
 
+  {% if after_signup %}
+  <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
+  {% endif %}
+
   <hr>
 
   <form method="post" action="{{ url_for('email_alerts') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ next_url }}">
 
     <h2>General updates</h2>
     <ul class="list-unstyled">
@@ -55,7 +60,7 @@
 
     <div class="row text-center submit-btn-container" style="display: none;">
       <div class="col-md-12">
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your notification settings</button>
+        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
         <hr>
       </div>
     </div>
@@ -100,7 +105,7 @@
 
     <div class="row text-center submit-btn-container" style="display: none;">
       <div class="col-md-12">
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your notification settings</button>
+        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
         <hr>
       </div>
     </div>
@@ -145,7 +150,7 @@
     <div class="row text-center submit-btn-container" style="display: none;">
       <div class="col-md-12">
         <hr>
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your notification settings</button>
+        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
         <hr>
       </div>
     </div>

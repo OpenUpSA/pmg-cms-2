@@ -268,7 +268,7 @@ def email_alerts():
     Allow a user to manage their notification alerts.
     """
     committees = None
-    next_url = request.values.get('next')
+    next_url = request.values.get('next', '')
 
     if g.current_user and request.method == 'POST':
         out = {'committee_alerts': [], 'general_alerts': []}

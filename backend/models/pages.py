@@ -50,7 +50,7 @@ class Redirect(db.Model):
                 if redirect.new_url:
                     dest = redirect.new_url
                 elif redirect.nid:
-                    nid = redirect_obj.nid
+                    nid = redirect.nid
 
         if nid:
             # lookup based on nid

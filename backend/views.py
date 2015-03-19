@@ -132,12 +132,6 @@ def send_api_response(data, status_code=200):
     return response
 
 
-def api_resources():
-    d = {}
-    for slug, model in resource_slugs.iteritems():
-        d[slug] = model.list()
-    return d
-
 # -------------------------------------------------------------------
 # API endpoints:
 #
@@ -229,10 +223,10 @@ def featured():
 @app.route('/bill/<any(current, draft, pmb, tabled):scope>/')
 @load_user('token', 'session')
 def current_bill_list(scope=None, bill_id=None):
-    if bill_id:
-        return api_resource_list('bill', bill_id, api_resources().get('bill'))
+    query = Bill.list()
 
-    query = api_resources().get('bill')
+    if bill_id:
+        return api_resource_list('bill', bill_id, query)
 
     if scope == 'current':
         statuses = BillStatus.current()
@@ -252,7 +246,7 @@ def current_bill_list(scope=None, bill_id=None):
 @app.route('/committee/premium/')
 @load_user('token', 'session')
 def committee_list():
-    query = api_resources().get('committee').filter(Committee.premium == True)
+    query = Committee.list().filter(Committee.premium == True)
     return api_resource_list('committee', None, query)
 
 
@@ -264,11 +258,12 @@ def resource_list(resource, resource_id=None):
     Generic resource endpoints.
     """
 
-    base_query = api_resources().get(resource)
-    if not base_query:
+    try:
+        query = resource_slugs[resource].list()
+    except KeyError:
         raise ApiException(404, "The specified resource type does not exist.")
 
-    return api_resource_list(resource, resource_id, base_query)
+    return api_resource_list(resource, resource_id, query)
 
 @app.route('/committee/question_reply/')
 def question_reply_committees():
@@ -286,11 +281,8 @@ def landing():
     """
     List available endpoints.
     """
-
-    out = {'endpoints': []}
-    for resource in api_resources().keys():
-        out['endpoints'].append(request.base_url + resource)
-    return send_api_response(out)
+    endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
+    return send_api_response({'endpoints': endpoints})
 
 
 @app.route('/update_alerts/', methods=['POST', ])

@@ -13,6 +13,8 @@
 {% endblock %}
 
 {% block page %}
+  <div class="row">
+    <div class="col-sm-9">
 	<h1><i class="fa fa-comments"></i> {{ call_for_comment.title }}</h1>
 
 	{% if call_for_comment.end_date %}
@@ -24,7 +26,17 @@
 	{% if call_for_comment.committee %}
 		<h2><a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a></h2>
 	{% endif %}
-	{{ call_for_comment.body|safe }}
+    </div>
+
+    <div class="col-sm-3">
+      {% if call_for_comment.committee %}
+	{% set committee = call_for_comment.committee %}
+	{% include 'user_management/_committee_alerts_signup.html' %}
+      {% endif %}
+    </div>
+  </div>
+
+  {{ call_for_comment.body|safe }}
 
 {% include "_correct_this_page.html" %}
 {% endblock %}

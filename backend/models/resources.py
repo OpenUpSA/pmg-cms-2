@@ -311,14 +311,14 @@ class CommitteeMeeting(Event):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
         # check user permissions, popping some content if required
         if not self.check_permission():
-            if tmp['content']:
-                # remove premium content
-                tmp['premium_content_excluded'] = True
-                del tmp['body']
-                del tmp['summary']
-                if 'files' in tmp:
-                    del tmp['files']
-                tmp['content'] = []
+            # remove premium content
+            tmp['premium_content_excluded'] = True
+            del tmp['body']
+            del tmp['summary']
+            if 'files' in tmp:
+                del tmp['files']
+            tmp['content'] = []
+
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 

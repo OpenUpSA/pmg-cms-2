@@ -76,7 +76,7 @@ class Search:
 
     def data_type_for_obj(self, obj):
         # QuestionReply -> question_reply
-        return obj.resource_content_type
+        return getattr(obj, 'resource_content_type', None)
 
     def model_for_data_type(self, data_type):
         # question_reply -> QuestionReply class
@@ -96,7 +96,8 @@ class Search:
 
     def indexable(self, obj):
         """ Should this object be indexed for searching? """
-        return self.reindex_changes and (self.data_type_for_obj(obj) in Transforms.convert_rules)
+        dt = self.data_type_for_obj(obj)
+        return self.reindex_changes and dt and dt in Transforms.convert_rules
 
     def mapping(self, data_type):
         mapping = {

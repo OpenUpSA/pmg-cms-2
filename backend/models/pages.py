@@ -1,3 +1,5 @@
+import re
+
 from sqlalchemy import desc, func
 from sqlalchemy.orm import validates
 

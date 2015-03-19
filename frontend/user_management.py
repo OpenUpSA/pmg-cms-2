@@ -304,6 +304,7 @@ def email_alerts():
 def user_committee_alert(committee_id):
     res = send_to_api('user/alerts/committees/%s' % committee_id)
     if res.get('alerts'):
+        ga_event('user', 'set-alerts', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
     return redirect(request.values.get('next', '/'))
 

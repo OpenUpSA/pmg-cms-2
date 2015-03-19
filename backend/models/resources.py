@@ -1,9 +1,5 @@
 import re
-from random import random
-import string
 import datetime
-from dateutil.relativedelta import relativedelta
-from dateutil import tz
 import logging
 import os
 
@@ -13,18 +9,17 @@ from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
 from flask import url_for
-from flask.ext.security import UserMixin, RoleMixin, \
-    Security, SQLAlchemyUserDatastore
 from flask.ext.sqlalchemy import models_committed
 from flask_security import current_user
 
 from werkzeug import secure_filename
 
-from app import app, db
-from base import ApiResource, resource_slugs
-import serializers
-from search import Search
-from s3_upload import S3Bucket
+from backend.app import app, db
+import backend.serializers as serializers
+from backend.search import Search
+from backend.s3_upload import S3Bucket
+
+from .base import ApiResource, resource_slugs
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -36,238 +31,6 @@ def allowed_file(filename):
     tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
-
-class ApiKey(db.Model):
-
-    __tablename__ = "api_key"
-
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(128), unique=True, nullable=False)
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('user.id'),
-        unique=True,
-        nullable=False)
-    user = db.relationship('User')
-
-    def generate_key(self):
-        self.key = ''.join(
-            random.choice(
-                string.ascii_uppercase +
-                string.digits) for _ in range(128))
-        return
-
-    def __unicode__(self):
-        s = u'%s' % self.key
-        return s
-
-    def to_dict(self, include_related=False):
-        return {'user_id': self.user_id, 'key': self.key}
-
-
-class Role(db.Model, RoleMixin):
-
-    __tablename__ = "role"
-
-    id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(255))
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-
-def one_year_later():
-    return datetime.date.today() + relativedelta(years=1)
-
-
-class Organisation(db.Model):
-
-    __tablename__ = "organisation"
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    domain = db.Column(db.String(100), nullable=False)
-    paid_subscriber = db.Column(db.Boolean)
-    created_at = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
-    # when does this subscription expire?
-    expiry = db.Column(db.Date(), default=one_year_later)
-    contact = db.Column(db.String(255))
-
-    # premium committee subscriptions
-    subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
-
-
-    def subscribed_to_committee(self, committee):
-        """ Does this organisation have an active subscription to `committee`? """
-        return not self.has_expired() and (committee in self.subscriptions)
-
-    def has_expired(self):
-        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
-
-    def __unicode__(self):
-        return unicode(self.name)
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        # send subscriptions back as a dict
-        subscription_dict = {}
-        if tmp.get('subscriptions'):
-            for committee in tmp['subscriptions']:
-                subscription_dict[committee['id']] = committee.get('name')
-        tmp['subscriptions'] = subscription_dict
-        # set 'has_expired' flag as appropriate
-        tmp['has_expired'] = self.has_expired()
-        return tmp
-
-
-class User(db.Model, UserMixin):
-
-    __tablename__ = "user"
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    name = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255), default='', server_default='', nullable=False)
-    active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
-    confirmed_at = db.Column(db.DateTime(timezone=True))
-    last_login_at = db.Column(db.DateTime(timezone=True))
-    current_login_at = db.Column(db.DateTime(timezone=True))
-    last_login_ip = db.Column(db.String(100))
-    current_login_ip = db.Column(db.String(100))
-    login_count = db.Column(db.Integer)
-    subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
-    # when does this subscription expire?
-    expiry = db.Column(db.Date(), default=one_year_later)
-
-    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
-    organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
-
-    # premium committee subscriptions, in addition to any that the user's organisation might have
-    subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
-
-    # alerts for changes to committees
-    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
-    roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
-
-    def __unicode__(self):
-        return unicode(self.email)
-
-    def has_expired(self):
-        return (self.expiry is not None) and (datetime.date.today() > self.expiry)
-
-    def update_current_login(self):
-        now = datetime.datetime.utcnow()
-        if self.current_login_at + datetime.timedelta(hours=1) < now:
-            self.current_login_at = now
-            db.session.commit()
-
-    def subscribed_to_committee(self, committee):
-        """ Does this user have an active subscription to `committee`? """
-        # admin users have access to everything
-        if self.has_role('editor'):
-            return True
-
-        # inactive users should go away
-        if not self.active:
-            return False
-
-        # expired users should go away
-        if self.has_expired():
-            return False
-
-        # first see if this user has a subscription
-        if committee in self.subscriptions:
-            return True
-
-        # now check if our organisation has access
-        return self.organisation and self.organisation.subscribed_to_committee(committee)
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp.pop('password')
-        tmp.pop('last_login_ip')
-        tmp.pop('current_login_ip')
-        tmp.pop('last_login_at')
-        tmp.pop('current_login_at')
-        tmp['confirmed'] = tmp.pop('confirmed_at') is not None
-        tmp.pop('login_count')
-        tmp['has_expired'] = self.has_expired()
-
-        # send committee alerts back as a dict
-        alerts_dict = {}
-        if tmp.get('committee_alerts'):
-            for committee in tmp['committee_alerts']:
-                alerts_dict[committee['id']] = committee.get('name')
-        tmp['committee_alerts'] = alerts_dict
-        return tmp
-
-
-def set_organisation(target, value, oldvalue, initiator):
-    """Set a user's organisation, based on the domain of their email address."""
-    if not target.organisation and value:
-        user_domain = value.split("@")[-1]
-        org = Organisation.query.filter_by(domain=user_domain).first()
-        if org:
-            target.organisation = org
-
-
-# setup listener on User.email attribute
-listen(User.email, 'set', set_organisation)
-
-
-roles_users = db.Table(
-    'roles_users',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id')),
-    db.Column(
-        'role_id',
-        db.Integer(),
-        db.ForeignKey('role.id')))
-
-organisation_committee = db.Table(
-    'organisation_committee',
-    db.Column(
-        'organisation_id',
-        db.Integer(),
-        db.ForeignKey('organisation.id', ondelete='CASCADE')),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete='CASCADE')))
-
-
-user_committee = db.Table(
-    'user_committee',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id', ondelete="CASCADE")),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete="CASCADE")))
-
-
-user_committee_alerts = db.Table(
-    'user_committee_alerts',
-    db.Column(
-        'user_id',
-        db.Integer(),
-        db.ForeignKey('user.id', ondelete="CASCADE")),
-    db.Column(
-        'committee_id',
-        db.Integer(),
-        db.ForeignKey('committee.id', ondelete="CASCADE")))
-
-
-# Setup Flask-Security
-user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
-
 
 class House(db.Model):
 
@@ -1026,20 +789,6 @@ class Content(db.Model):
         return tmp
 
 
-class EmailTemplate(db.Model):
-    __tablename__ = 'email_template'
-
-    id = db.Column(db.Integer, primary_key=True)
-
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(1024))
-    subject = db.Column(db.String(100))
-    body = db.Column(db.Text)
-
-    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
-
-
 
 # Listen for model updates
 @models_committed.connect_via(app)
@@ -1058,79 +807,6 @@ def on_models_changed(sender, changes):
             else:
                 # updated or inserted
                 searcher.add_obj(obj)
-
-
-class Redirect(db.Model):
-    __tablename__ = 'redirect'
-
-    id = db.Column(db.Integer, primary_key=True)
-    nid = db.Column(db.Integer)
-    old_url = db.Column(db.String(250), nullable=False, unique=True, index=True)
-    new_url = db.Column(db.String(250))
-
-    def __str__(self):
-        if self.nid:
-            target = "nid %s" % self.nid
-        else:
-            target = self.new_url
-
-        return u'<Redirect from %s to %s>' % (self.old_url, target)
-
-    @classmethod
-    def object_for_nid(cls, nid):
-        for cls in resource_slugs.itervalues():
-            if hasattr(cls, 'nid'):
-                obj = cls.query.filter(cls.nid == nid).first()
-                if obj:
-                    return obj
-
-    @classmethod
-    def for_url(cls, old_url):
-        dest = None
-        nid = None
-
-        if old_url.endswith("/"):
-            old_url = old_url[:-1]
-
-        # check for /node/1234
-        match = re.match('^/node/(\d+)$', old_url)
-        if match:
-            nid = match.group(1)
-
-        else:
-            redirect = cls.query.filter(cls.old_url == old_url).first()
-            if redirect:
-                if redirect.new_url:
-                    dest = redirect.new_url
-                elif redirect.nid:
-                    nid = redirect_obj.nid
-
-        if nid:
-            # lookup based on nid
-            obj = cls.object_for_nid(nid)
-            if obj:
-                dest = obj.url_path()
-
-        if dest and not dest.startswith('/'):
-            dest = '/' + dest
-
-        return dest
-
-
-class Page(db.Model):
-    """ A basic CMS page. """
-    __tablename__ = 'page'
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    slug = db.Column(db.String, nullable=False, unique=True, index=True)
-    body = db.Column(db.Text)
-    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
-
-    @validates('slug')
-    def validate_slug(self, key, value):
-        return value.strip('/')
 
 
 # Register all the resource types. This ensures they show up in the API and are searchable

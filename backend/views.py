@@ -20,7 +20,7 @@ from flask_security.decorators import load_user
 from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 
-from backend.base import resource_slugs
+from backend.models.base import resource_slugs
 
 # handling static files (only relevant during development)
 app.static_folder = 'static'

@@ -62,48 +62,65 @@
           <li><a href="#page-{{ num_pages }}" role="tab" data-toggle="tab">&raquo;</a></li>
         </ul>
       {% endif %}
+
       <div class="row">
-        <div class="col-md-12">
-          {% if committee.tabled_committee_reports %}
-            <div class="col-md-6">
-              <h3><span class="fa fa-briefcase"></span> Tabled Reports</h3>
-              <ul class="list-unstyled">
-                {% for result in committee.tabled_committee_reports[0:5] %}
-                  <li>{% include 'tabled_committee_report_stub.html' %}</li>
-                {% endfor %}
-              </ul>
-              {% if committee.tabled_committee_reports|length > 5 %}
-                <a href="/tabled-committee-reports/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
-              {% endif %}
-            </div>
-          {% endif %}
-          {% if committee.calls_for_comments %}
-            <div class="col-md-6">
-              <h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
-              <ul class="list-unstyled">
-                {% for result in committee.calls_for_comments[0:5] %}
-                  <li>{% include 'call_for_comment_stub.html' %}</li>
-                {% endfor %}
-              </ul>
-              {% if committee.calls_for_comments|length > 5 %}
-                <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
-              {% endif %}
-            </div>
-          {% endif %}
-          {% if committee.questions_replies %}
-            <div class="col-md-6">
-              <h3><span class="fa fa-question-circle"></span> Questions and Replies</h3>
-              <ul class="list-unstyled">
-                {% for result in committee.questions_replies[0:5] %}
-                  <li>{% include 'question_reply_stub.html' %}</li>
-                {% endfor %}
-              </ul>
-              {% if committee.questions_replies|length > 5 %}
-                <a href="/question_replies/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
-              {% endif %}
-            </div>
-          {% endif %}
-        </div>
+        {% if committee.tabled_committee_reports %}
+          <div class="col-md-6">
+            <h3><span class="fa fa-briefcase"></span> Tabled Reports</h3>
+            <table class="table table-compact">
+              {% for item in committee.tabled_committee_reports[0:5] %}
+              <tr>
+                <td><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
+                </div>
+              </tr>
+              {% endfor %}
+            </table>
+
+            {% if committee.tabled_committee_reports|length > 5 %}
+              <a href="/tabled-committee-reports/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if committee.calls_for_comments %}
+          <div class="col-md-6">
+            <h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
+            <table class="table table-compact">
+              {% for item in committee.calls_for_comments[0:5] %}
+                <tr><td>
+                  <div class="row">
+                    <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
+                    <div class="col-xs-8"><a href="{{ url_for('call_for_comment', call_for_comment_id=item.id) }}">{{ item.title }}</a></div>
+                  </div>
+                </td></tr>
+              {% endfor %}
+            </table>
+
+            {% if committee.calls_for_comments|length > 5 %}
+              <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if committee.questions_replies %}
+          <div class="col-md-6">
+            <h3><span class="fa fa-question-circle"></span> Questions and Replies</h3>
+            <table class="table table-compact">
+              {% for item in committee.questions_replies[0:5] %}
+                <tr><td>
+                  <div class="row">
+                    <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
+                    <div class="col-xs-8"><a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a></div>
+                  </div>
+                </td></tr>
+              {% endfor %}
+            </table>
+
+            {% if committee.questions_replies|length > 5 %}
+              <a href="/question_replies/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+            {% endif %}
+          </div>
+        {% endif %}
       </div>
     </div> <!-- /Reports -->
 

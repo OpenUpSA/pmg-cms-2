@@ -43,15 +43,15 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Members', 'member.index_view', Member.query.count()),
             ('Bill', 'bill.index_view', Bill.query.count()),
             ('Committee', 'committee.index_view', Committee.query.count()),
-            ('Committee Meetings', 'committee_meeting.index_view', Event.query.filter_by(type="committee-meeting").count()),
+            ('Committee Meetings', 'committee-meeting.index_view', Event.query.filter_by(type="committee-meeting").count()),
             ('Questions & Replies', 'question.index_view', QuestionReply.query.count()),
-            ('Calls for Comment', 'call_for_comment.index_view', CallForComment.query.count()),
+            ('Calls for Comment', 'call-for-comment.index_view', CallForComment.query.count()),
             ('Daily Schedules', 'schedule.index_view', DailySchedule.query.count()),
             ('Gazette', 'gazette.index_view', Gazette.query.count()),
             ('Hansards', 'hansard.index_view', Event.query.filter_by(type="plenary").count()),
             ('Media Briefings', 'briefing.index_view', Event.query.filter_by(type="media-briefing").count()),
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
-            ('Tabled Committee Reports', 'tabled_report.index_view', TabledCommitteeReport.query.count()),
+            ('Tabled Committee Reports', 'tabled-committee-report.index_view', TabledCommitteeReport.query.count()),
             ('Uploaded Files', 'files.index_view', File.query.count()),
             ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
@@ -808,8 +808,8 @@ admin.add_view(OrganisationView(Organisation, db.session, name="Organisations", 
 # ---------------------------------------------------------------------------------
 # Committees
 admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
-admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee_meeting', category="Committees"))
-admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled_report', category="Committees"))
+admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled-committee-report', category="Committees"))
 
 # ---------------------------------------------------------------------------------
 # Members
@@ -822,7 +822,7 @@ admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint='bill', fronte
 # ---------------------------------------------------------------------------------
 # Other Content
 admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
-admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call_for_comment', category="Other Content"))
+admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call-for-comment', category="Other Content"))
 admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
 admin.add_view(HansardView(Hansard, db.session, type="plenary", name="Hansards", endpoint='hansard', category="Other Content"))
 admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))

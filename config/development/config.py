@@ -50,17 +50,22 @@ MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 
 # Flask-Security config
 SECURITY_HOST = FRONTEND_HOST
-SECURITY_URL_PREFIX = "/security"
+SECURITY_URL_PREFIX = "/user"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = env.get('SECURITY_PASSWORD_SALT', "ioaefroijaAMELRK#$(aerieuh984akef#$graerj")
 SECURITY_EMAIL_SENDER = MAIL_DEFAULT_SENDER
 SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
-SECURITY_POST_LOGIN_VIEW = "/admin"
-SECURITY_POST_LOGOUT_VIEW = "/admin"
+
+# Flask-Security URLs, overridden because they don't put a / at the end
+SECURITY_LOGIN_URL = "/login/"
+
+# Flask-Security templates that we override
+SECURITY_LOGIN_USER_TEMPLATE = "user_management/login_user.html"
 
 # Flask-Security email subject lines
 SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"
+
 
 # Flask-Security features
 SECURITY_CONFIRMABLE = True

@@ -17,7 +17,7 @@
       <div class="col-sm-3">
 
         <ul class="nav navbar-nav pull-right">
-          {% if current_user %}
+          {% if current_user.is_authenticated() %}
             {% if admin_edit_url %}
               {% for role in current_user.roles %}
                 {% if role.name == 'editor' %}
@@ -49,7 +49,7 @@
             </ul>
           {% else %}
             <a href="{{ url_for('register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a>
-            <a href="{{ url_for('login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
+            <a href="{{ url_for('security.login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
           {% endif %}
         </ul>
       </div>

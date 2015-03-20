@@ -9,7 +9,6 @@ from sqlalchemy.event import listen
 from sqlalchemy import UniqueConstraint
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
-from flask_security import current_user
 
 from frontend import app, db
 import backend.serializers as serializers

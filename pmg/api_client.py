@@ -6,7 +6,7 @@ from flask import flash, session, abort, redirect, url_for, request
 from werkzeug.exceptions import HTTPException
 from flask.ext.security import current_user
 
-from frontend import app
+from pmg import app
 
 API_HOST = app.config['API_HOST']
 

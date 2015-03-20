@@ -1,11 +1,11 @@
 import logging
 import json
 from datetime import datetime, date
-from frontend import db, app
 from operator import itemgetter
+
 from sqlalchemy import inspect
 
-API_HOST = app.config["API_HOST"]
+from pmg import db, app
 
 logger = logging.getLogger(__name__)
 

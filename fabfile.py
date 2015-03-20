@@ -19,16 +19,14 @@ def setup_db():
 def index_search():
     with virtualenv():
         with cd('/var/www/pmg-cms'):
-            run('source production-env.sh; python backend/search.py --reindex all')
+            run('source production-env.sh; python pmg/search.py --reindex all')
 
 def hard_restart():
-    sudo("supervisorctl restart pmg_cms")
-    sudo("supervisorctl restart pmg_frontend")
+    sudo("supervisorctl restart pmg")
     return
 
 def restart():
-    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-cms.pid` || supervisorctl restart pmg_cms")
-    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-frontend.pid` || supervisorctl restart pmg_frontend")
+    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn.pid` || supervisorctl restart pmg")
     return
 
 

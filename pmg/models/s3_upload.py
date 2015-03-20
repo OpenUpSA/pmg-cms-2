@@ -4,8 +4,9 @@ from boto.s3.key import Key
 import boto.s3.connection
 import math
 import os
-from frontend import db, app
 import logging
+
+from pmg import db, app
 
 UPLOAD_PATH = app.config['UPLOAD_PATH']
 S3_BUCKET = app.config['S3_BUCKET']

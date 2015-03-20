@@ -10,7 +10,7 @@ from sqlalchemy import UniqueConstraint
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
 
-from frontend import app, db
+from pmg import app, db
 import serializers
 
 class ApiKey(db.Model):

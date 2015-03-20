@@ -10,10 +10,10 @@ from flask import render_template, g, request, redirect, session, url_for, abort
 from flask.ext.security import login_user, current_user
 from flask.ext.security.decorators import anonymous_user_required
 
-from frontend import app, db
-from frontend.api_client import ApiException, load_from_api, send_to_api
-from frontend.models import Committee
-from frontend.models.users import security
+from pmg import app, db
+from pmg.api_client import ApiException, load_from_api, send_to_api
+from pmg.models import Committee
+from pmg.models.users import security
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)

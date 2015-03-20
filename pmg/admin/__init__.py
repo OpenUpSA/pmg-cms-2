@@ -21,9 +21,8 @@ from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
 from xlsx import XLSXBuilder
 
-from frontend import app, db
-
-from frontend.models import *
+from pmg import app, db
+from pmg.models import *
 
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin

@@ -7,8 +7,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
 
-os.environ['PMG_LAYER'] = 'frontend'
-
 env = os.environ.get('FLASK_ENV', 'development')
 
 app = Flask(__name__, static_folder="static")
@@ -89,5 +87,5 @@ import views
 import user_management
 import admin
 
-from frontend.api import api
+from pmg.api import api
 app.register_blueprint(api, subdomain='api')

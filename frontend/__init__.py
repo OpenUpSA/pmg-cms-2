@@ -14,14 +14,20 @@ env = os.environ.get('FLASK_ENV', 'development')
 app = Flask(__name__, static_folder="static")
 app.config.from_pyfile('../config/%s/config.py' % env)
 
-db = SQLAlchemy(app)
-CsrfProtect(app)
-mail = Mail(app)
-
 # setup logging
 with open('config/%s/logging.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
+
+
+db = SQLAlchemy(app)
+csrf = CsrfProtect(app)
+mail = Mail(app)
+
+
+UPLOAD_PATH = app.config['UPLOAD_PATH']
+if not os.path.isdir(UPLOAD_PATH):
+    os.mkdir(UPLOAD_PATH)
 
 
 # override flask mail's send operation to inject some customer headers
@@ -82,6 +88,6 @@ import helpers
 import views
 import user_management
 
-from backend.app import api
+from backend.api import api
 
 app.register_blueprint(api, subdomain='api')

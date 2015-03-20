@@ -59,9 +59,11 @@ SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 # Flask-Security URLs, overridden because they don't put a / at the end
 SECURITY_LOGIN_URL = "/login/"
 SECURITY_LOGOUT_URL = "/logout/"
+SECURITY_CHANGE_URL = "/change-password/"
 
 # Flask-Security templates that we override
 SECURITY_LOGIN_USER_TEMPLATE = "user_management/login_user.html"
+SECURITY_CHANGE_PASSWORD_TEMPLATE = "user_management/change_password.html"
 
 # Flask-Security email subject lines
 SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"

@@ -32,7 +32,7 @@
               <i class="fa fa-user"></i> {{ current_user.email }} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu pull-right" role="menu">
-              <li><a href="{{ url_for('change_password') }}">Change password</a></li>
+              <li><a href="{{ url_for('security.change_password') }}">Change password</a></li>
               {% if not current_user.confirmed %}
                 <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
               {% endif %}

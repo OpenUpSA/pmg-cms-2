@@ -169,32 +169,6 @@ def reset_password(token):
         reset_password_token=token)
 
 
-@app.route('/user/change-password/', methods=['GET', 'POST'])
-def change_password():
-    """View function which handles a change password request."""
-    if not g.current_user:
-        return redirect(url_for('login', next=request.url))
-
-    form = forms.ChangePasswordForm()
-
-    if form.validate_on_submit():
-        data = {
-            "password": form.password.data,
-            "new_password": form.new_password.data,
-            "new_password_confirm": form.new_password_confirm.data,
-        }
-        response = user_management_api('change', json.dumps(data))
-        # redirect user
-        if response and not response.get('errors'):
-            flash(u'Your password has been changed successfully.', 'success')
-            if request.values.get('next'):
-                return redirect(request.values['next'])
-
-    return render_template(
-        'user_management/change_password.html',
-        change_password_form=form)
-
-
 @app.route('/confirm-email/<confirmation_key>', methods=['GET', ])
 def confirm_email(confirmation_key):
     """View function for confirming an email address."""

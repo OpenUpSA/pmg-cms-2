@@ -283,15 +283,6 @@ def landing():
     return send_api_response({'endpoints': endpoints})
 
 
-@api.route('/check_redirect/', methods=['POST'])
-def check_redirect():
-    """
-    Check if a given URL should be redirected.
-    """
-    dest = Redirect.for_url(request.json.get('url', ''))
-    return send_api_response({'redirect': dest})
-
-
 @api.route('/page/')
 def page():
     slug = request.args.get('slug', '').strip()

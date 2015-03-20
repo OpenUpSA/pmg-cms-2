@@ -20,11 +20,11 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from frontend import db, app, mail
+from frontend.search import Search
 from frontend.models import *
 from frontend.models.base import resource_slugs
 
 from backend.api import api
-from search import Search
 
 import frontend.models.serializers as serializers
 

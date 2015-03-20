@@ -24,8 +24,9 @@ from frontend.models import *
 from frontend.models.base import resource_slugs
 
 from backend.api import api
-import serializers
 from search import Search
+
+import frontend.models.serializers as serializers
 
 
 logger = logging.getLogger(__name__)

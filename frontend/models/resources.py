@@ -135,7 +135,7 @@ class Bill(ApiResource, db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['code'] = self.code
-        tmp['url'] = url_for('backend.resource_list', resource='bill', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='bill', resource_id=self.id, _external=True)
         return tmp
 
     def __unicode__(self):
@@ -317,7 +317,7 @@ class CommitteeMeeting(Event):
             if 'files' in tmp:
                 del tmp['files']
 
-        tmp['url'] = url_for('backend.resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -332,7 +332,7 @@ class Hansard(Event):
 
     def to_dict(self, include_related=False):
         tmp = super(Hansard, self).to_dict(include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='hansard', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='hansard', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -347,7 +347,7 @@ class Briefing(Event):
 
     def to_dict(self, include_related=False):
         tmp = super(Briefing, self).to_dict(include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='briefing', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='briefing', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -432,7 +432,7 @@ class Member(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='member', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='member', resource_id=self.id, _external=True)
 
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
@@ -496,7 +496,7 @@ class Committee(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='committee', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='committee', resource_id=self.id, _external=True)
         return tmp
 
 
@@ -564,7 +564,7 @@ class QuestionReply(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='question_reply', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='question_reply', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -594,7 +594,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -630,7 +630,7 @@ class CallForComment(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -654,7 +654,7 @@ class PolicyDocument(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='policy_document', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='policy_document', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -688,7 +688,7 @@ class Gazette(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='gazette', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='gazette', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -736,7 +736,7 @@ class DailySchedule(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = url_for('backend.resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
+        tmp['url'] = url_for('api.resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod

@@ -16,7 +16,7 @@ from frontend import app, mail
 import forms
 from frontend.bills import bill_history, MIN_YEAR
 from frontend.ga import ga_event
-from frontend.api import load_from_api, send_to_api
+from frontend.api_client import load_from_api, send_to_api
 
 from frontend.models import Redirect, Page
 

@@ -1,22 +1,24 @@
 import logging
-from frontend import db, app, mail
-from models import *
-import flask
-from flask import g, request, abort, redirect, url_for, session, make_response, render_template
+from functools import wraps
 import json
-from sqlalchemy import func, or_, distinct, desc
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.exc import NoResultFound
 import datetime
 from dateutil import tz
 from operator import itemgetter
 import re
-import serializers
 import sys
-from search import Search
 import math
+
+from frontend import db, app, mail
+from models import *
+import flask
+from flask import g, request, abort, redirect, url_for, session, make_response, render_template
+from sqlalchemy import func, or_, distinct, desc
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
+import serializers
+from search import Search
 from flask.ext.security import current_user
-from flask.ext.security.decorators import auth_required
+import flask.ext.security.decorators as security
 from flask.ext.login import login_required
 from flask.ext.mail import Message
 from werkzeug.exceptions import HTTPException
@@ -33,6 +35,22 @@ from backend.app import api
 
 logger = logging.getLogger(__name__)
 
+def load_user():
+    login_mechanisms = {
+        'token': lambda: security._check_token(),
+        'basic': lambda: security._check_http_auth(),
+        'session': lambda: current_user.is_authenticated()
+    }
+
+    def wrapper(fn):
+        @wraps(fn)
+        def decorated_view(*args, **kwargs):
+            for mechanism in login_mechanisms.itervalues():
+                if mechanism():
+                    break
+            return fn(*args, **kwargs)
+        return decorated_view
+    return wrapper
 
 class ApiException(HTTPException):
 
@@ -149,11 +167,16 @@ def landing():
 
 
 @api.route('/user/')
+@load_user()
 def user():
     """ Info on the currently logged in user. """
     if current_user.is_anonymous():
         raise ApiException(401, "not authenticated")
-    return send_api_response({'current_user': serializers.to_dict(current_user)})
+
+    user = serializers.to_dict(current_user)
+    user['authentication_token'] = current_user.get_auth_token()
+
+    return send_api_response({'current_user': user})
 
 
 @api.route('/search/')
@@ -259,6 +282,7 @@ def committee_list():
 
 @api.route('/<string:resource>/', )
 @api.route('/<string:resource>/<int:resource_id>/', )
+@load_user()
 def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.

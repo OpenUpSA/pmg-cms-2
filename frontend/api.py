@@ -4,6 +4,7 @@ import urllib
 
 from flask import flash, session, abort, redirect, url_for, request
 from werkzeug.exceptions import HTTPException
+from flask.ext.security import current_user
 
 from frontend import app
 
@@ -48,8 +49,8 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
 
     headers = {}
     # add auth header
-    if session and session.get('api_key'):
-        headers = {'Authentication-Token': session.get('api_key')}
+    if current_user.is_authenticated():
+        headers = {'Authentication-Token': current_user.get_auth_token()}
 
     try:
         response = requests.get(API_HOST + query_str, headers=headers, params=params)

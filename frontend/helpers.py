@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 import dateutil.parser
 import logging
 
@@ -60,11 +60,17 @@ def pagination_processor():
 def _jinja2_filter_datetime(iso_str, format_option=None):
     if not iso_str:
         return ""
+
+    if not isinstance(iso_str, (date, datetime)):
+        d = dateutil.parser.parse(iso_str)
+    else:
+        d = iso_str
+
     format = '%d %b %Y'
     if format_option == "long":
         format = '%d %B %Y'
-    date = dateutil.parser.parse(iso_str)
-    return date.strftime(format)
+
+    return d.strftime(format)
 
 
 @app.template_filter('member_url')

@@ -144,8 +144,6 @@ def user():
     """ Info on the currently logged in user. """
     if current_user.is_anonymous():
         raise ApiException(401, "not authenticated")
-
-    current_user.update_current_login()
     return send_api_response({'current_user': serializers.to_dict(current_user)})
 
 

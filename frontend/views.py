@@ -9,6 +9,7 @@ import json
 import os.path
 
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect, g
+from flask.ext.security import current_user
 
 from frontend import app
 import forms
@@ -41,6 +42,12 @@ def page_not_found(error):
 def server_error(error):
     return render_template('500.html', error=error), 500
 
+
+@app.before_request
+def update_last_login():
+    if current_user.is_authenticated():
+        # keep track of the last visit
+        current_user.update_current_login()
 
 
 def classify_attachments(files):

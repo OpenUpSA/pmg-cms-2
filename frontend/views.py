@@ -10,8 +10,9 @@ import os.path
 
 from flask import request, flash, make_response, url_for, session, render_template, abort, redirect, g
 from flask.ext.security import current_user
+from flask.ext.mail import Message
 
-from frontend import app
+from frontend import app, mail
 import forms
 from frontend.bills import bill_history, MIN_YEAR
 from frontend.ga import ga_event
@@ -730,11 +731,13 @@ def docs(path, dir=''):
 def correct_this_page():
     form = forms.CorrectThisPageForm(request.form)
     if form.validate_on_submit():
-        tmp = send_to_api('correct-this-page', json.dumps({
+        msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
+        msg.html = render_template('correct_this_page.html', submission={
             'url': form.url.data,
             'details': form.details.data,
             'email': form.email.data,
-            }))
+            })
+        mail.send(msg)
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))

@@ -139,6 +139,15 @@ def send_api_response(data, status_code=200):
 # API endpoints:
 #
 
+@api.route('/')
+def landing():
+    """
+    List available endpoints.
+    """
+    endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
+    return send_api_response({'endpoints': endpoints})
+
+
 @api.route('/user/')
 def user():
     """ Info on the currently logged in user. """
@@ -270,20 +279,3 @@ def question_reply_committees():
     """
     items = Committee.for_related(QuestionReply).all()
     return send_api_response(serializers.queryset_to_json(items, count=len(items)))
-
-
-@api.route('/', )
-def landing():
-    """
-    List available endpoints.
-    """
-    endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
-    return send_api_response({'endpoints': endpoints})
-
-
-@api.route('/correct-this-page/', methods=['POST'])
-def correct_this_page():
-    msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
-    msg.html = render_template('correct_this_page.html', submission=request.json)
-    mail.send(msg)
-    return send_api_response({})

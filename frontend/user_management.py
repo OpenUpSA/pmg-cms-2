@@ -8,6 +8,7 @@ from ga import ga_event
 
 from flask import render_template, g, request, redirect, session, url_for, abort, flash
 from flask.ext.security import login_user, current_user
+from flask.ext.security.decorators import anonymous_user_required
 
 from frontend import app
 from frontend.api import ApiException, load_from_api, send_to_api
@@ -58,38 +59,6 @@ def user_management_api(endpoint, data=None):
         flash(u'Error connecting to backend service.', 'danger')
 
 
-@app.route('/user/register/', methods=['GET', 'POST'])
-def register():
-    """View function which handles a registration request."""
-    if g.current_user:
-        return redirect(request.args.get('next', '/'))
-
-    form = forms.RegisterForm(request.form)
-    if request.args.get('next'):
-        form.next.data = request.args['next']
-
-    if form.validate_on_submit():
-        data = {
-            'email': form.email.data,
-            'password': form.password.data
-        }
-        response = user_management_api('register', json.dumps(data))
-
-        # save Api Key and redirect user
-        if response and response.get('user') and response['user'].get('authentication_token'):
-            logger.debug("saving authentication_token to the session")
-            session['api_key'] = response['user']['authentication_token']
-            load_current_user()
-
-            # set a google analytics event that will be sent when the page loads
-            ga_event('user', 'register')
-            flash(u'You have been registered. Please check your email for a confirmation.', 'success')
-
-            return redirect(url_for('email_alerts', next=request.values.get('next', '/')))
-
-    return render_template('user_management/register_user.html', form=form)
-
-
 @app.route('/user/send-confirmation/', methods=['GET', 'POST'])
 def send_confirmation():
     """View function which sends confirmation instructions."""
@@ -115,61 +84,8 @@ def send_confirmation():
         send_confirmation_form=form)
 
 
-@app.route('/user/forgot-password/', methods=['GET', 'POST'])
-def forgot_password():
-    """View function that handles a forgotten password request."""
-
-    form = forms.ForgotPasswordForm(request.form)
-
-    if form.validate_on_submit():
-        data = {
-            'email': form.email.data,
-        }
-        response = user_management_api('reset', json.dumps(data))
-        # redirect user
-        if not response or not response.get('errors'):
-            flash(
-                u'You will receive an email with instructions for resetting your password. Please check your inbox.',
-                'success')
-            if request.values.get('next'):
-                return redirect(request.values['next'])
-
-    return render_template(
-        'user_management/forgot_password.html',
-        forgot_password_form=form)
-
-
-@app.route('/reset-password/<token>', methods=['GET', 'POST'])
-def reset_password(token):
-    """View function that handles a reset password request."""
-
-    form = forms.ResetPasswordForm()
-
-    if form.validate_on_submit():
-        data = {
-            "password": form.password.data,
-            "password_confirm": form.password_confirm.data,
-        }
-        response = user_management_api('reset/' + token, json.dumps(data))
-
-        if response and not response.get('errors'):
-            flash(u'Your password has been changed successfully.', 'success')
-            logger.debug("saving authentication_token to the session")
-            session['api_key'] = response['user']['authentication_token']
-            load_current_user()
-            # redirect user
-            if request.values.get('next'):
-                return redirect(request.values['next'])
-            else:
-                return redirect(url_for('index'))
-
-    return render_template(
-        'user_management/reset_password.html',
-        reset_password_form=form,
-        reset_password_token=token)
-
-
 @app.route('/confirm-email/<confirmation_key>', methods=['GET', ])
+@anonymous_user_required
 def confirm_email(confirmation_key):
     """View function for confirming an email address."""
 

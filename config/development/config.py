@@ -1,5 +1,6 @@
 from os import environ as env
 
+WTF_CSRF_ENABLED = True
 SERVER_NAME = 'pmg.dev:5000'
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8'
@@ -74,7 +75,3 @@ SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
-
-# enable CSRF only for the frontend. The backend must have it disable so that Flask-Security can be used as an API
-import os
-WTF_CSRF_ENABLED = os.environ.get('PMG_LAYER') == 'frontend'

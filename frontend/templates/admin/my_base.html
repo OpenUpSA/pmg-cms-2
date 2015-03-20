@@ -1,31 +1,13 @@
 {% extends 'admin/base.html' %}
 {% block head_css %}
   {{ super() }}
-  <link href="{{ url_for('static', filename='font-awesome-4.2.0/css/font-awesome.min.css') }}" rel="stylesheet">
-  <style>
-
-    .preview-area .well {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    fieldset {
-      margin-bottom: 20px;
-    }
-
-    #new_alert_form .template-tips {
-      padding-top: 7px;
-    }
-
-    .form-group .form-inline .checkbox {
-      display: block;
-    }
-
-  </style>
+	{% assets "admin-css" %}
+		<link rel="stylesheet" href="{{ ASSET_URL }}">
+	{% endassets %}
 {% endblock head_css%}
 
 {% block brand %}
-  <a class="navbar-brand" href="{{ FRONTEND_HOST }}">{{ admin_view.admin.name }}</a>
+  <a class="navbar-brand" href="/">{{ admin_view.admin.name }}</a>
 {% endblock %}
 
 {% block access_control %}

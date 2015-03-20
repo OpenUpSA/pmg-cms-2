@@ -54,6 +54,15 @@ assets.register('css',
         output='stylesheets/styles.%(version)s.css'),
       output='stylesheets/app.%(version)s.css'))
 
+assets.register('admin-css',
+    Bundle(
+      'font-awesome-4.2.0/css/font-awesome.min.css',
+      Bundle(
+        'resources/css/admin.scss',
+        filters=PyScss(load_paths=assets.load_path),
+        output='stylesheets/admin-styles.%(version)s.css'),
+      output='stylesheets/admin.%(version)s.css'))
+
 assets.register('js', Bundle(
     'bower_components/jquery/dist/jquery.min.js',
     'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',

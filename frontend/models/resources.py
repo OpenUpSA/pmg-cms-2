@@ -17,8 +17,8 @@ from werkzeug import secure_filename
 from frontend import app, db
 import backend.serializers as serializers
 from backend.search import Search
-from backend.s3_upload import S3Bucket
 
+from .s3_upload import S3Bucket
 from .base import ApiResource, resource_slugs
 
 STATIC_HOST = app.config['STATIC_HOST']

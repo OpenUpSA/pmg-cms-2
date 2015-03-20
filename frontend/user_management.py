@@ -134,10 +134,12 @@ def email_alerts():
 
 @app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])
 def user_committee_alert(committee_id):
-    res = send_to_api('user/alerts/committees/%s' % committee_id)
-    if res.get('alerts'):
+    if current_user.is_authenticated() and request.method == 'POST':
+        current_user.committee_alerts.append(Committee.query.get(committee_id))
+        db.session.commit()
         ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
+
     return redirect(request.values.get('next', '/'))
 
 

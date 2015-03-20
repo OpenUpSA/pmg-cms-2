@@ -160,6 +160,12 @@ class User(db.Model, UserMixin):
         # now check if our organisation has access
         return self.organisation and self.organisation.subscribed_to_committee(committee)
 
+    def gets_alerts_for(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        return committee in self.committee_alerts
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp.pop('password')

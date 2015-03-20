@@ -1,5 +1,5 @@
 {% if current_user %}
-  {% if committee.id|string in current_user.committee_alerts %}
+  {% if current_user.gets_alerts_for(committee.id) %}
     <div class="email-alert-box subscribed">
       <p>You're subscribed to our free email alerts for this committee.</p>
       <a class="btn btn-default" href="{{ url_for('email_alerts') }}">Manage email alerts</a>

@@ -45,7 +45,7 @@
                 {% endif %}
               {% endfor %}
               <li class="divider"></li>
-              <li><a href="{{ url_for('logout') }}">Log Out</a>
+              <li><a href="{{ url_for('security.logout') }}">Log Out</a>
             </ul>
           {% else %}
             <a href="{{ url_for('register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a>

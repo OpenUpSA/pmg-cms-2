@@ -58,18 +58,6 @@ def user_management_api(endpoint, data=None):
         flash(u'Error connecting to backend service.', 'danger')
 
 
-@app.route('/XXX/user/logout/', methods=['GET', ])
-def logout():
-    """View function which handles a logout request."""
-    response = user_management_api('logout')
-    session.clear()
-    if response:
-        flash(u'You have been logged out successfully.', 'success')
-        return redirect(request.args.get('next', None) or
-                        url_for('index'))
-    return redirect(url_for('index'))
-
-
 @app.route('/user/register/', methods=['GET', 'POST'])
 def register():
     """View function which handles a registration request."""

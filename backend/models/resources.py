@@ -296,7 +296,6 @@ class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
-    _content_type = 'committee-meeting-report'
 
     def check_permission(self):
         # by default, all committee meetings are accessible
@@ -317,7 +316,6 @@ class CommitteeMeeting(Event):
             del tmp['summary']
             if 'files' in tmp:
                 del tmp['files']
-            tmp['content'] = []
 
         tmp['url'] = url_for('resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
@@ -331,7 +329,6 @@ class Hansard(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'plenary'
     }
-    _content_type = 'hansard'
 
     def to_dict(self, include_related=False):
         tmp = super(Hansard, self).to_dict(include_related=include_related)
@@ -347,7 +344,6 @@ class Briefing(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }
-    _content_type = 'briefing'
 
     def to_dict(self, include_related=False):
         tmp = super(Briefing, self).to_dict(include_related=include_related)
@@ -756,38 +752,6 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
     daily_schedule = db.relationship('DailySchedule')
     file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
-
-
-class Content(db.Model):
-
-    __tablename__ = "content"
-
-    id = db.Column(db.Integer, index=True, primary_key=True)
-    type = db.Column(db.String(50), index=True, nullable=False)
-
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True)
-    event = db.relationship('Event', backref=backref('content', lazy='joined'))
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), index=True)
-    file = db.relationship('File', lazy='joined')
-
-    # optional HTML summary and body of this content
-    summary = db.Column(db.Text())
-    body = db.Column(db.Text())
-
-    def __unicode__(self):
-        return unicode(self.type + " - " + str(self.id))
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        # lift nested 'file' fields to look like attributes on this model
-        if tmp.get('file'):
-            for key, val in tmp['file'].iteritems():
-                if tmp.get(key):
-                    pass  # don't overwrite parent model attributes from the child model
-                tmp[key] = val
-            tmp.pop('file')
-        return tmp
-
 
 
 # Listen for model updates

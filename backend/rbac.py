@@ -1,6 +1,6 @@
 import urllib
 
-from flask import request, redirect, abort
+from flask import request, redirect, abort, url_for
 from flask.ext.security import current_user
 
 class RBACMixin(object):
@@ -33,5 +33,4 @@ class RBACMixin(object):
                 abort(403)
             else:
                 # login
-                tmp = '/security/login?next=' + urllib.quote_plus(request.url)
-                return redirect(tmp)
+                return redirect(url_for('security.login', next=request.url))

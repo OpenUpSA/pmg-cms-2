@@ -12,15 +12,15 @@
 {% block body %}
   {{ super() }}
 
-  {% from "security/macros.html" import render_field_with_errors, render_field %}
+  {% from "admin/_macros.html" import render_field %}
 
   <h1>Send an email alert: {{ form.template.name }}</h1>
 
   <form class="form-horizontal" action="{{ url_for('alerts.new') }}" method="POST" id="new_alert_form" data-confirm="Lots of people will read this email. Have you checked the details?">
     {{ form.hidden_tag() }}
 
-    {{ render_field_with_errors(form.from_email, required=True) }}
-    {{ render_field_with_errors(form.subject, required=True) }}
+    {{ render_field(form.from_email) }}
+    {{ render_field(form.subject) }}
 
     <div class="form-group">
       {{ form.body.label(class_='control-label col-sm-2') }}

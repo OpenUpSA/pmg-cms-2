@@ -63,6 +63,11 @@ assets.register('js', Bundle(
     'resources/javascript/pmg.js',
     output='javascript/app.%(version)s.js'))
 
+assets.register('admin-js', Bundle(
+    'resources/javascript/admin/admin.js',
+    'resources/javascript/admin/email_alerts.js',
+    output='javascript/admin.%(version)s.js'))
+
 
 import helpers
 import views

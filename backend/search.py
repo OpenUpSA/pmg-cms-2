@@ -12,7 +12,7 @@ from sqlalchemy import types
 from inflection import camelize
 from bs4 import BeautifulSoup
 
-from app import db, app
+from frontend import db, app
 import models
 
 class Search:

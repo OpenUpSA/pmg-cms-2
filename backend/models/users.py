@@ -11,7 +11,7 @@ from sqlalchemy import UniqueConstraint
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
 from flask_security import current_user
 
-from backend.app import app, db
+from frontend import app, db
 import backend.serializers as serializers
 
 class ApiKey(db.Model):

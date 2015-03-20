@@ -1,9 +1,10 @@
 from os import environ as env
 
+SERVER_NAME = 'pmg.dev:5000'
 DEBUG = True
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8'
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
-API_HOST = "http://api.pmg.dev:5001/"
+API_HOST = "http://api.pmg.dev:5000/"
 FRONTEND_HOST = "http://pmg.dev:5000/"
 SESSION_COOKIE_DOMAIN = "pmg.dev"
 RESULTS_PER_PAGE = 50

@@ -1,6 +1,6 @@
 import logging
 
-from app import app
+from frontend import app
 
 logger = logging.getLogger(__name__)
 

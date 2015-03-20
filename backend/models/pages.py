@@ -3,7 +3,7 @@ import re
 from sqlalchemy import desc, func
 from sqlalchemy.orm import validates
 
-from backend.app import app, db
+from frontend import app, db
 from .base import resource_slugs
 
 

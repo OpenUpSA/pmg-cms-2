@@ -1,4 +1,3 @@
-from flask import render_template, g, request, redirect, session, url_for, abort, flash
 import os
 import forms
 import requests
@@ -7,26 +6,15 @@ import json
 import logging
 from ga import ga_event
 
+from flask import render_template, g, request, redirect, session, url_for, abort, flash
+from flask.ext.security import login_user, current_user
+
 from frontend import app
 from frontend.api import ApiException, load_from_api, send_to_api
+from backend.models.users import security
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)
-
-
-@app.before_request
-def load_current_user():
-    g.current_user = None
-    # XXX
-    return
-    user = load_from_api('user')
-    if user and 'current_user' in user:
-        g.current_user = user['current_user']
-
-
-@app.context_processor
-def current_user_context():
-    return {'current_user': g.current_user}
 
 
 # chat with backend API
@@ -70,40 +58,7 @@ def user_management_api(endpoint, data=None):
         flash(u'Error connecting to backend service.', 'danger')
 
 
-@app.route('/user/login/', methods=['GET', 'POST'])
-def login():
-    """View function for login view"""
-    if g.current_user:
-        return redirect(request.args.get('next', '/'))
-
-    form = forms.LoginForm(request.form)
-    if request.args.get('next'):
-        form.next.data = request.args['next']
-
-    if form.validate_on_submit():
-        data = {
-            'email': form.email.data,
-            'password': form.password.data
-        }
-        response = user_management_api('login', json.dumps(data))
-        if response and 'errors' in response:
-            # clear the flashes, we do our own error handling.
-            session['_flashes'] = []
-            form.bad_email = 'email' in response['errors']
-            form.bad_password = 'password' in response['errors']
-
-        # save auth token
-        if response and response.get('user') and response['user'].get('authentication_token'):
-            session['api_key'] = response['user']['authentication_token']
-            load_current_user()
-
-            if request.values.get('next'):
-                return redirect(request.values['next'])
-
-    return render_template('user_management/login_user.html', form=form)
-
-
-@app.route('/user/logout/', methods=['GET', ])
+@app.route('/XXX/user/logout/', methods=['GET', ])
 def logout():
     """View function which handles a logout request."""
     response = user_management_api('logout')

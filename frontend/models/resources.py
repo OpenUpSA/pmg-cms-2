@@ -15,7 +15,7 @@ from flask_security import current_user
 from werkzeug import secure_filename
 
 from frontend import app, db
-from backend.search import Search
+from frontend.search import Search
 
 import serializers
 from .s3_upload import S3Bucket

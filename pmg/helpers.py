@@ -5,8 +5,8 @@ import logging
 import arrow
 from flask import request, url_for
 
-from frontend import app
-from frontend.ga import get_ga_events
+from pmg import app
+from pmg.ga import get_ga_events
 
 logger = logging.getLogger(__name__)
 

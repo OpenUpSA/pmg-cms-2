@@ -12,13 +12,13 @@ from flask import request, flash, make_response, url_for, session, render_templa
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 
-from frontend import app, mail
-import forms
-from frontend.bills import bill_history, MIN_YEAR
-from frontend.ga import ga_event
-from frontend.api_client import load_from_api, send_to_api
+from pmg import app, mail
+from pmg.bills import bill_history, MIN_YEAR
+from pmg.ga import ga_event
+from pmg.api_client import load_from_api, send_to_api
+from pmg.models import Redirect, Page
 
-from frontend.models import Redirect, Page
+import forms
 
 API_HOST = app.config['API_HOST']
 app.session = session

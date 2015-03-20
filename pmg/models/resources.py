@@ -14,8 +14,8 @@ from flask_security import current_user
 
 from werkzeug import secure_filename
 
-from frontend import app, db
-from frontend.search import Search
+from pmg import app, db
+from pmg.search import Search
 
 import serializers
 from .s3_upload import S3Bucket

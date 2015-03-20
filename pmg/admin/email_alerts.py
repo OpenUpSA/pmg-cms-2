@@ -13,8 +13,8 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
 import mandrill
 
-from frontend.models import EmailTemplate, User, Committee, user_committee_alerts
-from frontend import app, db, mail
+from pmg.models import EmailTemplate, User, Committee, user_committee_alerts
+from pmg import app, db, mail
 from rbac import RBACMixin
 
 log = logging.getLogger(__name__)

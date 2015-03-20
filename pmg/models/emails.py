@@ -2,7 +2,7 @@ import re
 
 from sqlalchemy import desc, func
 
-from frontend import db
+from pmg import db
 
 class EmailTemplate(db.Model):
     __tablename__ = 'email_template'

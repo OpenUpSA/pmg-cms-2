@@ -28,7 +28,7 @@
   <p>Business, government and other users need to subscribe to access meeting reports of these 15 National Assembly committees.</p>
 
   {% if current_user and current_user.organisation %}
-    {% if current_user.organisation.has_expired %}
+    {% if current_user.organisation.has_expired() %}
       <div class="alert alert-danger" role="alert">
         <strong>Note:</strong> Your access has expired. Please see the <em>How To Subscribe</em> section for instructions on renewing your access.
       </div>

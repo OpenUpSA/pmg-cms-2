@@ -283,65 +283,6 @@ def landing():
     return send_api_response({'endpoints': endpoints})
 
 
-@api.route('/update_alerts/', methods=['POST', ])
-@auth_required('token')
-def update_alerts():
-    """
-    Update user's notification alerts.
-    """
-
-    out = {}
-    if current_user and current_user.is_active():
-        committee_alerts = request.json.get('committee_alerts')
-        logger.debug(json.dumps(committee_alerts, indent=4))
-
-        general_alerts = request.json.get('general_alerts')
-        logger.debug(json.dumps(general_alerts, indent=4))
-
-        # remove user's current subscriptions
-        current_user.committee_alerts = Committee.query.filter(Committee.id.in_(committee_alerts)).all()
-
-        # update general True/False subscriptions
-        current_user.subscribe_daily_schedule = True if 'daily-schedule' in general_alerts else False
-        db.session.add(current_user)
-        db.session.commit()
-        try:
-            out['current_user'] = serializers.to_dict(current_user)
-        except Exception:
-            logger.exception("Error serializing current user.")
-            pass
-    return send_api_response(out)
-
-
-@api.route('/user/alerts/committees/<int:committee_id>/', methods=['GET', 'POST', 'DELETE'])
-@auth_required('token')
-def user_committee_alert(committee_id):
-    if current_user and current_user.is_active():
-        cte = Committee.query.get(committee_id)
-        if not cte:
-            raise ApiException(404, "No such committee")
-
-        if request.method == 'GET':
-            subscribed = cte in current_user.committee_alerts
-
-        elif request.method == 'DELETE':
-            try:
-                current_user.committee_alerts.remove(cte)
-            except ValueError:
-                pass
-            subscribed = False
-            db.session.commit()
-
-        elif request.method == 'POST':
-            current_user.committee_alerts.append(cte)
-            subscribed = True
-            db.session.commit()
-
-        return send_api_response({'alerts': subscribed})
-    else:
-        raise ApiException(401, "Authentication required")
-
-
 @api.route('/check_redirect/', methods=['POST'])
 def check_redirect():
     """

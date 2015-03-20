@@ -11,7 +11,7 @@ from flask.ext.security import login_user, current_user
 from flask.ext.security.decorators import anonymous_user_required
 
 from frontend import app, db
-from frontend.api import ApiException, load_from_api, send_to_api
+from frontend.api_client import ApiException, load_from_api, send_to_api
 from frontend.models import Committee
 from frontend.models.users import security
 

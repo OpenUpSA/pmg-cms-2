@@ -20,13 +20,14 @@ from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
 from xlsx import XLSXBuilder
-from frontend import app, db
-from models import *
-from email_alerts import EmailAlertView
-from rbac import RBACMixin
-import widgets
-import support
 
+from frontend import app, db
+
+from backend.models import *
+
+from .email_alerts import EmailAlertView
+from .rbac import RBACMixin
+import widgets
 
 logger = logging.getLogger(__name__)
 

@@ -87,7 +87,7 @@ assets.register('admin-js', Bundle(
 import helpers
 import views
 import user_management
+import admin
 
 from backend.api import api
-
 app.register_blueprint(api, subdomain='api')

@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
 import mandrill
 
-from models import EmailTemplate, User, Committee, user_committee_alerts
+from backend.models import EmailTemplate, User, Committee, user_committee_alerts
 from frontend import app, db, mail
 from rbac import RBACMixin
 

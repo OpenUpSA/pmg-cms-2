@@ -28,8 +28,6 @@ import widgets
 import support
 
 
-FRONTEND_HOST = app.config['FRONTEND_HOST']
-
 logger = logging.getLogger(__name__)
 
 
@@ -125,7 +123,7 @@ class MyModelView(RBACMixin, ModelView):
 
     def frontend_url(self, model):
         if getattr(self, 'frontend_url_format', None):
-            return FRONTEND_HOST + self.frontend_url_format % self.get_pk_value(model)
+            return '/' + self.frontend_url_format % self.get_pk_value(model)
         return None
 
 
@@ -790,7 +788,7 @@ class PageView(MyModelView):
         }
 
     def frontend_url(self, model):
-        return FRONTEND_HOST + 'page/%s' % model.slug
+        return '/page/%s' % model.slug
 
     def on_form_prefill(self, form, id):
         form.path.data = '/page/%s' % form.slug.data

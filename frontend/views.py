@@ -16,6 +16,8 @@ from frontend.bills import bill_history, MIN_YEAR
 from frontend.ga import ga_event
 from frontend.api import load_from_api, send_to_api
 
+from backend.models import Redirect
+
 API_HOST = app.config['API_HOST']
 app.session = session
 
@@ -28,12 +30,9 @@ def admin_url(model_name, id):
 
 @app.errorhandler(404)
 def page_not_found(error):
-    tmp = send_to_api('check_redirect', json.dumps({'url': request.path}))
-    if tmp and tmp.get('redirect'):
-        target = tmp.get('redirect')
-
-        logger.info("Legacy redirect from %s to %s" % (request.path, target))
-        return redirect(target, code=302)
+    dest = Redirect.for_url(request.path)
+    if dest:
+        return redirect(dest, code=302)
 
     return render_template('404.html'), 404
 

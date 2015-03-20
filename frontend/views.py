@@ -18,7 +18,7 @@ from frontend.bills import bill_history, MIN_YEAR
 from frontend.ga import ga_event
 from frontend.api import load_from_api, send_to_api
 
-from backend.models import Redirect, Page
+from frontend.models import Redirect, Page
 
 API_HOST = app.config['API_HOST']
 app.session = session

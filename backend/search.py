@@ -13,7 +13,7 @@ from inflection import camelize
 from bs4 import BeautifulSoup
 
 from frontend import db, app
-import models
+import frontend.models
 
 class Search:
 
@@ -80,7 +80,7 @@ class Search:
 
     def model_for_data_type(self, data_type):
         # question_reply -> QuestionReply class
-        return getattr(models, camelize(data_type))
+        return getattr(frontend.models, camelize(data_type))
 
     def delete(self, data_type, uid):
         try:

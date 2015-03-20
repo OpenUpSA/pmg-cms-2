@@ -23,7 +23,7 @@ from xlsx import XLSXBuilder
 
 from frontend import app, db
 
-from backend.models import *
+from frontend.models import *
 
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin

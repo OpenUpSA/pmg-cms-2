@@ -12,8 +12,8 @@ from flask.ext.security.decorators import anonymous_user_required
 
 from frontend import app, db
 from frontend.api import ApiException, load_from_api, send_to_api
-from backend.models import Committee
-from backend.models.users import security
+from frontend.models import Committee
+from frontend.models.users import security
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)

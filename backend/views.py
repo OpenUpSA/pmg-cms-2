@@ -8,30 +8,32 @@ import re
 import sys
 import math
 
-from frontend import db, app, mail
-from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response, render_template
-from sqlalchemy import func, or_, distinct, desc
-from sqlalchemy.orm import joinedload
-from sqlalchemy.orm.exc import NoResultFound
-import serializers
-from search import Search
 from flask.ext.security import current_user
-import flask.ext.security.decorators as security
+from flask.ext.security.decorators import _check_token, _check_http_auth
 from flask.ext.login import login_required
 from flask.ext.mail import Message
 from werkzeug.exceptions import HTTPException
+from sqlalchemy import func, or_, distinct, desc
+from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
+
+from frontend import db, app, mail
+from frontend.models import *
+from frontend.models.base import resource_slugs
 
 from backend.api import api
-from backend.models.base import resource_slugs
+import serializers
+from search import Search
+
 
 logger = logging.getLogger(__name__)
 
 def load_user():
     login_mechanisms = {
-        'token': lambda: security._check_token(),
-        'basic': lambda: security._check_http_auth(),
+        'token': lambda: _check_token(),
+        'basic': lambda: _check_http_auth(),
         'session': lambda: current_user.is_authenticated()
     }
 

@@ -36,31 +36,10 @@ and the same restrictions apply for the API.
 If you are a registered user, and you wish to have access to restricted content through the API, then please follow 
 these steps:
 
-1. Send a POST request to https://api.pmg.org.za/security/login with a JSON body containing your credentials, e.g:
-    
-        {
-          "email": "email@example.com",
-          "password": "my-password"
-        }
-            
-    please make sure that your `Content-Type` and `Accept` headers are set to `application/json`. The API should 
-    return a JSON response of the form:
-        
-        { 
-            "meta":  { 
-                "code": 200 
-            }, 
-            "response": { 
-                "user": { 
-                    "authentication_token": "<example-auth-token>", 
-                    "id": "<user-id>" 
-                }
-            } 
-        }
-
-2. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
-
-3. You can check if you are correctly authenticated by doing a GET against http://api.pmg.org.za/user:
+1. Login to the website at https://pmg.org.za using your browser.
+2. Visit https://api.pmg.org.za/user/ and get the authentication token from the JSON response.
+3. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
+4. You can check if you are correctly authenticated by doing a GET against https://api.pmg.org.za/user/
 
         {
             "current_user": {

@@ -15,9 +15,9 @@ from flask_security import current_user
 from werkzeug import secure_filename
 
 from frontend import app, db
-import backend.serializers as serializers
 from backend.search import Search
 
+import serializers
 from .s3_upload import S3Bucket
 from .base import ApiResource, resource_slugs
 

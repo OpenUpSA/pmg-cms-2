@@ -28,15 +28,15 @@
   <div class="shaded form-container">
     <div class="row">
       <div class="col-sm-10 col-sm-offset-1">
-        <form class="form-horizontal" role="form" action="{{ url_for('register') }}" method="POST" name="register_user_form">
-          {{ form.hidden_tag() }}
-          {{ render_field(form.email) }}
-          {{ render_field(form.password) }}
-          {% if form.password_confirm %}
-            {{ render_field(form.password_confirm) }}
+        <form class="form-horizontal" role="form" action="{{ url_for('security.register') }}" method="POST" name="register_user_form">
+          {{ register_user_form.hidden_tag() }}
+          {{ render_field(register_user_form.email) }}
+          {{ render_field(register_user_form.password) }}
+          {% if register_user_form.password_confirm %}
+            {{ render_field(register_user_form.password_confirm) }}
           {% endif %}
-          {{ render_field(form.next) }}
-          {{ render_field(form.submit) }}
+          {{ render_field(register_user_form.next) }}
+          {{ render_field(register_user_form.submit) }}
         </form>
 
         <br>
@@ -44,7 +44,7 @@
         <div class="row">
           <div class="col-sm-9 col-sm-offset-3">
             <p class="lead">
-              <a href="{{ url_for('login')}}{% if form.next %}?next={{ form.next.data }}{% endif %}">
+              <a href="{{ url_for('security.login')}}{% if register_user_form.next %}?next={{ register_user_form.next.data }}{% endif %}">
                 Already have an account? Log in.
               </a>
             </p>

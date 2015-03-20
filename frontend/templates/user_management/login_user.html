@@ -30,7 +30,7 @@
           {% if 'email' in login_user_form.errors %}
             <p class="alert alert-danger">
               We couldn't find an account with that email address. Please
-              <a href="{{ url_for('register') }}">sign up</a> if you'd like
+              <a href="{{ url_for('security.register') }}">sign up</a> if you'd like
               to create one.
             </p>
           {% endif %}
@@ -39,7 +39,7 @@
             <div class="alert alert-danger">
               <p>
                 Your password is incorrect. Please try again
-                or <a href="{{ url_for('forgot_password')}}">reset your password</a>
+                or <a href="{{ url_for('security.forgot_password')}}">reset your password</a>
                 if you've forgotten it. You also need to reset your password if
                 you haven't reset it since 1 February 2015.
               </p>
@@ -50,7 +50,7 @@
             <strong>Existing accounts</strong>
             <br>
             If you had an account on our old website, please 
-            <a href="{{ url_for('forgot_password') }}">reset your password</a> before logging in.
+            <a href="{{ url_for('security.forgot_password') }}">reset your password</a> before logging in.
           </p>
         </div>
       </div>
@@ -68,9 +68,9 @@
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
           <p class="lead">
-            <a href="{{ url_for('forgot_password') }}">I forgot my password.</a>
+            <a href="{{ url_for('security.forgot_password') }}">I forgot my password.</a>
             <br>
-            <a href="{{ url_for('register') }}{% if login_user_form.next %}?next={{ login_user_form.next.data }}{% endif %}">Don't have an account? Sign up.</a>
+            <a href="{{ url_for('security.register') }}{% if login_user_form.next %}?next={{ login_user_form.next.data }}{% endif %}">Don't have an account? Sign up.</a>
           </p>
         </div>
       </div>

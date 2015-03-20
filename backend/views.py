@@ -16,7 +16,7 @@ import sys
 from search import Search
 import math
 from flask_security import current_user
-from flask_security.decorators import load_user
+from flask_security.decorators import auth_required
 from flask_mail import Message
 from werkzeug.exceptions import HTTPException
 
@@ -139,7 +139,6 @@ def send_api_response(data, status_code=200):
 #
 
 @api.route('/user/')
-@load_user('token', 'session')
 def user():
     """ Info on the currently logged in user. """
     if current_user.is_anonymous():
@@ -223,7 +222,6 @@ def featured():
 
 @api.route('/bill/<int:bill_id>/')
 @api.route('/bill/<any(current, draft, pmb, tabled):scope>/')
-@load_user('token', 'session')
 def current_bill_list(scope=None, bill_id=None):
     query = Bill.list()
 
@@ -246,7 +244,6 @@ def current_bill_list(scope=None, bill_id=None):
     return api_resource_list('bill', None, query)
 
 @api.route('/committee/premium/')
-@load_user('token', 'session')
 def committee_list():
     query = Committee.list().filter(Committee.premium == True)
     return api_resource_list('committee', None, query)
@@ -254,7 +251,6 @@ def committee_list():
 
 @api.route('/<string:resource>/', )
 @api.route('/<string:resource>/<int:resource_id>/', )
-@load_user('token', 'session')
 def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.
@@ -278,7 +274,7 @@ def question_reply_committees():
 
 
 @api.route('/', )
-@load_user('token', 'session')
+@auth_required('token', 'session')
 def landing():
     """
     List available endpoints.
@@ -288,7 +284,7 @@ def landing():
 
 
 @api.route('/update_alerts/', methods=['POST', ])
-@load_user('token')
+@auth_required('token')
 def update_alerts():
     """
     Update user's notification alerts.
@@ -318,7 +314,7 @@ def update_alerts():
 
 
 @api.route('/user/alerts/committees/<int:committee_id>/', methods=['GET', 'POST', 'DELETE'])
-@load_user('token')
+@auth_required('token')
 def user_committee_alert(committee_id):
     if current_user and current_user.is_active():
         cte = Committee.query.get(committee_id)

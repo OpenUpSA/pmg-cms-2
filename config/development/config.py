@@ -49,7 +49,6 @@ MAIL_PASSWORD = MANDRILL_API_KEY
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 
 # Flask-Security config
-SECURITY_HOST = FRONTEND_HOST
 SECURITY_URL_PREFIX = "/user"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
 SECURITY_PASSWORD_SALT = env.get('SECURITY_PASSWORD_SALT', "ioaefroijaAMELRK#$(aerieuh984akef#$graerj")
@@ -60,10 +59,15 @@ SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 SECURITY_LOGIN_URL = "/login/"
 SECURITY_LOGOUT_URL = "/logout/"
 SECURITY_CHANGE_URL = "/change-password/"
+SECURITY_RESET_URL = "/forgot-password/"
+SECURITY_REGISTER_URL = "/register/"
 
 # Flask-Security templates that we override
 SECURITY_LOGIN_USER_TEMPLATE = "user_management/login_user.html"
+SECURITY_REGISTER_USER_TEMPLATE = "user_management/register_user.html"
 SECURITY_CHANGE_PASSWORD_TEMPLATE = "user_management/change_password.html"
+SECURITY_FORGOT_PASSWORD_TEMPLATE = "user_management/forgot_password.html"
+SECURITY_RESET_PASSWORD_TEMPLATE = "user_management/reset_password.html"
 
 # Flask-Security email subject lines
 SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
@@ -71,7 +75,7 @@ SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PM
 
 
 # Flask-Security features
-SECURITY_CONFIRMABLE = True
+SECURITY_CONFIRMABLE = False
 SECURITY_LOGIN_WITHOUT_CONFIRMATION = True
 SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True

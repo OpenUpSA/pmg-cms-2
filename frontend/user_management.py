@@ -287,7 +287,7 @@ def email_alerts():
         tmp = send_to_api('update_alerts', json.dumps(out))
         if tmp:
             # register a google analytics event
-            ga_event('user', 'set-alerts')
+            ga_event('user', 'change-alerts')
             flash("Your notification settings have been updated successfully.", "success")
             if next_url:
                 return redirect(next_url)
@@ -304,7 +304,7 @@ def email_alerts():
 def user_committee_alert(committee_id):
     res = send_to_api('user/alerts/committees/%s' % committee_id)
     if res.get('alerts'):
-        ga_event('user', 'set-alerts', 'cte-alert-box')
+        ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
     return redirect(request.values.get('next', '/'))
 

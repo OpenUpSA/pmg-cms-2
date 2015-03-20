@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 @app.before_request
 def load_current_user():
     g.current_user = None
+    # XXX
+    return
     user = load_from_api('user')
     if user and 'current_user' in user:
         g.current_user = user['current_user']

@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CsrfProtect
+from flask_mail import Mail
 
 os.environ['PMG_LAYER'] = 'frontend'
 
@@ -15,6 +16,7 @@ app.config.from_pyfile('../config/%s/config.py' % env)
 
 db = SQLAlchemy(app)
 CsrfProtect(app)
+mail = Mail(app)
 
 # setup logging
 with open('config/%s/logging.yaml' % env) as f:
@@ -56,3 +58,7 @@ assets.register('js', Bundle(
 import helpers
 import views
 import user_management
+
+from backend.app import api
+
+app.register_blueprint(api, subdomain='api')

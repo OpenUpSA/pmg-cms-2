@@ -1,7 +1,7 @@
 import logging
 import json
 from datetime import datetime, date
-from app import db, app
+from frontend import db, app
 from operator import itemgetter
 from sqlalchemy import inspect
 

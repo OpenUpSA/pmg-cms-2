@@ -14,7 +14,7 @@ from sqlalchemy.sql.functions import count
 import mandrill
 
 from models import EmailTemplate, User, Committee, user_committee_alerts
-from app import app, db, mail
+from frontend import app, db, mail
 from rbac import RBACMixin
 
 log = logging.getLogger(__name__)

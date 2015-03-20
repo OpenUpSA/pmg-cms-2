@@ -4,7 +4,7 @@ from boto.s3.key import Key
 import boto.s3.connection
 import math
 import os
-from app import db, app
+from frontend import db, app
 import logging
 
 UPLOAD_PATH = app.config['UPLOAD_PATH']

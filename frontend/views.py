@@ -60,6 +60,7 @@ def classify_attachments(files):
 
 @app.route('/')
 def index():
+    logger.info("Loading index page")
     committee_meetings = load_from_api('committee-meeting')['results'][:10]
     bills = load_from_api('bill')["results"][:10]
     schedule = load_from_api('schedule')["results"]

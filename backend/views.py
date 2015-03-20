@@ -1,5 +1,5 @@
 import logging
-from app import db, app, mail
+from frontend import db, app, mail
 from models import *
 import flask
 from flask import g, request, abort, redirect, url_for, session, make_response, render_template
@@ -22,11 +22,13 @@ from werkzeug.exceptions import HTTPException
 
 from backend.models.base import resource_slugs
 
+from backend.app import api
+
 # handling static files (only relevant during development)
-app.static_folder = 'static'
-app.add_url_rule('/static/<path:filename>',
-                 endpoint='static',
-                 view_func=app.send_static_file)
+#api.static_folder = 'static'
+#api.add_url_rule('/static/<path:filename>',
+#                 endpoint='static',
+#                 view_func=api.send_static_file)
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +138,7 @@ def send_api_response(data, status_code=200):
 # API endpoints:
 #
 
-@app.route('/user/')
+@api.route('/user/')
 @load_user('token', 'session')
 def user():
     """ Info on the currently logged in user. """
@@ -147,7 +149,7 @@ def user():
     return send_api_response({'current_user': serializers.to_dict(current_user)})
 
 
-@app.route('/search/')
+@api.route('/search/')
 def search():
     """
     Search through ElasticSearch
@@ -202,7 +204,7 @@ def search():
 
     return send_api_response(result)
 
-@app.route('/featured/')
+@api.route('/featured/')
 def featured():
     info = {}
 
@@ -219,8 +221,8 @@ def featured():
     return send_api_response(info)
 
 
-@app.route('/bill/<int:bill_id>/')
-@app.route('/bill/<any(current, draft, pmb, tabled):scope>/')
+@api.route('/bill/<int:bill_id>/')
+@api.route('/bill/<any(current, draft, pmb, tabled):scope>/')
 @load_user('token', 'session')
 def current_bill_list(scope=None, bill_id=None):
     query = Bill.list()
@@ -243,15 +245,15 @@ def current_bill_list(scope=None, bill_id=None):
 
     return api_resource_list('bill', None, query)
 
-@app.route('/committee/premium/')
+@api.route('/committee/premium/')
 @load_user('token', 'session')
 def committee_list():
     query = Committee.list().filter(Committee.premium == True)
     return api_resource_list('committee', None, query)
 
 
-@app.route('/<string:resource>/', )
-@app.route('/<string:resource>/<int:resource_id>/', )
+@api.route('/<string:resource>/', )
+@api.route('/<string:resource>/<int:resource_id>/', )
 @load_user('token', 'session')
 def resource_list(resource, resource_id=None):
     """
@@ -265,7 +267,7 @@ def resource_list(resource, resource_id=None):
 
     return api_resource_list(resource, resource_id, query)
 
-@app.route('/committee/question_reply/')
+@api.route('/committee/question_reply/')
 def question_reply_committees():
     """
     A list of those committees that have received questions and replies.
@@ -275,7 +277,7 @@ def question_reply_committees():
     return send_api_response(serializers.queryset_to_json(items, count=len(items)))
 
 
-@app.route('/', )
+@api.route('/', )
 @load_user('token', 'session')
 def landing():
     """
@@ -285,7 +287,7 @@ def landing():
     return send_api_response({'endpoints': endpoints})
 
 
-@app.route('/update_alerts/', methods=['POST', ])
+@api.route('/update_alerts/', methods=['POST', ])
 @load_user('token')
 def update_alerts():
     """
@@ -315,7 +317,7 @@ def update_alerts():
     return send_api_response(out)
 
 
-@app.route('/user/alerts/committees/<int:committee_id>/', methods=['GET', 'POST', 'DELETE'])
+@api.route('/user/alerts/committees/<int:committee_id>/', methods=['GET', 'POST', 'DELETE'])
 @load_user('token')
 def user_committee_alert(committee_id):
     if current_user and current_user.is_active():
@@ -344,7 +346,7 @@ def user_committee_alert(committee_id):
         raise ApiException(401, "Authentication required")
 
 
-@app.route('/check_redirect/', methods=['POST'])
+@api.route('/check_redirect/', methods=['POST'])
 def check_redirect():
     """
     Check if a given URL should be redirected.
@@ -353,7 +355,7 @@ def check_redirect():
     return send_api_response({'redirect': dest})
 
 
-@app.route('/page/')
+@api.route('/page/')
 def page():
     slug = request.args.get('slug', '').strip()
     if not slug:
@@ -367,7 +369,7 @@ def page():
 
     return send_api_response(serializers.queryset_to_json(page))
 
-@app.route('/correct-this-page/', methods=['POST'])
+@api.route('/correct-this-page/', methods=['POST'])
 def correct_this_page():
     msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
     msg.html = render_template('correct_this_page.html', submission=request.json)

@@ -23,15 +23,8 @@ from flask.ext.login import login_required
 from flask.ext.mail import Message
 from werkzeug.exceptions import HTTPException
 
+from backend.api import api
 from backend.models.base import resource_slugs
-
-from backend.app import api
-
-# handling static files (only relevant during development)
-#api.static_folder = 'static'
-#api.add_url_rule('/static/<path:filename>',
-#                 endpoint='static',
-#                 view_func=api.send_static_file)
 
 logger = logging.getLogger(__name__)
 

@@ -15,9 +15,10 @@ import serializers
 import sys
 from search import Search
 import math
-from flask_security import current_user
-from flask_security.decorators import auth_required
-from flask_mail import Message
+from flask.ext.security import current_user
+from flask.ext.security.decorators import auth_required
+from flask.ext.login import login_required
+from flask.ext.mail import Message
 from werkzeug.exceptions import HTTPException
 
 from backend.models.base import resource_slugs
@@ -274,7 +275,6 @@ def question_reply_committees():
 
 
 @api.route('/', )
-@auth_required('token', 'session')
 def landing():
     """
     List available endpoints.

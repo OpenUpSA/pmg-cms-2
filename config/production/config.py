@@ -1,6 +1,7 @@
 from os import environ as env
 
 WTF_CSRF_ENABLED = True
+SERVER_NAME = 'pmg.org.za'
 SQLALCHEMY_DATABASE_URI = env['SQLALCHEMY_DATABASE_URI']
 SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
 API_HOST = "http://api.pmg.org.za/"

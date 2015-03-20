@@ -16,7 +16,7 @@ from frontend.bills import bill_history, MIN_YEAR
 from frontend.ga import ga_event
 from frontend.api import load_from_api, send_to_api
 
-from backend.models import Redirect
+from backend.models import Redirect, Page
 
 API_HOST = app.config['API_HOST']
 app.session = session
@@ -694,14 +694,15 @@ def page(pagename):
     Serves a page from templates/pages
     """
     logger.debug("Attempting to serve page: " + pagename)
-    page = load_from_api('page', params={'slug': pagename})
 
-    if page['slug'] != pagename:
-        return redirect(url_for('page', pagename=page['slug']))
+    pagename = Page().validate_slug(None, pagename)
+    page = Page.query.filter(Page.slug == pagename).first()
+    if not page:
+        abort(404)
 
     return render_template('page.html',
         page=page,
-        admin_edit_url=admin_url('pages', page['id']))
+        admin_edit_url=admin_url('pages', page.id))
 
 
 # some old content contains links files which are in S3:

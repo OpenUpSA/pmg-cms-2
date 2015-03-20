@@ -283,20 +283,6 @@ def landing():
     return send_api_response({'endpoints': endpoints})
 
 
-@api.route('/page/')
-def page():
-    slug = request.args.get('slug', '').strip()
-    if not slug:
-        raise ApiException(404, "No such page")
-
-    slug = Page().validate_slug(None, slug)
-
-    page = Page.query.filter(Page.slug == slug).first()
-    if not page:
-        raise ApiException(404, "No such page")
-
-    return send_api_response(serializers.queryset_to_json(page))
-
 @api.route('/correct-this-page/', methods=['POST'])
 def correct_this_page():
     msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')

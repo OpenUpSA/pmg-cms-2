@@ -62,13 +62,6 @@ SECURITY_CHANGE_URL = "/change-password/"
 SECURITY_RESET_URL = "/forgot-password/"
 SECURITY_REGISTER_URL = "/register/"
 
-# Flask-Security templates that we override
-SECURITY_LOGIN_USER_TEMPLATE = "user_management/login_user.html"
-SECURITY_REGISTER_USER_TEMPLATE = "user_management/register_user.html"
-SECURITY_CHANGE_PASSWORD_TEMPLATE = "user_management/change_password.html"
-SECURITY_FORGOT_PASSWORD_TEMPLATE = "user_management/forgot_password.html"
-SECURITY_RESET_PASSWORD_TEMPLATE = "user_management/reset_password.html"
-
 # Flask-Security email subject lines
 SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% macro check_subscribed(committee_id) %}
-  {% if current_user.committee_alerts and current_user.committee_alerts[committee_id|string] %}
+  {% if committee_id in subscriptions %}
     checked
   {% endif %}
 {% endmacro %}
@@ -18,7 +18,7 @@
 {% macro render_committee_checkbox(committee) %}
   <li class="checkbox">
     <label>
-      <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committee-id-{{ committee.id }}" {{ check_subscribed(committee.id) }}>
+      <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committees" {{ check_subscribed(committee.id) }} value="{{ committee.id }}">
       {{- committee.name -}}
     </label>
   </li>
@@ -50,7 +50,7 @@
     <ul class="list-unstyled">
       <li class="checkbox">
         <label>
-          <input type="checkbox" id="select-daily-schedule" name="select-daily-schedule"{% if current_user.subscribe_daily_schedule %} checked{% endif %}>
+          <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
           Daily schedule of parliament
         </label>
       </li>

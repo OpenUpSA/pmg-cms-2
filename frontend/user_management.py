@@ -10,8 +10,9 @@ from flask import render_template, g, request, redirect, session, url_for, abort
 from flask.ext.security import login_user, current_user
 from flask.ext.security.decorators import anonymous_user_required
 
-from frontend import app
+from frontend import app, db
 from frontend.api import ApiException, load_from_api, send_to_api
+from backend.models import Committee
 from backend.models.users import security
 
 API_HOST = app.config['API_HOST']
@@ -96,42 +97,38 @@ def confirm_email(confirmation_key):
     return redirect(url_for('index'))
 
 
-
 @app.route('/email-alerts/', methods=['GET', 'POST'])
 def email_alerts():
     """
     Allow a user to manage their notification alerts.
     """
-    committees = None
     next_url = request.values.get('next', '')
 
-    if g.current_user and request.method == 'POST':
-        out = {'committee_alerts': [], 'general_alerts': []}
-        general_notifications = ['select-daily-schedule']
+    if current_user and request.method == 'POST':
+        ids = request.form.getlist('committees')
+        current_user.committee_alerts = Committee.query.filter(Committee.id.in_(ids)).all()
+        current_user.subscribe_daily_schedule = bool(request.form.get('subscribe_daily_schedule'))
 
-        for field_name in request.form.keys():
-            if field_name in ['csrf_token', 'next']:
-                continue
+        db.session.commit()
 
-            if field_name in general_notifications:
-                key = "-".join(field_name.split('-')[1::])
-                out['general_alerts'].append(key)
-            else:
-                committee_id = int(field_name.split('-')[-1])
-                out['committee_alerts'].append(committee_id)
-        tmp = send_to_api('update_alerts', json.dumps(out))
-        if tmp:
-            # register a google analytics event
-            ga_event('user', 'change-alerts')
-            flash("Your notification settings have been updated successfully.", "success")
-            if next_url:
-                return redirect(next_url)
-            return redirect(url_for('email_alerts'))
+        # register a google analytics event
+        ga_event('user', 'change-alerts')
+        flash("Your notification settings have been updated successfully.", "success")
+        if next_url:
+            return redirect(next_url)
+
+        return redirect(url_for('email_alerts'))
 
     committees = load_from_api('committee', return_everything=True)['results']
+    if current_user:
+        subscriptions = set(c.id for c in current_user.committee_alerts)
+    else:
+        subscriptions = set()
+
     return render_template('user_management/email_alerts.html',
             committees=committees,
             after_signup=bool(next_url),
+            subscriptions=subscriptions,
             next_url=next_url)
 
 

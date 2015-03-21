@@ -22,7 +22,7 @@ The project consists of the following major components:
   * Database (PostgreSQL)
   * Search engine (Elastic Search)
   * Admin interface (Flask-Admin, integration with Mandrill for email notifications)
-    * https://api.pmg.org.za/admin
+    * https://pmg.org.za/admin
   * API (Flask)
     * https://api.pmg.org.za
 
@@ -79,15 +79,11 @@ Add the following lines to your `.hosts` file:
     127.0.0.1 api.pmg.dev
     127.0.0.1 pmg.dev
 
-Start the backend server:
+Start the server:
 
-    python runserver_backend.py
+    python run-development.py
 
-And start the frontend server:
-
-    python runserver_frontend.py
-
-You should now see them running at `http://api.pmg.dev:5001/` and `http://pmg.dev:5000/` respectively.
+You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
 
 
 ### Deploy instructions
@@ -119,16 +115,16 @@ the following form::
 We use alembic for applying changes to the data model. To setup a migration script:
 
     alembic -c 'config/development/alembic.ini' revision --autogenerate -m "<revision description>"
-    
+
 Then to run the script on your local machine: 
 
     alembic -c 'config/development/alembic.ini' upgrade head
-    
+
 but first, ensure that the `sqlalchemy.url` parameter is pointing at the right place.
 
 To run migration scripts on the live database, copy the `alembic.ini` into the production config directory, update the
 `sqlalchemy.url` parameter, and 
 
     alembic -c 'config/production/alembic.ini' upgrade head
-    
+
 Never add the production configuration to git, as it contains sensitive database credentials.

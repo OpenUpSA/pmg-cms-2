@@ -1,0 +1,24 @@
+{% if current_user %}
+  {% if current_user.gets_alerts_for(committee.id) %}
+    <div class="email-alert-box subscribed">
+      <p>You're subscribed to our free email alerts for this committee.</p>
+      <a class="btn btn-default" href="{{ url_for('email_alerts') }}">Manage email alerts</a>
+    </div>
+
+  {% else %}
+
+    <form action="{{ url_for('user_committee_alert', committee_id=committee.id) }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ request.url }}">
+      <div class="email-alert-box">
+        <p>Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> for this committee.</p>
+        <button class="btn btn-success" type="submit">Subscribe to {{ committee.name }}</button>
+      </div>
+    </form>
+  {% endif %}
+{% else %}
+  <div class="email-alert-box">
+    <p>Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> for this committee.</p>
+    <a class="btn btn-success" href="{{ url_for('register', next=request.path, utm_source='cte-alert-box') }}">Sign up for alerts</a>
+  </div>
+{% endif %}

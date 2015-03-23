@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% from "_macros.html" import render_field %}
+
+{%- block style %}
+  {{ super() }}
+  <style>
+    .title-heading{
+      padding-top: 25px;
+      padding-bottom: 25px;
+    }
+  </style>
+{%- endblock %}
+
+{% block page %}
+  <div class="text-center title-heading">
+    <h1>Login now to view premium content</h1>
+    <p class="lead">
+      Most of our content is freely available.
+      <br>
+      Log in to get access to committee meeting reports from 
+      <a href="{{ url_for('committee_subscriptions') }}">certain committees</a>.
+    </p>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-10 col-sm-offset-1">
+
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          {% if 'email' in login_user_form.errors %}
+            <p class="alert alert-danger">
+              We couldn't find an account with that email address. Please
+              <a href="{{ url_for('security.register') }}">sign up</a> if you'd like
+              to create one.
+            </p>
+          {% endif %}
+
+          {% if 'password' in login_user_form.errors %}
+            <div class="alert alert-danger">
+              <p>
+                Your password is incorrect. Please try again
+                or <a href="{{ url_for('security.forgot_password')}}">reset your password</a>
+                if you've forgotten it. You also need to reset your password if
+                you haven't reset it since 1 February 2015.
+              </p>
+            </div>
+          {% endif %}
+
+          <p class="alert alert-info">
+            <strong>Existing accounts</strong>
+            <br>
+            If you had an account on our old website, please 
+            <a href="{{ url_for('security.forgot_password') }}">reset your password</a> before logging in.
+          </p>
+        </div>
+      </div>
+      <br>
+
+      <form class="form-horizontal" role="form" action="{{ url_for('security.login') }}" method="POST" name="login_user_form">
+        {{ login_user_form.hidden_tag() }}
+        {{ render_field(login_user_form.email) }}
+        {{ render_field(login_user_form.password) }}
+        {{ render_field(login_user_form.submit) }}
+      </form>
+
+      <br>
+
+      <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+          <p class="lead">
+            <a href="{{ url_for('security.forgot_password') }}">I forgot my password.</a>
+            <br>
+            <a href="{{ url_for('security.register') }}{% if login_user_form.next %}?next={{ login_user_form.next.data }}{% endif %}">Don't have an account? Sign up.</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

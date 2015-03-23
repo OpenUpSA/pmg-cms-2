@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% from "_macros.html" import render_field %}
+
+{%- block style %}
+  {{ super() }}
+  <style>
+    .title-heading{
+      padding-top: 25px;
+      padding-bottom: 25px;
+    }
+    .form-container{
+      padding-top: 25px;
+    }
+  </style>
+{%- endblock %}
+
+{% block page %}
+  <div class="text-center title-heading">
+    <h1>Create an account now to view premium content</h1>
+    <p class="lead">
+      Most of our content is freely available.
+      <br>
+      Sign up to get access to committee meeting reports from 
+      <a href="{{ url_for('committee_subscriptions') }}">certain committees</a>.
+    </p>
+  </div>
+
+  <div class="shaded form-container">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1">
+        <form class="form-horizontal" role="form" action="{{ url_for('security.register') }}" method="POST" name="register_user_form">
+          {{ register_user_form.hidden_tag() }}
+          {{ render_field(register_user_form.email) }}
+          {{ render_field(register_user_form.password) }}
+          {% if register_user_form.password_confirm %}
+            {{ render_field(register_user_form.password_confirm) }}
+          {% endif %}
+          {{ render_field(register_user_form.next) }}
+          {{ render_field(register_user_form.submit) }}
+        </form>
+
+        <br>
+
+        <div class="row">
+          <div class="col-sm-9 col-sm-offset-3">
+            <p class="lead">
+              <a href="{{ url_for('security.login')}}{% if register_user_form.next %}?next={{ register_user_form.next.data }}{% endif %}">
+                Already have an account? Log in.
+              </a>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

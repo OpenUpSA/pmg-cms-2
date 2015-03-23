@@ -1,0 +1,47 @@
+{% macro file_type_icon(file_type, size=None) %}
+  {% if not file_type %}
+    <i class="fa fa-file-o"></i>
+  {% else %}
+    <i class="fa
+    {% if file_type == 'application/pdf' -%}
+    fa-file-pdf-o
+    {%- elif file_type == 'application/msword' -%}
+    fa-file-word-o
+    {%- elif 'audio' in file_type -%}
+    fa-file-audio-o
+    {%- elif 'powerpoint' in file_type -%}
+    fa-file-powerpoint-o
+    {%- else -%}
+    fa-file-o
+    {%- endif -%}
+    {% if size %} {{ size }}{% endif %}"></i>
+  {% endif %}
+{% endmacro %}
+
+{% macro render_field(field) %}
+  {% if field.type == 'HiddenField' %}
+    {{ field(**kwargs)|safe }}
+
+  {% elif field.type == 'SubmitField' %}
+    <div class="row">
+      <div class="col-sm-6 col-sm-offset-3">{{ field(class_='btn btn-primary', **kwargs)|safe }}</div>
+    </div>
+
+  {% else %}
+    <div class="form-group">
+      {{ field.label(class_='control-label col-sm-3') }}
+      <div class="col-sm-6">
+        {{ field(class_='form-control', required=field.flags.required, **kwargs)|safe }}
+
+        {% if field.errors %}
+          <ul class="list-unstyled text-warning">
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+{% endmacro %}

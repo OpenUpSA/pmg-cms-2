@@ -1,0 +1,135 @@
+{% extends 'admin/master.html' %}
+
+{% macro checkbox(field) %}
+  <div class="checkbox">
+    <label>
+      {{ field(**kwargs)|safe }}
+      {{ field.label() }}
+    </label>
+  </div>
+{% endmacro %}
+
+{% block body %}
+  {{ super() }}
+
+  {% from "admin/_macros.html" import render_field %}
+
+  <h1>Send an email alert: {{ form.template.name }}</h1>
+
+  <form class="form-horizontal" action="{{ url_for('alerts.new') }}" method="POST" id="new_alert_form" data-confirm="Lots of people will read this email. Have you checked the details?">
+    {{ form.hidden_tag() }}
+
+    {{ render_field(form.from_email) }}
+    {{ render_field(form.subject) }}
+
+    <div class="form-group">
+      {{ form.body.label(class_='control-label col-sm-2') }}
+      <div class="col-sm-10">
+        <div class="template-tips">
+          <p>These placeholders are replaced when the email is sent:</p>
+
+          <table class="table table-condensed table-striped table-bordered">
+            <tr>
+              <th>Placeholder</th>
+              <th>Replaced with</th>
+            </tr>
+            <tr>
+              <td>*|NAME|*</td>
+              <td>User's full name, or <i>Subscriber</i> if no name is set.</td>
+            </tr>
+          </table>
+
+        </div>
+        {{ form.body(class_='form-control') }}
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>General Recipients</legend>
+
+      {{ checkbox(form.daily_schedule_subscribers) }}
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Committee Recipients</legend>
+
+      <div class="committee-list">
+        <h4>Committees</h4>
+        <div class="committee-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="all1" class="check-all"><label for="all1"><b>All committees</b></label>
+            </label>
+          </div>
+
+          {% for choice in form.committee_ids %}
+            {% if not choice.data in form.ad_hoc_mapper %}
+              <div class="checkbox">
+                <label>
+                  <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
+                  {{ choice.label() }}
+                </label>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <h4>Ad-Hoc Committees:</h4>
+        <div class="committee-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" id="all2" class="check-all"><label for="all2"><b>All ad-hoc committees</b></label>
+            </label>
+          </div>
+
+          {% for choice in form.committee_ids %}
+            {% if choice.data in form.ad_hoc_mapper %}
+              <div class="checkbox">
+                <label>
+                  <input id="{{ choice.id }}" name="committee_ids" type="checkbox" value="{{ choice.data }}" {% if choice.checked %} checked {% endif %}>
+                  {{ choice.label() }}
+                </label>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+    </fieldset>
+
+    <hr>
+
+    <div class="text-center">
+      <button type="submit" class="btn btn-success preview">Preview &amp; Send email</button>
+    </div>
+  </form>
+
+  <br>
+
+
+  <!-- Preview modal -->
+  <div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel">Preview and send your email alert</h4>
+        </div>
+        <div class="modal-body">
+          <div class="preview-area"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Make some changes</button>
+          <button type="button" class="btn btn-success send">Send it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock body %}
+
+{% block tail %}
+  {{ super() }}
+  <script src="/static/javascript/email_alerts.js"></script>
+{% endblock %}

@@ -49,4 +49,4 @@ app.*.js
 app.*.css
 
 config/production/alembic.ini
-frontend/static/stylesheets/
+pmg/static/stylesheets/

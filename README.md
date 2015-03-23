@@ -1,5 +1,5 @@
-Parliamentary Monitoring Group website (pmg-cms-2)
-==================================================
+Parliamentary Monitoring Group website
+======================================
 
 Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa. 
 See: https://www.pmg.org.za.
@@ -18,11 +18,11 @@ and improve transparency surrounding the activities of parliament.
 The project consists of the following major components:
 
   * User-facing website, including free and paid-for content (built using Flask, Jinja2 templates, Bootstrap and jQuery)
-    * http://new.pmg.org.za
+    * https://pmg.org.za
   * Database (PostgreSQL)
   * Search engine (Elastic Search)
   * Admin interface (Flask-Admin, integration with Mandrill for email notifications)
-    * https://api.pmg.org.za/admin
+    * https://pmg.org.za/admin
   * API (Flask)
     * https://api.pmg.org.za
 
@@ -36,31 +36,10 @@ and the same restrictions apply for the API.
 If you are a registered user, and you wish to have access to restricted content through the API, then please follow 
 these steps:
 
-1. Send a POST request to https://api.pmg.org.za/security/login with a JSON body containing your credentials, e.g:
-    
-        {
-          "email": "email@example.com",
-          "password": "my-password"
-        }
-            
-    please make sure that your `Content-Type` and `Accept` headers are set to `application/json`. The API should 
-    return a JSON response of the form:
-        
-        { 
-            "meta":  { 
-                "code": 200 
-            }, 
-            "response": { 
-                "user": { 
-                    "authentication_token": "<example-auth-token>", 
-                    "id": "<user-id>" 
-                }
-            } 
-        }
-
-2. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
-
-3. You can check if you are correctly authenticated by doing a GET against http://api.pmg.org.za/user:
+1. Login to the website at https://pmg.org.za using your browser.
+2. Visit https://api.pmg.org.za/user/ and get the authentication token from the JSON response.
+3. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
+4. You can check if you are correctly authenticated by doing a GET against https://api.pmg.org.za/user/
 
         {
             "current_user": {
@@ -100,15 +79,11 @@ Add the following lines to your `.hosts` file:
     127.0.0.1 api.pmg.dev
     127.0.0.1 pmg.dev
 
-Start the backend server:
+Start the server:
 
-    python runserver_backend.py
+    python run-development.py
 
-And start the frontend server:
-
-    python runserver_frontend.py
-
-You should now see them running at `http://api.pmg.dev:5001/` and `http://pmg.dev:5000/` respectively.
+You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
 
 
 ### Deploy instructions
@@ -140,16 +115,16 @@ the following form::
 We use alembic for applying changes to the data model. To setup a migration script:
 
     alembic -c 'config/development/alembic.ini' revision --autogenerate -m "<revision description>"
-    
+
 Then to run the script on your local machine: 
 
     alembic -c 'config/development/alembic.ini' upgrade head
-    
+
 but first, ensure that the `sqlalchemy.url` parameter is pointing at the right place.
 
 To run migration scripts on the live database, copy the `alembic.ini` into the production config directory, update the
 `sqlalchemy.url` parameter, and 
 
     alembic -c 'config/production/alembic.ini' upgrade head
-    
+
 Never add the production configuration to git, as it contains sensitive database credentials.

@@ -19,16 +19,14 @@ def setup_db():
 def index_search():
     with virtualenv():
         with cd('/var/www/pmg-cms'):
-            run('source production-env.sh; python backend/search.py --reindex all')
+            run('source production-env.sh; python pmg/search.py --reindex all')
 
 def hard_restart():
-    sudo("supervisorctl restart pmg_cms")
-    sudo("supervisorctl restart pmg_frontend")
+    sudo("supervisorctl restart pmg")
     return
 
 def restart():
-    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-cms.pid` || supervisorctl restart pmg_cms")
-    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn-frontend.pid` || supervisorctl restart pmg_frontend")
+    sudo("kill -HUP `cat /var/www/pmg-cms/gunicorn.pid` || supervisorctl restart pmg")
     return
 
 
@@ -47,7 +45,7 @@ def setup():
 
     # install packages
     sudo('apt-get -y install git')
-    sudo('apt-get -y install build-essential python-dev sqlite3 libsqlite3-dev libpq-dev')
+    sudo('apt-get -y install build-essential python-dev sqlite3 libsqlite3-dev libpq-dev libxml2-dev libxslt1-dev libpcre3-dev')
     sudo('apt-get -y install python-pip supervisor')
     sudo('pip install virtualenv')
 
@@ -68,10 +66,6 @@ def setup():
         sudo('rm /etc/nginx/sites-enabled/default')
     with settings(warn_only=True):
         sudo('service nginx start')
-
-    # Database setup
-    sudo('apt-get -y install postgresql')
-    return
 
 
 def deploy():

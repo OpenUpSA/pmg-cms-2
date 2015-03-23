@@ -2,12 +2,12 @@ Fabric==1.10.0
 Flask==0.10.1
 Flask-Admin==1.1.0
 Flask-Assets==0.10
-Flask-Login==0.2.10
+Flask-Login==0.2.11
 Flask-Mail==0.9.1
 Flask-Principal==0.4.0
 Flask-SQLAlchemy==1.0
-git+http://github.com/Code4SA/flask-security.git@2.0.4
-Flask-WTF==0.10.3
+Flask-Security==1.7.4
+Flask-WTF==0.11
 Jinja2==2.7.3
 Mako==1.0.1
 MarkupSafe==0.23
@@ -33,7 +33,7 @@ itsdangerous==0.24
 lxml==3.4.1
 mandrill==1.0.57
 newrelic==2.40.0.34
-nltk==2.0.4
+nltk==3.0.2
 paramiko==1.15.1
 passlib==1.6.2
 pathlib==1.0.1

@@ -33,7 +33,7 @@ itsdangerous==0.24
 lxml==3.4.1
 mandrill==1.0.57
 newrelic==2.40.0.34
-nltk==2.0.4
+nltk
 paramiko==1.15.1
 passlib==1.6.2
 pathlib==1.0.1

@@ -11,7 +11,7 @@ def production():
     Env parameters for the production environment.
     """
 
-    env.host_string = 'ubuntu@new.pmg.org.za'
+    env.host_string = 'ubuntu@pmg.org.za'
     env.project_dir = '/var/www/pmg-cms'
     env.config_dir = env.project_dir + '/config/production'
     env.git_branch = 'master'

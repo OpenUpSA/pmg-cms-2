@@ -45,7 +45,7 @@ def setup():
 
     # install packages
     sudo('apt-get -y install git')
-    sudo('apt-get -y install build-essential python-dev sqlite3 libsqlite3-dev libpq-dev')
+    sudo('apt-get -y install build-essential python-dev sqlite3 libsqlite3-dev libpq-dev libxml2-dev libxslt1-dev libpcre3-dev')
     sudo('apt-get -y install python-pip supervisor')
     sudo('pip install virtualenv')
 

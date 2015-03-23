@@ -1,4 +1,4 @@
-{% if current_user %}
+{% if current_user.is_authenticated() %}
   {% if current_user.gets_alerts_for(committee.id) %}
     <div class="email-alert-box subscribed">
       <p>You're subscribed to our free email alerts for this committee.</p>

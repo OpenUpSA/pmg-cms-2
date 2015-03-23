@@ -19,6 +19,6 @@
 {% else %}
   <div class="email-alert-box">
     <p>Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> for this committee.</p>
-    <a class="btn btn-success" href="{{ url_for('register', next=request.path, utm_source='cte-alert-box') }}">Sign up for alerts</a>
+    <a class="btn btn-success" href="{{ url_for('security.register', next=request.path, utm_source='cte-alert-box') }}">Sign up for alerts</a>
   </div>
 {% endif %}

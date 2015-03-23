@@ -1,5 +1,5 @@
-Parliamentary Monitoring Group website (pmg-cms-2)
-==================================================
+Parliamentary Monitoring Group website
+======================================
 
 Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa. 
 See: https://www.pmg.org.za.
@@ -18,7 +18,7 @@ and improve transparency surrounding the activities of parliament.
 The project consists of the following major components:
 
   * User-facing website, including free and paid-for content (built using Flask, Jinja2 templates, Bootstrap and jQuery)
-    * http://new.pmg.org.za
+    * https://pmg.org.za
   * Database (PostgreSQL)
   * Search engine (Elastic Search)
   * Admin interface (Flask-Admin, integration with Mandrill for email notifications)

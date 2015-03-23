@@ -67,10 +67,6 @@ def setup():
     with settings(warn_only=True):
         sudo('service nginx start')
 
-    # Database setup
-    sudo('apt-get -y install postgresql')
-    return
-
 
 def deploy():
     # push any local changes to github

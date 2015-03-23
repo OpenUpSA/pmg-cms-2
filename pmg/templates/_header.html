@@ -41,7 +41,7 @@
               {% for role in current_user.roles %}
                 {% if role.name == 'editor' %}
                   </li><li class="divider"></li>
-                  <li><a href="{{ config.API_HOST + "admin/" }}">Admin interface</a></li>
+                  <li><a href="{{ url_for('admin.index') }}">Admin interface</a></li>
                 {% endif %}
               {% endfor %}
               <li class="divider"></li>

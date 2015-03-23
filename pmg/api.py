@@ -160,6 +160,10 @@ def landing():
     endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
     return send_api_response({'endpoints': endpoints})
 
+@api.route('/admin/')
+def old_admin():
+    # redirect api.pmg.org.za/admin/ to pmg.org.za/admin/
+    return redirect(url_for('admin.index'))
 
 @api.route('/user/')
 @load_user()

@@ -19,7 +19,7 @@ loggers:
     level: DEBUG
   pyelasticsearch:
     level: INFO
-  werkzeug:
+  gunicorn:
     level: INFO
 root:
   handlers: [console]

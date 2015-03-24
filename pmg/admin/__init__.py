@@ -429,7 +429,7 @@ class HansardView(EventView):
         'files',
     )
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
         }
     inline_models = [InlineFile(EventFile)]
 
@@ -456,8 +456,8 @@ class BriefingView(EventView):
         'files',
     )
     form_widget_args = {
-        'summary': {'class': 'custom-ckeditor'},
-        'body': {'class': 'custom-ckeditor'},
+        'summary': {'class': 'ckeditor'},
+        'body': {'class': 'ckeditor'},
         }
     inline_models = [InlineFile(EventFile)]
 
@@ -551,7 +551,7 @@ class QuestionReplyView(MyModelView):
         'body',
     )
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
         }
 
 
@@ -574,7 +574,7 @@ class CallForCommentView(MyModelView):
         'body',
     )
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
         }
 
 
@@ -588,7 +588,7 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
     column_searchable_list = ('title', )
     form_widget_args = {
         'body': {
-            'class': 'custom-ckeditor'
+            'class': 'ckeditor'
         },
     }
     form_excluded_columns = ('nid', )
@@ -623,8 +623,8 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
-        'summary': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
+        'summary': {'class': 'ckeditor'},
         }
     form_excluded_columns = ('nid', )
     inline_models = [InlineFile(TabledCommitteeReportFile)]
@@ -645,7 +645,7 @@ class EmailTemplateView(MyModelView):
         'body',
     )
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
         }
 
 
@@ -783,7 +783,7 @@ class PageView(MyModelView):
         'path': fields.TextField('Path'),
     }
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
+        'body': {'class': 'ckeditor'},
         'path': {'readonly': True},
         }
 

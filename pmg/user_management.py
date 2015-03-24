@@ -104,7 +104,7 @@ def email_alerts():
     """
     next_url = request.values.get('next', '')
 
-    if current_user and request.method == 'POST':
+    if current_user.is_authenticated() and request.method == 'POST':
         ids = request.form.getlist('committees')
         current_user.committee_alerts = Committee.query.filter(Committee.id.in_(ids)).all()
         current_user.subscribe_daily_schedule = bool(request.form.get('subscribe_daily_schedule'))
@@ -120,7 +120,7 @@ def email_alerts():
         return redirect(url_for('email_alerts'))
 
     committees = load_from_api('committee', return_everything=True)['results']
-    if current_user:
+    if current_user.is_authenticated():
         subscriptions = set(c.id for c in current_user.committee_alerts)
     else:
         subscriptions = set()

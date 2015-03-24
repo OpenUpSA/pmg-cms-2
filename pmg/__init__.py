@@ -32,8 +32,7 @@ if not os.path.isdir(UPLOAD_PATH):
 original_send = mail.send
 def send_email_with_subaccount(message):
     message.extra_headers = {'X-MC-Subaccount': app.config['MANDRILL_TRANSACTIONAL_SUBACCOUNT']}
-    print message
-    #original_send(message)
+    original_send(message)
 app.extensions.get('mail').send = send_email_with_subaccount
 
 

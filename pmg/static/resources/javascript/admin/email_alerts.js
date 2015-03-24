@@ -50,6 +50,8 @@ $(function() {
     };
   };
 
-  window.alertForm = new AlertForm();
-  window.alertForm.init();
+  if ($('#new_alert_form').length > 0) {
+    window.alertForm = new AlertForm();
+    window.alertForm.init();
+  }
 });

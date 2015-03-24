@@ -397,8 +397,8 @@ class CommitteeMeetingView(EventView):
         'files': {'widget': widgets.InlineFileWidget()},
     }
     form_widget_args = {
-        'body': {'class': 'custom-ckeditor'},
-        'summary': {'class': 'custom-ckeditor'}
+        'body': {'class': 'ckeditor'},
+        'summary': {'class': 'ckeditor'}
     }
     form_ajax_refs = {
         'bills': {

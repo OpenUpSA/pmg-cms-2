@@ -393,6 +393,7 @@ class CommitteeMeetingView(EventView):
         'files',
     )
     form_args = {
+        'summary': {'default': '<p>Report of the meeting to follow.</p>'},
         'committee': {'validators': [required()]},
         'files': {'widget': widgets.InlineFileWidget()},
     }

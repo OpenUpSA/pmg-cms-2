@@ -16,8 +16,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-import backend.app
-from backend.models import db
+from pmg import db
 target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,

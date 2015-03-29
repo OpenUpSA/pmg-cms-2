@@ -167,11 +167,11 @@ class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
     file_mime = db.Column(db.String(100))
+    file_path = db.Column(db.String(255))
+    file_bytes = db.Column(db.BigInteger())
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
-    duration = db.Column(db.Integer, default=0)
     playtime = db.Column(db.String(10))
-    file_path = db.Column(db.String(255))
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -189,12 +189,17 @@ class File(db.Model):
 
         # save file to disk
         filename = secure_filename(file_data.filename)
-        logger.debug('saving uploaded file: ' + filename)
-        file_data.save(os.path.join(app.config['UPLOAD_PATH'], filename))
+        path = os.path.join(app.config['UPLOAD_PATH'], filename)
+
+        logger.debug('saving uploaded file %s to %s' % (filename, path))
+        file_data.save(path)
+
+        # save attributes
+        self.file_mime = file_data.mimetype
+        self.file_bytes = os.stat(path).st_size
 
         # upload saved file to S3
-        self.file_path = s3_bucket.upload_file(filename)
-        self.file_mime = file_data.mimetype
+        self.file_path = s3_bucket.upload_file(path, filename)
 
 
     def __unicode__(self):

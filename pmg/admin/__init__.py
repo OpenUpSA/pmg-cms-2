@@ -20,11 +20,12 @@ from wtforms.validators import required, optional
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
-from xlsx import XLSXBuilder
+from jinja2 import Markup
+import humanize
 
 from pmg import app, db
 from pmg.models import *
-
+from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
 import widgets
@@ -757,18 +758,24 @@ class FeaturedContentView(MyModelView):
 class FileView(MyModelView):
     can_create = False
 
-    column_list = ('title', 'file_path')
+    column_list = ('title', 'file_path', 'file_bytes')
     column_searchable_list = ('title', 'file_path')
     column_default_sort = 'file_path'
+    column_labels = {'file_bytes': 'Size'}
+    column_formatters = {
+        'file_bytes': lambda v, c, m, n: '-' if m.file_bytes is None else Markup('<nobr>%s</nobr>' % humanize.naturalsize(m.file_bytes)),
+        }
     form_columns = (
         'title',
         'description',
         'file_path',
         'file_mime',
+        'file_bytes',
     )
     form_widget_args = {
         'file_path': {'disabled': True},
-        'file_mime': {'disabled': True}
+        'file_mime': {'disabled': True},
+        'file_bytes': {'disabled': True},
     }
 
 

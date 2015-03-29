@@ -14,6 +14,7 @@ from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilt
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.security import current_user
+import flask_wtf
 from wtforms import fields
 from wtforms.validators import required, optional
 from sqlalchemy import func
@@ -106,6 +107,8 @@ class UsageReportView(RBACMixin, BaseView):
 
 
 class MyModelView(RBACMixin, ModelView):
+    form_base_class = flask_wtf.Form
+
     required_roles = ['editor']
 
     can_create = True

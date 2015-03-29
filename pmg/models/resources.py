@@ -167,7 +167,7 @@ class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250))
     file_mime = db.Column(db.String(100))
-    file_path = db.Column(db.String(255))
+    file_path = db.Column(db.String(255), nullable=False)
     file_bytes = db.Column(db.BigInteger())
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))

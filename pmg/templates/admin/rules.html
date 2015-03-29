@@ -1,0 +1,7 @@
+{% macro staticfield(label) %}
+{# helper for a labelled static field #}
+<div class="form-group">
+  <label class="col-sm-2 control-label">{{ label }} &nbsp;</label>
+  <div class="col-sm-10 form-control-static">{{ caller() }}</div>
+</div>
+{% endmacro %}

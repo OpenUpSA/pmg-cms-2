@@ -8,7 +8,6 @@ import logging
 
 from pmg import db, app
 
-UPLOAD_PATH = app.config['UPLOAD_PATH']
 S3_BUCKET = app.config['S3_BUCKET']
 
 logger = logging.getLogger(__name__)
@@ -51,9 +50,7 @@ class S3Bucket():
         self.bucket = conn.get_bucket(S3_BUCKET)
         return
 
-    def upload_file(self, filename):
-
-        path = os.path.join(UPLOAD_PATH, filename)
+    def upload_file(self, path, filename):
         try:
             if not self.bucket:
                 self.get_bucket()

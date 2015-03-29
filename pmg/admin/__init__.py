@@ -13,6 +13,7 @@ from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
+from flask.ext.admin.form import rules
 from flask.ext.security import current_user
 import flask_wtf
 from wtforms import fields
@@ -765,6 +766,18 @@ class FileView(MyModelView):
     column_formatters = {
         'file_bytes': lambda v, c, m, n: '-' if m.file_bytes is None else Markup('<nobr>%s</nobr>' % humanize.naturalsize(m.file_bytes)),
         }
+
+    class SizeRule(rules.BaseRule):
+        def __call__(self, form, form_opts=None, field_args={}):
+            return humanize.naturalsize(form.file_bytes.data) if form.file_bytes.data else '-'
+
+    class UrlRule(rules.BaseRule):
+        def __call__(self, form, form_opts=None, field_args={}):
+            url = app.config['STATIC_HOST'] + form.file_path.data
+            return Markup(
+                '<a href="%s" target="_blank">%s</a>' % (url, url)
+                )
+
     form_columns = (
         'title',
         'description',
@@ -777,6 +790,12 @@ class FileView(MyModelView):
         'file_mime': {'disabled': True},
         'file_bytes': {'disabled': True},
     }
+
+    form_edit_rules = [
+        'title', 'description', 'file_path', 'file_mime',
+        rules.Container('rules.staticfield', SizeRule(), label='Size'),
+        rules.Container('rules.staticfield', UrlRule(), label='URL'),
+    ]
 
 
 class RedirectView(MyModelView):

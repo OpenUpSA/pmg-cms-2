@@ -201,11 +201,25 @@ class File(db.Model):
         # upload saved file to S3
         self.file_path = s3_bucket.upload_file(path, filename)
 
+    def delete_from_s3(self):
+        logger.info("Deleting %s from S3" % self.file_path)
+        key = s3_bucket.bucket.get_key(self.file_path)
+        key.delete()
 
     def __unicode__(self):
         if self.title:
             return u'%s (%s)' % (self.title, self.file_path)
         return u'%s' % self.file_path
+
+@models_committed.connect_via(app)
+def delete_file_from_s3(sender, changes):
+    for obj, change in changes:
+        # obj is the changed object, change is one of: update, insert, delete
+        if change == 'delete' and isinstance(obj, File):
+            try:
+                obj.delete_from_s3()
+            except Exception as e:
+                logger.warn("Couldn't delete %s from S3, ignoring: %s" % (obj, e.message), exc_info=e)
 
 
 class FileLinkMixin(object):

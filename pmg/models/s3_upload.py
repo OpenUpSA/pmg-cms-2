@@ -39,21 +39,18 @@ def increment_filename(duplicate_filename):
 
 
 class S3Bucket():
-
     def __init__(self):
-        self.bucket = None
-        return
+        self._bucket = None
 
-    def get_bucket(self):
-
-        conn = boto.s3.connect_to_region('eu-west-1')
-        self.bucket = conn.get_bucket(S3_BUCKET)
-        return
+    @property
+    def bucket(self):
+        if self._bucket is None:
+            conn = boto.s3.connect_to_region('eu-west-1')
+            self._bucket = conn.get_bucket(S3_BUCKET)
+        return self._bucket
 
     def upload_file(self, path, filename):
         try:
-            if not self.bucket:
-                self.get_bucket()
             # assemble key
             bytes = os.path.getsize(path)
             megabytes = rounded_megabytes(bytes)

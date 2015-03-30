@@ -14,10 +14,11 @@ from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilt
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
+from flask.ext.admin.helpers import is_form_submitted
 from flask.ext.security import current_user
 import flask_wtf
 from wtforms import fields
-from wtforms.validators import required, optional
+from wtforms.validators import data_required, optional
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from werkzeug import secure_filename
@@ -410,7 +411,7 @@ class CommitteeMeetingView(EventView):
     )
     form_args = {
         'summary': {'default': '<p>Report of the meeting to follow.</p>'},
-        'committee': {'validators': [required()]},
+        'committee': {'validators': [data_required()]},
         'files': {'widget': widgets.InlineFileWidget()},
     }
     form_widget_args = {
@@ -768,8 +769,6 @@ class FeaturedContentView(MyModelView):
 
 
 class FileView(MyModelView):
-    can_create = False
-
     column_list = ('title', 'file_path', 'file_bytes')
     column_searchable_list = ('title', 'file_path')
     column_default_sort = 'file_path'
@@ -807,6 +806,27 @@ class FileView(MyModelView):
         rules.Container('rules.staticfield', SizeRule(), label='Size'),
         rules.Container('rules.staticfield', UrlRule(), label='URL'),
     ]
+
+    form_create_rules = ['title', 'description', 'upload']
+
+    def get_create_form(self):
+        # allow user to upload a file when creating form
+        form = super(FileView, self).get_create_form()
+        form.upload = fields.FileField('Upload a file', [data_required()])
+        return form
+
+    def validate_form(self, form):
+        if is_form_submitted():
+            if hasattr(form, 'upload') and request.files.get(form.upload.name):
+                file_data = request.files.get(form.upload.name)
+                # ensures validation works, will be overwritten
+                form.file_path.raw_data = secure_filename(file_data.filename)
+        return super(FileView, self).validate_form(form)
+
+    def on_model_change(self, form, model, is_create):
+        if is_create:
+            file_data = request.files.get(form.upload.name)
+            model.from_upload(file_data)
 
 
 class RedirectView(MyModelView):

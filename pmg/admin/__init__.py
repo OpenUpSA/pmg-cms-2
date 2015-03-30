@@ -289,8 +289,12 @@ class CommitteeView(MyModelView):
         'ad_hoc',
         'premium',
         'house',
+        'contact_details',
         'memberships',
     )
+    form_widget_args = {
+        'contact_details': {'class': 'ckeditor'},
+    }
     form_args = {
         'memberships': {'widget': widgets.InlineMembershipsWidget()},
     }

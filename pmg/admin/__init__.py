@@ -33,6 +33,13 @@ import widgets
 
 logger = logging.getLogger(__name__)
 
+# Our base form extends flask_wtf.Form to get CSRF support,
+# and adds the _obj property required by Flask Admin
+class BaseForm(flask_wtf.Form):
+    def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
+        self._obj = obj
+        super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+
 
 class MyIndexView(RBACMixin, AdminIndexView):
     required_roles = ['editor']
@@ -109,7 +116,7 @@ class UsageReportView(RBACMixin, BaseView):
 
 
 class MyModelView(RBACMixin, ModelView):
-    form_base_class = flask_wtf.Form
+    form_base_class = BaseForm
 
     required_roles = ['editor']
 

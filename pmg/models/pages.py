@@ -4,7 +4,7 @@ from sqlalchemy import desc, func
 from sqlalchemy.orm import validates
 
 from pmg import app, db
-from .base import resource_slugs
+from .base import resource_slugs, FileLinkMixin
 
 
 class Redirect(db.Model):
@@ -75,6 +75,18 @@ class Page(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
 
+    files = db.relationship("PageFile", lazy='joined')
+
     @validates('slug')
     def validate_slug(self, key, value):
         return value.strip('/')
+
+
+class PageFile(FileLinkMixin, db.Model):
+    __tablename__ = "page_files"
+
+    id = db.Column(db.Integer, primary_key=True)
+    page_id = db.Column(db.Integer, db.ForeignKey('page.id', ondelete='CASCADE'), index=True, nullable=False)
+    page = db.relationship('Page')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')

@@ -797,9 +797,9 @@ class FileView(MyModelView):
         'file_bytes',
     )
     form_widget_args = {
-        'file_path': {'disabled': True},
-        'file_mime': {'disabled': True},
-        'file_bytes': {'disabled': True},
+        'file_mime': {'readonly': True},
+        'file_path': {'readonly': True},
+        'file_bytes': {'readonly': True},
     }
 
     form_edit_rules = [
@@ -814,12 +814,12 @@ class RedirectView(MyModelView):
     column_searchable_list = ('old_url', 'new_url')
     column_default_sort = 'old_url'
 
-class PageView(MyModelView):
+class PageView(ViewWithFiles, MyModelView):
     column_list = ('slug', 'title')
     column_searchable_list = ('slug', 'title')
     column_default_sort = 'slug'
 
-    form_columns = ('title', 'slug', 'path', 'body')
+    form_columns = ('title', 'slug', 'path', 'body', 'files')
     form_extra_fields = {
         'path': fields.TextField('Path'),
     }
@@ -827,6 +827,7 @@ class PageView(MyModelView):
         'body': {'class': 'ckeditor'},
         'path': {'readonly': True},
         }
+    inline_models = [InlineFile(PageFile)]
 
     def frontend_url(self, model):
         return '/page/%s' % model.slug

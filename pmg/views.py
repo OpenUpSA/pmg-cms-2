@@ -710,6 +710,7 @@ def page(pagename):
 
     return render_template('page.html',
         page=page,
+        attachments=[f.file for f in (page.files or [])],
         admin_edit_url=admin_url('pages', page.id))
 
 

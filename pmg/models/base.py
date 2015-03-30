@@ -29,3 +29,13 @@ class ApiResource(object):
             target.slug_prefix = dasherize(target.resource_content_type)
 
         resource_slugs[target.slug_prefix] = target
+
+
+class FileLinkMixin(object):
+    """ Mixin for models that link a content type to a File object
+    in a many-to-many relationship.
+    """
+
+    def to_dict(self, include_related=False):
+        """ Delegate to the file's to_dict completely. """
+        return self.file.to_dict(include_related)

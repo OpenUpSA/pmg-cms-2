@@ -19,7 +19,7 @@ from pmg.search import Search
 
 import serializers
 from .s3_upload import S3Bucket
-from .base import ApiResource, resource_slugs
+from .base import ApiResource, resource_slugs, FileLinkMixin
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -220,16 +220,6 @@ def delete_file_from_s3(sender, changes):
                 obj.delete_from_s3()
             except Exception as e:
                 logger.warn("Couldn't delete %s from S3, ignoring: %s" % (obj, e.message), exc_info=e)
-
-
-class FileLinkMixin(object):
-    """ Mixin for models that link a content type to a File object
-    in a many-to-many relationship.
-    """
-
-    def to_dict(self, include_related=False):
-        """ Delegate to the file's to_dict completely. """
-        return self.file.to_dict(include_related)
 
 
 class Event(ApiResource, db.Model):

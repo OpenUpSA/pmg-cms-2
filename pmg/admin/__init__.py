@@ -450,9 +450,12 @@ class HansardView(EventView):
         'body',
         'files',
     )
+    form_args = {
+        'house': {'validators': [data_required()]},
+    }
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
     form_ajax_refs = {
         'bills': {
             'fields': ('title',),

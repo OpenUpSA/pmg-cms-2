@@ -22,20 +22,17 @@
     {% set committee_id = result.committee.id %}
   {% endif %}
 {% endif %}
-<div class="committee-stub space-bottom-sm">
-  <div>
-    <span class="label label-primary">Committee Meeting</span>
-    {% if committee_name %}
-    <span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
-    {% endif %} 
-    {% if result.committee %}
-      <span class="label label-warning">{{ result.committee.house.name }}</span>
-    {% endif %}
-    {{ date|pretty_date }} ({{ date|human_date }})
+<div class="committee-stub">
+  <div class="row">
+    <div class="col-sm-10 col-xs-8">
+      <span class="label label-primary">Committee Meetings</span>
+
+      <a href="{{ url_for('committee_meeting', event_id=id) }}">{{ title|safe }}</a>
+      <div class="hidden-xs text-muted">{{ committee_name }}</div>
+    </div>
+    <div class="col-sm-2 col-xs-4">{{ date|pretty_date }}</div>
   </div>
-  <div>
-    <a href="/committee-meeting/{{ id }}">{{ title|safe }}</a>
-  </div>
+
   {% if result.highlight %}
   {% if result.highlight.description %}
   <div>

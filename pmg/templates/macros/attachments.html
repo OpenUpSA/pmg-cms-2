@@ -28,3 +28,21 @@
 {% macro related_attachments(related_docs) -%}
   {{ attachments_panel("Documents", related_docs, "fa-file") }}
 {%- endmacro %}
+
+{% macro related_bills(bills) -%}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">Bills</h4>
+    </div>
+    <div class="panel-body">
+      <ul class="fa-ul">
+        {% for item in bills %}
+        <li>
+          <i class="fa fa-li fa-file-text-o"></i>
+          <a href="{{ url_for('bill', bill_id=item.id) }}">{{ item.code }} - {{ item.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+{%- endmacro %}

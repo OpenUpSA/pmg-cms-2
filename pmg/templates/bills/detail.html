@@ -89,6 +89,8 @@
                     <div class="col-xs-8 col-md-10">
                       {% if event.type == "committee-meeting" %}
                       <a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a>
+                      {% elif event.type == "plenary" %}
+                      <a href="{{ url_for('hansard', event_id=event.id) }}">{{ event.title }}</a>
                       {% else %}
                       {{ event.title}}
                       {% endif %}

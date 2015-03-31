@@ -431,17 +431,20 @@ class HansardView(EventView):
     frontend_url_format = 'hansard/%s'
 
     column_list = (
+        'house',
         'title',
         'date',
     )
     column_sortable_list = (
         'title',
+        'house',
         'date',
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('title', )
     form_columns = (
         'date',
+        'house',
         'title',
         'body',
         'files',

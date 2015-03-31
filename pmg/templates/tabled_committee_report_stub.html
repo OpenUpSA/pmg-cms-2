@@ -21,16 +21,14 @@
     {% set committee_id = result.committee[0].id %}
   {% endif %}
 {% endif %}
-<div class="tabled-committee-report-stub space-bottom-sm">
-  <div>
-    <span class="label label-primary">Tabled Committee Report</span>
-    {% if committee_name %}
-    <span class="label label-info"><a href="/committee/{{committee_id}}">{{ committee_name }}</a></span>
-    {% endif %} 
-    {{ date|pretty_date }} ({{ date|human_date }})
-  </div>
-  <div>
-    <a href="/tabled-committee-report/{{ id }}">{{ title|safe }}</a>
+<div class="tabled-committee-report-stub">
+  <div class="row">
+    <div class="col-sm-10 col-xs-8">
+			<span class="label label-primary">Tabled Committee Report</span>
+      <a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=id) }}">{{ title|safe }}</a>
+			{% if committee_name %}
+      <div class="hidden-xs text-muted">{{ committee_name }}</div>
+			{% endif %} 
   </div>
   {% if result.highlight %}
   {% if result.highlight.description %}

@@ -446,12 +446,19 @@ class HansardView(EventView):
         'date',
         'house',
         'title',
+        'bills',
         'body',
         'files',
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
         }
+    form_ajax_refs = {
+        'bills': {
+            'fields': ('title',),
+            'page_size': 50
+        }
+    }
     inline_models = [InlineFile(EventFile)]
 
 class BriefingView(EventView):

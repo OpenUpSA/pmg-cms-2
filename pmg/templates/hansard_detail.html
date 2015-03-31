@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'macros/attachments.html' import audio_attachments, related_attachments %}
+{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
@@ -53,6 +53,10 @@
     <div class="col-sm-4">
       {{ audio_attachments(audio) }}
       {{ related_attachments(related_docs) }}
+
+      {% if event.bills %}
+        {{ related_bills(event.bills) }}
+      {% endif %}
     </div>
 
   </div>

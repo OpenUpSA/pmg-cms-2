@@ -18,15 +18,15 @@
     </div>
   </div>
 
-  {% if committee.about %}
-    <h3 class="collapse-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>
-    <div class="collapse">
-      {{ committee.about|safe }}
-    </div>
-  {% endif %}
-
   <div class="row">
     <div class="col-md-8">
+      {% if committee.about %}
+        <h3 class="collapse-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>
+        <div class="collapse">
+          {{ committee.about|safe }}
+        </div>
+      {% endif %}
+
       <h3><span class="fa fa-flash"></span> Committee Meetings</h3>
       {%- set per_page = 20 -%}
       {%- set num_pages = ((committee.events | length) / per_page) | int -%}

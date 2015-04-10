@@ -3,6 +3,11 @@
 {% block body %}
     {% if admin_view.frontend_url(model) %}
     <div class="pull-right">
+        {% set alert_url = admin_view.alert_url(model) %}
+        {% if alert_url %}
+        <a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
+        {% endif %}
+
         <a href="{{ admin_view.frontend_url(model) }}" class="btn btn-primary"><i class="fa fa-eye"></i> View page</a>
     </div>
     {% endif %}

@@ -1,4 +1,5 @@
 from inflection import underscore, dasherize
+from flask import url_for
 
 resource_slugs = {}
 
@@ -9,8 +10,9 @@ class ApiResource(object):
     Resources must be registered by calling :func:`register`.
     """
     
-    def url_path(self):
-        return '/%s/%s' % (self.slug_prefix, self.id)
+    @property
+    def url(self):
+        return url_for('api.resource_list', resource=self.slug_prefix, resource_id=self.id, _external=True)
 
     @classmethod
     def list(cls):

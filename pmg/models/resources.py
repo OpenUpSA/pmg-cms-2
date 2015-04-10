@@ -175,12 +175,13 @@ class File(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = self.file_url
+        tmp['url'] = self.url
         return tmp
 
     @property
-    def file_url(self):
-        return STATIC_HOST + self.file_path
+    def url(self):
+        """ The friendly URL a user can use to download this file. """
+        return url_for('docs', path=self.file_path)
 
     def from_upload(self, file_data):
         """ Handle a POST-based file upload and use it as the content for this file. """

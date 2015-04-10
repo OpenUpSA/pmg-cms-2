@@ -714,19 +714,22 @@ def page(pagename):
         admin_edit_url=admin_url('pages', page.id))
 
 
-# some old content contains links files which are in S3:
+# Redirect to content stored in S3.
+#
+# For current content, we always have URLs like /files/the/file.pdf
+# which must be redirected to S3/the/file.pdf.
+#
+# Legacy content from the old website can be under a few other paths, too.
 #   /docs/foo
 #   /questions/foo
 #   /mp3/foo
-#   /files/foo
-#   /files/doc/foo
-#   /files/docs/foo
 @app.route('/<any(docs, mp3, questions):dir>/<path:path>')
 @app.route('/files/<path:path>')
 def docs(path, dir=''):
     if dir:
         dir = dir + '/'
     return redirect(app.config['STATIC_HOST'] + dir + path)
+
 
 @app.route('/correct-this-page', methods=['POST'])
 def correct_this_page():

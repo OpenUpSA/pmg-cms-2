@@ -9,7 +9,9 @@
         {{ page.body | safe }}
     </div>
     <div class="col-sm-4">
+        {% if page.show_files %}
         {{ related_attachments(attachments) }}
+        {% endif %}
     </div>
 </div>
 {% else %}

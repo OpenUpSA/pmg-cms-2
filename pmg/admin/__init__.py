@@ -796,7 +796,7 @@ class FileView(MyModelView):
 
     class UrlRule(rules.BaseRule):
         def __call__(self, form, form_opts=None, field_args={}):
-            url = app.config['STATIC_HOST'] + form.file_path.data
+            url = url_for('docs', path=form.file_path.data)
             return Markup(
                 '<a href="%s" target="_blank">%s</a>' % (url, url)
                 )

@@ -7,7 +7,7 @@
     {% if model.file and model.file.file_path %}
       {{ field.form.id }}
       <div class="col-md-10">
-        <a href="{{ model.file.file_url }}" target="_blank">
+        <a href="{{ model.file.url }}" target="_blank">
           {{ macros.file_type_icon(model.type) }}
           {{ model.file.title }}
         </a>

@@ -48,7 +48,7 @@ def model_to_dict(obj, include_related=False):
     }
 
     try:
-        tmp_dict['url'] = obj.url
+        tmp_dict['url'] = obj.api_url
     except AttributeError:
         pass
 

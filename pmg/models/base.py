@@ -9,9 +9,13 @@ class ApiResource(object):
 
     Resources must be registered by calling :func:`register`.
     """
-    
+
     @property
     def url(self):
+        return url_for('index', _external=True) + "%s/%s/" % (self.slug_prefix, self.id)
+
+    @property
+    def api_url(self):
         return url_for('api.resource_list', resource=self.slug_prefix, resource_id=self.id, _external=True)
 
     @classmethod

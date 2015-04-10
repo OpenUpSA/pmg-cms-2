@@ -56,7 +56,7 @@ class Redirect(db.Model):
             # lookup based on nid
             obj = cls.object_for_nid(nid)
             if obj:
-                dest = obj.url_path()
+                dest = obj.url
 
         if dest and not dest.startswith('/'):
             dest = '/' + dest

@@ -139,18 +139,6 @@ class MyModelView(RBACMixin, ModelView):
             return '/' + self.frontend_url_format % self.get_pk_value(model)
         return None
 
-    def alert_url(self, model):
-        """ If we support sending an email alert about this model, what's the URL? """
-        if model.id and hasattr(model, 'alert_template'):
-            template = model.alert_template
-            if template:
-                params = {}
-                params[model.resource_content_type + "_id"] = model.id
-                params["template_id"] = template.id
-                params["committee_ids"] = model.committee.id
-                params["prefill"] = "1"
-                return url_for('alerts.new', **params)
-
 
 class HasExpiredFilter(BaseSQLAFilter):
     def __init__(self, column, name):

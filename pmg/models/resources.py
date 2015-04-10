@@ -135,6 +135,7 @@ class Bill(ApiResource, db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['code'] = self.code
+        tmp['url'] = url_for('api.resource_list', resource='bill', resource_id=self.id, _external=True)
         return tmp
 
     def __unicode__(self):
@@ -314,10 +315,6 @@ class CommitteeMeeting(Event):
             return current_user.subscribed_to_committee(self.committee)
         return True
 
-    @property
-    def alert_template(self):
-        from pmg.models.emails import EmailTemplate
-        return EmailTemplate.query.filter(EmailTemplate.name == "Minute alert").first()
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
@@ -330,6 +327,7 @@ class CommitteeMeeting(Event):
             if 'files' in tmp:
                 del tmp['files']
 
+        tmp['url'] = url_for('api.resource_list', resource='committee-meeting', resource_id=self.id, _external=True)
         return tmp
 
     @classmethod
@@ -342,6 +340,11 @@ class Hansard(Event):
         'polymorphic_identity': 'plenary'
     }
 
+    def to_dict(self, include_related=False):
+        tmp = super(Hansard, self).to_dict(include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='hansard', resource_id=self.id, _external=True)
+        return tmp
+
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.date))
@@ -351,6 +354,11 @@ class Briefing(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'media-briefing'
     }
+
+    def to_dict(self, include_related=False):
+        tmp = super(Briefing, self).to_dict(include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='briefing', resource_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def list(cls):
@@ -434,6 +442,7 @@ class Member(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='member', resource_id=self.id, _external=True)
 
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
@@ -494,6 +503,11 @@ class Committee(ApiResource, db.Model):
         if self.house:
             tmp = self.house.name_short + " " + tmp
         return unicode(tmp)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='committee', resource_id=self.id, _external=True)
+        return tmp
 
 
 class Membership(db.Model):
@@ -558,6 +572,11 @@ class QuestionReply(ApiResource, db.Model):
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='question_reply', resource_id=self.id, _external=True)
+        return tmp
+
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.start_date))
@@ -582,6 +601,11 @@ class TabledCommitteeReport(ApiResource, db.Model):
 
     def __unicode__(self):
         return self.title or ('<TabledCommitteeReport %s>' % self.id)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='tabled_committee_report', resource_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def list(cls):
@@ -614,6 +638,11 @@ class CallForComment(ApiResource, db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='call_for_comment', resource_id=self.id, _external=True)
+        return tmp
+
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.start_date))
@@ -632,6 +661,11 @@ class PolicyDocument(ApiResource, db.Model):
     nid = db.Column('nid', db.Integer())
 
     files = db.relationship("PolicyDocumentFile", lazy='joined')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='policy_document', resource_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def list(cls):
@@ -661,6 +695,11 @@ class Gazette(ApiResource, db.Model):
     nid = db.Column('nid', db.Integer())
 
     files = db.relationship("GazetteFile", lazy='joined')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='gazette', resource_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def list(cls):
@@ -704,6 +743,11 @@ class DailySchedule(ApiResource, db.Model):
     nid = db.Column(db.Integer())
 
     files = db.relationship("DailyScheduleFile", lazy='joined')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['url'] = url_for('api.resource_list', resource='daily_schedule', resource_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def list(cls):

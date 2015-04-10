@@ -64,7 +64,7 @@ class S3Bucket():
                 key = increment_filename(key)
                 tmp_key = self.bucket.get_key(key)
 
-            logger.debug("uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + bucket + "/" + key)
+            logger.debug("uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + key)
 
             # only upload if the key doesn't exist yet
             tmp_key = Key(self.bucket)

@@ -20,22 +20,25 @@ def rounded_megabytes(bytes):
     return megabytes
 
 
-def increment_filename(duplicate_filename):
+def increment_filename(filename):
     """
     Increment a counter on the filename, so that duplicate filenames can be avoided.
+    We do this by adding a counter as a path component at the start of the filename,
+    so that the original name is not changed.
     """
-    tmp = duplicate_filename.split(".")
-    filename, extension = ".".join(tmp[0:-1]), tmp[-1]
-    try:
-        tmp2 = filename.split("_")
-        count = int(tmp2[-1])
-        count += 1
-        tmp2[-1] = str(count)
-        filename = "_".join(tmp2)
-    except ValueError as e:
-        filename += "_2"
-        pass
-    return filename + "." + extension
+    if not '/' in filename:
+        counter = 0
+        rest = filename
+    else:
+        counter, rest = filename.split('/', 1)
+        try:
+            counter = int(counter)
+        except ValueError:
+            # eg. foo/bar.pdf -> 1/foo/bar.pdf
+            counter = 0
+            rest = filename
+
+    return '%d/%s' % (counter+1, rest)
 
 
 class S3Bucket():
@@ -49,40 +52,31 @@ class S3Bucket():
             self._bucket = conn.get_bucket(S3_BUCKET)
         return self._bucket
 
-    def upload_file(self, path, filename):
+    def upload_file(self, path, key):
         try:
             # assemble key
             bytes = os.path.getsize(path)
             megabytes = rounded_megabytes(bytes)
-            logger.debug("uploading: " + path + " (" + str(megabytes) + " MB)")
 
             # ensure we've got a unique key
-            tmp_key = self.bucket.get_key(filename)
+            tmp_key = self.bucket.get_key(key)
             while tmp_key is not None:
-                filename = increment_filename(filename)
-                tmp_key = self.bucket.get_key(filename)
+                key = increment_filename(key)
+                tmp_key = self.bucket.get_key(key)
+
+            logger.debug("uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + bucket + "/" + key)
 
             # only upload if the key doesn't exist yet
             tmp_key = Key(self.bucket)
-            tmp_key.key = filename
+            tmp_key.key = key
             tmp_key.set_contents_from_filename(path)
 
         except Exception as e:
-            logger.error("Cannot upload file to S3. Removing file from disc.")
+            logger.error("Cannot upload file to S3. Removing file from disk.")
             # remove file from disc
             os.remove(path)
             raise e
 
         # remove file from disc
         os.remove(path)
-        return filename
-
-
-if __name__ == "__main__":
-
-    filename = "5.elephant.jpg"  # a sample file, inside UPLOAD_PATH directory
-    for i in range(5):
-        filename = increment_filename(filename)
-        print filename
-    # tmp = S3Bucket()
-    # tmp.upload_file(filename)
+        return key

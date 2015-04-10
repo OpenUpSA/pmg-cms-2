@@ -866,6 +866,7 @@ class PageView(ViewWithFiles, MyModelView):
         return '/page/%s' % model.slug
 
     def on_form_prefill(self, form, id):
+        super(PageView, self).on_form_prefill(form, id)
         form.path.data = '/page/%s' % form.slug.data
 
 

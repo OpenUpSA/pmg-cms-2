@@ -8,11 +8,14 @@
 	{% block head %}{% endblock %}
 
 	{% block stylesheets %}
+	<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
 	{% assets "css" %}
 		<link rel="stylesheet" href="{{ ASSET_URL }}">
 	{% endassets %}
 	{% endblock %}
 	{% block style %}{% endblock %}
+
 	<meta name="description" content="PMG provides information on all South African parliamentary committee proceedings">
 	<meta name="keywords" content="Parliament, South Africa, South African Parliament, Hansards, Committee, Politics, Government">
 	{% block head_meta %}{% endblock %}

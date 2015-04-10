@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
 import mandrill
 
-from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting
+from pmg.models import EmailTemplate, User, Committee, user_committee_alerts
 from pmg import app, db, mail
 from rbac import RBACMixin
 
@@ -39,16 +39,6 @@ class EmailAlertView(RBACMixin, BaseView):
 
         form = EmailAlertForm(obj=template)
         form.template_id.data = form.template_id.data or template.id
-
-        # pull in some values from the querystring
-        for field in ('committee_meeting_id',):
-            if field in request.args:
-                getattr(form, field).data = request.args[field]
-        if 'committee_ids' in request.args:
-            form.committee_ids.data = [int(i) for i in request.args.getlist('committee_ids')]
-
-        if 'prefill' in request.args:
-            form.process_substitutions()
 
         if form.validate_on_submit() and form.previewed.data == '1':
             # send it
@@ -92,10 +82,8 @@ class EmailAlertForm(Form):
 
     # recipient options
     daily_schedule_subscribers = BooleanField('Daily schedule subscribers')
-    committee_ids = SelectMultipleField('Committee Subscribers', [validators.Optional()], coerce=int, widget=CheckboxInput)
 
-    # linked models
-    committee_meeting_id = HiddenField('committee_meeting_id')
+    committee_ids = SelectMultipleField('Committee Subscribers', [validators.Optional()], coerce=int, widget=CheckboxInput)
 
     def __init__(self, *args, **kwargs):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
@@ -121,28 +109,12 @@ class EmailAlertForm(Form):
             if committee.ad_hoc:
                 self.ad_hoc_mapper.append(committee.id)
 
+
     @property
     def template(self):
         if not hasattr(self, '_template'):
             self._template = EmailTemplate.query.get(self.template_id.data)
         return self._template
-
-    @property
-    def committee_meeting(self):
-        if self.committee_meeting_id.data:
-            return CommitteeMeeting.query.get(self.committee_meeting_id.data)
-
-    def process_substitutions(self):
-        committee_meeting = self.committee_meeting
-        committee_meeting.date = committee_meeting.date.strftime('%Y-%m-%d')
-
-        for field in (self.subject, self.body):
-            try:
-                field.data = field.data.format(committee_meeting=self.committee_meeting)
-            except KeyError as e:
-                if not field.errors:
-                    field.errors = []
-                field.errors.append("Couldn't substitute field %s" % e)
 
     def send_email(self):
         # TODO: don't send in development?

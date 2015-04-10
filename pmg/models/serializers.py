@@ -47,11 +47,6 @@ def model_to_dict(obj, include_related=False):
         key: getattr(obj, key) for key in columns
     }
 
-    try:
-        tmp_dict['url'] = obj.url
-    except AttributeError:
-        pass
-
     relations = obj.__mapper__.relationships.keys()
     # 1/0
     for key in relations:

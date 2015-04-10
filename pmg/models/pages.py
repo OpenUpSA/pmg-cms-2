@@ -1,6 +1,6 @@
 import re
 
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, sql
 from sqlalchemy.orm import validates
 
 from pmg import app, db
@@ -76,6 +76,7 @@ class Page(db.Model):
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
 
     files = db.relationship("PageFile", lazy='joined')
+    show_files = db.Column(db.Boolean, nullable=False, default=True, server_default=sql.expression.true())
 
     @validates('slug')
     def validate_slug(self, key, value):

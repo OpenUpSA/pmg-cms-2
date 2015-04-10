@@ -852,7 +852,7 @@ class PageView(ViewWithFiles, MyModelView):
     column_searchable_list = ('slug', 'title')
     column_default_sort = 'slug'
 
-    form_columns = ('title', 'slug', 'path', 'body', 'files')
+    form_columns = ('title', 'slug', 'path', 'body', 'show_files', 'files')
     form_extra_fields = {
         'path': fields.TextField('Path'),
     }
@@ -861,6 +861,9 @@ class PageView(ViewWithFiles, MyModelView):
         'path': {'readonly': True},
         }
     inline_models = [InlineFile(PageFile)]
+    column_descriptions = {
+        'show_files': 'Show a list of the files attached to this page in a box on the right?',
+    }
 
     def frontend_url(self, model):
         return '/page/%s' % model.slug

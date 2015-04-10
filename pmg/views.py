@@ -708,9 +708,12 @@ def page(pagename):
     if not page:
         abort(404)
 
+    files = [f.file for f in (page.files or [])]
+    files.sort(key=lambda f: (f.title, f.file_path))
+
     return render_template('page.html',
         page=page,
-        attachments=[f.file for f in (page.files or [])],
+        attachments=files,
         admin_edit_url=admin_url('pages', page.id))
 
 

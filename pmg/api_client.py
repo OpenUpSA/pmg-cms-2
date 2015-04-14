@@ -9,6 +9,8 @@ from flask.ext.security import current_user
 from pmg import app
 
 API_HOST = app.config['API_HOST']
+# timeout connecting and reading from remote host
+TIMEOUTS = (3.05, 10)
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +55,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         headers = {'Authentication-Token': current_user.get_auth_token()}
 
     try:
-        response = requests.get(API_HOST + query_str, headers=headers, params=params)
+        response = requests.get(API_HOST + query_str, headers=headers, params=params, timeout=TIMEOUTS)
 
         if response.status_code == 404:
             abort(404)
@@ -71,7 +73,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
             next_response_json = out
             i = 0
             while next_response_json.get('next') and i < 1000:
-                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params)
+                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params, timeout=TIMEOUTS)
                 next_response_json = next_response.json()
                 out['results'] += next_response_json['results']
                 i += 1
@@ -100,7 +102,8 @@ def send_to_api(endpoint, data=None):
             API_HOST +
             query_str,
             headers=headers,
-            data=data)
+            data=data,
+            timeout=TIMEOUTS)
         out = response.json()
 
         if response.status_code != 200:

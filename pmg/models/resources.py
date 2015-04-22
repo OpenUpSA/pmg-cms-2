@@ -123,7 +123,7 @@ class Bill(ApiResource, db.Model):
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')
-    versions = db.relationship("BillVersion", backref='bill')
+    versions = db.relationship("BillVersion", backref='bill', cascade='all, delete, delete-orphan')
 
     @property
     def code(self):
@@ -253,7 +253,7 @@ class Event(ApiResource, db.Model):
     committee = db.relationship('Committee', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
     house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
-    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'))
+    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
     chairperson = db.Column(db.String(256))
 
     # did this meeting involve public participation?
@@ -261,7 +261,7 @@ class Event(ApiResource, db.Model):
     # feature this on the front page?
     featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
     # optional file attachments
-    files = db.relationship('EventFile', lazy=True)
+    files = db.relationship('EventFile', lazy=True, cascade="all, delete, delete-orphan")
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -287,8 +287,8 @@ class Event(ApiResource, db.Model):
 
 event_bills = db.Table(
     'event_bills',
-    db.Column('event_id', db.Integer(), db.ForeignKey('event.id')),
-    db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id')))
+    db.Column('event_id', db.Integer(), db.ForeignKey('event.id', ondelete="CASCADE")),
+    db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id', ondelete="CASCADE")))
 
 
 class EventFile(FileLinkMixin, db.Model):
@@ -427,7 +427,7 @@ class Member(ApiResource, db.Model):
     # is this person *currently* an MP?
     current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
 
-    memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined')
+    memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined', cascade="all, delete, delete-orphan")
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -470,7 +470,7 @@ class Committee(ApiResource, db.Model):
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
 
-    memberships = db.relationship('Membership', backref="committee", cascade='all, delete-orphan', passive_deletes=True)
+    memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
 
     @classmethod
     def premium_for_select(cls):
@@ -505,7 +505,7 @@ class Membership(db.Model):
     type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
     type = db.relationship(MembershipType, lazy='joined')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), nullable=False)
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete="CASCADE"), nullable=False)
 
     def __unicode__(self):
         tmp = u" - ".join([unicode(self.type),
@@ -578,7 +578,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports'))
-    files = db.relationship("TabledCommitteeReportFile", lazy='joined')
+    files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     def __unicode__(self):
         return self.title or ('<TabledCommitteeReport %s>' % self.id)
@@ -631,7 +631,7 @@ class PolicyDocument(ApiResource, db.Model):
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
 
-    files = db.relationship("PolicyDocumentFile", lazy='joined')
+    files = db.relationship("PolicyDocumentFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     @classmethod
     def list(cls):
@@ -660,7 +660,7 @@ class Gazette(ApiResource, db.Model):
     start_date = db.Column(db.Date())
     nid = db.Column('nid', db.Integer())
 
-    files = db.relationship("GazetteFile", lazy='joined')
+    files = db.relationship("GazetteFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     @classmethod
     def list(cls):
@@ -703,7 +703,7 @@ class DailySchedule(ApiResource, db.Model):
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    files = db.relationship("DailyScheduleFile", lazy='joined')
+    files = db.relationship("DailyScheduleFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     @classmethod
     def list(cls):

@@ -125,6 +125,8 @@ def bills(bill_type, year=None):
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']
 
+    bills.sort(key=lambda b: [-b['year'], b['type']['prefix'], b.get('number', 0)])
+
     status_dict = {
         "na": ("in progress", "label-primary"),
         "ncop": ("in progress", "label-primary"),

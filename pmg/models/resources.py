@@ -119,7 +119,7 @@ class Bill(ApiResource, db.Model):
 
     status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
     status = db.relationship('BillStatus', backref='bill', lazy=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'))
+    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
     type = db.relationship('BillType', backref='bill', lazy=False)
     place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
     place_of_introduction = db.relationship('House')

@@ -15,7 +15,10 @@ SEARCH_REINDEX_CHANGES = True # reindex changes to models
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
 UPLOAD_PATH = "/tmp/pmg_upload/"
+
+# must match client_max_body_size in nginx.conf
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # size cap on uploads
+
 ALLOWED_EXTENSIONS = set(
     [
         "doc",

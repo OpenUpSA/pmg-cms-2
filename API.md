@@ -18,6 +18,21 @@ Most of the content is available for free via the API. If you are a registered u
 Content Types
 -------------
 
+There are many different types of content available:
+
+* Bills `bill`: bills tabled in Parliament
+* Briefings `briefing`: speeches and briefings given by ministers
+* Calls for comments `call-for-comment`: requests for the public to make comments
+* Committee meetings `committee-meeting`: meetings of Parliamentary committees
+* Commitee `committee`: Parliamentary commitees
+* Daily schedule `daily-schedule`: Parliament's daily schedule of meetings
+* Gazette `gazette`: a limited collection of Government gazettes and whitepapers
+* Hansard `hansard`: records of the happenings in Parliamentary sessions
+* Member `member`: Members of Parliament
+* Policy documents `policy-document`: policies and other documents released by parliament
+* Questions and replies `question_reply`: questions asked of Ministers and their replies
+* Tabled committee reports `tabled-committee-report`: reports tabled by Parliamentary committees
+
 Pagination
 ----------
 

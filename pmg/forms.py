@@ -1,8 +1,6 @@
-from flask import request, current_app, flash, url_for
+from flask import request, current_app, url_for
 from flask_wtf import Form as BaseForm
-from wtforms import TextField, PasswordField, validators, \
-    SubmitField, HiddenField, BooleanField, ValidationError, Field, \
-    SelectField
+from wtforms import TextField, PasswordField, validators, SubmitField, HiddenField
 from wtforms.fields.html5 import EmailField
 
 
@@ -90,7 +88,7 @@ _default_messages = {
         'Please log in to access this page.', 'info'),
     'REFRESH': (
         'Please reauthenticate to access this page.', 'info'),
-    }
+}
 
 
 class ValidatorMixin(object):
@@ -248,11 +246,11 @@ class ChangePasswordForm(Form, PasswordFormMixin):
         if not self.next.data:
             self.next.data = request.args.get('next', url_for('index'))
 
+
 class CorrectThisPageForm(Form):
     email = TextField('Email', [validators.Optional()])
     details = TextField('Details', [validators.Optional()])
     url = TextField('URL', [validators.Optional()])
-
-    def save(self):
-        pass
-
+    # this is a honeypot field which, if filled, means it's probably spam
+    # so ignore the feedback
+    website = TextField('Website', [validators.Optional()])

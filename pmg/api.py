@@ -158,7 +158,10 @@ def landing():
     List available endpoints.
     """
     endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
-    return send_api_response({'endpoints': endpoints})
+    return send_api_response({
+        'endpoints': endpoints,
+        'documentation': 'https://github.com/Code4SA/pmg-cms-2/blob/master/API.md',
+    })
 
 @api.route('/admin/')
 def old_admin():

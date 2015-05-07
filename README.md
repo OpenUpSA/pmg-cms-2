@@ -29,32 +29,11 @@ The project consists of the following major components:
 ## Making use of the API
 
 All of the data that is displayed through the frontend website, is served
-through an API (https://api.pmg.org.za), which is freely accessible.  However,
+through an API at https://api.pmg.org.za which is freely accessible.  However,
 please note that access to some content on the frontend website is restricted,
 and the same restrictions apply for the API. 
 
-If you are a registered user, and you wish to have access to restricted content through the API, then please follow 
-these steps:
-
-1. Login to the website at https://pmg.org.za using your browser.
-2. Visit https://api.pmg.org.za/user/ and get the authentication token from the JSON response.
-3. Include the authentication token in subsequent requests to tha API in a header named `Authentication-Token`.
-4. You can check if you are correctly authenticated by doing a GET against https://api.pmg.org.za/user/
-
-        {
-            "current_user": {
-                "organisation_id": null,
-                "confirmed": true,
-                "name": "your name",
-                "subscribe_daily_schedule": true,
-                "has_expired": false,
-                "email": "email@example.com",
-                "committee_alerts": {},
-                "active": true,
-                "id": 999,
-                "expiry": null
-            }
-        }
+* [More details on the API and what it contains are in API.md](API.md)
 
 ## Contributing to the project
 

@@ -1,21 +1,15 @@
 import logging
 from datetime import datetime, date
-import dateutil.parser
-import urllib
 import math
 import random
-import re
-import json
-import os.path
 
-from flask import request, flash, make_response, url_for, session, render_template, abort, redirect, g
+from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
-from pmg.ga import ga_event
-from pmg.api_client import load_from_api, send_to_api
+from pmg.api_client import load_from_api
 from pmg.models import Redirect, Page
 
 import forms
@@ -111,7 +105,7 @@ def bills(bill_type, year=None):
         params = {}
 
     else:
-        year_list = range(MIN_YEAR, date.today().year+1)
+        year_list = range(MIN_YEAR, date.today().year + 1)
         year_list.reverse()
         params = {}
 
@@ -134,7 +128,7 @@ def bills(bill_type, year=None):
         "enacted": ("signed into law", "label-success"),
         "withdrawn": ("withdrawn", "label-default"),
         "lapsed": ("lapsed", "label-default"),
-        }
+    }
 
     return render_template(
         'bills/list.html',
@@ -159,10 +153,10 @@ def bill(bill_id):
     }
     history = bill_history(bill)
     return render_template('bills/detail.html',
-            bill=bill,
-            history=history,
-            stages=stages,
-            admin_edit_url=admin_url('bill', bill_id))
+                           bill=bill,
+                           history=history,
+                           stages=stages,
+                           admin_edit_url=admin_url('bill', bill_id))
 
 
 @app.route('/committee/<int:committee_id>')
@@ -298,6 +292,7 @@ def tabled_committee_report(tabled_committee_report_id):
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
         admin_edit_url=admin_url('tabled-committee-report', tabled_committee_report_id))
+
 
 @app.route('/calls-for-comments/')
 @app.route('/calls-for-comments/<int:page>/')
@@ -536,7 +531,7 @@ def briefings(page=0):
         icon="bullhorn",
         title="Media Briefings",
         content_type="briefing",
-        )
+    )
 
 
 @app.route('/daily-schedule/<int:daily_schedule_id>')
@@ -661,19 +656,19 @@ def search(page=0):
     committees = load_from_api('committee', return_everything=True)['results']
 
     search_types = [
-            ("committee", "Committees"),
-            ("committee_meeting", "Committee Meetings"),
-            ("bill", "Bills"),
-            ("member", "MPs"),
-            ("hansard", "Hansards"),
-            ("briefing", "Media Briefings"),
-            ("question_reply", "Question & Reply"),
-            ("tabled_committee_report", "Tabled Committee Reports"),
-            ("call_for_comment", "Calls for Comments"),
-            ("policy_document", "Policy Documents"),
-            ("gazette", "Gazettes"),
-            ("daily_schedule", "Daily Schedules"),
-            ]
+        ("committee", "Committees"),
+        ("committee_meeting", "Committee Meetings"),
+        ("bill", "Bills"),
+        ("member", "MPs"),
+        ("hansard", "Hansards"),
+        ("briefing", "Media Briefings"),
+        ("question_reply", "Question & Reply"),
+        ("tabled_committee_report", "Tabled Committee Reports"),
+        ("call_for_comment", "Calls for Comments"),
+        ("policy_document", "Policy Documents"),
+        ("gazette", "Gazettes"),
+        ("daily_schedule", "Daily Schedules"),
+    ]
 
     def search_url(**kwargs):
         args = dict(filters)
@@ -698,6 +693,7 @@ def search(page=0):
         committees=committees,
         search_types=search_types)
 
+
 @app.route('/page/<path:pagename>')
 def page(pagename):
     """
@@ -714,9 +710,9 @@ def page(pagename):
     files.sort(key=lambda f: (f.title, f.file_path))
 
     return render_template('page.html',
-        page=page,
-        attachments=files,
-        admin_edit_url=admin_url('pages', page.id))
+                           page=page,
+                           attachments=files,
+                           admin_edit_url=admin_url('pages', page.id))
 
 
 # Redirect to content stored in S3.

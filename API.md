@@ -49,3 +49,19 @@ PMG has over 17 years of content and most content types are returned in pages, w
 When you've reached the last page the value of `next` will be `null`.
 
 The total number of records across all pages is given in the `count` field.
+
+Filtering
+---------
+
+Content types can be filtered, for example to limit committee meetings to a specific committee.
+
+To filter a content type, provide a `filter[field]=value` query parameter. 
+
+* `field` is the name of a field to filter on
+* `value` is the value to match
+
+For example, for committee meetings for the NCOP Economic and Business Development committee which has a `committee_id` of 97, use:
+
+    http://api.pmg.org.za/committee-meeting/?filter[committee_id]=97
+
+Most fields can be used as filters. You cannot filter on nested fields.

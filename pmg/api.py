@@ -1,34 +1,26 @@
 import logging
 from functools import wraps
-import json
-import datetime
-from dateutil import tz
-from operator import itemgetter
 import re
-import sys
 import math
 
 import flask
-from flask import g, request, abort, redirect, url_for, session, make_response, render_template, Blueprint
+from flask import request, redirect, url_for, Blueprint
 from flask.ext.security import current_user
 from flask.ext.security.decorators import _check_token, _check_http_auth
-from flask.ext.login import login_required
-from flask.ext.mail import Message
 from werkzeug.exceptions import HTTPException
-from sqlalchemy import func, or_, distinct, desc
-from sqlalchemy.orm import joinedload
+from sqlalchemy import desc
 from sqlalchemy.orm.exc import NoResultFound
 
-from pmg import db, app, mail
+from pmg import db, app
 from pmg.search import Search
-from pmg.models import *
+from pmg.models import *  # noqa
 from pmg.models.base import resource_slugs
 import pmg.models.serializers as serializers
 
 logger = logging.getLogger(__name__)
 
-
 api = Blueprint('api', __name__)
+
 
 def load_user():
     login_mechanisms = {
@@ -46,6 +38,7 @@ def load_user():
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
+
 
 class ApiException(HTTPException):
 
@@ -118,7 +111,7 @@ def api_resource_list(resource, resource_id, base_query):
     if count > (page + 1) * per_page:
         args = request.args.to_dict()
         args.update(request.view_args)
-        args['page'] = page+1
+        args['page'] = page + 1
         # TODO: this isn't great, it allows users to pass in keyword params just by passing
         # in query params
         next = url_for(request.endpoint, _external=True, **args)
@@ -137,7 +130,6 @@ def api_resource_list(resource, resource_id, base_query):
         count=count,
         next=next)
     return send_api_response(out, status_code=status_code)
-
 
 
 def send_api_response(data, status_code=200):
@@ -163,10 +155,12 @@ def landing():
         'documentation': 'https://github.com/Code4SA/pmg-cms-2/blob/master/API.md',
     })
 
+
 @api.route('/admin/')
 def old_admin():
     # redirect api.pmg.org.za/admin/ to pmg.org.za/admin/
     return redirect(url_for('admin.index'))
+
 
 @api.route('/user/')
 @load_user()
@@ -236,6 +230,7 @@ def search():
 
     return send_api_response(result)
 
+
 @api.route('/featured/')
 def featured():
     info = {}
@@ -245,9 +240,9 @@ def featured():
         info['feature'] = serializers.to_dict(feature)
 
     info['committee_meetings'] = CommitteeMeeting.query\
-            .filter(CommitteeMeeting.featured == True)\
-            .order_by(desc(CommitteeMeeting.date))\
-            .all()
+        .filter(CommitteeMeeting.featured == True)\
+        .order_by(desc(CommitteeMeeting.date))\
+        .all()
     info['committee_meetings'] = [serializers.to_dict(c) for c in info['committee_meetings']]
 
     return send_api_response(info)
@@ -276,9 +271,10 @@ def current_bill_list(scope=None, bill_id=None):
 
     return api_resource_list('bill', None, query)
 
+
 @api.route('/committee/premium/')
 def committee_list():
-    query = Committee.list().filter(Committee.premium == True)
+    query = Committee.list().filter(Committee.premium == True)  # noqa
     return api_resource_list('committee', None, query)
 
 
@@ -296,6 +292,7 @@ def resource_list(resource, resource_id=None):
         raise ApiException(404, "The specified resource type does not exist.")
 
     return api_resource_list(resource, resource_id, query)
+
 
 @api.route('/committee/question_reply/')
 def question_reply_committees():

@@ -12,7 +12,7 @@
 				<h4 class="modal-title">What's wrong with this page?</h4>
 			</div>
 
-			<form action="{{ url_for('correct_this_page') }}" method="POST">
+			<form action="{{ url_for('correct_this_page') }}" method="POST" class="correct-this-page-form">
 				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 				<input type="hidden" name="url" value="{{ request.url }}">
 
@@ -24,6 +24,11 @@
 					<div class="form-group">
 						<label for="correct_email">If you'd like us to get back to you, please enter your email address.</label>
 						<input type="email" name="email" id="correct_email" class="form-control" placeholder="you@example.com" value="{{ current_user.email }}">
+					</div>
+					{# honeypot field which, if filled, means this is probably spam, so ignore the feedback #}
+					<div class="form-group correct_website">
+						<label for="correct_website">Leave this blank</label>
+						<input type="text" name="website" id="correct_website" class="form-control" placeholder="leave this blank">
 					</div>
 				</div>
 				<div class="modal-footer">

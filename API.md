@@ -65,3 +65,21 @@ For example, for committee meetings for the NCOP Economic and Business Developme
     http://api.pmg.org.za/committee-meeting/?filter[committee_id]=97
 
 Most fields can be used as filters. You cannot filter on nested fields.
+
+Searching
+---------
+
+You can search across all API content using the `/search` endpoint.
+
+    http://api.pmg.org.za/search/?q=internet
+
+You can adjust the results with the following parameters:
+
+* `type` - return only certain data types, such as `committee-meeting`, `bill`, etc.
+* `per_page` - number of results to return per page
+* `start_date` - only find results with a date field on or after this date (ISO8601)
+* `end_date` - only find results with a date field on or before this date (ISO8601)
+* `committee` - only find results for this particular committee id (INT)
+
+The results deliberately don't return all information for a content type. Use the included `_id` and `_type`
+fields to lookup further information using the API.

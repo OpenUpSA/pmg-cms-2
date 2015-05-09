@@ -76,6 +76,7 @@ You can search across all API content using the `/search` endpoint.
 You can adjust the results with the following parameters:
 
 * `type` - return only certain data types, such as `committee-meeting`, `bill`, etc.
+* `page` - the page number in the set of results, use this to paginate through the results
 * `per_page` - number of results to return per page
 * `start_date` - only find results with a date field on or after this date (ISO8601)
 * `end_date` - only find results with a date field on or before this date (ISO8601)

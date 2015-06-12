@@ -58,7 +58,7 @@ class Redirect(db.Model):
             if obj:
                 dest = obj.url
 
-        if dest and not dest.startswith('/'):
+        if dest and not dest.startswith('http') and not dest.startswith('/'):
             dest = '/' + dest
 
         return dest

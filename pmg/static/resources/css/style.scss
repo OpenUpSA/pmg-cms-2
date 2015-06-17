@@ -30,19 +30,22 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding-top: 3px;
   margin-bottom: 0px;
 
-  #logo {
-    max-height: 30px;
-  }
-
-  .navbar-brand {
-    padding: 7px 15px;
+  .container {
+    .navbar-brand {
+      padding: 7px 0;
+      margin-left: 0px;
+    }
   }
 
   .navbar-form {
     width: 100%;
-    padding-left: 0px;
     margin-bottom: 0px;
     border: none;
+
+    margin-left: 0;
+    margin-right: 0;
+    padding-right: 0;
+    padding-left: 0;
     .input-group {
       width: 100%;
     }
@@ -55,8 +58,8 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
   }
 
-  .logo-container {
-    min-width: 173px;
+  .navbar-nav {
+    margin: 0;
   }
 }
 
@@ -181,7 +184,7 @@ article.page {
 }
 
 .space-bottom-sm {
-  margin-bottom: 10px;  
+  margin-bottom: 10px;
 }
 
 .container-body {

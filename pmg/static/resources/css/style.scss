@@ -229,6 +229,10 @@ article.page {
   img {
     margin-bottom: 10px;
   }
+
+  @media (max-width:768px) {
+    margin-top: 10px;
+  }
 }
 
 .correct-this-page-footer {
@@ -276,8 +280,10 @@ article.page {
 }
 
 .footer-1 {
-  margin-top: 60px;
   background-color: darken(#ddd, 40%);
+  @media (min-width:768px) {
+    margin-top: 60px;
+  }
 }
 
 .footer-2 {

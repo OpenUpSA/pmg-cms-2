@@ -1,10 +1,34 @@
 <nav class="navbar navbar-default navbar-pmg" role="navigation">
   <div class="container">
     <div class="row">
-      <div class="col-sm-3 logo-container">
-        <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group"></a>
+
+      <div class="col-sm-12 col-md-3 logo-container">
+        <a class="navbar-brand" href="/">
+          <img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group" class="img-responsive">
+          </a>
       </div>
-      <div class="col-sm-6">
+
+      <div class="col-sm-3 hidden-md hidden-lg" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-navbar-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="mobile-navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/committees/">Committees</a></li>
+            <li><a href="/members">MPs</a></li>
+            <li><a href="/bills">Bills</a></li>
+            <li><a href="/question_replies">Questions and Replies</a></li>
+            <li><a href="/calls-for-comments">Calls for Comments</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6">
         <form class="navbar-form" role="search" action="/search">
           <div class="input-group">
             <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
@@ -14,8 +38,8 @@
           </div>
         </form>
       </div>
-      <div class="col-sm-3">
 
+      <div class="col-sm-3">
         <ul class="nav navbar-nav pull-right">
           {% if current_user.is_authenticated() %}
             {% if admin_edit_url %}
@@ -40,7 +64,7 @@
               <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
               {% for role in current_user.roles %}
                 {% if role.name == 'editor' %}
-                  </li><li class="divider"></li>
+                  <li class="divider"></li>
                   <li><a href="{{ url_for('admin.index') }}">Admin interface</a></li>
                 {% endif %}
               {% endfor %}
@@ -53,20 +77,22 @@
           {% endif %}
         </ul>
       </div>
+
     </div>
   </div><!-- /.container -->
 </nav>
 
 {% block top_links %}
-<nav class="top-links">
-  
+
+<nav class="top-links hidden-sm hidden-xs">
+
   <div class="container">
+
     <div class="pull-right">
       <a class="btn btn-sm btn-default" title="Follow @PMG_SA on Twitter" href="https://twitter.com/intent/follow?original_referer={{ request.url|urlencode }}&amp;region=follow_link&amp;screen_name=PMG_SA&amp;tw_p=followbutton"><i class="fa fa-twitter"></i> Follow</a>
-
       <a class="btn btn-sm btn-default" title="Join PMG on Facebook" href="http://www.facebook.com/pmgsouthafrica"><i class="fa fa-facebook"></i> Facebook</a>
-
     </div>
+
     <ul class="list-inline">
       <li><a href="/committees/">Committees</a></li>
       <li><a href="/members">MPs</a></li>
@@ -74,6 +100,7 @@
       <li><a href="/question_replies">Questions and Replies</a></li>
       <li><a href="/calls-for-comments">Calls for Comments</a></li>
     </ul>
+
   </div>
 </nav>
 {% endblock %}

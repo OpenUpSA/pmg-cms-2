@@ -30,6 +30,14 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding-top: 3px;
   margin-bottom: 0px;
 
+  #logo {
+    max-height: 30px;
+  }
+
+  .logo-container {
+    min-width: 173px;
+  }
+
   .container {
     .navbar-brand {
       padding: 7px 0;
@@ -65,7 +73,6 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   .navbar-toggle {
     margin: 0;
     padding-top: 15px;
-
   }
 }
 
@@ -412,5 +419,11 @@ mark {
   button {
     white-space: normal;
     height: auto;
+  }
+}
+
+#twitter-widget-0 {
+  @media (max-width: 768px) {
+    display: none !important;
   }
 }

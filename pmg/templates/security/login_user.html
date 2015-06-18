@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% from "_macros.html" import render_field %}
 
+{% block title %}Login | PMG{% endblock %}
+
 {%- block style %}
   {{ super() }}
   <style>
@@ -17,7 +19,7 @@
     <p class="lead">
       Most of our content is freely available.
       <br>
-      Log in to get access to committee meeting reports from 
+      Log in to get access to committee meeting reports from
       <a href="{{ url_for('committee_subscriptions') }}">certain committees</a>.
     </p>
   </div>
@@ -49,7 +51,7 @@
           <p class="alert alert-info">
             <strong>Existing accounts</strong>
             <br>
-            If you had an account on our old website, please 
+            If you had an account on our old website, please
             <a href="{{ url_for('security.forgot_password') }}">reset your password</a> before logging in.
           </p>
         </div>

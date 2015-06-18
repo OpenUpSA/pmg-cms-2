@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Daily Schedules | PMG{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('daily_schedules') }}">Daily Schedules</a></li>
@@ -14,7 +16,7 @@
   {% endif %}
 </h1>
 
-  
+
 <div class="row">
   <div class="col-md-6">
     {% if daily_schedule.body %}
@@ -23,14 +25,14 @@
   </div>
   <div class="col-md-6">
     {% for file in daily_schedule.files %}
-    
-    
+
+
     {% if file.description %}
     <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.description }}</a>
     {% else %}
     <a href="{{file.url}}"><i class="fa fa-pdf"></i> {{ file.origname }}</a>
     {% endif %}
-    
+
     {% endfor %}
   </div>
 </div>

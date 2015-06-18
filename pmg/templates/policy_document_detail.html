@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% from 'macros/attachments.html' import attachments_panel %}
 
+{% block title %}{{ policy_document.title }} | PMG{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('policy_documents') }}">Policy Documents</a></li>
@@ -20,7 +22,7 @@
 {% if policy_document.effective_date %}
 <h2>Effective Date: {{ policy_document.effective_date }}</h2>
 {% endif %}
-  
+
 <div class="row">
   <div class="col-sm-6">
     {{ attachments_panel("Documents", policy_document.files, 'fa-file-pdf-o') }}

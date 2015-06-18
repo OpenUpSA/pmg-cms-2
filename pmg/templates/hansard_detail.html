@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
 
+{% block title %}PMG | Hansard | {{ event.title }}{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('hansards') }}">Hansards</a></li>

@@ -68,6 +68,11 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   .navbar-nav {
     margin: 0;
+
+    .account {
+      color: #777;
+      padding-left: 15px;
+    }
   }
 
   .navbar-toggle {

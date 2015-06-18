@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% from 'macros/members.html' import member_badge %}
 
+{% block title %}
+PMG | {{ committee.name }}
+{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('committees') }}">Committees</a></li>

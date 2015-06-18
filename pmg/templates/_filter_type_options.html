@@ -1,0 +1,10 @@
+<a class="list-group-item {% if not filters.type %}active{% endif %}" href="{{ search_url(type='') }}">
+    <b>All Types</b>
+</a>
+{% for data_type, name in search_types %}
+    {% if bincount[data_type] %}
+    <a class="list-group-item {% if (filters.type == data_type) %}active{% endif %}" href="{{ search_url(type=data_type) }}">
+        {{ name }}<span class="badge">{{ bincount[data_type] }}</span>
+    </a>
+    {% endif %}
+{% endfor %}

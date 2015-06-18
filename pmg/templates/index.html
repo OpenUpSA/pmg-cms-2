@@ -32,7 +32,7 @@
 
         <div class="col-md-8" id="committee-meetings"> <!-- Committee meetings -->
           <h3><span class="fa fa-comment"></span> Recent Committee meetings</h3>
-
+          <div class="table-responsive">
           <table class="table table-striped table-bordered">
             {% for committee_meeting in committee_meetings %}
               <tr>
@@ -44,6 +44,7 @@
               </tr>
             {% endfor %}
           </table>
+          </div>
           <a href="/committee-meetings/" class="btn btn-primary">More Committee Meetings</a>
         </div> <!-- Committee meetings -->
       </div>
@@ -71,9 +72,10 @@
         </ul>
       </div>
       {% endif %}
-
-      <a class="twitter-timeline" href="https://twitter.com/PMG_SA/mps" data-widget-id="298744494742966272">Tweets from @PMG_SA/mps</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      <div class="hidden-xs">
+        <a class="twitter-timeline" href="https://twitter.com/PMG_SA/mps" data-widget-id="298744494742966272">Tweets from @PMG_SA/mps</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+      </div>
 
     </div> <!-- /Sidebar -->
 

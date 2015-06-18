@@ -1,10 +1,61 @@
 <nav class="navbar navbar-default navbar-pmg" role="navigation">
   <div class="container">
     <div class="row">
-      <div class="col-sm-3 logo-container">
-        <a class="navbar-brand" href="/"><img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group"></a>
+
+      <div class="col-xs-9 col-md-3 clearfix">
+        <a class="navbar-brand" href="/">
+          <img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group" class="img-responsive">
+          </a>
       </div>
-      <div class="col-sm-6">
+
+      <div class="col-xs-3 hidden-md hidden-lg clearfix" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#mobile-navbar-collapse" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="col-xs-12 hidden-md hidden-lg">
+        <div class="collapse navbar-collapse" id="mobile-navbar-collapse">
+          <ul class="nav navbar-nav">
+          {% include "_top_links.html" %}
+          </ul>
+          <hr>
+          <ul class="nav navbar-nav">
+            {% if current_user.is_authenticated() %}
+              <li class="account">
+                <i class="fa fa-user"></i><b> {{ current_user.email }} </b>
+              </li>
+              <hr>
+              {% if admin_edit_url %}
+                {% for role in current_user.roles %}
+                  {% if role.name == 'editor' %}
+                  <li>
+                    <a href="{{ admin_edit_url }}">
+                      <i class="fa fa-pencil"></i> Edit Page
+                    </a>
+                  </li>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+                {% include "_user_links.html" %}
+              {% else %}
+                <li>
+                  <a href="{{ url_for('security.register', next=request.path) }}">Create an account</a>
+                </li>
+                <li>
+                  <a href="{{ url_for('security.login', next=request.path) }}">Log In</a>
+                </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-md-5 col-lg-6">
         <form class="navbar-form" role="search" action="/search">
           <div class="input-group">
             <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
@@ -14,8 +65,8 @@
           </div>
         </form>
       </div>
-      <div class="col-sm-3">
 
+      <div class="col-md-4 col-lg-3 hidden-xs hidden-sm">
         <ul class="nav navbar-nav pull-right">
           {% if current_user.is_authenticated() %}
             {% if admin_edit_url %}
@@ -27,52 +78,40 @@
                 {% endif %}
               {% endfor %}
             {% endif %}
-
             <button type="button" class="btn navbar-btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-expanded="false">
               <i class="fa fa-user"></i> {{ current_user.email }} <span class="caret"></span>
             </button>
             <ul class="dropdown-menu pull-right" role="menu">
-              <li><a href="{{ url_for('security.change_password') }}">Change password</a></li>
-              {% if not current_user.confirmed %}
-                <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
-              {% endif %}
-              <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
-              <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
-              {% for role in current_user.roles %}
-                {% if role.name == 'editor' %}
-                  </li><li class="divider"></li>
-                  <li><a href="{{ url_for('admin.index') }}">Admin interface</a></li>
-                {% endif %}
-              {% endfor %}
-              <li class="divider"></li>
-              <li><a href="{{ url_for('security.logout') }}">Log Out</a>
+              {% include "_user_links.html" %}
             </ul>
           {% else %}
-            <a href="{{ url_for('security.register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Create an account</a>
-            <a href="{{ url_for('security.login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">Log In</a>
+            <a href="{{ url_for('security.register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
+              Create an account
+            </a>
+            <a href="{{ url_for('security.login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
+              Log In
+            </a>
           {% endif %}
         </ul>
       </div>
+
     </div>
   </div><!-- /.container -->
 </nav>
 
 {% block top_links %}
-<nav class="top-links">
-  
+<nav class="top-links hidden-xs hidden-sm">
   <div class="container">
     <div class="pull-right">
-      <a class="btn btn-sm btn-default" title="Follow @PMG_SA on Twitter" href="https://twitter.com/intent/follow?original_referer={{ request.url|urlencode }}&amp;region=follow_link&amp;screen_name=PMG_SA&amp;tw_p=followbutton"><i class="fa fa-twitter"></i> Follow</a>
-
-      <a class="btn btn-sm btn-default" title="Join PMG on Facebook" href="http://www.facebook.com/pmgsouthafrica"><i class="fa fa-facebook"></i> Facebook</a>
-
+      <a class="btn btn-sm btn-default" title="Follow @PMG_SA on Twitter" href="https://twitter.com/intent/follow?original_referer={{ request.url|urlencode }}&amp;region=follow_link&amp;screen_name=PMG_SA&amp;tw_p=followbutton">
+        <i class="fa fa-twitter"></i> Follow
+      </a>
+      <a class="btn btn-sm btn-default" title="Join PMG on Facebook" href="http://www.facebook.com/pmgsouthafrica">
+        <i class="fa fa-facebook"></i> Facebook
+      </a>
     </div>
     <ul class="list-inline">
-      <li><a href="/committees/">Committees</a></li>
-      <li><a href="/members">MPs</a></li>
-      <li><a href="/bills">Bills</a></li>
-      <li><a href="/question_replies">Questions and Replies</a></li>
-      <li><a href="/calls-for-comments">Calls for Comments</a></li>
+      {% include "_top_links.html" %}
     </ul>
   </div>
 </nav>

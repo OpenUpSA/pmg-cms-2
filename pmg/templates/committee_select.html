@@ -1,4 +1,4 @@
-<select name="filter[committee]" id="" class="chosen  space-bottom-sm" onchange="form.submit()" >
+<select name="filter[committee]" id="" class="chosen space-bottom-sm search-filter" onchange="form.submit()" >
 	<option value="" {% if not filters.committee %} selected="selected" {% endif %}>{{ all_committees_option|default("All Committees") }}</option>
 
 	{% for ad_hoc in [False, True] %}

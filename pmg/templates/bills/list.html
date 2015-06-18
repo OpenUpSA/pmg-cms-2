@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% block title %}
-  PMG | {% if bill_type == 'pmb' %}
-          Private Member Bills
-      {% elif bill_type == 'all' %}
-        All Tabled &amp; Draft Bills
-      {% else %}
-        {{ bill_type.capitalize() }} Bills
-      {% endif %}
+  {% if bill_type == 'pmb' %}
+    Private Member Bills
+  {% elif bill_type == 'all' %}
+    All Tabled &amp; Draft Bills
+  {% else %}
+    {{ bill_type.capitalize() }} Bills
+  {% endif %}
+  | PMG
 {% endblock %}
 
 {% block breadcrumb %}

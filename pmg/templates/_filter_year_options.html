@@ -1,0 +1,10 @@
+<a class="list-group-item {% if not filters.start_date %}active{% endif %}" href="{{ search_url(start_date='', end_date='') }}">
+    <b>All Years</b>
+</a>
+{% for year in years %}
+    {% if yearcount[year] %}
+        <a class="list-group-item {% if (filters.start_date == year|string + "-01-01") %}active{% endif %}" href="{{ search_url(start_date='%s-01-01'%year, end_date='%s-12-31'%year) }}">
+            {{year}} <span class="badge">{{ yearcount[year] }}</span>
+        </a>
+    {% endif %}
+{% endfor %}

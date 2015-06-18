@@ -34,15 +34,26 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     max-height: 30px;
   }
 
-  .navbar-brand {
-    padding: 7px 15px;
+  .logo-container {
+    min-width: 173px;
+  }
+
+  .container {
+    .navbar-brand {
+      padding: 7px 0;
+      margin-left: 0px;
+    }
   }
 
   .navbar-form {
     width: 100%;
-    padding-left: 0px;
     margin-bottom: 0px;
     border: none;
+
+    margin-left: 0;
+    margin-right: 0;
+    padding-right: 0;
+    padding-left: 0;
     .input-group {
       width: 100%;
     }
@@ -55,8 +66,18 @@ $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
   }
 
-  .logo-container {
-    min-width: 173px;
+  .navbar-nav {
+    margin: 0;
+
+    .account {
+      color: #777;
+      padding-left: 15px;
+    }
+  }
+
+  .navbar-toggle {
+    margin: 0;
+    padding-top: 15px;
   }
 }
 
@@ -181,7 +202,7 @@ article.page {
 }
 
 .space-bottom-sm {
-  margin-bottom: 10px;  
+  margin-bottom: 10px;
 }
 
 .container-body {
@@ -212,6 +233,10 @@ article.page {
 
   img {
     margin-bottom: 10px;
+  }
+
+  @media (max-width:768px) {
+    margin-top: 10px;
   }
 }
 
@@ -260,8 +285,11 @@ article.page {
 }
 
 .footer-1 {
-  margin-top: 60px;
   background-color: darken(#ddd, 40%);
+    margin-top: 60px;
+  @media (max-width:768px) {
+    margin-top: 30px;
+  }
 }
 
 .footer-2 {
@@ -404,4 +432,8 @@ mark {
     white-space: normal;
     height: auto;
   }
+}
+
+.search-filter {
+  width: 100%;
 }

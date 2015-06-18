@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}{{ call_for_comment.title }} | PMG{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   {% if call_for_comment.committee %}

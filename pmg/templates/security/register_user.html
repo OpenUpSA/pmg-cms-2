@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% from "_macros.html" import render_field %}
 
+{% block title %}Register for an account | PMG{% endblock %}
+
 {%- block style %}
   {{ super() }}
   <style>
@@ -20,7 +22,7 @@
     <p class="lead">
       Most of our content is freely available.
       <br>
-      Sign up to get access to committee meeting reports from 
+      Sign up to get access to committee meeting reports from
       <a href="{{ url_for('committee_subscriptions') }}">certain committees</a>.
     </p>
   </div>

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}{{ tabled_committee_report.title }} | PMG{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   {% if tabled_committee_report.committee %}

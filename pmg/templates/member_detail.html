@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}PMG | {{ memeber.name }}{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('members') }}">Parliamentary Members</a></li>
@@ -14,7 +16,7 @@
     <img src="{{ member.profile_pic_url }}" alt="{{ member.name }}">
   </div>
   <div class="col-md-4">
-    {{ member.bio|safe }}  
+    {{ member.bio|safe }}
   </div>
 </div>
 

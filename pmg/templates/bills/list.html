@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}
+  PMG | {% if bill_type == 'pmb' %}
+          Private Member Bills
+      {% elif bill_type == 'all' %}
+        All Tabled &amp; Draft Bills
+      {% else %}
+        {{ bill_type.capitalize() }} Bills
+      {% endif %}
+{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('bills_portal') }}">Bills</a></li>

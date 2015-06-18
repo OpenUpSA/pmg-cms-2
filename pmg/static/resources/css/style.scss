@@ -286,8 +286,9 @@ article.page {
 
 .footer-1 {
   background-color: darken(#ddd, 40%);
-  @media (min-width:768px) {
     margin-top: 60px;
+  @media (max-width:768px) {
+    margin-top: 30px;
   }
 }
 

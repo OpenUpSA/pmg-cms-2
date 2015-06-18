@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}PMG | {{ gazette.title }}{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('gazettes') }}">Gazettes</a></li>
@@ -20,7 +22,7 @@
 {% if gazette.effective_date %}
 <h4>Effective Date: {{ gazette.effective_date }}</h4>
 {% endif %}
-  
+
 {% if gazette.files %}
 <ul class="fa-ul">
   {% for file in gazette.files %}

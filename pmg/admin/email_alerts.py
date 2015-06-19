@@ -153,8 +153,15 @@ class EmailAlertForm(Form):
         recipients = [{'email': r.email} for r in self.recipients]
         merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]} for r in self.recipients]
 
+        # NBNBNBNB: the email template MUST have a special DIV in it to place the content in.
+        # This gets removed when importing the template into Mandrill from Mailchimp
+        #  <div mc:edit="main"></div>
+
+        template_vars = [
+            {"name": "main", "content": self.message.html},
+        ]
+
         msg = {
-            "html": self.message.html,
             "subject": self.message.subject,
             "from_name": "PMG Notifications",
             "from_email": self.message.sender,
@@ -172,7 +179,7 @@ class EmailAlertForm(Form):
         log.info("Sending email via mandrill: %s" % msg)
 
         mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
-        mandrill_client.messages.send(message=msg)
+        mandrill_client.messages.send_template("notification-template", template_vars, msg)
 
     def generate_email(self):
         # TODO: render

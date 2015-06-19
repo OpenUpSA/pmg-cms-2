@@ -19,7 +19,7 @@ class Search:
     search_fields = ["title^2", "description", "fulltext"]
     search_type = "cross_fields"
     es = ElasticSearch(esserver)
-    per_batch = 50
+    per_batch = 200
     logger = logging.getLogger(__name__)
 
     reindex_changes = app.config['SEARCH_REINDEX_CHANGES']

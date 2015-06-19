@@ -18,24 +18,24 @@
 
   <div class="row">
     <div class="col-sm-9">
-			<h1><i class="fa fa-question-circle"></i> Question &amp; Reply: {{ question_reply.title }}</h1>
+      <h1><i class="fa fa-question-circle"></i> Question &amp; Reply: {{ question_reply.title }}</h1>
 
-			{% if question_reply.committee %}
-			<h4><a href="/committee/{{question_reply.committee.id}}">{{ question_reply.committee.name }}</a></h4>
-			{% endif %}
+      {% if question_reply.committee %}
+      <h4><a href="/committee/{{question_reply.committee.id}}">{{ question_reply.committee.name }}</a></h4>
+      {% endif %}
 
-			<h5>{{ question_reply.start_date }}</h5>
+      <h5>{{ question_reply.start_date }}</h5>
     </div>
 
     <div class="col-sm-3">
-			{% if question_reply.committee %}
-			  {% set committee = question_reply.committee %}
-				{% include 'user_management/_committee_alerts_signup.html' %}
-			{% endif %}
+      {% if question_reply.committee %}
+        {% set committee = question_reply.committee %}
+        {% include 'user_management/_committee_alerts_signup.html' %}
+      {% endif %}
     </div>
   </div>
 
-	{{ question_reply.body|safe }}
+  {{ question_reply.body|safe }}
 
 {% include "_correct_this_page.html" %}
 {% endblock %}

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>{% block title %}Parliamentary Monitoring Group | South Africa{% endblock %}</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %}Parliamentary Monitoring Group | South Africa{% endblock %}</title>
 
   <!--
 
@@ -14,55 +14,65 @@
 
   -->
 
-	<link rel="icon" type="image/png" href="/static/resources/images/favicon.png" />
-	{% block head %}{% endblock %}
+  <link rel="icon" type="image/png" href="/static/resources/images/favicon.png" />
+  {% block head %}{% endblock %}
 
-	{% block stylesheets %}
-	<link href='//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
-	<link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
-	{% assets "css" %}
-		<link rel="stylesheet" href="{{ ASSET_URL }}">
-	{% endassets %}
-	{% endblock %}
-	{% block style %}{% endblock %}
+  {% block stylesheets %}
+  <link href='//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
+  {% assets "css" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  {% endblock %}
+  {% block style %}{% endblock %}
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="PMG provides information on all South African parliamentary committee proceedings">
-	<meta name="keywords" content="Parliament, South Africa, South African Parliament, Hansards, Committee, Politics, Government">
-	{% block head_meta %}{% endblock %}
+  <meta name="description" content="PMG provides information on all South African parliamentary committee proceedings">
+  <meta name="keywords" content="Parliament, South Africa, South African Parliament, Hansards, Committee, Politics, Government">
+  {% block head_meta %}{% endblock %}
 </head>
 
 <body>
-	<div id="wrapper">
-		{% block content %}
-		{% endblock content %}
-	</div>
+  <div id="wrapper">
+    {% block content %}
+    {% endblock content %}
+  </div>
 
-	{% block javascript %}
-	{% assets "js" %}
-		<script type="text/javascript" src="{{ ASSET_URL }}"></script>
-	{% endassets %}
+  {% block javascript %}
+  {% assets "js" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets %}
 
-	<script>
+  <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-10305579-1', 'auto');
+
+  {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
+  {% if current_user.is_authenticated() %}
+    {% if current_user.organisation %}
+    ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
+    {% else %}
+    ga('set', 'dimension1', '(none)');
+    {% endif %}
+  {% endif %}
+
   ga('send', 'pageview');
 
   {% for cat, action, label, value in get_ga_events() %}
-	ga('send', 'event', '{{ cat }}', '{{ action }}'
-			{%if label -%}
-				, '{{ label }}'
-				{% if value -%}
-					, {{ value }}
-				{%endif%}{%endif%});
-	{% endfor %}
-	</script>
+  ga('send', 'event', '{{ cat }}', '{{ action }}'
+      {%if label -%}
+        , '{{ label }}'
+        {% if value -%}
+          , {{ value }}
+        {%endif%}{%endif%});
+  {% endfor %}
+  </script>
 
-	{% endblock %}
-	</div>
+  {% endblock %}
+  </div>
 </body>
 </html>

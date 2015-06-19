@@ -22,29 +22,29 @@
   {% endif %}
 {% endif %}
 <div class="question_reply-stub">
-	<div class="row">
-		<div class="col-sm-10 col-xs-8">
-			<span class="label label-primary">Questions and Replies</span>
-			<a href="/question_reply/{{ id }}">
-			{% if committee_name %}
-				{{ committee_name }}
-			{% else %} 
-				{{ title|safe }}
-			{% endif %} 
-			</a>
-		</div>
-		<div class="col-sm-2 col-xs-4">{{ date|pretty_date }}</div>
+  <div class="row">
+    <div class="col-sm-10 col-xs-8">
+      <span class="label label-primary">Questions and Replies</span>
+      <a href="/question_reply/{{ id }}">
+      {% if committee_name %}
+        {{ committee_name }}
+      {% else %} 
+        {{ title|safe }}
+      {% endif %} 
+      </a>
+    </div>
+    <div class="col-sm-2 col-xs-4">{{ date|pretty_date }}</div>
   </div>
 
   {% if result.highlight %}
-		{% if result.highlight.description %}
-		<div>
-			{{ result.highlight.description|search_snippet|ellipse|safe }}
-		</div>
-		{% elif result.highlight.fulltext %}
-		<div>
-			{{ result.highlight.fulltext|search_snippet|ellipse|safe }}
-		</div>
-		{% endif %}
+    {% if result.highlight.description %}
+    <div>
+      {{ result.highlight.description|search_snippet|ellipse|safe }}
+    </div>
+    {% elif result.highlight.fulltext %}
+    <div>
+      {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
+    </div>
+    {% endif %}
   {% endif %}
 </div>

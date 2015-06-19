@@ -6,44 +6,44 @@
 <h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
 
 <div class="space-bottom">
-	<div class="row">
-		<div class="col-md-6">
-			<form action="/search">
-				<input type="hidden" name="filter[type]" value="{{content_type}}">
-				<div class="input-group">
-					<input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
-					<span class="input-group-btn">
-						<button type="submit" class="btn btn-success">Search</button>
-					</span>
-				</div>
-			</form>
-		</div>
-		{% if committees %}
-		<div class="col-md-6">
-			<form>
-				{% include 'committee_select.html' %}
-			</form>
-		</div>
-		{% endif %}
+  <div class="row">
+    <div class="col-md-6">
+      <form action="/search">
+        <input type="hidden" name="filter[type]" value="{{content_type}}">
+        <div class="input-group">
+          <input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+          </span>
+        </div>
+      </form>
+    </div>
+    {% if committees %}
+    <div class="col-md-6">
+      <form>
+        {% include 'committee_select.html' %}
+      </form>
+    </div>
+    {% endif %}
 
-		{% if content_type == 'hansard' %}
-		<div class="col-md-6">
-			<a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
-		</div>
-		{% endif %}
-	</div>
+    {% if content_type == 'hansard' %}
+    <div class="col-md-6">
+      <a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
+    </div>
+    {% endif %}
+  </div>
 </div>
 
 <table class="table table-condensed table-hover table-striped content-list {{content_type}}-list">
-	<tbody>
-	{% for result in results %}
-		<tr>
-			<td>
-				{% include content_type | replace("-", "_") + '_stub.html' %}
-			</td>
-		</tr>
-	{% endfor %}
-	</tbody>
+  <tbody>
+  {% for result in results %}
+    <tr>
+      <td>
+        {% include content_type | replace("-", "_") + '_stub.html' %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
 </table>
 
 {% include 'pagination.html' %}

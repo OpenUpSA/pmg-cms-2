@@ -1,13 +1,13 @@
 <select name="filter[committee]" id="" class="chosen space-bottom-sm search-filter" onchange="form.submit()" >
-	<option value="" {% if not filters.committee %} selected="selected" {% endif %}>{{ all_committees_option|default("All Committees") }}</option>
+  <option value="" {% if not filters.committee %} selected="selected" {% endif %}>{{ all_committees_option|default("All Committees") }}</option>
 
-	{% for ad_hoc in [False, True] %}
-	  {% for house, house_id in [["National Assembly", 3], ["National Council of Provinces", 2], ["Joint Committees", 1]] %}
-		<optgroup label="{{ house }}{% if ad_hoc %} (Ad-hoc){% endif %}">
-			{% for committee in committees if committee.ad_hoc == ad_hoc and committee.house_id == house_id %}
-				<option value="{{ committee.id }}" {% if filters.committee|int == committee.id|int %} selected="selected" {% endif %}>{{ committee.name }}</option>
-			{% endfor %}
-		</optgroup>
-		{% endfor %}
-	{% endfor %}
+  {% for ad_hoc in [False, True] %}
+    {% for house, house_id in [["National Assembly", 3], ["National Council of Provinces", 2], ["Joint Committees", 1]] %}
+    <optgroup label="{{ house }}{% if ad_hoc %} (Ad-hoc){% endif %}">
+      {% for committee in committees if committee.ad_hoc == ad_hoc and committee.house_id == house_id %}
+        <option value="{{ committee.id }}" {% if filters.committee|int == committee.id|int %} selected="selected" {% endif %}>{{ committee.name }}</option>
+      {% endfor %}
+    </optgroup>
+    {% endfor %}
+  {% endfor %}
 </select>

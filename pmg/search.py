@@ -1,19 +1,16 @@
-import sys
 import math
-import argparse
 import logging
 import json
 
-import requests
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
 
-from sqlalchemy import types
 from inflection import camelize
 from bs4 import BeautifulSoup
 
-from pmg import db, app
+from . import db, app
 import pmg.models
+
 
 class Search:
 
@@ -27,7 +24,6 @@ class Search:
 
     reindex_changes = app.config['SEARCH_REINDEX_CHANGES']
     """ Should updates to models be reindexed? """
-
 
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
@@ -152,7 +148,6 @@ class Search:
 
         return filters
 
-
     def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False):
         filters = self.build_filters(start_date, end_date, document_type, committee)
 
@@ -218,7 +213,7 @@ class Search:
             "highlight": {
                 "pre_tags": ["<mark>"],
                 "post_tags": ["</mark>"],
-                "order" : "score",
+                "order": "score",
                 "fragment_size": 80,
                 "no_match_size": 0,
                 "fields": {
@@ -249,7 +244,7 @@ class Search:
             self.reindex_all(data_type)
 
     def delete_everything(self):
-        self.es.delete_index(self.index_name)        
+        self.es.delete_index(self.index_name)
 
     def create_index(self):
         self.es.create_index(self.index_name)
@@ -375,26 +370,3 @@ class Transforms:
                 return None
         else:
             return getattr(obj, field)
-
-
-
-if __name__ == "__main__":
-    # print "ElasticSearch PMG library"
-    data_types = Transforms.data_types() + ['all']
-
-    parser = argparse.ArgumentParser(description='ElasticSearch PMG library')
-    parser.add_argument('data_type', metavar='DATA_TYPE', choices=data_types, help='Data type to manipulate: %s' % data_types)
-    parser.add_argument('--reindex', action="store_true")
-    parser.add_argument('--delete', action="store_true")
-    args = parser.parse_args()
-
-    search = Search()
-
-    if args.reindex:
-        if args.data_type == 'all':
-            search.reindex_everything()
-        else:
-            search.reindex_all(args.data_type)
-
-    if args.delete:
-        search.delete_everything()

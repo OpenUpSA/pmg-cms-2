@@ -19,7 +19,7 @@ def setup_db():
 def index_search():
     with virtualenv():
         with cd('/var/www/pmg-cms'):
-            run('source production-env.sh; python pmg/search.py --reindex all')
+            run('source production-env.sh; python bin/search.py --reindex all')
 
 def hard_restart():
     sudo("supervisorctl restart pmg")

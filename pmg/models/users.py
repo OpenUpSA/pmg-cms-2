@@ -3,15 +3,14 @@ import string
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref, validates, joinedload
-from sqlalchemy.event import listen
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import sql
+from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
 
 from pmg import app, db
 import serializers
+
 
 class ApiKey(db.Model):
 
@@ -74,13 +73,18 @@ class Organisation(db.Model):
     # premium committee subscriptions
     subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
 
-
     def subscribed_to_committee(self, committee):
         """ Does this organisation have an active subscription to `committee`? """
         return not self.has_expired() and (committee in self.subscriptions)
 
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
+
+    @validates('expiry')
+    def validate_expiry(self, key, expiry):
+        for user in self.users:
+            user.expiry = expiry
+        return expiry
 
     def __unicode__(self):
         return unicode(self.name)
@@ -166,6 +170,26 @@ class User(db.Model, UserMixin):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
 
+    @validates('organisation')
+    def validate_organisation(self, key, org):
+        if org:
+            self.expiry = org.expiry
+        return org
+
+    @validates('expiry')
+    def validate_expiry(self, key, expiry):
+        if self.organisation:
+            # force org expiry
+            return self.organisation.expiry
+        return expiry
+
+    @validates('email')
+    def validate_email(self, key, email):
+        if not self.organisation and email:
+            user_domain = email.split("@")[-1]
+            self.organisation = Organisation.query.filter_by(domain=user_domain).first()
+        return email
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp.pop('password')
@@ -184,19 +208,6 @@ class User(db.Model, UserMixin):
                 alerts_dict[committee['id']] = committee.get('name')
         tmp['committee_alerts'] = alerts_dict
         return tmp
-
-
-def set_organisation(target, value, oldvalue, initiator):
-    """Set a user's organisation, based on the domain of their email address."""
-    if not target.organisation and value:
-        user_domain = value.split("@")[-1]
-        org = Organisation.query.filter_by(domain=user_domain).first()
-        if org:
-            target.organisation = org
-
-
-# setup listener on User.email attribute
-listen(User.email, 'set', set_organisation)
 
 
 roles_users = db.Table(

@@ -51,9 +51,13 @@
 
   ga('create', 'UA-10305579-1', 'auto');
 
-  {% if current_user.is_authenticated() and current_user.organisation and current_user.organisation.domain %}
   {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
-  ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
+  {% if current_user.is_authenticated() %}
+    {% if current_user.organisation %}
+    ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
+    {% else %}
+    ga('set', 'dimension1', '(none)');
+    {% endif %}
   {% endif %}
 
   ga('send', 'pageview');

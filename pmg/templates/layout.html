@@ -50,6 +50,12 @@
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
   ga('create', 'UA-10305579-1', 'auto');
+
+  {% if current_user.is_authenticated() and current_user.organisation and current_user.organisation.domain %}
+  {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
+  ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
+  {% endif %}
+
   ga('send', 'pageview');
 
   {% for cat, action, label, value in get_ga_events() %}

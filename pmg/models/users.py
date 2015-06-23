@@ -185,6 +185,8 @@ class User(db.Model, UserMixin):
 
     @validates('email')
     def validate_email(self, key, email):
+        if email:
+            email = email.lower()
         if not self.organisation and email:
             user_domain = email.split("@")[-1]
             self.organisation = Organisation.query.filter_by(domain=user_domain).first()

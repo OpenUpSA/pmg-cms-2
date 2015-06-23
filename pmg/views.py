@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, date
 import math
 import random
+from urlparse import urlparse, urlunparse
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -15,6 +16,8 @@ from pmg.models import Redirect, Page
 import forms
 
 API_HOST = app.config['API_HOST']
+LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
+
 app.session = session
 
 logger = logging.getLogger(__name__)
@@ -36,6 +39,16 @@ def page_not_found(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('500.html', error=error), 500
+
+
+@app.before_request
+def redirect_legacy_domains():
+    """ Redirect legacy domains to the primary domain. """
+    parts = urlparse(request.url)
+    if parts.netloc in LEGACY_DOMAINS:
+        parts = list(parts)
+        parts[1] = app.config['SERVER_NAME']
+        return redirect(urlunparse(parts), code=301)
 
 
 @app.before_request

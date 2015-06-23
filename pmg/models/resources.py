@@ -557,10 +557,21 @@ class QuestionReply(ApiResource, db.Model):
     body = db.Column(db.Text)
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
+    files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.start_date))
+
+
+class QuestionReplyFile(FileLinkMixin, db.Model):
+    __tablename__ = 'question_reply_file_join'
+
+    id = db.Column(db.Integer, primary_key=True)
+    question_reply_id = db.Column(db.Integer, db.ForeignKey('question_reply.id', ondelete='CASCADE'), index=True, nullable=False)
+    question_reply = db.relationship('QuestionReply')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 # === Tabled Committee Report === #

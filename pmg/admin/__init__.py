@@ -595,7 +595,8 @@ class QuestionReplyView(MyModelView):
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
+    inline_models = [InlineFile(QuestionReplyFile)]
 
 
 class CallForCommentView(MyModelView):

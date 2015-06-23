@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros/attachments.html' import attachments_panel %}
 
 {% block title %}{{ tabled_committee_report.title }} | PMG{% endblock %}
 
@@ -15,13 +16,21 @@
 {% endblock %}
 
 {% block page %}
-  <h1><i class="fa fa-briefcase"></i> {{ tabled_committee_report.title }}</h1>
+<div class="row">
+  <div class="col-sm-8">
+    <h1><i class="fa fa-briefcase"></i> {{ tabled_committee_report.title }}</h1>
 
-  {% if tabled_committee_report.committee %}
-  <h4><a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a></h4>
-  {% endif %}
+    {% if tabled_committee_report.committee %}
+    <h4><a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a></h4>
+    {% endif %}
 
-  {{ tabled_committee_report.body|safe }}
+    {{ tabled_committee_report.body|safe }}
+  </div>
+
+  <div class="col-sm-4">
+    {{ attachments_panel("Documents", tabled_committee_report.files, 'fa-file-pdf-o') }}
+  </div>
+</div>
 
 {% include "_correct_this_page.html" %}
 {% endblock %}

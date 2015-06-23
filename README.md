@@ -79,6 +79,16 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * MAIL_PASSWORD
 * SECURITY_PASSWORD_SALT
 
+### Reindexing for Search
+
+To re-index all content for search, run:
+
+    ssh dokku@dokku.code4sa.org run python bin/search.py --reindex all
+
+This isn't normally necessary as the search index is updated as items are created, updated and deleted.
+It can be useful when the index has become out of date. Search functionality will fail while the indexing
+is in progress. Re-indexing takes about 10 minutes.
+
 ### Database migration
 
 We use alembic for applying changes to the data model. To setup a migration script:

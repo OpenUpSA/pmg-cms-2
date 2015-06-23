@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from 'macros/attachments.html' import attachments_panel %}
 
 {% block title %}{{ question_reply.title }} | PMG{% endblock %}
 
@@ -25,6 +26,8 @@
       {% endif %}
 
       <h5>{{ question_reply.start_date }}</h5>
+
+      {{ question_reply.body|safe }}
     </div>
 
     <div class="col-sm-3">
@@ -32,10 +35,14 @@
         {% set committee = question_reply.committee %}
         {% include 'user_management/_committee_alerts_signup.html' %}
       {% endif %}
+
+      <br>
+
+      {% if question_reply.files %}
+        {{ attachments_panel("Documents", question_reply.files, 'fa-file-pdf-o') }}
+      {% endif %}
     </div>
   </div>
-
-  {{ question_reply.body|safe }}
 
 {% include "_correct_this_page.html" %}
 {% endblock %}

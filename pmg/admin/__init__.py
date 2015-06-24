@@ -241,7 +241,11 @@ class UserView(MyModelView):
     column_filters = [
             HasExpiredFilter(User.expiry, 'Subscription expiry'),
             DateBetweenFilter(User.expiry, 'Expiry date'),
-            ]
+        ]
+
+    def on_model_change(self, form, model):
+        if model.organisation:
+            model.expiry = model.organisation.expiry
 
 
 class OrganisationView(MyModelView):

@@ -176,13 +176,6 @@ class User(db.Model, UserMixin):
             self.expiry = org.expiry
         return org
 
-    @validates('expiry')
-    def validate_expiry(self, key, expiry):
-        if self.organisation:
-            # force org expiry
-            return self.organisation.expiry
-        return expiry
-
     @validates('email')
     def validate_email(self, key, email):
         if email:

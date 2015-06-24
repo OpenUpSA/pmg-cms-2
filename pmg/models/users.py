@@ -3,7 +3,7 @@ import string
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from sqlalchemy import sql
+from sqlalchemy import sql, event
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
@@ -80,12 +80,6 @@ class Organisation(db.Model):
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
-    @validates('expiry')
-    def validate_expiry(self, key, expiry):
-        for user in self.users:
-            user.expiry = expiry
-        return expiry
-
     def __unicode__(self):
         return unicode(self.name)
 
@@ -100,6 +94,12 @@ class Organisation(db.Model):
         # set 'has_expired' flag as appropriate
         tmp['has_expired'] = self.has_expired()
         return tmp
+
+
+@event.listens_for(Organisation.expiry, 'set')
+def organisation_expiry_set(target, value, oldvalue, initiator):
+    for user in target.users:
+        user.expiry = value
 
 
 class User(db.Model, UserMixin):

@@ -64,30 +64,30 @@ Start the server:
 
 You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
 
+### Deployment instructions
 
-### Deploy instructions
+Deployment is to dokku, a Heroku-like environment. To deploy, simply push to the git remote:
 
-Deployment is via fabric from the master branch on GitHub. You need to have an ssh key to access the server.
+    git push dokku
 
-Now, deploy the latest code from this project's master branch on GitHub:::
+Sensitive configuration variables are set as environment variables using Heroku or `dokku config:set`, the important ones are:
 
-    fab production deploy
+* SQLALCHEMY_DATABASE_URI
+* FLASK_ENV=production
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+* MAIL_PASSWORD
+* SECURITY_PASSWORD_SALT
 
-To deploy a new instance (requires Ubuntu 14.04), use:
+### Reindexing for Search
 
-    fab production setup deploy
+To re-index all content for search, run:
 
-On production, certain private config variables are loaded as environment variables by running
-a shell script `production-env.sh` from the project directory during startup. The script is of
-the following form::
+    ssh dokku@dokku.code4sa.org run python bin/search.py --reindex all
 
-    export SQLALCHEMY_DATABASE_URI=XXX
-    export FLASK_ENV=XXX
-    export AWS_ACCESS_KEY_ID=XXX
-    export AWS_SECRET_ACCESS_KEY=XXX
-    export MAIL_PASSWORD=XXX
-    export SECURITY_PASSWORD_SALT=XXX
-
+This isn't normally necessary as the search index is updated as items are created, updated and deleted.
+It can be useful when the index has become out of date. Search functionality will fail while the indexing
+is in progress. Re-indexing takes about 10 minutes.
 
 ### Database migration
 

@@ -40,6 +40,9 @@ and the same restrictions apply for the API.
 This project is open-source, and anyone is welcome to contribute. If you just want to make us aware of a bug / make
 a feature request, then please add a new GitHub Issue (if a similar one does not already exist).
 
+**NOTE:** On 2015-07-05 we removed some very large files from the repo and its history, reducing the size of the repo from over 100MB to 30MB.
+This required re-writing the history of the repo. You **must** [pull and rebase your changes](https://www.kernel.org/pub/software/scm/git/docs/git-rebase.html#_recovering_from_upstream_rebase).
+
 If you want to contribute to the code, please fork the repository, make your changes, and create a pull request.
 
 ### Local setup

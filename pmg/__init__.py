@@ -35,7 +35,6 @@ def send_email_with_subaccount(message):
         'X-MC-Subaccount': app.config['MANDRILL_TRANSACTIONAL_SUBACCOUNT'],
         'X-MC-Template': app.config['MANDRILL_TRANSACTIONAL_TEMPLATE'],
         'X-MC-GoogleAnalytics': 'pmg.org.za',
-        'X-MC-GoogleAnalyticsCampaign': 'transactional',
     }
     original_send(message)
 app.extensions.get('mail').send = send_email_with_subaccount

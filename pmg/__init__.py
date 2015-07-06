@@ -31,7 +31,12 @@ if not os.path.isdir(UPLOAD_PATH):
 # override flask mail's send operation to inject some customer headers
 original_send = mail.send
 def send_email_with_subaccount(message):
-    message.extra_headers = {'X-MC-Subaccount': app.config['MANDRILL_TRANSACTIONAL_SUBACCOUNT']}
+    message.extra_headers = {
+        'X-MC-Subaccount': app.config['MANDRILL_TRANSACTIONAL_SUBACCOUNT'],
+        'X-MC-Template': app.config['MANDRILL_TRANSACTIONAL_TEMPLATE'],
+        'X-MC-GoogleAnalytics': 'pmg.org.za',
+        'X-MC-GoogleAnalyticsCampaign': 'transactional',
+    }
     original_send(message)
 app.extensions.get('mail').send = send_email_with_subaccount
 

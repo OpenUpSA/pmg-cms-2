@@ -179,7 +179,7 @@ class EmailAlertForm(Form):
         log.info("Sending email via mandrill: %s" % msg)
 
         mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
-        mandrill_client.messages.send_template("notification-template", template_vars, msg)
+        mandrill_client.messages.send_template(app.config["MANDRILL_ALERTS_TEMPLATE"], template_vars, msg)
 
     def generate_email(self):
         # TODO: render

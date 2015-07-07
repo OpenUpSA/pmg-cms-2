@@ -261,7 +261,8 @@ class UserView(MyModelView):
             return redirect(return_url)
 
         if len(new_pwd) < 6:
-            flash(gettext('A password must contain at least 6 characters. Please try again.'), 'error')
+            flash(gettext(
+                'A password must contain at least 6 characters. Please try again.'), 'error')
             return redirect(return_url)
 
         if ' ' in new_pwd:
@@ -270,7 +271,7 @@ class UserView(MyModelView):
 
         change_user_password(user, new_pwd)
 
-        flash(gettext('Password for %s was changed successfully, and a notification has been sent.' % user.email))
+        flash(gettext('The password has been changed successfully. A notification has been sent to %s.' % user.email))
         return redirect(return_url)
 
 

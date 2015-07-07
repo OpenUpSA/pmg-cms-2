@@ -12,6 +12,40 @@
     </div>
     {% endif %}
 
+    {% if admin_view.name == 'Users' %}
+
+    <button type="button" class="btn btn-danger btn-sm pull-right" data-toggle="modal" data-target="#password-reset-modal">
+      Reset user password
+    </button>
+
+    <div class="modal fade" id="password-reset-modal" tabindex="-1" role="dialog" aria-labelledby="password-reset-label">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="password-reset-label">Reset user password</h4>
+                </div>
+                    <form action="{{ get_url('.reset_user_password', model_id=model.id, url=return_url) }}" method="POST" class="admin-form form-horizontal" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <p>Please enter a new password. It should contain at least 6 characters, and no spaces.</p>
+                        <input name=_csrf_token type=hidden value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <label for="name" class="col-md-4 control-label">New password</label>
+                            <div class="col-md-8">
+                                <input pattern=".{3,}" required class="form-control" id="new-password" name="new_password" type="text" title="Please use a min of 6 characters">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input name="reset_password" type="submit" class="btn btn-primary " value="{{ _gettext('Reset password') }}" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <h2>Edit {{ admin_view.name }}</h2>
+
     {{ super() }}
 {% endblock %}

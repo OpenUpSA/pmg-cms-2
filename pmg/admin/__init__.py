@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
+from flask.ext.admin.babel import gettext
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.admin.contrib.sqla.form import InlineModelConverter
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
@@ -16,6 +17,7 @@ from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
 from flask.ext.admin.helpers import is_form_submitted
 from flask.ext.security import current_user
+from flask.ext.security.changeable import change_user_password
 import flask_wtf
 from wtforms import fields
 from wtforms.validators import data_required, optional
@@ -246,6 +248,31 @@ class UserView(MyModelView):
     def on_model_change(self, form, model):
         if model.organisation:
             model.expiry = model.organisation.expiry
+
+
+    @expose('/reset_password',  methods=['GET', 'POST'])
+    def reset_user_password(self):
+        user = User.query.get(request.args['model_id'])
+        new_pwd = request.form['new_password']
+        return_url = request.headers['Referer']
+
+        if user is None:
+            flash(gettext('User not found. Please try again.'), 'error')
+            return redirect(return_url)
+
+        if len(new_pwd) < 6:
+            flash(gettext(
+                'A password must contain at least 6 characters. Please try again.'), 'error')
+            return redirect(return_url)
+
+        if ' ' in new_pwd:
+            flash(gettext('Passwords cannot contain spaces. Please try again.'), 'error')
+            return redirect(return_url)
+
+        change_user_password(user, new_pwd)
+
+        flash(gettext('The password has been changed successfully. A notification has been sent to %s.' % user.email))
+        return redirect(return_url)
 
 
 class OrganisationView(MyModelView):

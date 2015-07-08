@@ -270,6 +270,7 @@ class UserView(MyModelView):
             return redirect(return_url)
 
         change_user_password(user, new_pwd)
+        db.session.commit()
 
         flash(gettext('The password has been changed successfully. A notification has been sent to %s.' % user.email))
         return redirect(return_url)

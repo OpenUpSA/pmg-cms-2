@@ -1022,6 +1022,23 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
     file = db.relationship('File', lazy='joined')
 
 
+class MeetingRegister(ApiResource, db.Model):
+    __tablename__ = "meeting_register"
+
+    id = db.Column(db.Integer, primary_key=True)
+    ost = db.Column(db.Time(timezone=True))
+    ast = db.Column(db.Time(timezone=True))
+    aet = db.Column(db.Time(timezone=True))
+    pmg_rep = db.Column(db.String(255), nullable=False)
+    alt = db.Column(db.Boolean(), server_default=sql.expression.false(), index=True)
+    attendance = db.Column(db.String(3))
+    chairperson = db.Column(db.Boolean(), default=False, nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True, nullable=False)
+    meeting = db.relationship('CommitteeMeeting')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True, nullable=False)
+    member = db.relationship('Member', lazy='select')
+
+
 # Listen for model updates
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):

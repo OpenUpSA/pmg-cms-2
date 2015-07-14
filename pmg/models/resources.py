@@ -1,12 +1,9 @@
-import re
 import datetime
 import logging
 import os
 
-from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref, validates, joinedload
-from sqlalchemy.event import listen
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import desc, func, sql
+from sqlalchemy.orm import backref, joinedload
 
 from flask import url_for
 from flask.ext.sqlalchemy import models_committed
@@ -19,7 +16,7 @@ from pmg.search import Search
 
 import serializers
 from .s3_upload import S3Bucket
-from .base import ApiResource, resource_slugs, FileLinkMixin
+from .base import ApiResource, FileLinkMixin
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -31,6 +28,7 @@ def allowed_file(filename):
     tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
+
 
 class House(db.Model):
 
@@ -211,6 +209,7 @@ class File(db.Model):
             return u'%s (%s)' % (self.title, self.file_path)
         return u'%s' % self.file_path
 
+
 @models_committed.connect_via(app)
 def delete_file_from_s3(sender, changes):
     for obj, change in changes:
@@ -250,7 +249,7 @@ class Event(ApiResource, db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
-    committee = db.relationship('Committee', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
+    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
     house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
@@ -474,7 +473,8 @@ class Committee(ApiResource, db.Model):
 
     @classmethod
     def premium_for_select(cls):
-        return cls.query.filter(cls.premium == True)\
+        return cls.query\
+                .filter(cls.premium == True)\
                 .order_by(cls.name)\
                 .all()
 
@@ -530,8 +530,8 @@ class Schedule(ApiResource, db.Model):
     def list(cls):
         current_time = datetime.datetime.utcnow()
         return cls.query\
-                .order_by(desc(cls.meeting_date))\
-                .filter(Schedule.meeting_date >= current_time)
+            .order_by(desc(cls.meeting_date))\
+            .filter(Schedule.meeting_date >= current_time)
 
 schedule_house_table = db.Table(
     'schedule_house_join', db.Model.metadata,

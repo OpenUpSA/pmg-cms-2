@@ -318,6 +318,9 @@ class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
+    actual_start_time = db.Column(db.Time(timezone=True))
+    actual_end_time = db.Column(db.Time(timezone=True))
+    pmg_monitor = db.Column(db.String(255))
 
     def check_permission(self):
         # by default, all committee meetings are accessible
@@ -1022,21 +1025,33 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
     file = db.relationship('File', lazy='joined')
 
 
-class MeetingRegister(ApiResource, db.Model):
-    __tablename__ = "meeting_register"
+class ChoiceType(types.TypeDecorator):
 
+    impl = types.String
+
+    def __init__(self, choices, **kw):
+        self.choices = dict(choices)
+        super(ChoiceType, self).__init__(**kw)
+
+    def process_bind_param(self, value, dialect):
+        return [k for k, v in self.choices.iteritems() if v == value][0]
+
+    def process_result_value(self, value, dialect):
+        return self.choices[value]
+
+
+class CommitteeMeetingAttendance(ApiResource, db.Model):
+    __tablename__ = "committee_meeting_attendance"
+
+    # TODO: Get values for attendance abbreviations
     id = db.Column(db.Integer, primary_key=True)
-    ost = db.Column(db.Time(timezone=True))
-    ast = db.Column(db.Time(timezone=True))
-    aet = db.Column(db.Time(timezone=True))
-    pmg_rep = db.Column(db.String(255), nullable=False)
-    alt = db.Column(db.Boolean(), server_default=sql.expression.false(), index=True)
-    attendance = db.Column(db.String(3))
+    alt = db.Column(db.Boolean(), nullable=True)
+    attendance = db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', name='meeting_attendance_enum')
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('event.id'), index=True, nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
     meeting = db.relationship('CommitteeMeeting')
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True, nullable=False)
-    member = db.relationship('Member', lazy='select')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
+    member = db.relationship('Member')
 
 
 # Listen for model updates

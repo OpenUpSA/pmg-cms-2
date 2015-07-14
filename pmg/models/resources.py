@@ -10,6 +10,7 @@ from flask.ext.sqlalchemy import models_committed
 from flask_security import current_user
 
 from werkzeug import secure_filename
+from za_parliament_scrapers.questions import QuestionAnswerScraper
 
 from pmg import app, db
 from pmg.search import Search
@@ -40,6 +41,14 @@ class House(db.Model):
 
     def __unicode__(self):
         return unicode(self.name)
+
+    @classmethod
+    def ncop(cls):
+        return self.query.filter(cls.name_short == 'NCOP').one()
+
+    @classmethod
+    def na(cls):
+        return self.query.filter(cls.name_short == 'NA').one()
 
 
 class Party(db.Model):
@@ -454,6 +463,13 @@ class Member(ApiResource, db.Model):
             .filter(Member.current == True)\
             .order_by(Member.name)
 
+    @classmethod
+    def find_inexact(cls, name, threshold=0.8):
+        """ Try to find the member with this name, permitting an inexact match.
+        """
+        # TODO: handle Dr A Foobar
+        pass
+
 
 class Committee(ApiResource, db.Model):
 
@@ -540,7 +556,203 @@ schedule_house_table = db.Table(
 )
 
 
-# === Questions Replies === #
+# === Committee Questions === #
+#
+# Questions asked by an MP of a Committe chairperson
+
+class CommitteeQuestion(ApiResource, db.Model):
+    __tablename__ = "committee_question"
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
+    committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
+
+    # XXX: don't forget session, numbers are unique by session only
+
+    # Questions are also referred to by an identifier code of the form
+    # [NC][OW]\d+[AEX]
+    # The meaning of the parts of this identifier is as follows:
+    #  - [NC] - tells you the house the question was asked in. See 'house' below.
+    #  - [OW] - tells you whether the question is for oral or written answer.
+    #           Questions can sometimes be transferred between being oral or
+    #           written. When this happens, they may be referred to by the new
+    #           identifier with everything the same except the O/W.
+    #  - \d+  - (number below) Every question to a particular house in a
+    #           particular year gets given another number. This number doesn't
+    #           change when the question is translated or has [OW] changed.
+    #  - [AEX]- Afrikaans/English/Xhosa. The language the question is currently
+    #           being displayed in. Translations of the question will have a
+    #           different [AEX] in the identifier.
+    #
+    # Note that we also store the number, house, and answer_type separately.
+    code = db.Column(db.String(50), index=True, unique=True, nullable=False)
+
+    # From the identifier discussed above.
+    question_number = db.Column(db.Integer, index=True, nullable=True)
+
+    # This is in the identifier above.
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house = db.relationship("House")
+
+    # Questions for written answer and questions for oral answer both have
+    # sequence numbers. It looks like these are probably the order the questions
+    # were asked in. The sequences are unique for each house for written/oral and
+    # restart on 1 each session.
+
+    # At least one of these four numbers should be non-null, and it's possible
+    # for more than one to be non-null if a question is transferred from oral to written
+    # or vice-versa.
+    written_number = db.Column(db.Integer, nullable=True, index=True)
+    oral_number = db.Column(db.Integer, nullable=True, index=True)
+
+    # The president and vice president get their own question number sequences for
+    # oral questions.
+    president_number = db.Column(db.Integer, nullable=True, index=True)
+    deputy_president_number = db.Column(db.Integer, nullable=True, index=True)
+
+    answer_type = db.Column(db.Enum('oral', 'written', name='committee_question_answer_type_enum'), nullable=False)
+
+    # Date on which the question was answered. Not to be confused with the date the
+    # question was published, which is date_published on the QuestionPaper.
+    answered_on = db.Column(db.Date(), nullable=False)
+
+    # This should always be the year from the date above, but is worth
+    # storing separately so that we can easily have uniqueness constraints
+    # on it.
+    year = db.Column(db.Integer, index=True, nullable=False)
+
+    # The actual text of the question.
+    question = db.Column(db.Text)
+
+    # The actual text of the question.
+    answer = db.Column(db.Text)
+
+    # Text of the person the question is asked of
+    question_to_name = db.Column(db.String(1024), nullable=False)
+
+    # Is the question a translation of one originally asked in another language.
+    # Currently we are only storing questions in English.
+    translated = db.Column(db.Boolean, default=False, nullable=False)
+
+    # oral/written number, asker and askee as as string, for example:
+    # '144. Mr D B Feldman (COPE-Gauteng) to ask the Minister of Defence and Military Veterans:'
+    # '152. Mr D A Worth (DA-FS) to ask the Minister of Defence and Military Veterans:'
+    # '254. Mr R A Lees (DA-KZN) to ask the Minister of Rural Development and Land Reform:'
+    intro = db.Column(db.Text)
+
+    # Name of the person asking the question.
+    asked_by_name = db.Column(db.String(1024), nullable=False)
+    # The actual MP asking the question. This may be null if we weren't able to link it to an MP
+    asked_by_member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=True)
+    asked_by_member = db.relationship('Member')
+
+    # the source document for this question
+    source_file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="SET NULL"), index=True, nullable=True)
+    source_file = db.relationship('File', lazy='joined')
+
+    # TODO: attachments
+    # files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
+
+    # TODO: indexes for uniqueness
+    class Meta:
+        unique_together = (
+            ('written_number', 'house', 'year'),
+            ('oral_number', 'house', 'year'),
+            ('president_number', 'house', 'year'),
+            ('dp_number', 'house', 'year'),
+            ('id_number', 'house', 'year'),
+        )
+
+    def populate_from_code(self, code):
+        """ Populate this question with the details contained in +code+, such as
+        RNW2680-1212114.
+        """
+        details = QuestionAnswerScraper().details_from_name(code)
+
+        house = details.pop('house')
+        if house == 'N':
+            house = House.na()
+        elif house == 'C':
+            house = House.ncop()
+        else:
+            raise ValueError("Invalid house: %s" % house)
+
+        year = details.pop('year')
+
+        # TODO: session
+        self.code = details['code']
+        self.year = year
+        self.house = house
+        self.written_number = details.get('written_number')
+        self.oral_number = details.get('oral_number')
+        self.president_number = details.get('president_number')
+        self.deputy_president_number = details.get('deputy_president_number')
+        self.answered_on = details.get('date')
+        self.answer_type = details.get('type')
+
+    def parse_answer_file(self, filename):
+        # process the actual document text
+        text, html = QuestionAnswerScraper().extract_content_from_document(filename)
+        self.parse_question_text(self, text)
+        self.parse_answer_html(self, html)
+
+    def parse_question_text(self, text):
+        questions = QuestionAnswerScraper().extract_questions_from_text(text)
+        if not questions:
+            raise ValueError("Couldn't find any questions in the text.")
+        q = questions[0]
+
+        # TODO: committee
+        self.question_to_name = q['questionto']
+
+        self.asked_by_name = q['askedby']
+        self.asked_by_member = Member.find_inexact(self.asked_by_name)
+
+        self.question = q['question']
+        self.translated = q['translated']
+        self.intro = q['intro']
+
+    def parse_answer_html(self, html):
+        self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
+
+    @classmethod
+    def import_from_answer_file(cls, filename):
+        name = os.path.basename(filename)
+
+        question = CommitteeQuestion()
+        question.populate_from_code(name)
+
+        # does it already exist?
+        existing = cls.find(question.house, question.year,
+                            oral_number=question.oral_number,
+                            written_number=question.written_number)
+        question = existing or question
+        question.parse_answer_file(filename)
+
+        # TODO: attach this file as the source
+
+        return question
+
+    @classmethod
+    def find(cls, house, year, **kwargs):
+        # TODO: filter by session
+        query = cls.query.filter(
+            cls.house == house,
+            cls.year == year,
+        )
+
+        if kwargs.get('oral_number'):
+            query = query.filter(cls.oral_number == kwargs['oral_number'])
+
+        if kwargs.get('written_number'):
+            query = query.filter(cls.written_number == kwargs['written_number'])
+
+        return query.first()
+
+
+# === Legacy Questions & Replies === #
+#
+# Questions are stored in batches as HTML, linked to a committee.
 
 class QuestionReply(ApiResource, db.Model):
 

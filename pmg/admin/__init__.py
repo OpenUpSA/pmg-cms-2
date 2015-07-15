@@ -15,7 +15,7 @@ from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilt
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
-from flask.ext.admin.helpers import is_form_submitted
+from flask.ext.admin.helpers import is_form_submitted, get_url
 from flask.ext.security import current_user
 from flask.ext.security.changeable import change_user_password
 import flask_wtf
@@ -640,6 +640,7 @@ class CommitteeQuestionView(MyModelView):
             question = CommitteeQuestion.import_from_uploaded_answer_file(file_data)
             db.session.add(question)
             db.session.commit()
+            flash("Successfully imported from %s" % (file_data.filename,))
             return redirect(get_url('.edit_view', id=question.id, url=return_url))
         except ValueError as e:
             flash("Couldn't import from %s: %s" % (file_data.filename, e.message), 'error')

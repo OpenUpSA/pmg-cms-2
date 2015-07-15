@@ -708,10 +708,14 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.house = house
         self.written_number = details.get('written_number')
         self.oral_number = details.get('oral_number')
+        self.question_number = self.written_number or self.oral_number
         self.president_number = details.get('president_number')
         self.deputy_president_number = details.get('deputy_president_number')
         self.answered_on = details.get('date')
-        self.answer_type = details.get('type')
+        self.answer_type = {
+            'O': 'oral',
+            'W': 'written',
+        }[details.get('type') or 'W']
 
     def parse_answer_file(self, filename):
         # process the actual document text

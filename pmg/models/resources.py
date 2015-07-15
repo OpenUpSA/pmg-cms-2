@@ -766,7 +766,7 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     @classmethod
     def import_from_answer_file(cls, filename):
-        name = os.path.basename(filename)
+        name = os.path.splitext(os.path.basename(filename))[0]
 
         question = CommitteeQuestion()
         question.populate_from_code(name)

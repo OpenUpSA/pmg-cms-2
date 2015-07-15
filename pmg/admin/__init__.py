@@ -607,6 +607,45 @@ class MemberView(MyModelView):
             model.profile_pic_url = tmp.file_path
 
 
+class CommitteeQuestionView(MyModelView):
+    list_template = 'admin/committee_question_list.html'
+
+    column_list = (
+        'committee',
+        'code',
+        'question_number',
+        'answered_on',
+    )
+    column_default_sort = ('answered_on', True)
+    column_searchable_list = ('code',)
+    form_widget_args = {
+        'answer': {'class': 'ckeditor'},
+    }
+    form_ajax_refs = {
+        'source_file': {
+            'fields': ('title', 'file_path'),
+            'page_size': 10,
+        },
+        'asked_by_member': {
+            'fields': ('name',),
+            'page_size': 25
+        },
+    }
+
+    @expose('/upload', methods=['POST'])
+    def upload(self):
+        return_url = request.headers['Referer']
+        file_data = request.files.get('file')
+        try:
+            question = CommitteeQuestion.import_from_uploaded_answer_file(file_data)
+            db.session.add(question)
+            db.session.commit()
+            return redirect(get_url('.edit_view', id=question.id, url=return_url))
+        except ValueError as e:
+            flash("Couldn't import from %s: %s" % (file_data.filename, e.message), 'error')
+            return redirect(return_url)
+
+
 class QuestionReplyView(MyModelView):
     frontend_url_format = 'question_reply/%s'
 
@@ -943,6 +982,7 @@ admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint='bill', fronte
 
 # ---------------------------------------------------------------------------------
 # Other Content
+admin.add_view(CommitteeQuestionView(CommitteeQuestion, db.session, name="Questions to Committees", endpoint='committee-question', category="Other Content"))
 admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
 admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call-for-comment', category="Other Content"))
 admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))

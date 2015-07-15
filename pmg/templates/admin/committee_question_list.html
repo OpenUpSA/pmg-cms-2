@@ -1,0 +1,15 @@
+{% extends 'admin/my_list.html' %}
+
+{% block model_menu_bar %}
+  <div class="pull-right">
+    <form action="{{ get_url('.upload') }}" method="post" style="display: none" class="upload-answer-form" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="file" name="file" accept=".docx">
+    </form>
+
+    <button type="button" class="btn btn-success upload-answer-file">
+      Upload new answer .docx
+    </button>
+  </div>
+  {{ super() }}
+{% endblock %}

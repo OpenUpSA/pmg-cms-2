@@ -716,6 +716,17 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
 
     @classmethod
+    def import_from_uploaded_answer_file(cls, upload):
+        # save the file to disk
+        filename = secure_filename(upload.filename)
+        path = os.path.join(app.config['UPLOAD_PATH'], filename)
+        logger.debug('saving uploaded file %s to %s' % (filename, path))
+        upload.save(path)
+
+        question = cls.import_from_answer_file(path)
+        question.source_file = File().from_upload(upload)
+
+    @classmethod
     def import_from_answer_file(cls, filename):
         name = os.path.basename(filename)
 

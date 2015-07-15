@@ -1042,10 +1042,17 @@ class ChoiceType(types.TypeDecorator):
 
 class CommitteeMeetingAttendance(ApiResource, db.Model):
     __tablename__ = "committee_meeting_attendance"
-
-    # TODO: Get values for attendance abbreviations
+    """
+    Attendance abbreviations:
+        A:   Absent
+        AP:  Absent with Apologies
+        DE:  Departed Early
+        L:   Arrived Late
+        LDE: Arrived Late and Departed Early
+        P:   Present
+    """
     id = db.Column(db.Integer, primary_key=True)
-    alt = db.Column(db.Boolean(), nullable=True)
+    alternate_member = db.Column(db.Boolean(), nullable=True)
     attendance = db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', name='meeting_attendance_enum')
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
     meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)

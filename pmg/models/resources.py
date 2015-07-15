@@ -45,11 +45,11 @@ class House(db.Model):
 
     @classmethod
     def ncop(cls):
-        return self.query.filter(cls.name_short == 'NCOP').one()
+        return cls.query.filter(cls.name_short == 'NCOP').one()
 
     @classmethod
     def na(cls):
-        return self.query.filter(cls.name_short == 'NA').one()
+        return cls.query.filter(cls.name_short == 'NA').one()
 
 
 class Party(db.Model):
@@ -515,6 +515,19 @@ class Committee(ApiResource, db.Model):
     def list(cls):
         return cls.query.order_by(cls.house_id, cls.name)
 
+    @classmethod
+    def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
+        candidates = candidates or cls.query.all()
+        best = None
+
+        for cte in candidates:
+            score = levenshtein(cte.name, name)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (cte, score)
+
+        return best[0] if best else None
+
     def __unicode__(self):
         tmp = self.name
         if self.house:
@@ -634,7 +647,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     # The actual text of the question.
     question = db.Column(db.Text)
 
-    # The actual text of the question.
+    # The actual text (HTML) of the answer.
     answer = db.Column(db.Text)
 
     # Text of the person the question is asked of
@@ -703,20 +716,27 @@ class CommitteeQuestion(ApiResource, db.Model):
     def parse_answer_file(self, filename):
         # process the actual document text
         text, html = QuestionAnswerScraper().extract_content_from_document(filename)
-        self.parse_question_text(self, text)
-        self.parse_answer_html(self, html)
+
+        try:
+            self.parse_question_text(text)
+        except ValueError as e:
+            logger.warn(e.message)
+            self.question = text
+
+        self.parse_answer_html(html)
 
     def parse_question_text(self, text):
         questions = QuestionAnswerScraper().extract_questions_from_text(text)
         if not questions:
-            raise ValueError("Couldn't find any questions in the text.")
+            raise ValueError("Couldn't find any questions in the text")
         q = questions[0]
 
-        # TODO: committee
         self.question_to_name = q['questionto']
+        self.committee = self.committee_from_minister_name(self.question_to_name)
 
         self.asked_by_name = q['askedby']
-        self.asked_by_member = Member.find_inexact(self.asked_by_name)
+        # TODO: split out into first, last and title
+        # self.asked_by_member = Member.find_by_inexact_name(self.asked_by_name)
 
         self.question = q['question']
         self.translated = q['translated']
@@ -724,6 +744,12 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     def parse_answer_html(self, html):
         self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
+
+    def committee_from_minister_name(self, minister):
+        name = minister\
+            .replace('Minister of ', '')\
+            .replace('Minister in the ', '')
+        return Committee.find_by_inexact_name(name)
 
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
@@ -735,6 +761,8 @@ class CommitteeQuestion(ApiResource, db.Model):
 
         question = cls.import_from_answer_file(path)
         question.source_file = File().from_upload(upload)
+
+        return question
 
     @classmethod
     def import_from_answer_file(cls, filename):
@@ -749,8 +777,6 @@ class CommitteeQuestion(ApiResource, db.Model):
                             written_number=question.written_number)
         question = existing or question
         question.parse_answer_file(filename)
-
-        # TODO: attach this file as the source
 
         return question
 

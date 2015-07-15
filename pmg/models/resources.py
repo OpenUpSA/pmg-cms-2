@@ -1,9 +1,10 @@
 import datetime
 import logging
 import os
+import re
 
 from sqlalchemy import desc, func, sql
-from sqlalchemy.orm import backref, joinedload
+from sqlalchemy.orm import backref, joinedload, validates
 
 from flask import url_for
 from flask.ext.sqlalchemy import models_committed
@@ -699,11 +700,8 @@ class CommitteeQuestion(ApiResource, db.Model):
         else:
             raise ValueError("Invalid house: %s" % house)
 
-        year = details.pop('year')
-
         # TODO: session
         self.code = details['code']
-        self.year = year
         self.house = house
         self.written_number = details.get('written_number')
         self.oral_number = details.get('oral_number')
@@ -738,8 +736,9 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.committee = self.committee_from_minister_name(self.question_to_name)
 
         self.asked_by_name = q['askedby']
-        # TODO: split out into first, last and title
-        # self.asked_by_member = Member.find_by_inexact_name(self.asked_by_name)
+        parts = re.split(' +', self.asked_by_name)
+        title, first, last = parts[0], ''.join(parts[1:-1]), parts[-1]
+        self.asked_by_member = Member.find_by_inexact_name(first, last, title)
 
         self.question = q['question']
         self.translated = q['translated']
@@ -753,6 +752,11 @@ class CommitteeQuestion(ApiResource, db.Model):
             .replace('Minister of ', '')\
             .replace('Minister in the ', '')
         return Committee.find_by_inexact_name(name)
+
+    @validates('answered_on')
+    def validate_answered_on(self, key, value):
+        self.year = value.year
+        return value
 
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):

@@ -1,40 +1,37 @@
 import logging
-import os
 from operator import itemgetter
 import datetime
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
-from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
+from flask import flash, redirect, url_for, request, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.babel import gettext
 from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.contrib.sqla.form import InlineModelConverter
-from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
 from flask.ext.admin.helpers import is_form_submitted, get_url
-from flask.ext.security import current_user
 from flask.ext.security.changeable import change_user_password
 import flask_wtf
 from wtforms import fields
-from wtforms.validators import data_required, optional
+from wtforms.validators import data_required
 from sqlalchemy import func
-from sqlalchemy.sql.expression import and_, or_
+from sqlalchemy.sql.expression import or_
 from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
 
 from pmg import app, db
-from pmg.models import *
+from pmg.models import *  # noqa
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
 import widgets
 
 logger = logging.getLogger(__name__)
+
 
 # Our base form extends flask_wtf.Form to get CSRF support,
 # and adds the _obj property required by Flask Admin
@@ -64,7 +61,7 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled-committee-report.index_view', TabledCommitteeReport.query.count()),
             ('Uploaded Files', 'files.index_view', File.query.count()),
-            ]
+        ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
 
         return self.render(
@@ -76,8 +73,7 @@ class UsageReportView(RBACMixin, BaseView):
     required_roles = ['editor', ]
 
     def get_list(self, months):
-
-        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
+        cutoff = datetime.datetime.utcnow() - relativedelta(months=months)
         organisation_list = db.session.query(
             Organisation.name,
             Organisation.domain,
@@ -109,8 +105,7 @@ class UsageReportView(RBACMixin, BaseView):
 
     @expose('/xlsx/<int:months>/')
     def download(self, months=1):
-
-        today=datetime.date.today()
+        today = datetime.date.today()
         tmp = str(months) + " month up to " + str(today)
         if months > 1:
             tmp = str(months) + " months up to " + str(today)
@@ -157,45 +152,45 @@ class MyModelView(RBACMixin, ModelView):
 class HasExpiredFilter(BaseSQLAFilter):
     def __init__(self, column, name):
         options = (
-                ('expired', 'Expired'),
-                ('unexpired', 'Not expired'),
-                ('1month', 'Expiring in 1 month'),
-                ('3month', 'Expiring in 3 months'),
-                ('6month', 'Expiring in 6 months'),
-                ('1year', 'Expiring in 1 year'),
-            )
+            ('expired', 'Expired'),
+            ('unexpired', 'Not expired'),
+            ('1month', 'Expiring in 1 month'),
+            ('3month', 'Expiring in 3 months'),
+            ('6month', 'Expiring in 6 months'),
+            ('1year', 'Expiring in 1 year'),
+        )
         super(HasExpiredFilter, self).__init__(column, name, options=options)
 
     def apply(self, query, value):
         if value == 'expired':
             return query\
-                    .filter(self.column != None)\
-                    .filter(self.column < datetime.date.today())
+                .filter(self.column < datetime.date.today())\
+                .filter(self.column != None)  # noqa
 
         elif value == 'unexpired':
             return query.filter(or_(
-                        self.column == None,
-                        self.column >= datetime.date.today()))
+                self.column == None,  # noqa
+                self.column >= datetime.date.today()))
 
         elif value == '1month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=1))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=1))
 
         elif value == '3month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=3))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=3))
 
         elif value == '6month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=6))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=6))
 
         elif value == '1year':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(years=1))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(years=1))
 
         else:
             return query
@@ -216,11 +211,11 @@ class UserView(MyModelView):
         'current_login_at',
         'login_count',
         'expiry',
-        ]
+    ]
     column_labels = {
         'current_login_at': "Last seen",
         'subscriptions': "User's premium subscriptions",
-        }
+    }
     form_columns = [
         'email',
         'name',
@@ -231,26 +226,25 @@ class UserView(MyModelView):
         'subscribe_daily_schedule',
         'subscriptions',
         'committee_alerts',
-        ]
+    ]
     form_args = {
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
             'widget': widgets.CheckboxSelectWidget(multiple=True),
-            }
         }
+    }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     column_filters = [
-            HasExpiredFilter(User.expiry, 'Subscription expiry'),
-            DateBetweenFilter(User.expiry, 'Expiry date'),
-        ]
+        HasExpiredFilter(User.expiry, 'Subscription expiry'),
+        DateBetweenFilter(User.expiry, 'Expiry date'),
+    ]
 
     def on_model_change(self, form, model):
         if model.organisation:
             model.expiry = model.organisation.expiry
 
-
-    @expose('/reset_password',  methods=['GET', 'POST'])
+    @expose('/reset_password', methods=['GET', 'POST'])
     def reset_user_password(self):
         user = User.query.get(request.args['model_id'])
         new_pwd = request.form['new_password']
@@ -284,12 +278,12 @@ class OrganisationView(MyModelView):
         'domain',
         'paid_subscriber',
         'expiry',
-        ]
+    ]
     column_searchable_list = ('domain', 'name')
     column_filters = [
-            HasExpiredFilter(Organisation.expiry, 'Subscription expiry'),
-            DateBetweenFilter(Organisation.expiry, 'Expiry date'),
-            ]
+        HasExpiredFilter(Organisation.expiry, 'Subscription expiry'),
+        DateBetweenFilter(Organisation.expiry, 'Expiry date'),
+    ]
     form_ajax_refs = {
         'users': {
             'fields': ('name', 'email'),
@@ -298,13 +292,13 @@ class OrganisationView(MyModelView):
     }
     form_excluded_columns = [
         'created_at',
-        ]
+    ]
     form_args = {
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
             'widget': widgets.CheckboxSelectWidget(multiple=True)
-            }
         }
+    }
     column_labels = {'subscriptions': "Premium subscriptions"}
 
 
@@ -328,7 +322,7 @@ class CommitteeView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
-        )
+    )
     form_columns = (
         'name',
         'ad_hoc',
@@ -368,7 +362,7 @@ class InlineFile(InlineFormAdmin):
     form_columns = (
         'id',
         'file',
-        )
+    )
     column_labels = {'file': 'Existing file', }
     form_ajax_refs = {
         'file': {
@@ -508,6 +502,7 @@ class HansardView(EventView):
     }
     inline_models = [InlineFile(EventFile)]
 
+
 class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
 
@@ -533,7 +528,7 @@ class BriefingView(EventView):
     form_widget_args = {
         'summary': {'class': 'ckeditor'},
         'body': {'class': 'ckeditor'},
-        }
+    }
     inline_models = [InlineFile(EventFile)]
 
 
@@ -554,7 +549,7 @@ class MemberView(MyModelView):
         'memberships': 'Committees',
         'current': 'Currently active',
         'pa_link': 'PA Link',
-        }
+    }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -569,7 +564,7 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
-        )
+    )
     column_filters = ['current', 'house.name', 'party.name', 'province.name']
     form_columns = (
         'name',
@@ -595,7 +590,7 @@ class MemberView(MyModelView):
         'bio': {
             'rows': '10'
         },
-        }
+    }
     edit_template = "admin/edit_member.html"
 
     def on_model_change(self, form, model, is_created):
@@ -691,7 +686,7 @@ class CallForCommentView(MyModelView):
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
 
 
 class DailyScheduleView(ViewWithFiles, MyModelView):
@@ -741,7 +736,7 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     form_widget_args = {
         'body': {'class': 'ckeditor'},
         'summary': {'class': 'ckeditor'},
-        }
+    }
     form_excluded_columns = ('nid', )
     inline_models = [InlineFile(TabledCommitteeReportFile)]
 
@@ -762,7 +757,7 @@ class EmailTemplateView(MyModelView):
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
 
 
 class InlineBillEventsForm(InlineFormAdmin):
@@ -773,7 +768,7 @@ class InlineBillEventsForm(InlineFormAdmin):
         'title',
         'house',
         'member',
-        )
+    )
     form_choices = {
         'type': [
             ('bill-introduced', 'Bill introduced'),
@@ -802,13 +797,13 @@ class InlineBillVersionForm(InlineFormAdmin):
         'date',
         'title',
         'file',
-        )
+    )
     form_ajax_refs = {
         'file': {
             'fields': ('title',),
             'page_size': 25
-            }
         }
+    }
 
     def postprocess_form(self, form_class):
         # TODO: hide this for existing versions
@@ -855,10 +850,11 @@ class BillsView(MyModelView):
     inline_models = [
         InlineBillEventsForm(Event),
         InlineBillVersionForm(BillVersion),
-        ]
+    ]
     form_args = {
         'events': {'widget': widgets.InlineBillEventsWidget()},
     }
+
 
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
@@ -873,7 +869,7 @@ class FileView(MyModelView):
     column_labels = {'file_bytes': 'Size'}
     column_formatters = {
         'file_bytes': lambda v, c, m, n: '-' if m.file_bytes is None else Markup('<nobr>%s</nobr>' % humanize.naturalsize(m.file_bytes)),
-        }
+    }
 
     class SizeRule(rules.BaseRule):
         def __call__(self, form, form_opts=None, field_args={}):
@@ -884,7 +880,7 @@ class FileView(MyModelView):
             url = url_for('docs', path=form.file_path.data)
             return Markup(
                 '<a href="%s" target="_blank">%s</a>' % (url, url)
-                )
+            )
 
     form_columns = (
         'title',
@@ -932,6 +928,7 @@ class RedirectView(MyModelView):
     column_searchable_list = ('old_url', 'new_url')
     column_default_sort = 'old_url'
 
+
 class PageView(ViewWithFiles, MyModelView):
     column_list = ('slug', 'title')
     column_searchable_list = ('slug', 'title')
@@ -944,7 +941,7 @@ class PageView(ViewWithFiles, MyModelView):
     form_widget_args = {
         'body': {'class': 'ckeditor'},
         'path': {'readonly': True},
-        }
+    }
     inline_models = [InlineFile(PageFile)]
     column_descriptions = {
         'show_files': 'Show a list of the files attached to this page in a box on the right?',

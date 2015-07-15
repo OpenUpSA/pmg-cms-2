@@ -14,6 +14,7 @@ from za_parliament_scrapers.questions import QuestionAnswerScraper
 
 from pmg import app, db
 from pmg.search import Search
+from pmg.utils import levenshtein
 
 import serializers
 from .s3_upload import S3Bucket
@@ -464,11 +465,20 @@ class Member(ApiResource, db.Model):
             .order_by(Member.name)
 
     @classmethod
-    def find_inexact(cls, name, threshold=0.8):
-        """ Try to find the member with this name, permitting an inexact match.
-        """
-        # TODO: handle Dr A Foobar
-        pass
+    def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
+        # in the db, the name format is "last_name, title initial"
+        seeking = "%s, %s %s" % (last_name, title, first_name[0])
+
+        members = members or Member.query.all()
+        best = None
+
+        for member in members:
+            score = levenshtein(member.name, seeking)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (member, score)
+
+        return best[0] if best else None
 
 
 class Committee(ApiResource, db.Model):

@@ -604,6 +604,7 @@ class MemberView(MyModelView):
 
 class CommitteeQuestionView(MyModelView):
     list_template = 'admin/committee_question_list.html'
+    create_template = 'admin/committee_question_create.html'
 
     column_list = (
         'code',

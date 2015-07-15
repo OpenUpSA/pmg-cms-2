@@ -606,13 +606,34 @@ class CommitteeQuestionView(MyModelView):
     list_template = 'admin/committee_question_list.html'
 
     column_list = (
-        'committee',
         'code',
+        'committee',
         'question_number',
         'answered_on',
     )
     column_default_sort = ('answered_on', True)
     column_searchable_list = ('code',)
+    form_columns = (
+        'code',
+        'answered_on',
+        'intro',
+        'question',
+        'asked_by_name',
+        'asked_by_member',
+        'question_to_name',
+        'committee',
+        'answer',
+        'source_file',
+        'written_number',
+        'oral_number',
+        'president_number',
+        'deputy_president_number',
+        'translated',
+    )
+    column_labels = {
+        'question_to_name': "Question To",
+        'committee': "Question To Committee",
+    }
     form_widget_args = {
         'answer': {'class': 'ckeditor'},
     }
@@ -626,6 +647,7 @@ class CommitteeQuestionView(MyModelView):
             'page_size': 25
         },
     }
+    inline_models = [InlineFile(CommitteeQuestionFile)]
 
     @expose('/upload', methods=['POST'])
     def upload(self):

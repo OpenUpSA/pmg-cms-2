@@ -673,8 +673,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     source_file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="SET NULL"), index=True, nullable=True)
     source_file = db.relationship('File', lazy='joined')
 
-    # TODO: attachments
-    # files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship("CommitteeQuestionFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     # TODO: indexes for uniqueness
     class Meta:
@@ -764,7 +763,8 @@ class CommitteeQuestion(ApiResource, db.Model):
         upload.save(path)
 
         question = cls.import_from_answer_file(path)
-        question.source_file = File().from_upload(upload)
+        question.source_file = File()
+        question.source_file.from_upload(upload)
 
         return question
 
@@ -799,6 +799,16 @@ class CommitteeQuestion(ApiResource, db.Model):
             query = query.filter(cls.written_number == kwargs['written_number'])
 
         return query.first()
+
+
+class CommitteeQuestionFile(FileLinkMixin, db.Model):
+    __tablename__ = 'committee_question_file_join'
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee_question_id = db.Column(db.Integer, db.ForeignKey('committee_question.id', ondelete='CASCADE'), index=True, nullable=False)
+    committee_question = db.relationship('CommitteeQuestion')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
 
 
 # === Legacy Questions & Replies === #
@@ -1019,6 +1029,7 @@ ApiResource.register(Briefing)
 ApiResource.register(CallForComment)
 ApiResource.register(Committee)
 ApiResource.register(CommitteeMeeting)
+ApiResource.register(CommitteeQuestion)
 ApiResource.register(DailySchedule)
 ApiResource.register(Gazette)
 ApiResource.register(Hansard)

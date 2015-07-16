@@ -87,13 +87,16 @@ def get_filters():
 
 def api_resource_list(resource, resource_id, base_query):
     # validate paging parameters
-    page = 0
     per_page = app.config['RESULTS_PER_PAGE']
-    if request.args.get('page'):
-        try:
-            page = int(request.args.get('page'))
-        except ValueError:
-            raise ApiException(422, "Please specify a valid 'page'.")
+    try:
+        per_page = max(min(per_page, int(request.args.get('per_page', per_page))), 1)
+    except ValueError:
+        pass
+
+    try:
+        page = int(request.args.get('page', 0))
+    except ValueError:
+        raise ApiException(422, "Please specify a valid 'page'.")
 
     for f in get_filters():
         base_query = base_query.filter_by(**f)

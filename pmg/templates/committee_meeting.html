@@ -68,7 +68,7 @@
         <h3>
           Date of Meeting:
           {% if event.date %}
-            {{ event.date | pretty_date }}
+            {{ event.date | pretty_date("long") }}
           {% else %}
             (unknown)
           {% endif %}

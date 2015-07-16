@@ -186,6 +186,20 @@ def committee_detail(committee_id):
                            admin_edit_url=admin_url('committee', committee_id))
 
 
+@app.route('/committee/<int:committee_id>/questions/')
+@app.route('/committee/<int:committee_id>/questions/<int:page>/')
+def committee_questions(committee_id, page=0):
+    """
+    Display committee question for the committee.
+    """
+    committee = load_from_api('committee', committee_id)
+    questions = load_from_api('committee/%s/questions' % committee_id, page=page)
+
+    return render_template('committee_questions.html',
+                           committee=committee,
+                           questions=questions)
+
+
 @app.route('/committees/')
 def committees():
     """

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from 'macros/members.html' import member_badge %}
+
+{% block title %}Questions to {{ committee.name }} | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+  <li>Committee Questions</li>
+</ol>
+{% endblock %}
+
+{% block page %}
+
+<h1>Questions to the Minister</h1>
+<h2>{{ committee.name }}</h2>
+
+{% for question in questions.results %}
+
+  <div class="committee-question-detail">
+    <h4>
+      {{ question.answered_on | pretty_date("long") }} - {{ question.code }}
+    </h4>
+
+    <div class="media">
+      <div class="media-left">
+        {% if question.asked_by_member %}
+          {% if question.asked_by_member.profile_pic_url %}
+            <a class="media-object" href="{{ question.asked_by_member|member_url }}"><img class="member-profile-pic" src="{{ question.asked_by_member.profile_pic_url }}" alt="Profile picture: {{ question.asked_by_member.name }}" ></a>
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="media-body">
+        <h4 class="media-heading">
+          {% if question.asked_by_member %}
+            <a href="{{ question.asked_by_member|member_url }}">{{ question.asked_by_member.name }}</a>
+          {% else %}
+            {{ question.asked_by_name }}
+          {% endif %}
+        </h4>
+
+        <h5>{{ question.intro }}</h5>
+
+        <p>{{ question.question }}</p>
+
+        <div class="related">
+          <ul class="list-inline">
+            {% if question.source_file %}
+            <li><i class="fa fa-fw fa-file-text-o"></i> <a href="{{ question.source_file.url }}" target="_blank">Source</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        {% if question.answer %}
+          <div class="committee-question-reply">
+            <h4>Reply:</h4>
+            {{ question.answer|safe }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+{% endfor %}
+
+<p>PAGER</p>
+
+{% include "_correct_this_page.html" %}
+{% endblock %}

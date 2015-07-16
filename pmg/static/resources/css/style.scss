@@ -437,3 +437,55 @@ mark {
 .search-filter {
   width: 100%;
 }
+
+// committee questions
+.committee-question-detail {
+  padding: 10px 0px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ccc;
+
+  .related {
+    text-align: right;
+  }
+}
+
+.committee-question-reply {
+  table {
+    width: 100%;
+    max-width: 100%;
+
+    // Cells
+    > thead,
+    > tbody,
+    > tfoot {
+      > tr {
+        > th,
+        > td {
+          padding: 5px;
+          vertical-align: top;
+          border: 1px solid #ddd;
+        }
+      }
+    }
+    // Bottom align for column headings
+    > thead > tr > th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #ddd;
+    }
+    // Remove top border from thead by default
+    > caption + thead,
+    > colgroup + thead,
+    > thead:first-child {
+      > tr:first-child {
+        > th,
+        > td {
+          border-top: 0;
+        }
+      }
+    }
+    // Account for multiple tbody instances
+    > tbody + tbody {
+      border-top: 2px solid #ddd;
+    }
+  }
+}

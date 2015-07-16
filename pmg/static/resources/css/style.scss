@@ -444,6 +444,14 @@ mark {
   margin-bottom: 20px;
   border-bottom: 2px solid #ccc;
 
+  .media-object {
+    width: 64px;
+
+    img {
+      max-width: 64px;
+    }
+  }
+
   .related {
     float: right;
   }

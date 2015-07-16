@@ -25,17 +25,19 @@
 
     <div class="media">
       <div class="media-left">
-        {% if question.asked_by_member %}
-          {% if question.asked_by_member.profile_pic_url %}
-            <a class="media-object" href="{{ question.asked_by_member|member_url }}"><img class="member-profile-pic" src="{{ question.asked_by_member.profile_pic_url }}" alt="Profile picture: {{ question.asked_by_member.name }}" ></a>
-          {% endif %}
+        {% set asked_by_member = question.asked_by_member %}
+
+        {% if asked_by_member and asked_by_member.profile_pic_url %}
+          <a class="media-object" href="{{ asked_by_member|member_url }}"><img class="member-profile-pic" src="{{ asked_by_member.profile_pic_url }}" alt="Profile picture: {{ asked_by_member.name }}" ></a>
+        {% else %}
+          <div class="media-object"></div>
         {% endif %}
       </div>
 
       <div class="media-body">
         <h4 class="media-heading">
-          {% if question.asked_by_member %}
-            <a href="{{ question.asked_by_member|member_url }}">{{ question.asked_by_member.name }}</a>
+          {% if asked_by_member %}
+            <a href="{{ asked_by_member|member_url }}">{{ asked_by_member.name }}</a>
           {% else %}
             {{ question.asked_by_name }}
           {% endif %}

@@ -314,7 +314,7 @@ def committee_questions(committee_id):
     Questions asked to the minister of a committee.
     """
     # don't eager load duplicate committee details
-    query = CommitteeQuestion.query\
+    query = CommitteeQuestion.list()\
         .filter(CommitteeQuestion.committee_id == committee_id)\
         .options(lazyload('committee'))\
         .options(joinedload('asked_by_member'))

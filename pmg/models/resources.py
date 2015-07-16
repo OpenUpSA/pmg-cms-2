@@ -794,6 +794,10 @@ class CommitteeQuestion(ApiResource, db.Model):
         return question
 
     @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.answered_on))
+
+    @classmethod
     def find(cls, house, year, **kwargs):
         # TODO: filter by session
         query = cls.query.filter(

@@ -1,3 +1,5 @@
+{% from 'macros/attachments.html' import related_attachments %}
+
 <div class="committee-question-detail">
   <h4>
     {{ question.answered_on | pretty_date("long") }} - 
@@ -28,22 +30,34 @@
 
       <p>{{ question.question }}</p>
 
-      <div class="related">
-        <ul class="list-inline">
-          {% if question.source_file %}
-          <li><i class="fa fa-fw fa-file-text-o"></i> <a href="{{ question.source_file.url }}" target="_blank">Source</a></li>
+      <div class="row">
+        <div class="col-xs-5">
+          {% if question.answer and hide_replies %}
+          <button class="btn btn-default" data-toggle="collapse" data-target="#commitee-question-reply-{{ question.id}}">Show reply</button>
           {% endif %}
+        </div>
 
-          <li><i class="fa fa-fw fa-link"></i> <a href="{{ url_for('committee_question', question_id=question.id) }}">Link</a></li>
-        </ul>
+        <div class="col-xs-7 text-right">
+          <ul class="list-inline">
+            {% if question.source_file %}
+            <li><i class="fa fa-fw fa-file-text-o"></i> <a href="{{ question.source_file.url }}" target="_blank">Source</a></li>
+            {% endif %}
+
+            <li><i class="fa fa-fw fa-link"></i> <a href="{{ url_for('committee_question', question_id=question.id) }}">Link</a></li>
+          </ul>
+        </div>
       </div>
 
       {% if question.answer %}
-        {% if hide_replies %}
-        <button class="btn btn-default" data-toggle="collapse" data-target="#commitee-question-reply-{{ question.id}}">Show reply</button>
-        {% endif %}
         <div class="committee-question-reply {% if hide_replies %}collapse{% endif %}" id="commitee-question-reply-{{ question.id}}">
           <h4>Reply:</h4>
+
+          {% if question.files %}
+          <div class="col-sm-4 col-xs-12 pull-right">
+            {{ related_attachments(question.files) }}
+          </div>
+          {% endif %}
+
           {{ question.answer|safe }}
         </div>
       {% endif %}

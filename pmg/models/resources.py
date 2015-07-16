@@ -208,7 +208,10 @@ class File(db.Model):
         self.file_bytes = os.stat(path).st_size
 
         # upload saved file to S3
-        self.file_path = s3_bucket.upload_file(path, filename)
+        if app.debug:
+            self.file_path = path
+        else:
+            self.file_path = s3_bucket.upload_file(path, filename)
 
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)

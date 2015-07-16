@@ -1,25 +1,12 @@
-{% extends "base.html" %}
+{% extends "committee_layout.html" %}
 {% from 'macros/members.html' import member_badge %}
 
-{% block title %}{{ committee.name }} | PMG{% endblock %}
-
-{% block breadcrumb %}
-<ol class="breadcrumb">
-  <li><a href="{{ url_for('committees') }}">Committees</a></li>
-</ol>
+{% block committee_title %}
+  <h1>{{ committee.name }}</h1>
+  <h4 class="light-red">{{ committee.house.name }} Committee</h4>
 {% endblock %}
 
-{% block page %}
-  <div class="row">
-    <div class="col-sm-9">
-      <h1>{{ committee.name }}</h1>
-      <h4 class="light-red">{{ committee.house.name }} Committee</h4>
-    </div>
-    <div class="col-sm-3">
-      {% include 'user_management/_committee_alerts_signup.html' %}
-    </div>
-  </div>
-
+{% block committee_page %}
   <div class="row">
     <div class="col-md-8">
       {% if committee.about %}
@@ -110,23 +97,28 @@
           </div>
         {% endif %}
 
-        {% if committee.questions_replies %}
+        {% if recent_questions %}
           <div class="col-md-6">
             <h3><span class="fa fa-question-circle"></span> Questions and Replies</h3>
             <table class="table table-compact">
-              {% for item in committee.questions_replies[0:5] %}
+              {% for item in recent_questions %}
                 <tr><td>
                   <div class="row">
-                    <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
-                    <div class="col-xs-8"><a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a></div>
+                    <div class="col-xs-4">{{ (item.start_date or item.answered_on)|pretty_date }}</div>
+                    <div class="col-xs-8">
+                      {# handle QuestionReply and CommitteeQuestion objects differently #}
+                      {% if item.answered_on %}
+                      <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.asked_by_name }}</a>
+                      {% else %}
+                      <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
+                      {% endif %}
+                    </div>
                   </div>
                 </td></tr>
               {% endfor %}
             </table>
 
-            {% if committee.questions_replies|length > 5 %}
-              <a href="/question_replies/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
-            {% endif %}
+            <a href="{{ url_for('committee_questions', committee_id=committee.id) }}" class="btn btn-primary">More</a>
           </div>
         {% endif %}
       </div>
@@ -184,11 +176,5 @@
       {% endif %}
 
     </div>  <!-- /Members -->
-
-
-
   </div>
-
-{% include "_correct_this_page.html" %}
 {% endblock %}
-

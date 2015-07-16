@@ -307,17 +307,6 @@ article.page {
   }
 }
 
-// committee detail page
-.member-profile-pic{
-  max-width: 50px;
-  max-height: 75px;
-}
-
-.member-profile-pic.chairperson{
-  max-width: 100px;
-  max-height: 150px;
-}
-
 // member listing page
 ul.member-list {
   > li {
@@ -437,3 +426,4 @@ mark {
 .search-filter {
   width: 100%;
 }
+

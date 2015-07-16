@@ -208,7 +208,10 @@ class File(db.Model):
         self.file_bytes = os.stat(path).st_size
 
         # upload saved file to S3
-        self.file_path = s3_bucket.upload_file(path, filename)
+        if app.debug:
+            self.file_path = path
+        else:
+            self.file_path = s3_bucket.upload_file(path, filename)
 
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)
@@ -497,6 +500,11 @@ class Committee(ApiResource, db.Model):
     house = db.relationship('House', lazy='joined')
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)
+        return tmp
 
     @classmethod
     def premium_for_select(cls):
@@ -787,6 +795,10 @@ class CommitteeQuestion(ApiResource, db.Model):
         question.parse_answer_file(filename)
 
         return question
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.answered_on))
 
     @classmethod
     def find(cls, house, year, **kwargs):

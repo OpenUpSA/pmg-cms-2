@@ -9,6 +9,7 @@ from flask.ext.security import current_user
 from flask.ext.security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
 from sqlalchemy import desc
+from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from pmg import db, app
@@ -86,13 +87,16 @@ def get_filters():
 
 def api_resource_list(resource, resource_id, base_query):
     # validate paging parameters
-    page = 0
     per_page = app.config['RESULTS_PER_PAGE']
-    if request.args.get('page'):
-        try:
-            page = int(request.args.get('page'))
-        except ValueError:
-            raise ApiException(422, "Please specify a valid 'page'.")
+    try:
+        per_page = max(min(per_page, int(request.args.get('per_page', per_page))), 1)
+    except ValueError:
+        pass
+
+    try:
+        page = int(request.args.get('page', 0))
+    except ValueError:
+        raise ApiException(422, "Please specify a valid 'page'.")
 
     for f in get_filters():
         base_query = base_query.filter_by(**f)
@@ -302,3 +306,17 @@ def question_reply_committees():
     """
     items = Committee.for_related(QuestionReply).all()
     return send_api_response(serializers.queryset_to_json(items, count=len(items)))
+
+
+@api.route('/committee/<int:committee_id>/questions/')
+def committee_questions(committee_id):
+    """
+    Questions asked to the minister of a committee.
+    """
+    # don't eager load duplicate committee details
+    query = CommitteeQuestion.list()\
+        .filter(CommitteeQuestion.committee_id == committee_id)\
+        .options(lazyload('committee'))\
+        .options(joinedload('asked_by_member'))
+
+    return api_resource_list('committee-question', None, query)

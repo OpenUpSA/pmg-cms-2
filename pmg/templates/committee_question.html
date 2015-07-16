@@ -12,11 +12,14 @@
 {% block committee_title %}
   {{ super() }}
   <h1>Questions to the Minister</h1>
+  <p>
+    <a href="/question_replies/?filter[committee]={{ committee.id }}">← Questions from before July 2015</a>
+    |
+    <a href="{{ url_for('committee_questions', committee_id=committee.id) }}">Recent Questions →</a>
+  </p>
 {% endblock %}
 
 
 {% block committee_page %}
-<p><a href="{{ url_for('committee_questions', committee_id=question.committee.id) }}">← all questions</a>
 {% include '_committee_question_detail.html' with context %}
-
 {% endblock %}

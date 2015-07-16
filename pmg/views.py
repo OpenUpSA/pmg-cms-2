@@ -181,8 +181,18 @@ def committee_detail(committee_id):
 
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
+    questions = load_from_api('committee/%s/questions' % committee_id, params={'per_page': 5})
+
+    recent_questions = committee['questions_replies']
+    if questions['results']:
+        # blend together the 5 most recent questions to this committee
+        recent_questions.extend(questions['results'])
+        recent_questions.sort(key=lambda q: q.get('answered_on', q.get('date', 0)), reverse=True)
+        recent_questions = recent_questions[:5]
+
     return render_template('committee_detail.html',
                            committee=committee,
+                           recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))
 
 
@@ -200,7 +210,7 @@ def committee_questions(committee_id, page=0):
 
     if questions['count'] == 0:
         # send them to the old page
-        return redirect("/question_replies/?filter[committee]=" + committee_id)
+        return redirect("/question_replies/?filter[committee]=%s" % committee_id)
 
     return render_template('committee_questions.html',
                            committee=committee,
@@ -627,11 +637,17 @@ def daily_schedules(page=0):
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
-    logger.debug("question_reply page called")
     question_reply = load_from_api('question_reply', question_reply_id)
+
+    if question_reply['committee']:
+        template = 'committee_question_reply.html'
+    else:
+        template = 'question_reply_detail.html'
+
     return render_template(
-        'question_reply_detail.html',
+        template,
         question_reply=question_reply,
+        committee=question_reply.get('committee'),
         admin_edit_url=admin_url('question', question_reply_id))
 
 

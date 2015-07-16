@@ -728,6 +728,7 @@ def search(page=0):
     search_types = [
         ("committee", "Committees"),
         ("committee_meeting", "Committee Meetings"),
+        ("committee_question", "Committee Questions"),
         ("bill", "Bills"),
         ("member", "MPs"),
         ("hansard", "Hansards"),

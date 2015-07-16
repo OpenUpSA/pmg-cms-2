@@ -9,6 +9,7 @@ from flask.ext.security import current_user
 from flask.ext.security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
 from sqlalchemy import desc
+from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
 from pmg import db, app
@@ -302,3 +303,17 @@ def question_reply_committees():
     """
     items = Committee.for_related(QuestionReply).all()
     return send_api_response(serializers.queryset_to_json(items, count=len(items)))
+
+
+@api.route('/committee/<int:committee_id>/questions/')
+def committee_questions(committee_id):
+    """
+    Questions asked to the minister of a committee.
+    """
+    # don't eager load duplicate committee details
+    query = CommitteeQuestion.query\
+        .filter(CommitteeQuestion.committee_id == committee_id)\
+        .options(lazyload('committee'))\
+        .options(joinedload('asked_by_member'))
+
+    return api_resource_list('committee-question', None, query)

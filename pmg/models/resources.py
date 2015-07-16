@@ -498,6 +498,11 @@ class Committee(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)
+        return tmp
+
     @classmethod
     def premium_for_select(cls):
         return cls.query\

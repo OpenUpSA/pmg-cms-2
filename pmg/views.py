@@ -201,10 +201,25 @@ def committee_questions(committee_id, page=0):
     return render_template('committee_questions.html',
                            committee=committee,
                            questions=questions,
+                           hide_replies=True,
                            url='/committee/%s/questions' % committee_id,
                            num_pages=num_pages,
                            per_page=per_page,
                            page=page)
+
+
+@app.route('/committee-question/<int:question_id>/')
+def committee_question(question_id):
+    """ Display a single committee question.
+    """
+    question = load_from_api('committee-question', question_id)
+    committee = question['committee']
+
+    return render_template('committee_question.html',
+                           committee=committee,
+                           question=question,
+                           hide_replies=False,
+                           admin_edit_url=admin_url('committee-question', question_id))
 
 
 @app.route('/committees/')

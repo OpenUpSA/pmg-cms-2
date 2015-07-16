@@ -439,10 +439,16 @@ mark {
 }
 
 // committee questions
+.committee-question-list {
+  margin-top: 20px;
+
+  .committee-question-detail {
+    padding-bottom: 30px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ccc;
+  }
+}
 .committee-question-detail {
-  padding: 10px 0px;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #ccc;
 
   .media-object {
     width: 64px;
@@ -461,6 +467,7 @@ mark {
   table {
     width: 100%;
     max-width: 100%;
+    margin-bottom: 10px;
 
     // Cells
     > thead,

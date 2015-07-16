@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% from 'macros/members.html' import member_badge %}
 
-{% block title %}Questions to {{ committee.name }} | PMG{% endblock %}
+{% block title %}Question to {{ committee.name }} | PMG{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('committees') }}">Committees</a></li>
   <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
-  <li>Committee Questions</li>
+  <li><a href="{{ url_for('committee_questions', committee_id=committee.id) }}">Committee Questions</a></li>
 </ol>
 {% endblock %}
 
@@ -15,13 +16,8 @@
 <h1>Questions to the Minister</h1>
 <h2>{{ committee.name }}</h2>
 
-<section class="committee-question-list">
-{% for question in questions.results %}
-  {% include '_committee_question_detail.html' with context %}
-{% endfor %}
-</section>
-
-{% include 'pagination.html' %}
+<p><a href="{{ url_for('committee_questions', committee_id=question.committee.id) }}">← all questions</a>
+{% include '_committee_question_detail.html' with context %}
 
 {% include "_correct_this_page.html" %}
 {% endblock %}

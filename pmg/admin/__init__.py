@@ -629,7 +629,6 @@ class CommitteeQuestionView(MyModelView):
         'oral_number',
         'president_number',
         'deputy_president_number',
-        'translated',
     )
     column_labels = {
         'question_to_name': "Question To",
@@ -664,10 +663,13 @@ class CommitteeQuestionView(MyModelView):
             flash("Couldn't import from %s: %s" % (file_data.filename, e.message), 'error')
             return redirect(return_url)
 
+    def frontend_url(self, model):
+        if model.id and model.committee:
+            return url_for('committee_question', question_id=model.id)
+        return None
+
 
 class QuestionReplyView(MyModelView):
-    frontend_url_format = 'question_reply/%s'
-
     column_list = (
         'committee',
         'title',

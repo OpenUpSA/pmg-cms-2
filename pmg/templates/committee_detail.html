@@ -1,6 +1,11 @@
 {% extends "committee_layout.html" %}
 {% from 'macros/members.html' import member_badge %}
 
+{% block committee_title %}
+  <h1>{{ committee.name }}</h1>
+  <h4 class="light-red">{{ committee.house.name }} Committee</h4>
+{% endblock %}
+
 {% block committee_page %}
   <div class="row">
     <div class="col-md-8">

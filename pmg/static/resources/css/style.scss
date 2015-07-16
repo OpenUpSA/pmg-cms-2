@@ -307,17 +307,6 @@ article.page {
   }
 }
 
-// committee detail page
-.member-profile-pic{
-  max-width: 50px;
-  max-height: 75px;
-}
-
-.member-profile-pic.chairperson{
-  max-width: 100px;
-  max-height: 150px;
-}
-
 // member listing page
 ul.member-list {
   > li {
@@ -438,67 +427,3 @@ mark {
   width: 100%;
 }
 
-// committee questions
-.committee-question-list {
-  .committee-question-detail {
-    padding-bottom: 30px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ccc;
-  }
-}
-.committee-question-detail {
-
-  .media-object {
-    width: 64px;
-
-    img {
-      max-width: 64px;
-    }
-  }
-
-  .related {
-    float: right;
-  }
-}
-
-.committee-question-reply {
-  table {
-    width: 100%;
-    max-width: 100%;
-    margin-bottom: 10px;
-
-    // Cells
-    > thead,
-    > tbody,
-    > tfoot {
-      > tr {
-        > th,
-        > td {
-          padding: 5px;
-          vertical-align: top;
-          border: 1px solid #ddd;
-        }
-      }
-    }
-    // Bottom align for column headings
-    > thead > tr > th {
-      vertical-align: bottom;
-      border-bottom: 2px solid #ddd;
-    }
-    // Remove top border from thead by default
-    > caption + thead,
-    > colgroup + thead,
-    > thead:first-child {
-      > tr:first-child {
-        > th,
-        > td {
-          border-top: 0;
-        }
-      }
-    }
-    // Account for multiple tbody instances
-    > tbody + tbody {
-      border-top: 2px solid #ddd;
-    }
-  }
-}

@@ -289,6 +289,7 @@ def committee_meeting(event_id):
     return render_template(
         'committee_meeting.html',
         event=event,
+        committee=event['committee'],
         audio=audio,
         related_docs=related_docs,
         premium_committees=premium_committees,

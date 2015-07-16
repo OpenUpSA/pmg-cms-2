@@ -54,7 +54,8 @@
         </div>
 
         {% if question.answer %}
-          <div class="committee-question-reply">
+          <button class="btn btn-default" data-toggle="collapse" data-target="#commitee-question-reply-{{ question.id}}">Show reply</button>
+          <div class="committee-question-reply collapse" id="commitee-question-reply-{{ question.id}}">
             <h4>Reply:</h4>
             {{ question.answer|safe }}
           </div>

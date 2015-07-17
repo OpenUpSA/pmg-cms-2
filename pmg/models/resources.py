@@ -617,7 +617,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     #           different [AEX] in the identifier.
     #
     # Note that we also store the number, house, and answer_type separately.
-    code = db.Column(db.String(50), index=True, unique=True, nullable=False)
+    code = db.Column(db.String(50), index=True, unique=False, nullable=False)
 
     # From the identifier discussed above.
     question_number = db.Column(db.Integer, index=True, nullable=True)
@@ -684,15 +684,14 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     files = db.relationship("CommitteeQuestionFile", lazy='joined', cascade="all, delete, delete-orphan")
 
-    # TODO: indexes for uniqueness
-    class Meta:
-        unique_together = (
-            ('written_number', 'house', 'year'),
-            ('oral_number', 'house', 'year'),
-            ('president_number', 'house', 'year'),
-            ('dp_number', 'house', 'year'),
-            ('id_number', 'house', 'year'),
-        )
+    # indexes for uniqueness
+    __table_args__ = (
+        db.UniqueConstraint('date', 'code', name='date_code_ix'),
+        db.UniqueConstraint('date', 'house_id', 'oral_number', name='date_oral_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'written_number', name='date_written_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'president_number', name='date_president_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'deputy_president_number', name='date_deputy_president_number_ix'),
+    )
 
     def populate_from_code(self, code):
         """ Populate this question with the details contained in +code+, such as

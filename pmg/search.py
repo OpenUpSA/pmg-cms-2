@@ -276,7 +276,7 @@ class Transforms:
             "id": "id",
             "title": "intro",
             "fulltext": ["question", "answer"],
-            "date": "answered_on",
+            "date": "date",
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },

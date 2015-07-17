@@ -187,7 +187,7 @@ def committee_detail(committee_id):
     if questions['results']:
         # blend together the 5 most recent questions to this committee
         recent_questions.extend(questions['results'])
-        recent_questions.sort(key=lambda q: q.get('answered_on', q.get('date', 0)), reverse=True)
+        recent_questions.sort(key=lambda q: q.get('date', q.get('start_date', 0)), reverse=True)
         recent_questions = recent_questions[:5]
 
     return render_template('committee_detail.html',

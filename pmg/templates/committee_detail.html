@@ -104,10 +104,10 @@
               {% for item in recent_questions %}
                 <tr><td>
                   <div class="row">
-                    <div class="col-xs-4">{{ (item.start_date or item.answered_on)|pretty_date }}</div>
+                    <div class="col-xs-4">{{ (item.start_date or item.date)|pretty_date }}</div>
                     <div class="col-xs-8">
                       {# handle QuestionReply and CommitteeQuestion objects differently #}
-                      {% if item.answered_on %}
+                      {% if item.date %}
                       <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.asked_by_name }}</a>
                       {% else %}
                       <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>

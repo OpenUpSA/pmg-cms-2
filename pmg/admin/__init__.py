@@ -610,13 +610,13 @@ class CommitteeQuestionView(MyModelView):
         'code',
         'committee',
         'question_number',
-        'answered_on',
+        'date',
     )
-    column_default_sort = ('answered_on', True)
+    column_default_sort = ('date', True)
     column_searchable_list = ('code',)
     form_columns = (
         'code',
-        'answered_on',
+        'date',
         'intro',
         'question',
         'asked_by_name',

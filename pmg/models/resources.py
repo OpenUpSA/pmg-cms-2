@@ -644,9 +644,9 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     answer_type = db.Column(db.Enum('oral', 'written', name='committee_question_answer_type_enum'), nullable=False)
 
-    # Date on which the question was answered. Not to be confused with the date the
-    # question was published, which is date_published on the QuestionPaper.
-    answered_on = db.Column(db.Date(), nullable=False)
+    # Date of the question, generally the date on which it was answered. Not to
+    # be confused with the date the question was published.
+    date = db.Column(db.Date(), nullable=False)
 
     # This should always be the year from the date above, but is worth
     # storing separately so that we can easily have uniqueness constraints
@@ -716,7 +716,7 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.question_number = self.written_number or self.oral_number
         self.president_number = details.get('president_number')
         self.deputy_president_number = details.get('deputy_president_number')
-        self.answered_on = details.get('date')
+        self.date = details.get('date')
         self.answer_type = {
             'O': 'oral',
             'W': 'written',
@@ -761,8 +761,8 @@ class CommitteeQuestion(ApiResource, db.Model):
             .replace('Minister in the ', '')
         return Committee.find_by_inexact_name(name)
 
-    @validates('answered_on')
-    def validate_answered_on(self, key, value):
+    @validates('date')
+    def validate_date(self, key, value):
         self.year = value.year
         return value
 
@@ -798,7 +798,7 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(desc(cls.answered_on))
+        return cls.query.order_by(desc(cls.date))
 
     @classmethod
     def find(cls, house, year, **kwargs):

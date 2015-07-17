@@ -2,7 +2,7 @@
 
 <div class="committee-question-detail">
   <h4>
-    {{ question.answered_on | pretty_date("long") }} - 
+    {{ question.date | pretty_date("long") }} - 
     <a href="{{ url_for('committee_question', question_id=question.id) }}">{{ question.code }}</a>
   </h4>
 

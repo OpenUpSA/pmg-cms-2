@@ -655,6 +655,11 @@ class CommitteeQuestionView(MyModelView):
         file_data = request.files.get('file')
         try:
             question = CommitteeQuestion.import_from_uploaded_answer_file(file_data)
+            if question.id:
+                # it already existed
+                flash("That question has already been imported.", "warn")
+                return redirect(get_url('.edit_view', id=question.id, url=return_url))
+
             db.session.add(question)
             db.session.commit()
             flash("Successfully imported from %s" % (file_data.filename,))

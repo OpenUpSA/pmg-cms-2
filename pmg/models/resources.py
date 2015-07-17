@@ -774,8 +774,10 @@ class CommitteeQuestion(ApiResource, db.Model):
         upload.save(path)
 
         question = cls.import_from_answer_file(path)
-        question.source_file = File()
-        question.source_file.from_upload(upload)
+        if not question.id:
+            # it's new
+            question.source_file = File()
+            question.source_file.from_upload(upload)
 
         return question
 
@@ -790,9 +792,10 @@ class CommitteeQuestion(ApiResource, db.Model):
         existing = cls.find(question.house, question.year,
                             oral_number=question.oral_number,
                             written_number=question.written_number)
-        question = existing or question
-        question.parse_answer_file(filename)
+        if existing:
+            return existing
 
+        question.parse_answer_file(filename)
         return question
 
     @classmethod

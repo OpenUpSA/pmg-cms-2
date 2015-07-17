@@ -1,40 +1,37 @@
 import logging
-import os
 from operator import itemgetter
 import datetime
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
-from flask import Flask, flash, redirect, url_for, request, render_template, g, abort, make_response
+from flask import flash, redirect, url_for, request, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.babel import gettext
 from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.contrib.sqla.form import InlineModelConverter
-from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
-from flask.ext.admin.helpers import is_form_submitted
-from flask.ext.security import current_user
+from flask.ext.admin.helpers import is_form_submitted, get_url
 from flask.ext.security.changeable import change_user_password
 import flask_wtf
 from wtforms import fields
-from wtforms.validators import data_required, optional
+from wtforms.validators import data_required
 from sqlalchemy import func
-from sqlalchemy.sql.expression import and_, or_
+from sqlalchemy.sql.expression import or_
 from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
 
 from pmg import app, db
-from pmg.models import *
+from pmg.models import *  # noqa
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
 import widgets
 
 logger = logging.getLogger(__name__)
+
 
 # Our base form extends flask_wtf.Form to get CSRF support,
 # and adds the _obj property required by Flask Admin
@@ -64,7 +61,7 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled-committee-report.index_view', TabledCommitteeReport.query.count()),
             ('Uploaded Files', 'files.index_view', File.query.count()),
-            ]
+        ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
 
         return self.render(
@@ -76,8 +73,7 @@ class UsageReportView(RBACMixin, BaseView):
     required_roles = ['editor', ]
 
     def get_list(self, months):
-
-        cutoff = datetime.datetime.utcnow()-relativedelta(months=months)
+        cutoff = datetime.datetime.utcnow() - relativedelta(months=months)
         organisation_list = db.session.query(
             Organisation.name,
             Organisation.domain,
@@ -109,8 +105,7 @@ class UsageReportView(RBACMixin, BaseView):
 
     @expose('/xlsx/<int:months>/')
     def download(self, months=1):
-
-        today=datetime.date.today()
+        today = datetime.date.today()
         tmp = str(months) + " month up to " + str(today)
         if months > 1:
             tmp = str(months) + " months up to " + str(today)
@@ -157,45 +152,45 @@ class MyModelView(RBACMixin, ModelView):
 class HasExpiredFilter(BaseSQLAFilter):
     def __init__(self, column, name):
         options = (
-                ('expired', 'Expired'),
-                ('unexpired', 'Not expired'),
-                ('1month', 'Expiring in 1 month'),
-                ('3month', 'Expiring in 3 months'),
-                ('6month', 'Expiring in 6 months'),
-                ('1year', 'Expiring in 1 year'),
-            )
+            ('expired', 'Expired'),
+            ('unexpired', 'Not expired'),
+            ('1month', 'Expiring in 1 month'),
+            ('3month', 'Expiring in 3 months'),
+            ('6month', 'Expiring in 6 months'),
+            ('1year', 'Expiring in 1 year'),
+        )
         super(HasExpiredFilter, self).__init__(column, name, options=options)
 
     def apply(self, query, value):
         if value == 'expired':
             return query\
-                    .filter(self.column != None)\
-                    .filter(self.column < datetime.date.today())
+                .filter(self.column < datetime.date.today())\
+                .filter(self.column != None)  # noqa
 
         elif value == 'unexpired':
             return query.filter(or_(
-                        self.column == None,
-                        self.column >= datetime.date.today()))
+                self.column == None,  # noqa
+                self.column >= datetime.date.today()))
 
         elif value == '1month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=1))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=1))
 
         elif value == '3month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=3))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=3))
 
         elif value == '6month':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(months=6))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(months=6))
 
         elif value == '1year':
             return query\
-                    .filter(self.column >= datetime.date.today())\
-                    .filter(self.column <= datetime.date.today() + relativedelta(years=1))
+                .filter(self.column >= datetime.date.today())\
+                .filter(self.column <= datetime.date.today() + relativedelta(years=1))
 
         else:
             return query
@@ -216,11 +211,11 @@ class UserView(MyModelView):
         'current_login_at',
         'login_count',
         'expiry',
-        ]
+    ]
     column_labels = {
         'current_login_at': "Last seen",
         'subscriptions': "User's premium subscriptions",
-        }
+    }
     form_columns = [
         'email',
         'name',
@@ -231,26 +226,25 @@ class UserView(MyModelView):
         'subscribe_daily_schedule',
         'subscriptions',
         'committee_alerts',
-        ]
+    ]
     form_args = {
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
             'widget': widgets.CheckboxSelectWidget(multiple=True),
-            }
         }
+    }
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     column_filters = [
-            HasExpiredFilter(User.expiry, 'Subscription expiry'),
-            DateBetweenFilter(User.expiry, 'Expiry date'),
-        ]
+        HasExpiredFilter(User.expiry, 'Subscription expiry'),
+        DateBetweenFilter(User.expiry, 'Expiry date'),
+    ]
 
     def on_model_change(self, form, model):
         if model.organisation:
             model.expiry = model.organisation.expiry
 
-
-    @expose('/reset_password',  methods=['GET', 'POST'])
+    @expose('/reset_password', methods=['GET', 'POST'])
     def reset_user_password(self):
         user = User.query.get(request.args['model_id'])
         new_pwd = request.form['new_password']
@@ -284,12 +278,12 @@ class OrganisationView(MyModelView):
         'domain',
         'paid_subscriber',
         'expiry',
-        ]
+    ]
     column_searchable_list = ('domain', 'name')
     column_filters = [
-            HasExpiredFilter(Organisation.expiry, 'Subscription expiry'),
-            DateBetweenFilter(Organisation.expiry, 'Expiry date'),
-            ]
+        HasExpiredFilter(Organisation.expiry, 'Subscription expiry'),
+        DateBetweenFilter(Organisation.expiry, 'Expiry date'),
+    ]
     form_ajax_refs = {
         'users': {
             'fields': ('name', 'email'),
@@ -298,13 +292,13 @@ class OrganisationView(MyModelView):
     }
     form_excluded_columns = [
         'created_at',
-        ]
+    ]
     form_args = {
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
             'widget': widgets.CheckboxSelectWidget(multiple=True)
-            }
         }
+    }
     column_labels = {'subscriptions': "Premium subscriptions"}
 
 
@@ -328,7 +322,7 @@ class CommitteeView(MyModelView):
     column_searchable_list = ('name', )
     column_formatters = dict(
         memberships=macro('render_membership_count'),
-        )
+    )
     form_columns = (
         'name',
         'ad_hoc',
@@ -368,7 +362,7 @@ class InlineFile(InlineFormAdmin):
     form_columns = (
         'id',
         'file',
-        )
+    )
     column_labels = {'file': 'Existing file', }
     form_ajax_refs = {
         'file': {
@@ -508,6 +502,7 @@ class HansardView(EventView):
     }
     inline_models = [InlineFile(EventFile)]
 
+
 class BriefingView(EventView):
     frontend_url_format = 'briefing/%s'
 
@@ -533,7 +528,7 @@ class BriefingView(EventView):
     form_widget_args = {
         'summary': {'class': 'ckeditor'},
         'body': {'class': 'ckeditor'},
-        }
+    }
     inline_models = [InlineFile(EventFile)]
 
 
@@ -554,7 +549,7 @@ class MemberView(MyModelView):
         'memberships': 'Committees',
         'current': 'Currently active',
         'pa_link': 'PA Link',
-        }
+    }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -569,7 +564,7 @@ class MemberView(MyModelView):
         profile_pic_url=macro('render_profile_pic'),
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
-        )
+    )
     column_filters = ['current', 'house.name', 'party.name', 'province.name']
     form_columns = (
         'name',
@@ -595,7 +590,7 @@ class MemberView(MyModelView):
         'bio': {
             'rows': '10'
         },
-        }
+    }
     edit_template = "admin/edit_member.html"
 
     def on_model_change(self, form, model, is_created):
@@ -607,9 +602,74 @@ class MemberView(MyModelView):
             model.profile_pic_url = tmp.file_path
 
 
-class QuestionReplyView(MyModelView):
-    frontend_url_format = 'question_reply/%s'
+class CommitteeQuestionView(MyModelView):
+    list_template = 'admin/committee_question_list.html'
+    create_template = 'admin/committee_question_create.html'
 
+    column_list = (
+        'code',
+        'committee',
+        'question_number',
+        'date',
+    )
+    column_default_sort = ('date', True)
+    column_searchable_list = ('code',)
+    form_columns = (
+        'code',
+        'date',
+        'intro',
+        'question',
+        'asked_by_name',
+        'asked_by_member',
+        'question_to_name',
+        'committee',
+        'answer',
+        'source_file',
+        'written_number',
+        'oral_number',
+        'president_number',
+        'deputy_president_number',
+    )
+    column_labels = {
+        'question_to_name': "Question To",
+        'committee': "Question To Committee",
+    }
+    form_widget_args = {
+        'answer': {'class': 'ckeditor'},
+    }
+    form_ajax_refs = {
+        'source_file': {
+            'fields': ('title', 'file_path'),
+            'page_size': 10,
+        },
+        'asked_by_member': {
+            'fields': ('name',),
+            'page_size': 25
+        },
+    }
+    inline_models = [InlineFile(CommitteeQuestionFile)]
+
+    @expose('/upload', methods=['POST'])
+    def upload(self):
+        return_url = request.headers['Referer']
+        file_data = request.files.get('file')
+        try:
+            question = CommitteeQuestion.import_from_uploaded_answer_file(file_data)
+            db.session.add(question)
+            db.session.commit()
+            flash("Successfully imported from %s" % (file_data.filename,))
+            return redirect(get_url('.edit_view', id=question.id, url=return_url))
+        except ValueError as e:
+            flash("Couldn't import from %s: %s" % (file_data.filename, e.message), 'error')
+            return redirect(return_url)
+
+    def frontend_url(self, model):
+        if model.id and model.committee:
+            return url_for('committee_question', question_id=model.id)
+        return None
+
+
+class QuestionReplyView(MyModelView):
     column_list = (
         'committee',
         'title',
@@ -651,7 +711,7 @@ class CallForCommentView(MyModelView):
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
 
 
 class DailyScheduleView(ViewWithFiles, MyModelView):
@@ -701,7 +761,7 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     form_widget_args = {
         'body': {'class': 'ckeditor'},
         'summary': {'class': 'ckeditor'},
-        }
+    }
     form_excluded_columns = ('nid', )
     inline_models = [InlineFile(TabledCommitteeReportFile)]
 
@@ -722,7 +782,7 @@ class EmailTemplateView(MyModelView):
     )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        }
+    }
 
 
 class InlineBillEventsForm(InlineFormAdmin):
@@ -733,7 +793,7 @@ class InlineBillEventsForm(InlineFormAdmin):
         'title',
         'house',
         'member',
-        )
+    )
     form_choices = {
         'type': [
             ('bill-introduced', 'Bill introduced'),
@@ -762,13 +822,13 @@ class InlineBillVersionForm(InlineFormAdmin):
         'date',
         'title',
         'file',
-        )
+    )
     form_ajax_refs = {
         'file': {
             'fields': ('title',),
             'page_size': 25
-            }
         }
+    }
 
     def postprocess_form(self, form_class):
         # TODO: hide this for existing versions
@@ -815,10 +875,11 @@ class BillsView(MyModelView):
     inline_models = [
         InlineBillEventsForm(Event),
         InlineBillVersionForm(BillVersion),
-        ]
+    ]
     form_args = {
         'events': {'widget': widgets.InlineBillEventsWidget()},
     }
+
 
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
@@ -833,7 +894,7 @@ class FileView(MyModelView):
     column_labels = {'file_bytes': 'Size'}
     column_formatters = {
         'file_bytes': lambda v, c, m, n: '-' if m.file_bytes is None else Markup('<nobr>%s</nobr>' % humanize.naturalsize(m.file_bytes)),
-        }
+    }
 
     class SizeRule(rules.BaseRule):
         def __call__(self, form, form_opts=None, field_args={}):
@@ -844,7 +905,7 @@ class FileView(MyModelView):
             url = url_for('docs', path=form.file_path.data)
             return Markup(
                 '<a href="%s" target="_blank">%s</a>' % (url, url)
-                )
+            )
 
     form_columns = (
         'title',
@@ -892,6 +953,7 @@ class RedirectView(MyModelView):
     column_searchable_list = ('old_url', 'new_url')
     column_default_sort = 'old_url'
 
+
 class PageView(ViewWithFiles, MyModelView):
     column_list = ('slug', 'title')
     column_searchable_list = ('slug', 'title')
@@ -904,7 +966,7 @@ class PageView(ViewWithFiles, MyModelView):
     form_widget_args = {
         'body': {'class': 'ckeditor'},
         'path': {'readonly': True},
-        }
+    }
     inline_models = [InlineFile(PageFile)]
     column_descriptions = {
         'show_files': 'Show a list of the files attached to this page in a box on the right?',
@@ -931,11 +993,10 @@ admin.add_view(OrganisationView(Organisation, db.session, name="Organisations", 
 # Committees
 admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint='committee', category="Committees"))
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
+admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call-for-comment', category="Committees"))
+admin.add_view(CommitteeQuestionView(CommitteeQuestion, db.session, name="Questions to Committees", endpoint='committee-question', category="Committees"))
+admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Old Questions & Replies", endpoint='question', category="Committees"))
 admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled-committee-report', category="Committees"))
-
-# ---------------------------------------------------------------------------------
-# Members
-admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
 
 # ---------------------------------------------------------------------------------
 # Bills
@@ -943,25 +1004,27 @@ admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint='bill', fronte
 
 # ---------------------------------------------------------------------------------
 # Other Content
-admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Questions & Replies", endpoint='question', category="Other Content"))
-admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call-for-comment', category="Other Content"))
+admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
+admin.add_view(FeaturedContentView(Featured, db.session, name="Featured Content", endpoint='featured', category="Other Content"))
 admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
 admin.add_view(HansardView(Hansard, db.session, type="plenary", name="Hansards", endpoint='hansard', category="Other Content"))
-admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
-admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedules", endpoint='schedule', category="Other Content"))
 admin.add_view(BriefingView(Briefing, db.session, type="media-briefing", name="Media Briefings", endpoint='briefing', category="Other Content"))
-admin.add_view(FeaturedContentView(Featured, db.session, category='Other Content', name="Featured Content", endpoint='featured'))
 admin.add_view(RedirectView(Redirect, db.session, category='Other Content', name="Legacy Redirects", endpoint='redirects'))
+admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
 admin.add_view(PageView(Page, db.session, category='Other Content', name="Static Pages", endpoint='pages'))
 admin.add_view(FileView(File, db.session, category='Other Content', name="Uploaded Files", endpoint='files'))
 
 # ---------------------------------------------------------------------------------
 # Form options
-admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
 admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
+admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 
 # ---------------------------------------------------------------------------------
 # Email alerts
 admin.add_view(EmailAlertView(category='Email Alerts', name="Send Emails", endpoint='alerts'))
 admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Templates", category='Email Alerts', endpoint='email-templates'))
+
+# ---------------------------------------------------------------------------------
+# Members
+admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))

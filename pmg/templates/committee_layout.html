@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}{{ committee.name }} | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% block committee_breadcrumb %}
+  <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+  {% endblock %}
+</ol>
+{% endblock %}
+
+
+{% block page %}
+  <div class="row">
+    <div class="col-sm-9 committee-header">
+      {% block committee_title %}
+      <h2>{{ committee.name }}</h2>
+      {% endblock %}
+    </div>
+    <div class="col-sm-3">
+      {% include 'user_management/_committee_alerts_signup.html' %}
+    </div>
+  </div>
+
+  {% block committee_page %}
+  {% endblock %}
+
+  {% include "_correct_this_page.html" %}
+
+{% endblock %}

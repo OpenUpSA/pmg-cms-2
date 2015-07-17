@@ -1,34 +1,21 @@
-{% extends "base.html" %}
+{% extends "committee_layout.html" %}
 {% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
 
 {% block title %}{{ event.title }} | PMG{% endblock %}
 
-{% block breadcrumb %}
-<ol class="breadcrumb">
-  {% if event.committee %}
-  <li><a href="{{ url_for('committees') }}">Committees</a></li>
-  <li><a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></li>
-  <li>Committee Meetings</li>
-  {% else %}
+{% block committee_breadcrumb %}
+  {{ super() }}
   <li><a href="{{ url_for('committee_meetings') }}">Committee Meetings</a></li>
-  {% endif %}
-</ol>
 {% endblock %}
 
-{% block page %}
-  <div class="row">
-    <div class="col-sm-9">
-      <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
-    </div>
 
-    {% if event.committee %}
-      <div class="col-sm-3">
-        {% set committee = event.committee %}
-        {% include 'user_management/_committee_alerts_signup.html' %}
-      </div>
-    {% endif %}
-  </div>
+{% block committee_title %}
+  {{ super() }}
+  <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
+{% endblock %}
 
+
+{% block committee_page %}
   {% if event.premium_content_excluded %}
     <p class="lead">
     Access to this committee meeting report and those for the committees below is restricted. All other committees are freely accessible.
@@ -50,16 +37,7 @@
   {% else %}
 
     <div class="row">
-      <div class="col-sm-8 justify-p">
-
-        <h3>
-          Committee:
-          {% if event.committee %}
-            <a href="{{ url_for('committee_detail', committee_id=event.committee.id) }}">{{ event.committee.name }}</a></h3>
-          {% else %}
-            (unknown)
-          {% endif %}
-        </h3>
+      <div class="col-sm-8">
 
         {% if event.chairperson %}
           <h3>Chairperson: {{ event.chairperson }}</h3>
@@ -68,7 +46,7 @@
         <h3>
           Date of Meeting:
           {% if event.date %}
-            {{ event.date | pretty_date }}
+            {{ event.date | pretty_date("long") }}
           {% else %}
             (unknown)
           {% endif %}
@@ -109,6 +87,5 @@
 
   {% endif %}
 
-{% include "_correct_this_page.html" %}
 {% endblock %}
 

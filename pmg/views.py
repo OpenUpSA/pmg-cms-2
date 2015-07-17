@@ -181,9 +181,59 @@ def committee_detail(committee_id):
 
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
+    questions = load_from_api('committee/%s/questions' % committee_id, params={'per_page': 5})
+
+    recent_questions = committee['questions_replies']
+    if questions['results']:
+        # blend together the 5 most recent questions to this committee
+        recent_questions.extend(questions['results'])
+        recent_questions.sort(key=lambda q: q.get('date', q.get('start_date', 0)), reverse=True)
+        recent_questions = recent_questions[:5]
+
     return render_template('committee_detail.html',
                            committee=committee,
+                           recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))
+
+
+@app.route('/committee/<int:committee_id>/questions/')
+@app.route('/committee/<int:committee_id>/questions/<int:page>/')
+def committee_questions(committee_id, page=0):
+    """
+    Display committee question for the committee.
+    """
+    per_page = 10
+
+    committee = load_from_api('committee', committee_id)
+    questions = load_from_api('committee/%s/questions' % committee_id, page=page, params={'per_page': per_page})
+    num_pages = int(math.ceil(float(questions['count']) / float(per_page)))
+
+    if questions['count'] == 0:
+        # send them to the old page
+        return redirect("/question_replies/?filter[committee]=%s" % committee_id)
+
+    return render_template('committee_questions.html',
+                           committee=committee,
+                           questions=questions,
+                           hide_replies=True,
+                           url='/committee/%s/questions' % committee_id,
+                           num_pages=num_pages,
+                           per_page=per_page,
+                           page=page)
+
+
+@app.route('/committee-question/<int:question_id>/')
+def committee_question(question_id):
+    """ Display a single committee question.
+    """
+    question = load_from_api('committee-question', question_id)
+    committee = question['committee']
+
+    return render_template('committee_question.html',
+                           committee=committee,
+                           question=question,
+                           hide_replies=False,
+                           admin_edit_url=admin_url('committee-question', question_id))
 
 
 @app.route('/committees/')
@@ -249,6 +299,7 @@ def committee_meeting(event_id):
     return render_template(
         'committee_meeting.html',
         event=event,
+        committee=event['committee'],
         audio=audio,
         related_docs=related_docs,
         premium_committees=premium_committees,
@@ -586,11 +637,17 @@ def daily_schedules(page=0):
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
-    logger.debug("question_reply page called")
     question_reply = load_from_api('question_reply', question_reply_id)
+
+    if question_reply['committee']:
+        template = 'committee_question_reply.html'
+    else:
+        template = 'question_reply_detail.html'
+
     return render_template(
-        'question_reply_detail.html',
+        template,
         question_reply=question_reply,
+        committee=question_reply.get('committee'),
         admin_edit_url=admin_url('question', question_reply_id))
 
 
@@ -671,6 +728,7 @@ def search(page=0):
     search_types = [
         ("committee", "Committees"),
         ("committee_meeting", "Committee Meetings"),
+        ("committee_question", "Committee Questions"),
         ("bill", "Bills"),
         ("member", "MPs"),
         ("hansard", "Hansards"),

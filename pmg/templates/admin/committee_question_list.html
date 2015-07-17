@@ -1,0 +1,8 @@
+{% extends 'admin/my_list.html' %}
+
+{% block model_menu_bar %}
+  <div class="pull-right">
+    {% include 'admin/_committee_question_upload.html' %}
+  </div>
+  {{ super() }}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% if result._source %}
+  {% if result.highlight.title %}
+    {% set title = result.highlight.title|search_snippet %}
+  {% else %}  
+    {% set title = result._source.title %}
+  {% endif %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
+  {% if  result._source.committee_id %}
+    {% set committee_id = result._source.committee_id %}
+  {% endif %}
+  {% if  result._source.committee_name %}
+    {% set committee_name = result._source.committee_name %}
+  {% endif %}
+{% else %}
+  {% set title = result.intro %}
+  {% set date = result.date %}
+  {% set id = result.id %}
+  {% if result.committee %}
+    {% set committee_name = result.committee.name %}
+    {% set committee_id = result.committee.id %}
+  {% endif %}
+{% endif %}
+<div class="committee_question-stub">
+  <div class="row">
+    <div class="col-sm-10 col-xs-8">
+      <span class="label label-primary">Committee Questions</span>
+      <a href="{{ url_for('committee_question', question_id=id) }}">
+      {% if committee_name %}
+        {{ committee_name }}
+      {% else %} 
+        {{ title|safe }}
+      {% endif %} 
+      </a>
+    </div>
+    <div class="col-sm-2 col-xs-4">{{ date|pretty_date }}</div>
+  </div>
+
+  {% if result.highlight.fulltext %}
+  <div>
+    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
+  </div>
+  {% endif %}
+</div>

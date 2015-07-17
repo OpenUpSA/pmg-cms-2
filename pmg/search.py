@@ -261,7 +261,7 @@ class Transforms:
         "committee": {
             "id": "id",
             "title": "name",
-            "description": ["info", "about"]
+            "description": "about",
         },
         "committee_meeting": {
             "id": "id",
@@ -269,8 +269,16 @@ class Transforms:
             "description": "summary",
             "fulltext": "body",
             "date": "date",
-            "committee_name": ["committee", "name"],
-            "committee_id": ["committee", "id"],
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
+        },
+        "committee_question": {
+            "id": "id",
+            "title": "intro",
+            "fulltext": ["question", "answer"],
+            "date": "date",
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
         },
         "member": {
             "id": "id",
@@ -297,32 +305,32 @@ class Transforms:
             "description": "summary",
             "fulltext": "body",
             "date": "date",
-            "committee_name": ["committee", "name"],
-            "committee_id": ["committee", "id"],
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
         },
         "question_reply": {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", "name"],
-            "committee_id": ["committee", "id"],
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
         },
         "tabled_committee_report": {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", "name"],
-            "committee_id": ["committee", "id"],
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
         },
         "call_for_comment": {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": ["committee", "name"],
-            "committee_id": ["committee", "id"],
+            "committee_name": "committee.name",
+            "committee_id": "committee.id",
         },
         "policy_document": {
             "id": "id",
@@ -355,18 +363,16 @@ class Transforms:
     @classmethod
     def get_val(cls, obj, field):
         if isinstance(field, list):
-            if (len(field) == 1):
-                if hasattr(obj, field[0]):
-                    return getattr(obj, field[0])
-            key = field[:1][0]
-            if isinstance(key, int):
-                if len(obj) > key:
-                    return cls.get_val(obj[key], field[1:])
-                return None
-            if hasattr(obj, key):
-                newobj = getattr(obj, key)
-                return cls.get_val(newobj, field[1:])
-            else:
-                return None
+            # join multiple fields
+            return ' '.join(cls.get_val(obj, f) or '' for f in field)
+
+        elif '.' in field:
+            # get nested attributes: foo.bar.baz
+            for part in field.split('.'):
+                if not obj:
+                    return None
+                obj = getattr(obj, part)
+
         else:
+            # simple attribute name
             return getattr(obj, field)

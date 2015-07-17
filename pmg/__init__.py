@@ -56,6 +56,7 @@ assets.register('css',
       'chosen/chosen.min.css',
       Bundle(
         'resources/css/style.scss',
+        'resources/css/committees.scss',
         'resources/css/bill-progress.scss',
         filters=PyScss(load_paths=assets.load_path),
         output='stylesheets/styles.%(version)s.css'),

@@ -1,25 +1,25 @@
-import re
 import datetime
 import logging
 import os
+import re
 
-from sqlalchemy import desc, Index, func, sql
-from sqlalchemy.orm import backref, validates, joinedload
-from sqlalchemy.event import listen
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import desc, func, sql
+from sqlalchemy.orm import backref, joinedload, validates
 
 from flask import url_for
 from flask.ext.sqlalchemy import models_committed
 from flask_security import current_user
 
 from werkzeug import secure_filename
+from za_parliament_scrapers.questions import QuestionAnswerScraper
 
 from pmg import app, db
 from pmg.search import Search
+from pmg.utils import levenshtein
 
 import serializers
 from .s3_upload import S3Bucket
-from .base import ApiResource, resource_slugs, FileLinkMixin
+from .base import ApiResource, FileLinkMixin
 
 STATIC_HOST = app.config['STATIC_HOST']
 
@@ -32,6 +32,7 @@ def allowed_file(filename):
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
 
+
 class House(db.Model):
 
     __tablename__ = "house"
@@ -42,6 +43,14 @@ class House(db.Model):
 
     def __unicode__(self):
         return unicode(self.name)
+
+    @classmethod
+    def ncop(cls):
+        return cls.query.filter(cls.name_short == 'NCOP').one()
+
+    @classmethod
+    def na(cls):
+        return cls.query.filter(cls.name_short == 'NA').one()
 
 
 class Party(db.Model):
@@ -199,7 +208,10 @@ class File(db.Model):
         self.file_bytes = os.stat(path).st_size
 
         # upload saved file to S3
-        self.file_path = s3_bucket.upload_file(path, filename)
+        if app.debug:
+            self.file_path = path
+        else:
+            self.file_path = s3_bucket.upload_file(path, filename)
 
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)
@@ -210,6 +222,7 @@ class File(db.Model):
         if self.title:
             return u'%s (%s)' % (self.title, self.file_path)
         return u'%s' % self.file_path
+
 
 @models_committed.connect_via(app)
 def delete_file_from_s3(sender, changes):
@@ -250,7 +263,7 @@ class Event(ApiResource, db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
-    committee = db.relationship('Committee', lazy=False, backref=backref( 'events', order_by=desc('Event.date')))
+    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
     house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
@@ -455,6 +468,22 @@ class Member(ApiResource, db.Model):
             .filter(Member.current == True)\
             .order_by(Member.name)
 
+    @classmethod
+    def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
+        # in the db, the name format is "last_name, title initial"
+        seeking = "%s, %s %s" % (last_name, title, first_name[0])
+
+        members = members or Member.query.all()
+        best = None
+
+        for member in members:
+            score = levenshtein(member.name, seeking)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (member, score)
+
+        return best[0] if best else None
+
 
 class Committee(ApiResource, db.Model):
 
@@ -472,9 +501,15 @@ class Committee(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)
+        return tmp
+
     @classmethod
     def premium_for_select(cls):
-        return cls.query.filter(cls.premium == True)\
+        return cls.query\
+                .filter(cls.premium == True)\
                 .order_by(cls.name)\
                 .all()
 
@@ -488,6 +523,19 @@ class Committee(ApiResource, db.Model):
     @classmethod
     def list(cls):
         return cls.query.order_by(cls.house_id, cls.name)
+
+    @classmethod
+    def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
+        candidates = candidates or cls.query.all()
+        best = None
+
+        for cte in candidates:
+            score = levenshtein(cte.name, name)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (cte, score)
+
+        return best[0] if best else None
 
     def __unicode__(self):
         tmp = self.name
@@ -530,8 +578,8 @@ class Schedule(ApiResource, db.Model):
     def list(cls):
         current_time = datetime.datetime.utcnow()
         return cls.query\
-                .order_by(desc(cls.meeting_date))\
-                .filter(Schedule.meeting_date >= current_time)
+            .order_by(desc(cls.meeting_date))\
+            .filter(Schedule.meeting_date >= current_time)
 
 schedule_house_table = db.Table(
     'schedule_house_join', db.Model.metadata,
@@ -540,7 +588,247 @@ schedule_house_table = db.Table(
 )
 
 
-# === Questions Replies === #
+# === Committee Questions === #
+#
+# Questions asked by an MP of a Committe chairperson
+
+class CommitteeQuestion(ApiResource, db.Model):
+    __tablename__ = "committee_question"
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
+    committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
+
+    # XXX: don't forget session, numbers are unique by session only
+
+    # Questions are also referred to by an identifier code of the form
+    # [NC][OW]\d+[AEX]
+    # The meaning of the parts of this identifier is as follows:
+    #  - [NC] - tells you the house the question was asked in. See 'house' below.
+    #  - [OW] - tells you whether the question is for oral or written answer.
+    #           Questions can sometimes be transferred between being oral or
+    #           written. When this happens, they may be referred to by the new
+    #           identifier with everything the same except the O/W.
+    #  - \d+  - (number below) Every question to a particular house in a
+    #           particular year gets given another number. This number doesn't
+    #           change when the question is translated or has [OW] changed.
+    #  - [AEX]- Afrikaans/English/Xhosa. The language the question is currently
+    #           being displayed in. Translations of the question will have a
+    #           different [AEX] in the identifier.
+    #
+    # Note that we also store the number, house, and answer_type separately.
+    code = db.Column(db.String(50), index=True, unique=False, nullable=False)
+
+    # From the identifier discussed above.
+    question_number = db.Column(db.Integer, index=True, nullable=True)
+
+    # This is in the identifier above.
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house = db.relationship("House")
+
+    # Questions for written answer and questions for oral answer both have
+    # sequence numbers. It looks like these are probably the order the questions
+    # were asked in. The sequences are unique for each house for written/oral and
+    # restart on 1 each session.
+
+    # At least one of these four numbers should be non-null, and it's possible
+    # for more than one to be non-null if a question is transferred from oral to written
+    # or vice-versa.
+    written_number = db.Column(db.Integer, nullable=True, index=True)
+    oral_number = db.Column(db.Integer, nullable=True, index=True)
+
+    # The president and vice president get their own question number sequences for
+    # oral questions.
+    president_number = db.Column(db.Integer, nullable=True, index=True)
+    deputy_president_number = db.Column(db.Integer, nullable=True, index=True)
+
+    answer_type = db.Column(db.Enum('oral', 'written', name='committee_question_answer_type_enum'), nullable=False)
+
+    # Date of the question, generally the date on which it was answered. Not to
+    # be confused with the date the question was published.
+    date = db.Column(db.Date(), nullable=False)
+
+    # This should always be the year from the date above, but is worth
+    # storing separately so that we can easily have uniqueness constraints
+    # on it.
+    year = db.Column(db.Integer, index=True, nullable=False)
+
+    # The actual text of the question.
+    question = db.Column(db.Text)
+
+    # The actual text (HTML) of the answer.
+    answer = db.Column(db.Text)
+
+    # Text of the person the question is asked of
+    question_to_name = db.Column(db.String(1024), nullable=False)
+
+    # Is the question a translation of one originally asked in another language.
+    # Currently we are only storing questions in English.
+    translated = db.Column(db.Boolean, default=False, nullable=False)
+
+    # oral/written number, asker and askee as as string, for example:
+    # '144. Mr D B Feldman (COPE-Gauteng) to ask the Minister of Defence and Military Veterans:'
+    # '152. Mr D A Worth (DA-FS) to ask the Minister of Defence and Military Veterans:'
+    # '254. Mr R A Lees (DA-KZN) to ask the Minister of Rural Development and Land Reform:'
+    intro = db.Column(db.Text)
+
+    # Name of the person asking the question.
+    asked_by_name = db.Column(db.String(1024), nullable=False)
+    # The actual MP asking the question. This may be null if we weren't able to link it to an MP
+    asked_by_member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=True)
+    asked_by_member = db.relationship('Member')
+
+    # the source document for this question
+    source_file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="SET NULL"), index=True, nullable=True)
+    source_file = db.relationship('File', lazy='joined')
+
+    files = db.relationship("CommitteeQuestionFile", lazy='joined', cascade="all, delete, delete-orphan")
+
+    # indexes for uniqueness
+    __table_args__ = (
+        db.UniqueConstraint('date', 'code', name='date_code_ix'),
+        db.UniqueConstraint('date', 'house_id', 'oral_number', name='date_oral_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'written_number', name='date_written_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'president_number', name='date_president_number_ix'),
+        db.UniqueConstraint('date', 'house_id', 'deputy_president_number', name='date_deputy_president_number_ix'),
+    )
+
+    def populate_from_code(self, code):
+        """ Populate this question with the details contained in +code+, such as
+        RNW2680-1212114.
+        """
+        details = QuestionAnswerScraper().details_from_name(code)
+
+        house = details.pop('house')
+        if house == 'N':
+            house = House.na()
+        elif house == 'C':
+            house = House.ncop()
+        else:
+            raise ValueError("Invalid house: %s" % house)
+
+        # TODO: session
+        self.code = details['code']
+        self.house = house
+        self.written_number = details.get('written_number')
+        self.oral_number = details.get('oral_number')
+        self.question_number = self.written_number or self.oral_number
+        self.president_number = details.get('president_number')
+        self.deputy_president_number = details.get('deputy_president_number')
+        self.date = details.get('date')
+        self.answer_type = {
+            'O': 'oral',
+            'W': 'written',
+        }[details.get('type') or 'W']
+
+    def parse_answer_file(self, filename):
+        # process the actual document text
+        text, html = QuestionAnswerScraper().extract_content_from_document(filename)
+
+        try:
+            self.parse_question_text(text)
+        except ValueError as e:
+            logger.warn(e.message)
+            self.question = text
+
+        self.parse_answer_html(html)
+
+    def parse_question_text(self, text):
+        questions = QuestionAnswerScraper().extract_questions_from_text(text)
+        if not questions:
+            raise ValueError("Couldn't find any questions in the text")
+        q = questions[0]
+
+        self.question_to_name = q['questionto']
+        self.committee = self.committee_from_minister_name(self.question_to_name)
+
+        self.asked_by_name = q['askedby']
+        parts = re.split(' +', self.asked_by_name)
+        title, first, last = parts[0], ''.join(parts[1:-1]), parts[-1]
+        self.asked_by_member = Member.find_by_inexact_name(first, last, title)
+
+        self.question = q['question']
+        self.translated = q['translated']
+        self.intro = q['intro']
+
+    def parse_answer_html(self, html):
+        self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
+
+    def committee_from_minister_name(self, minister):
+        name = minister\
+            .replace('Minister of ', '')\
+            .replace('Minister in the ', '')
+        return Committee.find_by_inexact_name(name)
+
+    @validates('date')
+    def validate_date(self, key, value):
+        self.year = value.year
+        return value
+
+    @classmethod
+    def import_from_uploaded_answer_file(cls, upload):
+        # save the file to disk
+        filename = secure_filename(upload.filename)
+        path = os.path.join(app.config['UPLOAD_PATH'], filename)
+        logger.debug('saving uploaded file %s to %s' % (filename, path))
+        upload.save(path)
+
+        question = cls.import_from_answer_file(path)
+        question.source_file = File()
+        question.source_file.from_upload(upload)
+
+        return question
+
+    @classmethod
+    def import_from_answer_file(cls, filename):
+        name = os.path.splitext(os.path.basename(filename))[0]
+
+        question = CommitteeQuestion()
+        question.populate_from_code(name)
+
+        # does it already exist?
+        existing = cls.find(question.house, question.year,
+                            oral_number=question.oral_number,
+                            written_number=question.written_number)
+        question = existing or question
+        question.parse_answer_file(filename)
+
+        return question
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(desc(cls.date))
+
+    @classmethod
+    def find(cls, house, year, **kwargs):
+        # TODO: filter by session
+        query = cls.query.filter(
+            cls.house == house,
+            cls.year == year,
+        )
+
+        if kwargs.get('oral_number'):
+            query = query.filter(cls.oral_number == kwargs['oral_number'])
+
+        if kwargs.get('written_number'):
+            query = query.filter(cls.written_number == kwargs['written_number'])
+
+        return query.first()
+
+
+class CommitteeQuestionFile(FileLinkMixin, db.Model):
+    __tablename__ = 'committee_question_file_join'
+
+    id = db.Column(db.Integer, primary_key=True)
+    committee_question_id = db.Column(db.Integer, db.ForeignKey('committee_question.id', ondelete='CASCADE'), index=True, nullable=False)
+    committee_question = db.relationship('CommitteeQuestion')
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
+    file = db.relationship('File', lazy='joined')
+
+
+# === Legacy Questions & Replies === #
+#
+# Questions are stored in batches as HTML, linked to a committee.
 
 class QuestionReply(ApiResource, db.Model):
 
@@ -756,6 +1044,7 @@ ApiResource.register(Briefing)
 ApiResource.register(CallForComment)
 ApiResource.register(Committee)
 ApiResource.register(CommitteeMeeting)
+ApiResource.register(CommitteeQuestion)
 ApiResource.register(DailySchedule)
 ApiResource.register(Gazette)
 ApiResource.register(Hansard)

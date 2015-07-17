@@ -13,7 +13,6 @@ SEARCH_RESULTS_PER_PAGE = 20
 SQLALCHEMY_ECHO = False
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
-ES_SERVER = "http://ec2-54-77-69-243.eu-west-1.compute.amazonaws.com:9200"
 SEARCH_REINDEX_CHANGES = False # don't reindex changes to models
 UPLOAD_PATH = "/tmp/pmg_upload/"
 ES_SERVER = "http://localhost:9200"

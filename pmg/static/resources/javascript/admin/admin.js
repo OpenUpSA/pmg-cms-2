@@ -8,3 +8,17 @@ $(function() {
     });
   });
 });
+
+$(function() {
+  $('.upload-answer-file').on('click', function(e) {
+    e.preventDefault();
+    // prompt the user to choose a file
+    $('.upload-answer-form [name=file]').click();
+  });
+
+  $('.upload-answer-form [name=file]').on('change', function(e) {
+    if (this.files.length > 0) {
+      this.form.submit();
+    }
+  });
+});

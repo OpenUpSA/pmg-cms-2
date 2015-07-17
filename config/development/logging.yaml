@@ -12,7 +12,7 @@ loggers:
   passlib:
     level: INFO
   sqlalchemy.engine:
-    level: INFO
+    level: WARN
   pyelasticsearch:
     level: INFO
 root:

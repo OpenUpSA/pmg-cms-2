@@ -183,7 +183,7 @@ def committee_detail(committee_id):
     committee = load_from_api('committee', committee_id)
     questions = load_from_api('committee/%s/questions' % committee_id, params={'per_page': 5})
 
-    recent_questions = committee['questions_replies']
+    recent_questions = committee.get('questions_replies', [])
     if questions['results']:
         # blend together the 5 most recent questions to this committee
         recent_questions.extend(questions['results'])

@@ -639,7 +639,7 @@ def daily_schedules(page=0):
 def question_reply(question_reply_id):
     question_reply = load_from_api('question_reply', question_reply_id)
 
-    if question_reply['committee']:
+    if question_reply.get('committee'):
         template = 'committee_question_reply.html'
     else:
         template = 'question_reply_detail.html'

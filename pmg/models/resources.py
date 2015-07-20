@@ -528,7 +528,7 @@ class Committee(ApiResource, db.Model):
         return cls.query.order_by(cls.house_id, cls.name)
 
     @classmethod
-    def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
+    def find_by_inexact_name(cls, name, threshold=0.6, candidates=None):
         candidates = candidates or cls.query.all()
         best = None
 

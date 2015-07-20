@@ -18,13 +18,12 @@ from pmg.models.resources import CommitteeMeeting, Member, Committee, House, Com
 
 if __name__ == "__main__":
 
-    # parser = argparse.ArgumentParser(description='Import Committee meeting attendance csv file')
-    # parser.add_argument('csv_file', help='Path to file')
-    # args = parser.parse_args()
-    # if args.csv_file:
+    parser = argparse.ArgumentParser(description='Import Committee meeting attendance csv file')
+    parser.add_argument('csv', help='Path to file')
+    args = parser.parse_args()
 
     with open(file_path + '/output.csv', 'wb') as outputfile:
-        with open(file_path + '/test.csv') as csvfile:
+        with open(file_path + '/' + args.csv) as csvfile:
             # The csv file being imported needs to be sorted by date.
             writer = csv.writer(outputfile)
             reader = csv.DictReader(csvfile)
@@ -40,8 +39,7 @@ if __name__ == "__main__":
             committee_meeting_dict = {}
 
             for row in reader:
-                import ipdb; ipdb.set_trace()
-                if reader.line_num < 2000:
+                if reader.line_num < 10:
                     date_time_str = "%s %s" % (row['Date'], row['OST'])
                     try:
                         meeting_date = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
@@ -158,13 +156,24 @@ if __name__ == "__main__":
                         # If multiple, or no meetings were found, log the row.
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
-                            row['House'], row['ISSID'], row['Name'], row['Committee'],
-                            row['OST'], row['PMG'], row['Name'], row['alt'], row['attendance'],
+                            row['House'], row['ISSID'], row['Name Committee'],
+                            row['OST'], row['PMG Name'], row['alt'], row['attendance'],
                             row['chairperson'], row['first_name'], row['party_affiliation'],
                             row['province'], row['surname'], row['title']
                         ])
-                        print "Errornous line: " + str(reader.line_num)
+                        print "Meetings error: " + str(reader.line_num)
                         print "Number of Comittee meetings: " + str(len(committee_meeting_results))
+
+                    elif member is None:
+                        writer.writerow([
+                            row['Column'], row['AET'], row['AST'], row['Date'],
+                            row['House'], row['ISSID'], row['Name Committee'],
+                            row['OST'], row['PMG Name'], row['alt'], row['attendance'],
+                            row['chairperson'], row['first_name'], row['party_affiliation'],
+                            row['province'], row['surname'], row['title']
+                        ])
+                        print "Member error: " + str(reader.line_num)
+
                     else:
                         committee_meeting = committee_meeting_results[0]
                         committee_meeting.date = meeting_date
@@ -181,5 +190,5 @@ if __name__ == "__main__":
                         db.session.add(committee_meeting_attendance)
                         print reader.line_num
 
-            db.session.flush()
-            # db.session.commit()
+            # db.session.flush()
+            db.session.commit()

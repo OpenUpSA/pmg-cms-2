@@ -39,8 +39,9 @@ if __name__ == "__main__":
             committee_meeting_dict = {}
 
             for row in reader:
-                if reader.line_num < 10:
-                    date_time_str = "%s %s" % (row['Date'], row['OST'])
+                # if reader.line_num > 10 and reader.line_num <= 300:
+                    ost = row['OST'] if row['OST'] else '00:00:00'
+                    date_time_str = "%s %s" % (row['Date'], ost)
                     try:
                         meeting_date = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
                         meeting_date = meeting_date.replace(tzinfo=local_time)
@@ -190,5 +191,5 @@ if __name__ == "__main__":
                         db.session.add(committee_meeting_attendance)
                         print reader.line_num
 
-            # db.session.flush()
-            db.session.commit()
+            db.session.flush()
+            # db.session.commit()

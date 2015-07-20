@@ -37,7 +37,8 @@ if __name__ == "__main__":
 
             member_dict = {}
             committee_dict = {}
-            # import ipdb; ipdb.set_trace()
+            committee_meeting_dict = {}
+
             for row in reader:
                 import ipdb; ipdb.set_trace()
                 if reader.line_num < 2000:
@@ -141,10 +142,17 @@ if __name__ == "__main__":
                             committee = Committee.find_by_inexact_name(committee_name, candidates=all_committees)
                         committee_dict[committee_name] = committee
 
-                    committee_meeting_results = CommitteeMeeting.query\
+                    if committee:
+                        if (committee.name, meeting_date.date()) in committee_meeting_dict:
+                            committee_meeting_results = committee_meeting_dict[(committee.name, meeting_date.date())]
+                        else:
+                            committee_meeting_results = CommitteeMeeting.query\
                                 .filter(CommitteeMeeting.committee == committee)\
                                 .filter(func.date(CommitteeMeeting.date) == meeting_date.date())\
                                 .all()
+                            if committee_meeting_results:
+                                cm = committee_meeting_results[0]
+                                committee_meeting_dict[(cm.committee.name, cm.date.date())] = committee_meeting_results
 
                     if len(committee_meeting_results) != 1:
                         # If multiple, or no meetings were found, log the row.

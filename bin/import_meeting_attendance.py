@@ -48,7 +48,7 @@ if __name__ == "__main__":
             committee_meeting_dict = {}
 
             for row in reader:
-                if reader.line_num >= 10:
+                if reader.line_num >= 0:
                     if len(meeting_count[(row['Date'], row['Name Committee'])]) > 1:
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
@@ -150,7 +150,7 @@ if __name__ == "__main__":
                             committee = None
                             # committee = Committee.query.filter(
                             #     Committee.name == 'Ad Hoc Committee on Police Minister\'s Report on Nkandla').first()
-                        elif committee_name == 'Standing committee of Public accounts':
+                        elif committee_name == 'Standing Committee on Public Accounts':
                             committee = None
                         elif 'Select Committee on' in committee_name:
                             # Only campare against NCOP committees
@@ -196,6 +196,8 @@ if __name__ == "__main__":
                         print "Member error: " + str(reader.line_num)
 
                     else:
+                        if committee_name != committee.name:
+                            print 'CTE', committee_name, ':', committee.name
                         committee_meeting = committee_meeting_results[0]
                         committee_meeting.date = meeting_date
                         committee_meeting.actual_start_time = ast

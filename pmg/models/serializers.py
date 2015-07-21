@@ -1,11 +1,10 @@
 import logging
 import json
-from datetime import datetime, date
-from operator import itemgetter
+from datetime import datetime, date, time
 
 from sqlalchemy import inspect
 
-from pmg import db, app
+from pmg import db
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +16,7 @@ class CustomEncoder(json.JSONEncoder):
     """
 
     def default(self, obj):
-        if isinstance(obj, datetime) or isinstance(obj, date):
+        if isinstance(obj, (datetime, date, time)):
             encoded_obj = obj.isoformat()
         elif isinstance(obj, db.Model):
             try:
@@ -53,7 +52,6 @@ def model_to_dict(obj, include_related=False):
         pass
 
     relations = obj.__mapper__.relationships.keys()
-    # 1/0
     for key in relations:
         # serialize eagerly loaded related objects, or all related objects if
         # the flag is set
@@ -65,17 +63,13 @@ def model_to_dict(obj, include_related=False):
                         tmp_dict[key] = related_content.to_dict()
                     else:
                         tmp_dict[key] = model_to_dict(related_content)
-                except AttributeError as e:
+                except AttributeError:
                     tmp_dict[key] = []
                     for item in related_content:
                         if hasattr(item, 'to_dict'):
                             tmp_dict[key].append(item.to_dict())
                         else:
                             tmp_dict[key].append(model_to_dict(item))
-            # # remove redundant ids
-            # join_key = obj.__mapper__.relationships[key].local_remote_pairs[0][0].name
-            # if tmp_dict.get(join_key):
-            #     tmp_dict.pop(join_key)
     return tmp_dict
 
 

@@ -337,6 +337,7 @@ class CommitteeMeeting(Event):
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
+        tmp['attendance_url'] = url_for('api.committee_meeting_attendance', committee_meeting_id=self.id, _external=True)
         # check user permissions, popping some content if required
         if not self.check_permission():
             # remove premium content
@@ -1043,7 +1044,11 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
     meeting = db.relationship('CommitteeMeeting')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
-    member = db.relationship('Member')
+    member = db.relationship('Member', lazy=False)
+
+    @classmethod
+    def list(cls):
+        return cls.query
 
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
@@ -1083,3 +1088,4 @@ ApiResource.register(PolicyDocument)
 ApiResource.register(QuestionReply)
 ApiResource.register(Schedule)
 ApiResource.register(TabledCommitteeReport)
+ApiResource.register(CommitteeMeetingAttendance)

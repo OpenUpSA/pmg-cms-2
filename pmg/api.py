@@ -320,3 +320,16 @@ def committee_questions(committee_id):
         .options(joinedload('asked_by_member'))
 
     return api_resource_list('committee-question', None, query)
+
+
+@api.route('/committee-meeting/<int:committee_meeting_id>/attendance/')
+def committee_meeting_attendance(committee_meeting_id):
+    """
+    MP attendance of committee meetings.
+    """
+    query = CommitteeMeetingAttendance.list()\
+        .filter(CommitteeMeetingAttendance.meeting_id == committee_meeting_id)\
+        .options(lazyload('member.memberships'))
+        # .options(joinedload('asked_by_member'))
+
+    return api_resource_list('committee-meeting-attendance', None, query)

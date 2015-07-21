@@ -47,7 +47,7 @@ if __name__ == "__main__":
             committee_meeting_dict = {}
 
             for row in reader:
-                if reader.line_num >= 21 and reader.line_num <= 21:
+                if reader.line_num < 10:
                     if len(meeting_count[(row['Date'], row['Name Committee'])]) > 1:
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
@@ -119,7 +119,7 @@ if __name__ == "__main__":
                             committee_name = committee_name[prefix_len+1:]
 
                     if committee_name in committee_dict:
-                        commitee = committee_dict[committee_name]
+                        committee = committee_dict[committee_name]
                     else:
                         # Check for some committee exceptions
                         if committee_name == 'Standing Committee on Finance':
@@ -207,5 +207,5 @@ if __name__ == "__main__":
                         db.session.add(committee_meeting_attendance)
                         print reader.line_num
 
-            db.session.flush()
-            # db.session.commit()
+            # db.session.flush()
+            db.session.commit()

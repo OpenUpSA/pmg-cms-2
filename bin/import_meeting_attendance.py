@@ -7,7 +7,7 @@ import csv
 import time
 import datetime
 import pytz
-from dateutil.tz import tzutc
+from collections import defaultdict
 from sqlalchemy import func
 
 file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
@@ -19,13 +19,23 @@ from pmg.models.resources import CommitteeMeeting, Member, Committee, House, Com
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Import Committee meeting attendance csv file')
-    parser.add_argument('csv', help='Path to file')
+    parser.add_argument('input', help='Path of file to import')
+    parser.add_argument('log', help='Path of file to log errors')
     args = parser.parse_args()
 
-    with open(file_path + '/output.csv', 'wb') as outputfile:
-        with open(file_path + '/' + args.csv) as csvfile:
-            # The csv file being imported needs to be sorted by date.
-            writer = csv.writer(outputfile)
+    meeting_count = defaultdict(list)
+    with open(file_path + '/' + args.input) as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            # To be used for checking multiple committee meetings in a single day
+            if row['ISSID'] not in meeting_count[(row['Date'], row['Name Committee'])]:
+                meeting_count[(row['Date'], row['Name Committee'])].append(row['ISSID'])
+
+
+    with open(file_path + '/' + args.log, 'wb') as logfile:
+        with open(file_path + '/' + args.input) as csvfile:
+            # The csv file being imported should be sorted by date.
+            writer = csv.writer(logfile)
             reader = csv.DictReader(csvfile)
 
             members = Member.query.all()
@@ -39,16 +49,20 @@ if __name__ == "__main__":
             committee_meeting_dict = {}
 
             for row in reader:
-                # if reader.line_num > 10 and reader.line_num <= 300:
+                if reader.line_num >= 10 and reader.line_num <= 290:
+                    if len(meeting_count[(row['Date'], row['Name Committee'])]) > 1:
+                        writer.writerow([
+                            row['Column'], row['AET'], row['AST'], row['Date'],
+                            row['House'], row['ISSID'], row['Name Committee'],
+                            row['OST'], row['PMG Name'], row['alt'], row['attendance'],
+                            row['chairperson'], row['first_name'], row['party_affiliation'],
+                            row['province'], row['surname'], row['title']])
+                        continue
+
                     ost = row['OST'] if row['OST'] else '00:00:00'
                     date_time_str = "%s %s" % (row['Date'], ost)
-                    try:
-                        meeting_date = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
-                        meeting_date = meeting_date.replace(tzinfo=local_time)
-                    except ValueError:
-                        # No OST
-                        meeting_date = datetime.datetime.strptime(row['Date'], '%Y-%m-%d')
-                        meeting_date = meeting_date.replace(tzinfo=local_time)
+                    meeting_date = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
+                    meeting_date = meeting_date.replace(tzinfo=local_time)
                     try:
                         aet = time.strptime(row['AET'], '%H:%M:%S')
                         aet = datetime.time(aet.tm_hour, aet.tm_min, tzinfo=local_time)
@@ -101,13 +115,15 @@ if __name__ == "__main__":
                             member = Member.find_by_inexact_name(first_name, last_name, title, members=members)
                         member_dict[member_name] = member
 
+                    if 'Portfolio Committee on' in committee_name or 'Porrfolio Committee on' in committee_name:
+                            # Remove from committee_name as it doesn't appear in the db
+                            prefix_len = len('Portfolio Committee on')
+                            committee_name = committee_name[prefix_len+1:]
+
                     if committee_name in committee_dict:
                         commitee = committee_dict[committee_name]
                     else:
                         # Check for some committee exceptions
-                        if 'Portfolio Committee on' in committee_name or 'Porrfolio Committee on' in committee_name:
-                            prefix_len = len('Portfolio Committee on')
-                            committee_name = committee_name[prefix_len+1:]
                         if committee_name == 'Standing Committee on Finance':
                             committee = Committee.query.filter(Committee.name == "Finance Standing Committee").first()
                         elif committee_name == 'Select Committee on Finance':
@@ -124,7 +140,9 @@ if __name__ == "__main__":
                             committee = Committee.query.filter(Committee.name == 'Public Service and Administration, as well as Performance Monitoring and Evaluation').first()
                         elif committee_name == 'Joint Standing Committee on Defence':
                             committee = Committee.query.filter(Committee.name == 'Defence').first()
-
+                        elif committee_name == 'Ad Hoc Committee on Open Democracy Bill':
+                            committee = Committee.query.filter(
+                                Committee.name == 'Promotion of Access to Information Bill (Open Democracy Bill)').first()
                         # Temp: these committees do not exist
                         elif committee_name == 'Ad Hoc Committee Nkandla':
                             committee = None
@@ -132,10 +150,8 @@ if __name__ == "__main__":
                             #     Committee.name == 'Ad Hoc Committee on Police Minister\'s Report on Nkandla').first()
                         elif committee_name == 'Standing committee of Public accounts':
                             committee = None
-                        elif committee_name == 'Ad Hoc Committee on Open Democracy Bill':
-                            committee = Committee.query.filter(
-                                Committee.name == 'Promotion of Access to Information Bill (Open Democracy Bill)').first()
                         elif 'Select Committee on' in committee_name:
+                            # Only campare against NCOP committees
                             committee = Committee.find_by_inexact_name(committee_name, candidates=ncop_committees)
                         else:
                             committee = Committee.find_by_inexact_name(committee_name, candidates=all_committees)
@@ -152,6 +168,8 @@ if __name__ == "__main__":
                             if committee_meeting_results:
                                 cm = committee_meeting_results[0]
                                 committee_meeting_dict[(cm.committee.name, cm.date.date())] = committee_meeting_results
+                    else:
+                        committee_meeting_results = []
 
                     if len(committee_meeting_results) != 1:
                         # If multiple, or no meetings were found, log the row.

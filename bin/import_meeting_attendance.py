@@ -6,7 +6,7 @@ import sys
 import csv
 import time
 import datetime
-import pytz
+import arrow
 from collections import defaultdict
 from sqlalchemy import func
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     meeting_count = defaultdict(list)
-    with open(file_path + '/' + args.input) as csvfile:
+    with open(args.input) as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
             # To be used for checking multiple committee meetings in a single day
@@ -32,8 +32,8 @@ if __name__ == "__main__":
                 meeting_count[(row['Date'], row['Name Committee'])].append(row['ISSID'])
 
 
-    with open(file_path + '/' + args.log, 'wb') as logfile:
-        with open(file_path + '/' + args.input) as csvfile:
+    with open(args.log, 'wb') as logfile:
+        with open(args.input) as csvfile:
             # The csv file being imported should be sorted by date.
             writer = csv.writer(logfile)
             reader = csv.DictReader(csvfile)
@@ -42,14 +42,12 @@ if __name__ == "__main__":
             all_committees = Committee.query.all()
             ncop_committees = Committee.query.filter(House.name_short == 'NCOP')
 
-            local_time = pytz.timezone('Africa/Johannesburg')
-
             member_dict = {}
             committee_dict = {}
             committee_meeting_dict = {}
 
             for row in reader:
-                if reader.line_num >= 10 and reader.line_num <= 290:
+                if reader.line_num >= 21 and reader.line_num <= 21:
                     if len(meeting_count[(row['Date'], row['Name Committee'])]) > 1:
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
@@ -60,17 +58,17 @@ if __name__ == "__main__":
                         continue
 
                     ost = row['OST'] if row['OST'] else '00:00:00'
-                    date_time_str = "%s %s" % (row['Date'], ost)
-                    meeting_date = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S')
-                    meeting_date = meeting_date.replace(tzinfo=local_time)
+                    # force GMT+0200
+                    date_time_str = "%sT%s+02:00" % (row['Date'], ost)
+                    meeting_date = arrow.get(date_time_str).datetime
                     try:
                         aet = time.strptime(row['AET'], '%H:%M:%S')
-                        aet = datetime.time(aet.tm_hour, aet.tm_min, tzinfo=local_time)
+                        aet = datetime.time(aet.tm_hour, aet.tm_min, tzinfo=meeting_date.tzinfo)
                     except ValueError:
                         aet = None
                     try:
                         ast = time.strptime(row['AST'], '%H:%M:%S')
-                        ast = datetime.time(ast.tm_hour, ast.tm_min, tzinfo=local_time)
+                        ast = datetime.time(ast.tm_hour, ast.tm_min, tzinfo=meeting_date.tzinfo)
                     except ValueError:
                         ast = None
 

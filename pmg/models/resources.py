@@ -1046,6 +1046,9 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     member = db.relationship('Member')
 
 
+db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
+
+
 # Listen for model updates
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):

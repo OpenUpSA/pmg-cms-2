@@ -7,6 +7,7 @@ import csv
 import time
 import datetime
 import arrow
+import re
 from collections import defaultdict
 from sqlalchemy import func
 
@@ -58,6 +59,9 @@ if __name__ == "__main__":
                         continue
 
                     ost = row['OST'] if row['OST'] else '00:00:00'
+                    if not re.match(r'^\d\d:', ost):
+                        ost = '0' + ost
+
                     # force GMT+0200
                     date_time_str = "%sT%s+02:00" % (row['Date'], ost)
                     meeting_date = arrow.get(date_time_str).datetime

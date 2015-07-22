@@ -18,6 +18,7 @@ $(function() {
 
   $('.upload-answer-form [name=file]').on('change', function(e) {
     if (this.files.length > 0) {
+      $('.upload-answer-file').prop('disabled', true).text('Uploading...');
       this.form.submit();
     }
   });

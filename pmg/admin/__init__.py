@@ -634,6 +634,9 @@ class CommitteeQuestionView(MyModelView):
         'question_to_name': "Question To",
         'committee': "Question To Committee",
     }
+    form_args = {
+        'files': {'widget': widgets.InlineFileWidget()},
+    }
     form_widget_args = {
         'answer': {'class': 'ckeditor'},
     }

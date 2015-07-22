@@ -50,12 +50,13 @@ if __name__ == "__main__":
             for row in reader:
                 if reader.line_num >= 0:
                     if len(meeting_count[(row['Date'], row['Name Committee'])]) > 1:
+                        error = "Multiple committee meetings in a day found in import data."
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
                             row['House'], row['ISSID'], row['Name Committee'],
                             row['OST'], row['PMG Name'], row['alt'], row['attendance'],
                             row['chairperson'], row['first_name'], row['party_affiliation'],
-                            row['province'], row['surname'], row['title']])
+                            row['province'], row['surname'], row['title'], error])
                         continue
 
                     ost = row['OST'] if row['OST'] else '00:00:00'
@@ -174,26 +175,36 @@ if __name__ == "__main__":
                         committee_meeting_results = []
 
                     if len(committee_meeting_results) != 1:
+                        if committee == None:
+                            error = "Committee not found"
+                        elif len(committee_meeting_results) == 0:
+                            error = "Committee meeting not found."
+                        elif len(committee_meeting_results) > 1:
+                            error = "Multiple committee meetings in a day found in database."
+                        else:
+                            error = "Undefined error."
                         # If multiple, or no meetings were found, log the row.
+
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
                             row['House'], row['ISSID'], row['Name Committee'],
                             row['OST'], row['PMG Name'], row['alt'], row['attendance'],
                             row['chairperson'], row['first_name'], row['party_affiliation'],
-                            row['province'], row['surname'], row['title']
+                            row['province'], row['surname'], row['title'], error
                         ])
                         print "Meetings error: " + str(reader.line_num)
                         print "Number of Comittee meetings: " + str(len(committee_meeting_results))
 
                     elif member is None:
+                        error = "Member not found."
                         writer.writerow([
                             row['Column'], row['AET'], row['AST'], row['Date'],
                             row['House'], row['ISSID'], row['Name Committee'],
                             row['OST'], row['PMG Name'], row['alt'], row['attendance'],
                             row['chairperson'], row['first_name'], row['party_affiliation'],
-                            row['province'], row['surname'], row['title']
+                            row['province'], row['surname'], row['title'], error
                         ])
-                        print "Member error: " + str(reader.line_num)
+                        print "Member not found: " + str(reader.line_num)
 
                     else:
                         if committee_name != committee.name:

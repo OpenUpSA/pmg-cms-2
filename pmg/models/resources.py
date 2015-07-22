@@ -318,6 +318,9 @@ class CommitteeMeeting(Event):
     __mapper_args__ = {
         'polymorphic_identity': 'committee-meeting'
     }
+    actual_start_time = db.Column(db.Time(timezone=True))
+    actual_end_time = db.Column(db.Time(timezone=True))
+    pmg_monitor = db.Column(db.String(255))
 
     def check_permission(self):
         # by default, all committee meetings are accessible
@@ -334,6 +337,7 @@ class CommitteeMeeting(Event):
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
+        tmp['attendance_url'] = url_for('api.committee_meeting_attendance', committee_meeting_id=self.id, _external=True)
         # check user permissions, popping some content if required
         if not self.check_permission():
             # remove premium content
@@ -1022,6 +1026,35 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
     file = db.relationship('File', lazy='joined')
 
 
+class CommitteeMeetingAttendance(ApiResource, db.Model):
+    __tablename__ = "committee_meeting_attendance"
+    """
+    Attendance abbreviations:
+        A:   Absent
+        AP:  Absent with Apologies
+        DE:  Departed Early
+        L:   Arrived Late
+        LDE: Arrived Late and Departed Early
+        P:   Present
+        U:   Unknown
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    alternate_member = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    attendance = db.Column(db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', 'U', name='meeting_attendance_enum'), nullable=False)
+    chairperson = db.Column(db.Boolean(), default=False, nullable=False)
+    meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
+    meeting = db.relationship('CommitteeMeeting')
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
+    member = db.relationship('Member', lazy=False)
+
+    @classmethod
+    def list(cls):
+        return cls.query
+
+
+db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
+
+
 # Listen for model updates
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
@@ -1056,3 +1089,4 @@ ApiResource.register(PolicyDocument)
 ApiResource.register(QuestionReply)
 ApiResource.register(Schedule)
 ApiResource.register(TabledCommitteeReport)
+ApiResource.register(CommitteeMeetingAttendance)

@@ -49,3 +49,5 @@ app.*.css
 
 config/production/alembic.ini
 pmg/static/stylesheets/
+
+bin/*.csv

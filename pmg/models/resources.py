@@ -776,6 +776,8 @@ class CommitteeQuestion(ApiResource, db.Model):
         path = os.path.join(app.config['UPLOAD_PATH'], filename)
         logger.debug('saving uploaded file %s to %s' % (filename, path))
         upload.save(path)
+        # reset file, so subsequent save() calls work
+        upload.stream.seek(0)
 
         question = cls.import_from_answer_file(path)
         if not question.id:

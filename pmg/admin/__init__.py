@@ -144,7 +144,7 @@ class MyModelView(RBACMixin, ModelView):
                 params = {}
                 params[model.resource_content_type + "_id"] = model.id
                 params["template_id"] = template.id
-                params["committee_ids"] = model.committee.id
+                params["committee_ids"] = model.committee_id
                 params["prefill"] = "1"
                 return url_for('alerts.new', **params)
 

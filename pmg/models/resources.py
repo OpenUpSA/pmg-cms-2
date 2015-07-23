@@ -795,9 +795,7 @@ class CommitteeQuestion(ApiResource, db.Model):
         question.populate_from_code(name)
 
         # does it already exist?
-        existing = cls.find(question.house, question.year,
-                            oral_number=question.oral_number,
-                            written_number=question.written_number)
+        existing = cls.find(question.code, question.date)
         if existing:
             return existing
 
@@ -809,20 +807,8 @@ class CommitteeQuestion(ApiResource, db.Model):
         return cls.query.order_by(desc(cls.date))
 
     @classmethod
-    def find(cls, house, year, **kwargs):
-        # TODO: filter by session
-        query = cls.query.filter(
-            cls.house == house,
-            cls.year == year,
-        )
-
-        if kwargs.get('oral_number'):
-            query = query.filter(cls.oral_number == kwargs['oral_number'])
-
-        if kwargs.get('written_number'):
-            query = query.filter(cls.written_number == kwargs['written_number'])
-
-        return query.first()
+    def find(cls, code, date):
+        return cls.query.filter(cls.code == code, cls.date == date).first()
 
 
 class CommitteeQuestionFile(FileLinkMixin, db.Model):

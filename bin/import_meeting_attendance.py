@@ -118,10 +118,15 @@ if __name__ == "__main__":
                             member = Member.find_by_inexact_name(first_name, last_name, title, members=members)
                         member_dict[member_name] = member
 
+                    select_committee = False
                     if 'Portfolio Committee on' in committee_name or 'Porrfolio Committee on' in committee_name:
-                            # Remove from committee_name as it doesn't appear in the db
-                            prefix_len = len('Portfolio Committee on')
-                            committee_name = committee_name[prefix_len+1:]
+                        # Remove from committee_name as it doesn't appear in the db
+                        prefix_len = len('Portfolio Committee on')
+                        committee_name = committee_name[prefix_len+1:]
+                    elif 'Select Committee on' in committee_name:
+                        prefix_len = len('Select Committee on')
+                        committee_name = committee_name[prefix_len+1:]
+                        select_committee = True
 
                     if committee_name in committee_dict:
                         committee = committee_dict[committee_name]
@@ -129,13 +134,13 @@ if __name__ == "__main__":
                         # Check for some committee exceptions
                         if committee_name == 'Standing Committee on Finance':
                             committee = Committee.query.filter(Committee.name == "Finance Standing Committee").first()
-                        elif committee_name == 'Select Committee on Finance':
+                        elif committee_name == 'Finance' and select_committee:
                             committee = Committee.query.filter(Committee.name == 'NCOP Finance').first()
-                        elif committee_name == 'Select Committee on Economic Development':
+                        elif committee_name == 'Economic Development' and select_committee:
                             committee = Committee.query.filter(Committee.name == 'NCOP Economic and Business Development').first()
-                        elif committee_name == 'Select Committee on Appropriations':
+                        elif committee_name == 'Appropriations' and select_committee:
                             committee = Committee.query.filter(Committee.name == 'NCOP Appropriations').first()
-                        elif committee_name == 'Select Committee on Social Services':
+                        elif committee_name == 'Social Services' and select_committee:
                             committee = Committee.query.filter(Committee.name == 'NCOP Social Services').first()
                         elif committee_name == 'Ad hoc Committee on Powers and Privileges  of Parlaiment':
                             committee = Committee.query.filter(Committee.name == 'Powers and Privileges').first()
@@ -153,8 +158,8 @@ if __name__ == "__main__":
                             #     Committee.name == 'Ad Hoc Committee on Police Minister\'s Report on Nkandla').first()
                         elif committee_name == 'Standing Committee on Public Accounts':
                             committee = None
-                        elif 'Select Committee on' in committee_name:
-                            # Only campare against NCOP committees
+
+                        elif select_committee:
                             committee = Committee.find_by_inexact_name(committee_name, candidates=ncop_committees)
                         else:
                             committee = Committee.find_by_inexact_name(committee_name, candidates=all_committees)
@@ -228,4 +233,4 @@ if __name__ == "__main__":
                         db.session.flush()
 
             db.session.flush()
-            #db.session.commit()
+            # db.session.commit()

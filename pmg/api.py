@@ -298,6 +298,19 @@ def resource_list(resource, resource_id=None):
     return api_resource_list(resource, resource_id, query)
 
 
+@api.route('/member/<int:member_id>/questions/')
+def member_questions(member_id):
+    """
+    Questions asked by this member
+    """
+    # don't eager load duplicate committee details
+    query = CommitteeQuestion.list()\
+        .filter(CommitteeQuestion.asked_by_member_id == member_id)\
+        .options(joinedload('asked_by_member'))
+
+    return api_resource_list('committee-question', None, query)
+
+
 @api.route('/committee/question_reply/')
 def question_reply_committees():
     """

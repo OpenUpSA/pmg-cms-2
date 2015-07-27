@@ -452,6 +452,8 @@ class Member(ApiResource, db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
 
+        tmp['questions_url'] = url_for('api.member_questions', member_id=self.id, _external=True)
+
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
 

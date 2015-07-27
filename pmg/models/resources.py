@@ -664,7 +664,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     answer = db.Column(db.Text)
 
     # Text of the person the question is asked of
-    question_to_name = db.Column(db.String(1024), nullable=False)
+    question_to_name = db.Column(db.String(1024))
 
     # Is the question a translation of one originally asked in another language.
     # Currently we are only storing questions in English.
@@ -677,9 +677,9 @@ class CommitteeQuestion(ApiResource, db.Model):
     intro = db.Column(db.Text)
 
     # Name of the person asking the question.
-    asked_by_name = db.Column(db.String(1024), nullable=False)
+    asked_by_name = db.Column(db.String(1024))
     # The actual MP asking the question. This may be null if we weren't able to link it to an MP
-    asked_by_member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=True)
+    asked_by_member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'))
     asked_by_member = db.relationship('Member')
 
     # the source document for this question

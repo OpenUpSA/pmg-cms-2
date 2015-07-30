@@ -426,6 +426,22 @@ class EventView(ViewWithFiles, MyModelView):
             .filter(self.model.type == self.type)
 
 
+class InlineCommitteeMeetingAttendance(InlineFormAdmin):
+    form_columns = (
+        'id',
+        'member',
+        'attendance',
+        'chairperson',
+        'alternate_member',
+    )
+    form_ajax_refs = {
+        'member': {
+            'fields': ('name',),
+            'page_size': 25
+        }
+    }
+
+
 class CommitteeMeetingView(EventView):
     frontend_url_format = 'committee-meeting/%s'
 
@@ -464,7 +480,10 @@ class CommitteeMeetingView(EventView):
             'page_size': 50
         }
     }
-    inline_models = [InlineFile(EventFile)]
+    inline_models = [
+        InlineFile(EventFile),
+        InlineCommitteeMeetingAttendance(CommitteeMeetingAttendance),
+    ]
 
 
 class HansardView(EventView):

@@ -1033,7 +1033,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     attendance = db.Column(db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', 'U', name='meeting_attendance_enum'), nullable=False)
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
     meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
-    meeting = db.relationship('CommitteeMeeting')
+    meeting = db.relationship('CommitteeMeeting', backref='attendance')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
     member = db.relationship('Member', lazy=False)
 

@@ -34,7 +34,6 @@ def track_pageview(path=None):
 
     path = path or request.path
     user_id = current_user.id if current_user.is_authenticated() else None
-    client_ip = request.access_route[0]
 
     client_id = request.cookies.get('_ga')
     if client_id:
@@ -42,4 +41,7 @@ def track_pageview(path=None):
         client_id = client_id.split('.', 2)[-1]
 
     tracker = Tracker.create(ga_id, user_id=user_id, client_id=client_id)
-    tracker.send('pageview', path, uip=client_ip)
+    tracker.send('pageview', path,
+                 uip=request.access_route[0],
+                 referrer=request.referrer or '',
+                 userAgent=request.user_agent)

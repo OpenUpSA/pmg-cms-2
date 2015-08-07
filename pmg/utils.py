@@ -1,6 +1,9 @@
 from __future__ import division
 
 import nltk
+from UniversalAnalytics import Tracker
+from flask import request
+from flask.ext.security import current_user
 
 
 def levenshtein(first, second, transpositions=False):
@@ -19,3 +22,23 @@ def levenshtein(first, second, transpositions=False):
         return 0
 
     return (lensum - ldist) / lensum
+
+
+def track_pageview(path=None):
+    """ User Google Analytics to track this pageview. """
+    from pmg import app
+
+    ga_id = app.config.get('GOOGLE_ANALYTICS_ID')
+    if not ga_id:
+        return
+
+    path = path or request.path
+    user_id = current_user.id if current_user.is_authenticated() else None
+
+    client_id = request.cookies.get('_ga')
+    if client_id:
+        # GA1.2.1760224793.1424413995
+        client_id = client_id.split('.', 2)[-1]
+
+    tracker = Tracker.create(ga_id, user_id=user_id, client_id=client_id)
+    tracker.send('pageview', path)

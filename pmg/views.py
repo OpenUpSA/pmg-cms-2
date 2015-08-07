@@ -14,6 +14,7 @@ from pmg.api_client import load_from_api
 from pmg.models import Redirect, Page
 
 import forms
+import utils
 
 API_HOST = app.config['API_HOST']
 LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
@@ -800,6 +801,10 @@ def page(pagename):
 def docs(path, dir=''):
     if dir:
         dir = dir + '/'
+
+    # report to google analytics
+    utils.track_pageview()
+
     return redirect(app.config['STATIC_HOST'] + dir + path)
 
 

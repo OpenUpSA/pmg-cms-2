@@ -1,9 +1,14 @@
 from __future__ import division
+import re
 
 import nltk
 from UniversalAnalytics import Tracker
 from flask import request
 from flask.ext.security import current_user
+
+
+# Useragents that are bots
+BOTS_RE = re.compile('(bot|spider|cloudfront|slurp)', re.I)
 
 
 def levenshtein(first, second, transpositions=False):
@@ -24,13 +29,17 @@ def levenshtein(first, second, transpositions=False):
     return (lensum - ldist) / lensum
 
 
-def track_pageview(path=None):
+def track_pageview(path=None, ignore_bots=True):
     """ User Google Analytics to track this pageview. """
     from pmg import app
 
     ga_id = app.config.get('GOOGLE_ANALYTICS_ID')
     if not ga_id:
-        return
+        return False
+
+    user_agent = request.user_agent.string
+    if ignore_bots and BOTS_RE.search(user_agent):
+        return False
 
     path = path or request.path
     user_id = current_user.id if current_user.is_authenticated() else None
@@ -44,4 +53,6 @@ def track_pageview(path=None):
     tracker.send('pageview', path,
                  uip=request.access_route[0],
                  referrer=request.referrer or '',
-                 userAgent=request.user_agent)
+                 userAgent=user_agent)
+
+    return True

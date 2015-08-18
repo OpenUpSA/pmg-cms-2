@@ -453,6 +453,7 @@ class Member(ApiResource, db.Model):
         tmp = serializers.model_to_dict(self, include_related=include_related)
 
         tmp['questions_url'] = url_for('api.member_questions', member_id=self.id, _external=True)
+        tmp['attendance_url'] = url_for('api.member_attendance', member_id=self.id, _external=True)
 
         if tmp['profile_pic_url']:
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
@@ -1040,7 +1041,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query
+        return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)

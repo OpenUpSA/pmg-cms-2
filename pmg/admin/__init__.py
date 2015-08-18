@@ -444,6 +444,17 @@ class InlineCommitteeMeetingAttendance(InlineFormAdmin):
             'page_size': 25
         }
     }
+    form_choices = {
+        'attendance': [
+            ('A', 'A - Absent'),
+            ('AP', 'AP - Absent with Apologies'),
+            ('DE', 'DE - Departed Early'),
+            ('L', 'AL - Arrived Late'),
+            ('LDE', 'LDE - Arrived Late and Departed Early'),
+            ('P', 'P - Present'),
+            ('U', 'U - Unknown'),
+        ]
+    }
 
 
 class CommitteeMeetingView(EventView):

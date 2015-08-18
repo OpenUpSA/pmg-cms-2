@@ -1030,6 +1030,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     alternate_member = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    # TODO: Y shouldn't be an option
     attendance = db.Column(db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', 'U', name='meeting_attendance_enum'), nullable=False)
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
     meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)

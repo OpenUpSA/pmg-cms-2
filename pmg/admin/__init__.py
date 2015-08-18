@@ -22,6 +22,7 @@ from sqlalchemy.sql.expression import or_
 from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
+import psycopg2
 
 from pmg import app, db
 from pmg.models import *  # noqa
@@ -31,6 +32,9 @@ from .rbac import RBACMixin
 import widgets
 
 logger = logging.getLogger(__name__)
+
+
+SAST = psycopg2.tz.FixedOffsetTimezone(offset=120, name=None)
 
 
 # Our base form extends flask_wtf.Form to get CSRF support,
@@ -407,7 +411,7 @@ class EventView(ViewWithFiles, MyModelView):
             model.type = self.type
         # make sure the new date is timezone aware
         if model.date:
-            model.date = model.date.replace(tzinfo=tz.tzlocal())
+            model.date = model.date.replace(tzinfo=SAST)
 
     def get_query(self):
         """
@@ -457,6 +461,8 @@ class CommitteeMeetingView(EventView):
         'committee',
         'title',
         'date',
+        'actual_start_time',
+        'actual_end_time',
         'chairperson',
         'featured',
         'public_participation',
@@ -484,6 +490,13 @@ class CommitteeMeetingView(EventView):
         InlineFile(EventFile),
         InlineCommitteeMeetingAttendance(CommitteeMeetingAttendance),
     ]
+
+    def on_model_change(self, form, model, is_created):
+        super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
+        # make sure the new times are timezone aware
+        for attr in ['actual_start_time', 'actual_end_time']:
+            if getattr(model, attr):
+                setattr(model, attr, getattr(model, attr).replace(tzinfo=SAST))
 
 
 class HansardView(EventView):
@@ -842,7 +855,7 @@ class InlineBillEventsForm(InlineFormAdmin):
 
     def on_model_change(self, form, model):
         # make sure the new date is timezone aware
-        model.date = model.date.replace(tzinfo=tz.tzlocal())
+        model.date = model.date.replace(tzinfo=SAST)
 
 
 class InlineBillVersionForm(InlineFormAdmin):
@@ -913,7 +926,7 @@ class BillsView(MyModelView):
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
         # make sure the new date is timezone aware
-        model.start_date = model.start_date.replace(tzinfo=tz.tzlocal())
+        model.start_date = model.start_date.replace(tzinfo=SAST)
 
 
 class FileView(MyModelView):

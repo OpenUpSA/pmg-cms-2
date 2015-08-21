@@ -14,6 +14,11 @@ TIMEOUTS = (3.05, 10)
 
 logger = logging.getLogger(__name__)
 
+# Disable urllib3 warnings
+# https://urllib3.readthedocs.org/en/latest/security.html#insecurerequestwarning
+requests.packages.urllib3.disable_warnings()
+
+
 class ApiException(HTTPException):
     """
     Class for handling all of our expected API errors.

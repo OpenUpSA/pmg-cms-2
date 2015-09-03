@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% block committee_breadcrumb %}
+  {% endblock %}
+</ol>
+{% endblock %}
+
+
+{% block page %}
+  <div class="row">
+    <div class="col-sm-9 committee-header">
+      {% block question_title %}
+        <h1>Questions to the Minister</h1>
+      {% endblock %}
+    </div>
+  </div>
+
+  {% block question_page %}
+  {% endblock %}
+
+  {% include "_correct_this_page.html" %}
+
+{% endblock %}

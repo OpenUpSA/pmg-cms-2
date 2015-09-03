@@ -508,7 +508,7 @@ class Committee(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
-    minister = db.relationship('Minister', lazy=True, backref="committee")
+    minister = db.relationship('Minister', lazy=True)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

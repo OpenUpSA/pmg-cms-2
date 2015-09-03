@@ -473,7 +473,7 @@ class Member(ApiResource, db.Model):
                      joinedload('province'),
                      joinedload('memberships.committee'))\
             .filter(Member.current == True)\
-            .order_by(Member.name)
+            .order_by(Member.name)  # noqa
 
     @classmethod
     def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
@@ -518,7 +518,7 @@ class Committee(ApiResource, db.Model):
         return cls.query\
                 .filter(cls.premium == True)\
                 .order_by(cls.name)\
-                .all()
+                .all()  # noqa
 
     @classmethod
     def for_related(cls, other):

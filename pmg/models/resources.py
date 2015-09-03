@@ -611,7 +611,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
 
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
-    minister = db.relationship('Minister', backref=db.backref('questions'), lazy='joined')
+    minister = db.relationship('Minister', lazy='joined')
 
     # XXX: don't forget session, numbers are unique by session only
 
@@ -853,7 +853,7 @@ class QuestionReply(ApiResource, db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
-    minister = db.relationship('Minister', backref=db.backref('questions_replies'), lazy='joined')
+    minister = db.relationship('Minister', lazy='joined')
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
@@ -1079,8 +1079,17 @@ class Minister(ApiResource, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['questions_url'] = url_for('api.minister_questions', minister_id=self.id, _external=True)
+        return tmp
+
     def __unicode__(self):
         return unicode(self.name)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(cls.name)
 
 
 # Listen for model updates
@@ -1113,6 +1122,7 @@ ApiResource.register(DailySchedule)
 ApiResource.register(Gazette)
 ApiResource.register(Hansard)
 ApiResource.register(Member)
+ApiResource.register(Minister)
 ApiResource.register(PolicyDocument)
 ApiResource.register(QuestionReply)
 ApiResource.register(Schedule)

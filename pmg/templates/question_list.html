@@ -1,0 +1,17 @@
+{% extends "question_layout.html" %}
+
+{% block title %}Questions to Ministers | PMG{% endblock %}
+
+{% block question_page %}
+<section class="committee-question-list">
+{% for question in questions %}
+  {% if question.code %}
+    {% include '_question_detail.html' with context %}
+  {% else %}
+    {% include '_question_reply_detail_old.html' with context %}
+  {% endif %}
+{% endfor %}
+</section>
+
+{% include 'pagination.html' %}
+{% endblock %}

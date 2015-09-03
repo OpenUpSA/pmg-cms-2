@@ -669,17 +669,29 @@ def question_replies(page=0):
         'question_reply',
         page=page,
         params=params)
-    count = question_replies_list["count"]
+    committee_question_list = load_from_api(
+        'committee-question',
+        page=page,
+        params=params)
+    count = question_replies_list["count"] + committee_question_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    question_replies = question_replies_list['results']
+
+    questions = sorted(
+        question_replies_list['results'] + committee_question_list['results'],
+        key=lambda item: item.get('date' or 'start_date'),
+        reverse=True)
+    import ipdb; ipdb.set_trace()
     url = "/question_replies"
+
     return render_template(
-        'list.html',
-        results=question_replies,
-        num_pages=num_pages,
-        page=page,
+        'question_list.html',
+        questions=questions,
+        hide_replies=True,
         url=url,
+        num_pages=num_pages,
+        per_page=per_page,
+        page=page,
         icon="question-circle",
         title="Questions and Replies",
         content_type="question_reply",

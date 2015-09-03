@@ -507,6 +507,8 @@ class Committee(ApiResource, db.Model):
     house = db.relationship('House', lazy='joined')
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
+    minister = db.relationship('Minister', lazy=True, backref="committee")
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -1045,6 +1047,17 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
+
+
+class Minister(ApiResource, db.Model):
+    __tablename__ = "minister"
+    """
+    A ministerial position to which questions may be asked.
+    This is the position, not the person who holds that position.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
 
 
 # Listen for model updates

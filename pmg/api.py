@@ -11,6 +11,7 @@ from werkzeug.exceptions import HTTPException
 from sqlalchemy import desc
 from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql.expression import literal_column
 
 from pmg import db, app
 from pmg.search import Search
@@ -344,6 +345,51 @@ def question_reply_committees():
     """
     items = Committee.for_related(QuestionReply).all()
     return send_api_response(serializers.queryset_to_json(items, count=len(items)))
+
+
+@api.route('/minister-questions-combined/')
+def minister_questions_combined():
+    """
+    Mixture of old QuestionReplies and new CommitteeQuestion objects
+    folded together in date order to support pagination.
+    """
+
+    # To make pagination possible, we grab a combined list of IDs,
+    # paginate that list, and then fetch the details.
+
+    # get a combined list of IDs
+    q1 = db.session.query(CommitteeQuestion.id, CommitteeQuestion.date.label("date"), literal_column("'cq'").label("type"))
+    q2 = db.session.query(QuestionReply.id, QuestionReply.start_date.label("date"), literal_column("'qr'").label("type"))
+    query = q1.union_all(q2).order_by(desc("date"))
+
+    query, count, next = paginate_request_query(query)
+
+    # pull out the IDs we want
+    cq_ids = [c[0] for c in query if c[2] == 'cq']
+    qr_ids = [c[0] for c in query if c[2] == 'qr']
+
+    # get committee questions
+    query = CommitteeQuestion.list()\
+        .filter(CommitteeQuestion.id.in_(cq_ids))\
+        .order_by(CommitteeQuestion.date.desc())\
+        .options(
+            lazyload('committee'),
+            lazyload('asked_by_member'))
+    objects = query.all()
+
+    # get question reply objects
+    query = QuestionReply.list()\
+        .filter(QuestionReply.id.in_(qr_ids))\
+        .order_by(QuestionReply.start_date.desc())\
+        .options(lazyload('committee'))
+    # mash them together
+    objects.extend(query.all())
+
+    # sort
+    objects.sort(key=lambda x: getattr(x, 'date', getattr(x, 'start_date', None)), reverse=True)
+
+    out = serializers.queryset_to_json(objects, count=count, next=next)
+    return send_api_response(out)
 
 
 @api.route('/committee/<int:committee_id>/questions/')

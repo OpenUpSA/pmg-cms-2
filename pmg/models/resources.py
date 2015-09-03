@@ -605,8 +605,13 @@ class CommitteeQuestion(ApiResource, db.Model):
     __tablename__ = "committee_question"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # TODO: delete this reference and use the minister relation instead
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
+
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
+    minister = db.relationship('Minister', backref=db.backref('questions'), lazy='joined')
 
     # XXX: don't forget session, numbers are unique by session only
 
@@ -774,6 +779,12 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.year = value.year
         return value
 
+    @validates('committee')
+    def validate_committee(self, key, cte):
+        if cte:
+            self.minister = cte.minister
+        return cte
+
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
         # save the file to disk
@@ -838,14 +849,23 @@ class QuestionReply(ApiResource, db.Model):
     slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
+    # TODO: delete this reference and use the minister relation instead
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
+    minister = db.relationship('Minister', backref=db.backref('questions_replies'), lazy='joined')
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
     files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
+
+    @validates('committee')
+    def validate_committee(self, key, cte):
+        if cte:
+            self.minister = cte.minister
+        return cte
 
     @classmethod
     def list(cls):
@@ -1058,6 +1078,9 @@ class Minister(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
+
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 # Listen for model updates

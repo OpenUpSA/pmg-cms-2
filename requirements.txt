@@ -1,4 +1,4 @@
-alembic==0.7.4
+alembic==0.8.2
 argh==0.26.1
 arrow==0.4.4
 beautifulsoup4==4.3.2
@@ -28,7 +28,7 @@ inflection==0.2.1
 itsdangerous==0.24
 Jinja2==2.7.3
 lxml==3.4.1
-Mako==1.0.1
+Mako==1.0.2
 mandrill==1.0.57
 MarkupSafe==0.23
 newrelic==2.40.0.34
@@ -42,11 +42,12 @@ pycrypto==2.6.1
 pyelasticsearch==0.7.1
 pyScss==1.3.4
 python-dateutil==2.3
+python-editor==0.4
 PyYAML==3.11
 requests==2.6.0
 simplejson==3.6.5
 six==1.8.0
-SQLAlchemy==0.8.2
+SQLAlchemy==1.0.8
 universal-analytics-python==0.2.4
 watchdog==0.8.3
 webassets==0.10.1

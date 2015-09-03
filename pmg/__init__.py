@@ -20,7 +20,7 @@ with open('config/%s/logging.yaml' % env) as f:
 
 
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, transaction_per_migration=True)
 csrf = CsrfProtect(app)
 mail = Mail(app)
 

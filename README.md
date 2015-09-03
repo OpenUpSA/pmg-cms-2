@@ -63,7 +63,7 @@ Add the following lines to your `.hosts` file:
 
 Start the server:
 
-    python run-development.py
+    python app.py runserver
 
 You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
 
@@ -94,19 +94,10 @@ is in progress. Re-indexing takes about 10 minutes.
 
 ### Database migration
 
-We use alembic for applying changes to the data model. To setup a migration script:
+We use [Flask-Migrate](https://flask-migrate.readthedocs.org/en/latest/) and [Alembic](https://alembic.readthedocs.org/en/latest/) for applying changes to the data model. To setup a migration script:
 
-    alembic -c 'config/development/alembic.ini' revision --autogenerate -m "<revision description>"
+    python app.py db migrate -m "<revision description>"
 
 Then to run the script on your local machine: 
 
-    alembic -c 'config/development/alembic.ini' upgrade head
-
-but first, ensure that the `sqlalchemy.url` parameter is pointing at the right place.
-
-To run migration scripts on the live database, copy the `alembic.ini` into the production config directory, update the
-`sqlalchemy.url` parameter, and 
-
-    alembic -c 'config/production/alembic.ini' upgrade head
-
-Never add the production configuration to git, as it contains sensitive database credentials.
+    python app.py db upgrade

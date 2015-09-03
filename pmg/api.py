@@ -85,8 +85,24 @@ def get_filters():
     return filters
 
 
-def api_resource_list(resource, resource_id, base_query):
-    # validate paging parameters
+def api_resource(resource_id, base_query):
+    try:
+        resource = base_query.filter_by(id=resource_id).one()
+    except NoResultFound:
+        raise ApiException(404, "Not found")
+
+    status_code = 200
+    if resource == "committee-meeting":
+        if not resource.check_permission():
+            if current_user.is_anonymous():
+                status_code = 401  # Unauthorized, i.e. authentication is required
+            else:
+                status_code = 403  # Forbidden, i.e. the user is not subscribed
+
+    return send_api_response(serializers.queryset_to_json(resource), status_code=status_code)
+
+
+def paginate_request_query(base_query):
     per_page = app.config['RESULTS_PER_PAGE']
     try:
         per_page = max(min(per_page, int(request.args.get('per_page', per_page))), 1)
@@ -98,42 +114,37 @@ def api_resource_list(resource, resource_id, base_query):
     except ValueError:
         raise ApiException(422, "Please specify a valid 'page'.")
 
-    for f in get_filters():
-        base_query = base_query.filter_by(**f)
+    query = base_query.limit(per_page).offset(page * per_page).all()
+    count = base_query.count()
+    next = create_next_page_url(count, page, per_page)
 
-    if resource_id:
-        try:
-            queryset = base_query.filter_by(id=resource_id).one()
-            count = 1
-        except NoResultFound:
-            raise ApiException(404, "Not found")
-    else:
-        queryset = base_query.limit(per_page).offset(page * per_page).all()
-        count = base_query.count()
+    return query, count, next
 
-    next = None
+
+def create_next_page_url(count, page, per_page):
+    """
+    Generate the next page URL for the current request and
+    the provided page params.
+    """
     if count > (page + 1) * per_page:
         args = request.args.to_dict()
         args.update(request.view_args)
         args['page'] = page + 1
         # TODO: this isn't great, it allows users to pass in keyword params just by passing
         # in query params
-        next = url_for(request.endpoint, _external=True, **args)
+        return url_for(request.endpoint, _external=True, **args)
 
-    status_code = 200
-    if resource == "committee-meeting" and resource_id:
-        committee_meeting_obj = queryset
-        if not committee_meeting_obj.check_permission():
-            if current_user.is_anonymous():
-                status_code = 401  # Unauthorized, i.e. authentication is required
-            else:
-                status_code = 403  # Forbidden, i.e. the user is not subscribed
+    return None
 
-    out = serializers.queryset_to_json(
-        queryset,
-        count=count,
-        next=next)
-    return send_api_response(out, status_code=status_code)
+
+def api_resource_list(base_query):
+    for f in get_filters():
+        base_query = base_query.filter_by(**f)
+
+    queryset, count, next = paginate_request_query(base_query)
+
+    out = serializers.queryset_to_json(queryset, count=count, next=next)
+    return send_api_response(out)
 
 
 def send_api_response(data, status_code=200):
@@ -258,7 +269,7 @@ def current_bill_list(scope=None, bill_id=None):
     query = Bill.list()
 
     if bill_id:
-        return api_resource_list('bill', bill_id, query)
+        return api_resource(bill_id, query)
 
     if scope == 'current':
         statuses = BillStatus.current()
@@ -273,13 +284,13 @@ def current_bill_list(scope=None, bill_id=None):
     elif scope == 'tabled':
         query = query.filter(Bill.type != BillType.draft())
 
-    return api_resource_list('bill', None, query)
+    return api_resource_list(query)
 
 
 @api.route('/committee/premium/')
 def committee_list():
     query = Committee.list().filter(Committee.premium == True)  # noqa
-    return api_resource_list('committee', None, query)
+    return api_resource_list(query)
 
 
 @api.route('/<string:resource>/', )
@@ -289,13 +300,15 @@ def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.
     """
-
     try:
         query = resource_slugs[resource].list()
     except KeyError:
-        raise ApiException(404, "The specified resource type does not exist.")
+        raise ApiException(404, "The resource type '%s' does not exist." % resource)
 
-    return api_resource_list(resource, resource_id, query)
+    if resource_id:
+        return api_resource(resource_id, query)
+    else:
+        return api_resource_list(query)
 
 
 @api.route('/member/<int:member_id>/questions/')
@@ -308,7 +321,7 @@ def member_questions(member_id):
         .filter(CommitteeQuestion.asked_by_member_id == member_id)\
         .options(joinedload('asked_by_member'))
 
-    return api_resource_list('committee-question', None, query)
+    return api_resource_list(query)
 
 
 @api.route('/member/<int:member_id>/attendance/')
@@ -320,7 +333,7 @@ def member_attendance(member_id):
         .filter(CommitteeMeetingAttendance.member_id == member_id)\
         .options(lazyload('member'), joinedload('meeting'))
 
-    return api_resource_list('committee-meeting-attendance', None, query)
+    return api_resource_list(query)
 
 
 @api.route('/committee/question_reply/')
@@ -344,7 +357,7 @@ def committee_questions(committee_id):
         .options(lazyload('committee'))\
         .options(joinedload('asked_by_member'))
 
-    return api_resource_list('committee-question', None, query)
+    return api_resource_list(query)
 
 
 @api.route('/committee-meeting/<int:committee_meeting_id>/attendance/')
@@ -356,4 +369,4 @@ def committee_meeting_attendance(committee_meeting_id):
         .filter(CommitteeMeetingAttendance.meeting_id == committee_meeting_id)\
         .options(lazyload('member.memberships'))
 
-    return api_resource_list('committee-meeting-attendance', None, query)
+    return api_resource_list(query)

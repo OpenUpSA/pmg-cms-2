@@ -4,11 +4,11 @@
 
 {% block question_page %}
 <section class="committee-question-list">
-{% for question in questions %}
+{% for question in questions.results %}
   {% if question.code %}
     {% include '_question_detail.html' with context %}
   {% else %}
-    {% include '_question_reply_detail_old.html' with context %}
+    {% include '_question_detail_old.html' with context %}
   {% endif %}
 {% endfor %}
 </section>

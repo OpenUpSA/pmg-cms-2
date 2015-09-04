@@ -656,7 +656,7 @@ def question_reply(question_reply_id):
 @app.route('/question_replies/<int:page>/')
 def question_replies(page=0):
     """
-    Page through all available question_replies.
+    Page through all available question_replies + committee_questions.
     """
     logger.debug("question_replies page called")
     committees = load_from_api('committee/question_reply', return_everything=True)['results']

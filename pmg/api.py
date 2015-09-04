@@ -353,15 +353,21 @@ def minister_questions_combined():
     Mixture of old QuestionReplies and new CommitteeQuestion objects
     folded together in date order to support pagination.
     """
+    filters = get_filters()
 
     # To make pagination possible, we grab a combined list of IDs,
     # paginate that list, and then fetch the details.
 
     # get a combined list of IDs
     q1 = db.session.query(CommitteeQuestion.id, CommitteeQuestion.date.label("date"), literal_column("'cq'").label("type"))
-    q2 = db.session.query(QuestionReply.id, QuestionReply.start_date.label("date"), literal_column("'qr'").label("type"))
-    query = q1.union_all(q2).order_by(desc("date"))
+    for f in filters:
+        q1 = q1.filter_by(**f)
 
+    q2 = db.session.query(QuestionReply.id, QuestionReply.start_date.label("date"), literal_column("'qr'").label("type"))
+    for f in filters:
+        q2 = q2.filter_by(**f)
+
+    query = q1.union_all(q2).order_by(desc("date"))
     query, count, next = paginate_request_query(query)
 
     # pull out the IDs we want
@@ -375,6 +381,8 @@ def minister_questions_combined():
         .options(
             lazyload('committee'),
             lazyload('asked_by_member'))
+    for f in filters:
+        query = query.filter_by(**f)
     objects = query.all()
 
     # get question reply objects
@@ -382,6 +390,8 @@ def minister_questions_combined():
         .filter(QuestionReply.id.in_(qr_ids))\
         .order_by(QuestionReply.start_date.desc())\
         .options(lazyload('committee'))
+    for f in filters:
+        query = query.filter_by(**f)
     # mash them together
     objects.extend(query.all())
 

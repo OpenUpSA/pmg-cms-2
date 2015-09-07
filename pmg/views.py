@@ -179,48 +179,21 @@ def committee_detail(committee_id):
     """
     Display all available detail for the committee.
     """
-
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
-    questions = load_from_api('committee/%s/questions' % committee_id, params={'per_page': 5})
 
-    recent_questions = committee.get('questions_replies', [])
-    if questions['results']:
-        # blend together the 5 most recent questions to this committee
-        recent_questions.extend(questions['results'])
-        recent_questions.sort(key=lambda q: q.get('date', q.get('start_date', 0)), reverse=True)
-        recent_questions = recent_questions[:5]
+    params = {
+      'filter[committee_id]': committee_id,
+      'per_page': 5
+    }
+    recent_questions = load_from_api(
+        'minister-questions-combined',
+        params=params)['results']
 
     return render_template('committee_detail.html',
                            committee=committee,
                            recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))
-
-
-@app.route('/committee/<int:committee_id>/questions/')
-@app.route('/committee/<int:committee_id>/questions/<int:page>/')
-def committee_questions(committee_id, page=0):
-    """
-    Display committee question for the committee.
-    """
-    per_page = 10
-
-    committee = load_from_api('committee', committee_id)
-    questions = load_from_api('committee/%s/questions' % committee_id, page=page, params={'per_page': per_page})
-    num_pages = int(math.ceil(float(questions['count']) / float(per_page)))
-
-    if questions['count'] == 0:
-        # send them to the old page
-        return redirect("/question_replies/?filter[committee]=%s" % committee_id)
-
-    return render_template('committee_questions.html',
-                           committee=committee,
-                           questions=questions,
-                           hide_replies=True,
-                           url='/committee/%s/questions' % committee_id,
-                           num_pages=num_pages,
-                           per_page=per_page,
-                           page=page)
 
 
 @app.route('/committee-question/<int:question_id>/')

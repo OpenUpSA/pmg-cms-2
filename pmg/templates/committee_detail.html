@@ -72,7 +72,8 @@
             </table>
 
             {% if committee.tabled_committee_reports|length > 5 %}
-              <a href="/tabled-committee-reports/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+              <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
+
             {% endif %}
           </div>
         {% endif %}
@@ -118,7 +119,8 @@
               {% endfor %}
             </table>
 
-            <a href="{{ url_for('committee_questions', committee_id=committee.id) }}" class="btn btn-primary">More</a>
+            <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
+
           </div>
         {% endif %}
       </div>

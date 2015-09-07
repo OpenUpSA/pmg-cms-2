@@ -182,20 +182,19 @@ def committee_detail(committee_id):
 
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
-    questions = load_from_api('committee/%s/questions' % committee_id, params={'per_page': 5})
 
-    recent_questions = committee.get('questions_replies', [])
-    if questions['results']:
-        # blend together the 5 most recent questions to this committee
-        recent_questions.extend(questions['results'])
-        recent_questions.sort(key=lambda q: q.get('date', q.get('start_date', 0)), reverse=True)
-        recent_questions = recent_questions[:5]
+    params = {
+      'filter[committee_id]': committee_id,
+      'per_page': 5
+    }
+    recent_questions = load_from_api(
+        'minister-questions-combined',
+        params=params)['results']
 
     return render_template('committee_detail.html',
                            committee=committee,
                            recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))
-
 
 
 @app.route('/committee-question/<int:question_id>/')

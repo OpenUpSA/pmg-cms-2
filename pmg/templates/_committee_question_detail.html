@@ -1,70 +1,74 @@
 {% from 'macros/attachments.html' import related_attachments %}
 
-<div class="committee-question-detail">
-  <h4>
-    {{ question.date | pretty_date("long") }} -
-    <a href="{{ url_for('committee_question', question_id=question.id) }}">{{ question.code }}</a>
-  </h4>
-
-  <div class="media">
-    <div class="media-left">
-      {% set asked_by_member = question.asked_by_member %}
-
-      {% if asked_by_member and asked_by_member.profile_pic_url %}
-        <a class="media-object" href="{{ asked_by_member|member_url }}"><img class="member-profile-pic" src="{{ asked_by_member.profile_pic_url }}" alt="Profile picture: {{ asked_by_member.name }}" ></a>
-      {% else %}
-        <div class="media-object"></div>
-      {% endif %}
-    </div>
-
-    <div class="media-body">
-      <h4 class="media-heading">
-        {% if asked_by_member %}
-          <a href="{{ asked_by_member|member_url }}">{{ asked_by_member.name }}</a>
-        {% else %}
-          {{ question.asked_by_name }}
-        {% endif %}
-        to ask the
-        {{ question.question_to_name }}
+<div class="row">
+  <div class="col-sm-9">
+    <div class="committee-question-detail">
+      <h4>
+        {{ question.date | pretty_date("long") }} -
+        <a href="{{ url_for('committee_question', question_id=question.id) }}">{{ question.code }}</a>
       </h4>
 
-      <div class="row">
-        <div class="col-sm-9">
-          <p>{{ question.question }}</p>
-        </div>
-      </div>
+      <div class="media">
+        <div class="media-left">
+          {% set asked_by_member = question.asked_by_member %}
 
-      <div class="row">
-        <div class="col-xs-5">
-          {% if question.answer and hide_replies %}
-          <button class="btn btn-default" data-toggle="collapse" data-target="#commitee-question-reply-{{ question.id}}">Show reply</button>
+          {% if asked_by_member and asked_by_member.profile_pic_url %}
+            <a class="media-object" href="{{ asked_by_member|member_url }}"><img class="member-profile-pic" src="{{ asked_by_member.profile_pic_url }}" alt="Profile picture: {{ asked_by_member.name }}" ></a>
+          {% else %}
+            <div class="media-object"></div>
           {% endif %}
         </div>
 
-        <div class="col-xs-7 text-right">
-          <ul class="list-inline">
-            {% if question.source_file %}
-            <li><i class="fa fa-fw fa-file-text-o"></i> <a href="{{ question.source_file.url }}" target="_blank">Source</a></li>
+        <div class="media-body">
+          <h4 class="media-heading">
+            {% if asked_by_member %}
+              <a href="{{ asked_by_member|member_url }}">{{ asked_by_member.name }}</a>
+            {% else %}
+              {{ question.asked_by_name }}
             {% endif %}
+            to ask the
+            {{ question.question_to_name }}
+          </h4>
 
-            <li><i class="fa fa-fw fa-link"></i> <a href="{{ url_for('committee_question', question_id=question.id) }}">Link</a></li>
-          </ul>
+          <div class="row">
+            <div class="col-sm-12">
+              <p>{{ question.question }}</p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-xs-5">
+              {% if question.answer and hide_replies %}
+              <button class="btn btn-default" data-toggle="collapse" data-target="#commitee-question-reply-{{ question.id}}">Show reply</button>
+              {% endif %}
+            </div>
+
+            <div class="col-xs-7 text-right">
+              <ul class="list-inline">
+                {% if question.source_file %}
+                <li><i class="fa fa-fw fa-file-text-o"></i> <a href="{{ question.source_file.url }}" target="_blank">Source</a></li>
+                {% endif %}
+
+                <li><i class="fa fa-fw fa-link"></i> <a href="{{ url_for('committee_question', question_id=question.id) }}">Link</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {% if question.answer %}
+            <div class="committee-question-reply {% if hide_replies %}collapse{% endif %}" id="commitee-question-reply-{{ question.id}}">
+              <h4>Reply:</h4>
+
+              {% if question.files %}
+              <div class="col-sm-4 pull-right">
+                {{ related_attachments(question.files) }}
+              </div>
+              {% endif %}
+
+              {{ question.answer|safe }}
+            </div>
+          {% endif %}
         </div>
       </div>
-
-      {% if question.answer %}
-        <div class="committee-question-reply {% if hide_replies %}collapse{% endif %}" id="commitee-question-reply-{{ question.id}}">
-          <h4>Reply:</h4>
-
-          {% if question.files %}
-          <div class="col-sm-4 pull-right">
-            {{ related_attachments(question.files) }}
-          </div>
-          {% endif %}
-
-          {{ question.answer|safe }}
-        </div>
-      {% endif %}
     </div>
   </div>
 </div>

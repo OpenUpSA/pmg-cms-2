@@ -197,31 +197,6 @@ def committee_detail(committee_id):
                            admin_edit_url=admin_url('committee', committee_id))
 
 
-@app.route('/committee/<int:committee_id>/questions/')
-@app.route('/committee/<int:committee_id>/questions/<int:page>/')
-def committee_questions(committee_id, page=0):
-    """
-    Display committee question for the committee.
-    """
-    per_page = 10
-
-    committee = load_from_api('committee', committee_id)
-    questions = load_from_api('committee/%s/questions' % committee_id, page=page, params={'per_page': per_page})
-    num_pages = int(math.ceil(float(questions['count']) / float(per_page)))
-
-    if questions['count'] == 0:
-        # send them to the old page
-        return redirect("/question_replies/?filter[committee]=%s" % committee_id)
-
-    return render_template('committee_questions.html',
-                           committee=committee,
-                           questions=questions,
-                           hide_replies=True,
-                           url='/committee/%s/questions' % committee_id,
-                           num_pages=num_pages,
-                           per_page=per_page,
-                           page=page)
-
 
 @app.route('/committee-question/<int:question_id>/')
 def committee_question(question_id):

@@ -3,7 +3,7 @@
     <div class="question-reply-detail">
       <h4>
         {{ question.start_date | pretty_date("long") }} -
-        <a href="/question_reply/{{ question.id }}">Questions asked to Minister of {{ question.title }}</a>
+        <a href="{{ url_for('question_reply', question_reply_id=question.id) }}">Questions asked to Minister of {{ question.title }}</a>
       </h4>
     </div>
   </div>

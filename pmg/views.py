@@ -656,30 +656,32 @@ def question_reply(question_reply_id):
 @app.route('/question_replies/<int:page>/')
 def question_replies(page=0):
     """
-    Page through all available question_replies.
+    Page through all available question_replies + committee_questions.
     """
-
     logger.debug("question_replies page called")
     committees = load_from_api('committee/question_reply', return_everything=True)['results']
     filters = {}
     params = {}
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
-    question_replies_list = load_from_api(
-        'question_reply',
+    questions = load_from_api(
+        'minister-questions-combined',
         page=page,
         params=params)
-    count = question_replies_list["count"]
+    count = questions["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    question_replies = question_replies_list['results']
+
     url = "/question_replies"
+
     return render_template(
-        'list.html',
-        results=question_replies,
-        num_pages=num_pages,
-        page=page,
+        'question_list.html',
+        questions=questions,
+        hide_replies=True,
         url=url,
+        num_pages=num_pages,
+        per_page=per_page,
+        page=page,
         icon="question-circle",
         title="Questions and Replies",
         content_type="question_reply",

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  {% block committee_breadcrumb %}
+  {% endblock %}
+</ol>
+{% endblock %}
+
+
+{% block page %}
+
+  <div class="row">
+    <div class="col-sm-9 committee-header">
+      {% block question_title %}
+        <h1><i class="fa fa-icon fa-{{ icon }}"></i> {{ title }}</h1>
+      {% endblock %}
+    </div>
+  </div>
+
+  <div class="space-bottom">
+    <div class="row">
+      <div class="col-md-6">
+        <form action="/search">
+          <input type="hidden" name="filter[type]" value="{{content_type}}">
+          <div class="input-group">
+            <input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-success">Search</button>
+            </span>
+          </div>
+        </form>
+      </div>
+      {% if committees %}
+      <div class="col-md-6">
+        <form>
+          {% include 'committee_select.html' %}
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% block question_page %}
+  {% endblock %}
+
+  {% include "_correct_this_page.html" %}
+
+{% endblock %}

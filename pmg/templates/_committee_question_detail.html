@@ -2,7 +2,7 @@
 
 <div class="committee-question-detail">
   <h4>
-    {{ question.date | pretty_date("long") }} - 
+    {{ question.date | pretty_date("long") }} -
     <a href="{{ url_for('committee_question', question_id=question.id) }}">{{ question.code }}</a>
   </h4>
 
@@ -24,11 +24,15 @@
         {% else %}
           {{ question.asked_by_name }}
         {% endif %}
+        to ask the
+        {{ question.question_to_name }}
       </h4>
 
-      <h5>{{ question.intro }}</h5>
-
-      <p>{{ question.question }}</p>
+      <div class="row">
+        <div class="col-xs-12 col-sm-9">
+          <p>{{ question.question }}</p>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-xs-5">

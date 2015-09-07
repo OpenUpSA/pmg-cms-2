@@ -6,9 +6,9 @@
 <section class="committee-question-list">
 {% for question in questions.results %}
   {% if question.code %}
-    {% include '_question_detail.html' with context %}
+    {% include '_committee_question_detail.html' with context %}
   {% else %}
-    {% include '_question_detail_old.html' with context %}
+    {% include '_question_reply_detail.html' with context %}
   {% endif %}
 {% endfor %}
 </section>

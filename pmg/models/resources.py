@@ -631,7 +631,7 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     # This is in the identifier above.
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
-    house = db.relationship("House")
+    house = db.relationship("House", lazy=False)
 
     # Questions for written answer and questions for oral answer both have
     # sequence numbers. It looks like these are probably the order the questions

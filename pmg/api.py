@@ -380,7 +380,8 @@ def minister_questions_combined():
         .order_by(CommitteeQuestion.date.desc())\
         .options(
             lazyload('committee'),
-            lazyload('asked_by_member'))
+            joinedload('asked_by_member'),
+            lazyload('asked_by_member.memberships'))
     for f in filters:
         query = query.filter_by(**f)
     objects = query.all()

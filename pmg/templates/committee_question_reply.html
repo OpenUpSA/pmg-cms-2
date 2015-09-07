@@ -6,7 +6,7 @@
 
 {% block committee_breadcrumb %}
   {{ super() }}
-  <li><a href="{{ url_for('committee_questions', committee_id=committee.id) }}">Committee Questions</a></li>
+  <li><a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">Committee Questions</a></li>
 {% endblock %}
 
 
@@ -14,9 +14,7 @@
   {{ super() }}
   <h1>Questions to the Minister</h1>
   <p>
-    <a href="/question_replies/?filter[committee]={{ committee.id }}">← Questions from before July 2015</a>
-    |
-    <a href="{{ url_for('committee_questions', committee_id=committee.id) }}">Recent Questions →</a>
+    <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">← More questions to the Minister</a>
   </p>
 {% endblock %}
 

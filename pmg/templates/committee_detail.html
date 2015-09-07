@@ -118,7 +118,8 @@
               {% endfor %}
             </table>
 
-            <a href="{{ url_for('committee_questions', committee_id=committee.id) }}" class="btn btn-primary">More</a>
+            <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
+
           </div>
         {% endif %}
       </div>

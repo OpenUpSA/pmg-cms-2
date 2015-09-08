@@ -5,11 +5,11 @@ import json
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
 
-from inflection import camelize
 from bs4 import BeautifulSoup
 
 from . import db, app
-import pmg.models
+from pmg.models.resources import *  # noqa
+from pmg.models.base import resource_slugs
 
 
 class Search:
@@ -33,12 +33,18 @@ class Search:
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
 
-        Model = self.model_for_data_type(data_type)
-        ids = [r[0] for r in db.session.query(Model.id).all()]
+        models = [m for m in resource_slugs.itervalues() if m.resource_content_type == data_type]
+        for model in models:
+            self.reindex_for_model(model)
+
+    def reindex_for_model(self, model):
+        """ Index all content of type +model+ """
+        ids = [r[0] for r in db.session.query(model.id).all()]
 
         count = len(ids)
         pages = int(math.ceil(float(count) / float(self.per_batch)))
-        self.logger.info("Pages %s, Count %s" % (pages, count))
+        self.logger.info("Reindexing for %s" % model.__name__)
+        self.logger.info("Pages %s, count %s" % (pages, count))
 
         while len(ids):
             self.logger.info("Items left %s" % len(ids))
@@ -47,9 +53,9 @@ class Search:
                 if ids:
                     id_subsection.append(ids.pop())
 
-            rows = db.session.query(Model).filter(Model.id.in_(id_subsection)).all()
-            items = [Transforms.serialise(data_type, r) for r in rows]
-            self.add_many(data_type, items)
+            rows = db.session.query(model).filter(model.id.in_(id_subsection)).all()
+            items = [Transforms.serialise(r) for r in rows]
+            self.add_many(model.resource_content_type, items)
 
     def drop_index(self, data_type):
         self.logger.info("Dropping %s index" % data_type)
@@ -57,9 +63,7 @@ class Search:
         self.logger.info("Dropped %s index" % data_type)
 
     def add_obj(self, obj):
-        data_type = self.data_type_for_obj(obj)
-        item = Transforms.serialise(data_type, obj)
-        self.add(data_type, item)
+        self.add(obj.resource_content_type, Transforms.serialise(obj))
 
     def add_many(self, data_type, items):
         self.es.bulk_index(self.index_name, data_type, items)
@@ -68,15 +72,7 @@ class Search:
         self.add_many(data_type, [item])
 
     def delete_obj(self, obj):
-        self.delete(self.data_type_for_obj(obj), obj.id)
-
-    def data_type_for_obj(self, obj):
-        # QuestionReply -> question_reply
-        return getattr(obj, 'resource_content_type', None)
-
-    def model_for_data_type(self, data_type):
-        # question_reply -> QuestionReply class
-        return getattr(pmg.models, camelize(data_type))
+        self.delete(obj.resource_content_type, obj.id)
 
     def delete(self, data_type, uid):
         try:
@@ -92,7 +88,7 @@ class Search:
 
     def indexable(self, obj):
         """ Should this object be indexed for searching? """
-        dt = self.data_type_for_obj(obj)
+        dt = getattr(obj, 'resource_content_type', None)
         return self.reindex_changes and dt and dt in Transforms.convert_rules
 
     def mapping(self, data_type):
@@ -251,19 +247,28 @@ class Search:
 
 
 class Transforms:
+    """
+    Each API model in PMG has different fields, so we need to describe how to map
+    the model into something that can be indexed by ElasticSearch.
+
+    Most models correspond directly to a single content type in ES. One or two
+    of them are combined into one type so that we can support legacy and modern
+    models (eg. QuestionReply and CommitteeQuestion).
+    """
+
     @classmethod
     def data_types(cls):
-        return cls.convert_rules.keys()
+        return [k.resource_content_type for k in cls.convert_rules.iterkeys()]
 
     # If there is a rule defined here, the corresponding CamelCase model
     # will be indexed
     convert_rules = {
-        "committee": {
+        Committee: {
             "id": "id",
             "title": "name",
             "description": "about",
         },
-        "committee_meeting": {
+        CommitteeMeeting: {
             "id": "id",
             "title": "title",
             "description": "summary",
@@ -272,7 +277,7 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "committee_question": {
+        CommitteeQuestion: {
             "id": "id",
             "title": "intro",
             "fulltext": ["question", "answer"],
@@ -280,26 +285,26 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "member": {
+        Member: {
             "id": "id",
             "title": "name",
             "description": "bio",
             "date": "start_date",
         },
-        "bill": {
+        Bill: {
             "id": "id",
             "title": "title",
             "year": "year",
             "number": "number",
             "code": "code",
         },
-        "hansard": {
+        Hansard: {
             "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "date",
         },
-        "briefing": {
+        Briefing: {
             "id": "id",
             "title": "title",
             "description": "summary",
@@ -308,7 +313,7 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "question_reply": {
+        QuestionReply: {
             "id": "id",
             "title": "title",
             "fulltext": "body",
@@ -316,7 +321,7 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "tabled_committee_report": {
+        TabledCommitteeReport: {
             "id": "id",
             "title": "title",
             "fulltext": "body",
@@ -324,7 +329,7 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "call_for_comment": {
+        CallForComment: {
             "id": "id",
             "title": "title",
             "fulltext": "body",
@@ -332,17 +337,17 @@ class Transforms:
             "committee_name": "committee.name",
             "committee_id": "committee.id",
         },
-        "policy_document": {
+        PolicyDocument: {
             "id": "id",
             "title": "title",
             "date": "start_date",
         },
-        "gazette": {
+        Gazette: {
             "id": "id",
             "title": "title",
             "date": "start_date",
         },
-        "daily_schedule": {
+        DailySchedule: {
             "id": "id",
             "title": "title",
             "fulltext": "body",
@@ -351,13 +356,23 @@ class Transforms:
     }
 
     @classmethod
-    def serialise(cls, data_type, obj):
-        item = {}
-        for key, field in Transforms.convert_rules[data_type].iteritems():
+    def serialise(cls, obj):
+        from pmg import app
+
+        # needed for the URLs
+        with app.app_context():
+            item = {
+                'url': obj.url,
+                'api_url': obj.api_url,
+                'slug_prefix': obj.slug_prefix,
+            }
+
+        for key, field in Transforms.convert_rules[obj.__class__].iteritems():
             val = cls.get_val(obj, field)
             if isinstance(val, unicode):
                 val = BeautifulSoup(val).get_text().strip()
             item[key] = val
+
         return item
 
     @classmethod

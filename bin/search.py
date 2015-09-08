@@ -8,9 +8,6 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../')
 from pmg.search import Search, Transforms
 
 if __name__ == "__main__":
-
-
-    # print "ElasticSearch PMG library"
     data_types = Transforms.data_types() + ['all']
 
     parser = argparse.ArgumentParser(description='ElasticSearch PMG library')

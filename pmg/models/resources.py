@@ -14,7 +14,6 @@ from werkzeug import secure_filename
 from za_parliament_scrapers.questions import QuestionAnswerScraper
 
 from pmg import app, db
-from pmg.search import Search
 from pmg.utils import levenshtein
 
 import serializers
@@ -602,6 +601,13 @@ schedule_house_table = db.Table(
 class CommitteeQuestion(ApiResource, db.Model):
     __tablename__ = "committee_question"
 
+    # we mix QuestionReplies and CommitteeQuestions together
+    # in ElasticSearch
+    resource_content_type = "minister_question"
+
+    # otherwise this is  based on resource_content_type
+    slug_prefix = "committee-question"
+
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
@@ -832,6 +838,10 @@ class QuestionReply(ApiResource, db.Model):
 
     __tablename__ = "question_reply"
 
+    # we mix QuestionReplies and CommitteeQuestions together
+    # in ElasticSearch
+    resource_content_type = "minister_question"
+
     # override the default of question-reply for legacy reasons
     slug_prefix = "question_reply"
 
@@ -1050,6 +1060,7 @@ db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMe
 # Listen for model updates
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
+    from pmg.search import Search
     searcher = Search()
 
     for obj, change in changes:

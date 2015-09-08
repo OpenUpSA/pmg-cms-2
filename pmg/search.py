@@ -264,12 +264,10 @@ class Transforms:
     # will be indexed
     convert_rules = {
         Committee: {
-            "id": "id",
             "title": "name",
             "description": "about",
         },
         CommitteeMeeting: {
-            "id": "id",
             "title": "title",
             "description": "summary",
             "fulltext": "body",
@@ -278,7 +276,7 @@ class Transforms:
             "committee_id": "committee.id",
         },
         CommitteeQuestion: {
-            "id": "id",
+            "id": ["slug_prefix", "id"],
             "title": "intro",
             "fulltext": ["question", "answer"],
             "date": "date",
@@ -286,26 +284,22 @@ class Transforms:
             "committee_id": "committee.id",
         },
         Member: {
-            "id": "id",
             "title": "name",
             "description": "bio",
             "date": "start_date",
         },
         Bill: {
-            "id": "id",
             "title": "title",
             "year": "year",
             "number": "number",
             "code": "code",
         },
         Hansard: {
-            "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "date",
         },
         Briefing: {
-            "id": "id",
             "title": "title",
             "description": "summary",
             "fulltext": "body",
@@ -314,7 +308,7 @@ class Transforms:
             "committee_id": "committee.id",
         },
         QuestionReply: {
-            "id": "id",
+            "id": ["slug_prefix", "id"],
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
@@ -322,7 +316,6 @@ class Transforms:
             "committee_id": "committee.id",
         },
         TabledCommitteeReport: {
-            "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
@@ -330,7 +323,6 @@ class Transforms:
             "committee_id": "committee.id",
         },
         CallForComment: {
-            "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
@@ -338,17 +330,14 @@ class Transforms:
             "committee_id": "committee.id",
         },
         PolicyDocument: {
-            "id": "id",
             "title": "title",
             "date": "start_date",
         },
         Gazette: {
-            "id": "id",
             "title": "title",
             "date": "start_date",
         },
         DailySchedule: {
-            "id": "id",
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
@@ -362,12 +351,17 @@ class Transforms:
         # needed for the URLs
         with app.app_context():
             item = {
+                'model_id': obj.id,
                 'url': obj.url,
                 'api_url': obj.api_url,
                 'slug_prefix': obj.slug_prefix,
             }
 
-        for key, field in Transforms.convert_rules[obj.__class__].iteritems():
+        rules = Transforms.convert_rules[obj.__class__]
+        if 'id' not in rules:
+            item['id'] = obj.id
+
+        for key, field in rules.iteritems():
             val = cls.get_val(obj, field)
             if isinstance(val, unicode):
                 val = BeautifulSoup(val).get_text().strip()
@@ -379,7 +373,9 @@ class Transforms:
     def get_val(cls, obj, field):
         if isinstance(field, list):
             # join multiple fields
-            return ' '.join(cls.get_val(obj, f) or '' for f in field)
+            vals = (cls.get_val(obj, f) or '' for f in field)
+            vals = [unicode(v) if not isinstance(v, basestring) else v for v in vals]
+            return ' '.join(vals)
 
         elif '.' in field:
             # get nested attributes: foo.bar.baz

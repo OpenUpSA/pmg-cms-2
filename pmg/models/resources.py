@@ -884,7 +884,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
     nid = db.Column(db.Integer())
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports'))
+    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports'), lazy=False)
     files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     def __unicode__(self):

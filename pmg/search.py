@@ -29,9 +29,10 @@ class Search:
         """ Index all content of a data_type """
         try:
             self.drop_index(data_type)
-            self.mapping(data_type)
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
+
+        self.mapping(data_type)
 
         models = [m for m in resource_slugs.itervalues() if m.resource_content_type == data_type]
         for model in models:

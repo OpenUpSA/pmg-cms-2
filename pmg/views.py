@@ -657,7 +657,7 @@ def question_replies(page=0):
         page=page,
         icon="question-circle",
         title="Questions and Replies",
-        content_type="question_reply",
+        content_type="minister_question",
         committees=committees,
         all_committees_option="All Ministries",
         filters=filters)
@@ -704,12 +704,12 @@ def search(page=0):
     search_types = [
         ("committee", "Committees"),
         ("committee_meeting", "Committee Meetings"),
-        ("committee_question", "Committee Questions"),
         ("bill", "Bills"),
         ("member", "MPs"),
         ("hansard", "Hansards"),
         ("briefing", "Media Briefings"),
-        ("question_reply", "Question & Reply"),
+        # this is both QuestionReply and CommitteeQuestion objects
+        ("minister_question", "Questions & Replies"),
         ("tabled_committee_report", "Tabled Committee Reports"),
         ("call_for_comment", "Calls for Comments"),
         ("policy_document", "Policy Documents"),

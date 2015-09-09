@@ -1,0 +1,5 @@
+{% if result._id.startswith('committee-question') %}
+  {% include 'committee_question_stub.html' %}
+{% else %}
+  {% include 'question_reply_stub.html' %}
+{% endif %}

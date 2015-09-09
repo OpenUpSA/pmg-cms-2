@@ -383,6 +383,7 @@ class Transforms:
                 if not obj:
                     return None
                 obj = getattr(obj, part)
+            return obj
 
         else:
             # simple attribute name

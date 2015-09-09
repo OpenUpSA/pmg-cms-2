@@ -11,7 +11,7 @@ RESULTS_PER_PAGE = 50
 SEARCH_RESULTS_PER_PAGE = 20
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
-ES_SERVER = "http://ec2-54-154-176-3.eu-west-1.compute.amazonaws.com:9200"
+ES_SERVER = "http://ec2-52-19-68-36.eu-west-1.compute.amazonaws.com:9200"
 SEARCH_REINDEX_CHANGES = True  # reindex changes to models
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET

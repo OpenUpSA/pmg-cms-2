@@ -258,7 +258,7 @@ class Transforms:
 
     @classmethod
     def data_types(cls):
-        return [k.resource_content_type for k in cls.convert_rules.iterkeys()]
+        return sorted(list(set(k.resource_content_type for k in cls.convert_rules.iterkeys())))
 
     # If there is a rule defined here, the corresponding CamelCase model
     # will be indexed
@@ -346,8 +346,6 @@ class Transforms:
 
     @classmethod
     def serialise(cls, obj):
-        from pmg import app
-
         # needed for the URLs
         with app.app_context():
             item = {

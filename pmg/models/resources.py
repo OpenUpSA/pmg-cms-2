@@ -321,6 +321,8 @@ class CommitteeMeeting(Event):
     actual_end_time = db.Column(db.Time(timezone=True))
     pmg_monitor = db.Column(db.String(255))
 
+    attendance = db.relationship('CommitteeMeetingAttendance', backref='meeting', cascade="all, delete, delete-orphan")
+
     def check_permission(self):
         # by default, all committee meetings are accessible
         if self.committee and self.committee.premium:
@@ -1045,7 +1047,6 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     attendance = db.Column(db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', 'U', name='meeting_attendance_enum'), nullable=False)
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
     meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
-    meeting = db.relationship('CommitteeMeeting', backref='attendance')
     member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
     member = db.relationship('Member', lazy=False)
 

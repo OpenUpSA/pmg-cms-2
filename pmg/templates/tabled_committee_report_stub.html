@@ -17,8 +17,8 @@
   {% set date = result.start_date %}
   {% set id = result.id %}
   {% if result.committee %}
-    {% set committee_name = result.committee[0].name %}
-    {% set committee_id = result.committee[0].id %}
+    {% set committee_name = result.committee.name %}
+    {% set committee_id = result.committee.id %}
   {% endif %}
 {% endif %}
 <div class="tabled-committee-report-stub">

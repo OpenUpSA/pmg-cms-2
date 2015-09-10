@@ -78,9 +78,10 @@ def to_dict(obj, include_related=False):
     Check if a custom serializer is defined for the given object, otherwise use the default.
     """
     try:
-        return obj.to_dict(include_related=include_related)
-    except AttributeError:
-        return model_to_dict(obj, include_related=include_related)
+        if hasattr(obj, 'to_dict'):
+            return obj.to_dict(include_related=include_related)
+        else:
+            return model_to_dict(obj, include_related=include_related)
     except Exception as e:
         logger.exception(e)
         raise e

@@ -474,7 +474,7 @@ class Member(ApiResource, db.Model):
                      joinedload('province'),
                      joinedload('memberships.committee'))\
             .filter(Member.current == True)\
-            .order_by(Member.name)
+            .order_by(Member.name)  # noqa
 
     @classmethod
     def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
@@ -508,6 +508,8 @@ class Committee(ApiResource, db.Model):
     house = db.relationship('House', lazy='joined')
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
+    minister = db.relationship('Minister', lazy=True)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -519,7 +521,7 @@ class Committee(ApiResource, db.Model):
         return cls.query\
                 .filter(cls.premium == True)\
                 .order_by(cls.name)\
-                .all()
+                .all()  # noqa
 
     @classmethod
     def for_related(cls, other):
@@ -611,8 +613,13 @@ class CommitteeQuestion(ApiResource, db.Model):
     slug_prefix = "committee-question"
 
     id = db.Column(db.Integer, primary_key=True)
+
+    # TODO: delete this reference and use the minister relation instead
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
+
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
+    minister = db.relationship('Minister', lazy='joined')
 
     # XXX: don't forget session, numbers are unique by session only
 
@@ -780,6 +787,12 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.year = value.year
         return value
 
+    @validates('committee')
+    def validate_committee(self, key, cte):
+        if cte:
+            self.minister = cte.minister
+        return cte
+
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
         # save the file to disk
@@ -848,14 +861,23 @@ class QuestionReply(ApiResource, db.Model):
     slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
+    # TODO: delete this reference and use the minister relation instead
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
     committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
+    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
+    minister = db.relationship('Minister', lazy='joined')
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
     files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
+
+    @validates('committee')
+    def validate_committee(self, key, cte):
+        if cte:
+            self.minister = cte.minister
+        return cte
 
     @classmethod
     def list(cls):
@@ -1058,6 +1080,29 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
 
 
+class Minister(ApiResource, db.Model):
+    __tablename__ = "minister"
+    """
+    A ministerial position to which questions may be asked.
+    This is the position, not the person who holds that position.
+    """
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['questions_url'] = url_for('api.minister_questions', minister_id=self.id, _external=True)
+        return tmp
+
+    def __unicode__(self):
+        return unicode(self.name)
+
+    @classmethod
+    def list(cls):
+        return cls.query.order_by(cls.name)
+
+
 # Listen for model updates
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
@@ -1089,6 +1134,7 @@ ApiResource.register(DailySchedule)
 ApiResource.register(Gazette)
 ApiResource.register(Hansard)
 ApiResource.register(Member)
+ApiResource.register(Minister)
 ApiResource.register(PolicyDocument)
 ApiResource.register(QuestionReply)
 ApiResource.register(Schedule)

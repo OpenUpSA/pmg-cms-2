@@ -1,7 +1,6 @@
 import logging
 from operator import itemgetter
 import datetime
-from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
 from flask import flash, redirect, url_for, request, make_response
@@ -316,7 +315,10 @@ class CommitteeView(MyModelView):
         'ad_hoc',
         'memberships'
     )
-    column_labels = {'memberships': 'Members', }
+    column_labels = {
+        'memberships': 'Members',
+        'minister': 'Associated Minister',
+    }
     column_sortable_list = (
         'name',
         ('house', 'house.name'),
@@ -332,6 +334,7 @@ class CommitteeView(MyModelView):
         'ad_hoc',
         'premium',
         'house',
+        'minister',
         'about',
         'contact_details',
         'memberships',
@@ -934,6 +937,17 @@ class BillsView(MyModelView):
     }
 
 
+class MinisterView(MyModelView):
+    column_list = (
+        'name',
+    )
+    column_default_sort = ('name', True)
+    column_searchable_list = ('name',)
+    form_columns = (
+        'name',
+    )
+
+
 class FeaturedContentView(MyModelView):
     def on_model_change(self, form, model, is_created):
         # make sure the new date is timezone aware
@@ -1048,6 +1062,7 @@ admin.add_view(CommitteeView(Committee, db.session, name="Committees", endpoint=
 admin.add_view(CommitteeMeetingView(CommitteeMeeting, db.session, type="committee-meeting", name="Committee Meetings", endpoint='committee-meeting', category="Committees"))
 admin.add_view(CallForCommentView(CallForComment, db.session, name="Calls for Comment", endpoint='call-for-comment', category="Committees"))
 admin.add_view(CommitteeQuestionView(CommitteeQuestion, db.session, name="Questions to Committees", endpoint='committee-question', category="Committees"))
+admin.add_view(MinisterView(Minister, db.session, name="Ministers", endpoint='minister', category="Committees"))
 admin.add_view(QuestionReplyView(QuestionReply, db.session, name="Old Questions & Replies", endpoint='question', category="Committees"))
 admin.add_view(TabledCommitteeReportView(TabledCommitteeReport, db.session, name="Tabled Committee Reports", endpoint='tabled-committee-report', category="Committees"))
 

@@ -258,7 +258,7 @@ def featured():
     info['committee_meetings'] = CommitteeMeeting.query\
         .filter(CommitteeMeeting.featured == True)\
         .order_by(desc(CommitteeMeeting.date))\
-        .all()
+        .all()  # noqa
     info['committee_meetings'] = [serializers.to_dict(c) for c in info['committee_meetings']]
 
     return send_api_response(info)
@@ -380,6 +380,7 @@ def minister_questions_combined():
         .order_by(CommitteeQuestion.date.desc())\
         .options(
             lazyload('committee'),
+            lazyload('minister'),
             joinedload('asked_by_member'),
             lazyload('asked_by_member.memberships'))
     for f in filters:
@@ -390,7 +391,9 @@ def minister_questions_combined():
     query = QuestionReply.list()\
         .filter(QuestionReply.id.in_(qr_ids))\
         .order_by(QuestionReply.start_date.desc())\
-        .options(lazyload('committee'))
+        .options(
+            lazyload('committee'),
+            lazyload('minister'))
     for f in filters:
         query = query.filter_by(**f)
     # mash them together
@@ -401,6 +404,24 @@ def minister_questions_combined():
 
     out = serializers.queryset_to_json(objects, count=count, next=next)
     return send_api_response(out)
+
+
+@api.route('/minister/<int:minister_id>/questions/')
+def minister_questions(minister_id):
+    """
+    Questions asked to a minister
+    """
+    # don't eager load duplicate committee details
+    query = CommitteeQuestion.list()\
+        .filter(CommitteeQuestion.minister_id == minister_id)\
+        .order_by(CommitteeQuestion.date.desc())\
+        .options(
+            lazyload('committee'),
+            lazyload('minister'),
+            joinedload('asked_by_member'),
+            lazyload('asked_by_member.memberships'))
+
+    return api_resource_list(query)
 
 
 @api.route('/committee/<int:committee_id>/questions/')

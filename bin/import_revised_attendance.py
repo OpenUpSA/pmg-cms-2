@@ -8,24 +8,23 @@ import time
 import datetime
 import arrow
 import re
-from collections import defaultdict
-from sqlalchemy import func
 
 file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.abspath(os.path.join(file_path, os.pardir)))
 
 from pmg import db
-from pmg.models.resources import CommitteeMeeting, Member, Committee, House, CommitteeMeetingAttendance
+from pmg.models.resources import CommitteeMeeting, Member, CommitteeMeetingAttendance
 
 
-def log_error(writer, row):
+def log_error(writer, row, error=None):
+    row['new_error'] = error
     writer.writerow([
         row['Column'], row['AET'], row['AST'], row['Date'],
         row['House'], row['ISSID'], row['Name Committee'],
         row['OST'], row['PMG Name'], row['alt'], row['attendance'],
         row['chairperson'], row['first_name'], row['party_affiliation'],
         row['province'], row['surname'], row['title'], row['error'],
-        row['url'], row['url2'], row['comments']
+        row['url'], row['url2'], row['comments'], row['new_error']
     ])
 
 def get_member(members, first_name, last_name, title):
@@ -56,10 +55,20 @@ if __name__ == "__main__":
             members = Member.query.all()
             member_dict = {}
             committee_meeting_dict = {}
+            meeting_attendance = list()
+
             for row in reader:
                 if reader.line_num >= 0:
-                    if row['error'] == 'Member not found.':
+                    # Temp: Member mismatches
+                    if row['surname'] in ["Ramakatsa", "Michael"]:
+                        log_error(writer, row, error='Member incorrectly matched.')
+                        continue
 
+                    if row['url'] == "Committee meeting not found.":
+                        log_error(writer, row)
+                        continue
+
+                    if row['error'] == 'Member not found.':
                         first_name = row['first_name']
                         last_name = row['surname']
                         title = row['title']
@@ -74,9 +83,7 @@ if __name__ == "__main__":
                             # Member not found
                             log_error(writer, row)
                             continue
-                        else:
-                            # Create attendance
-                            pass
+                        pass
 
                     elif row['url2']:
                         log_error(writer, row)
@@ -129,6 +136,11 @@ if __name__ == "__main__":
                         member = get_member(members, first_name, last_name, title)
                         member_dict[member_name] = member
 
+                    if not member:
+                        # Member not found
+                        log_error(writer, row, error='Member not found.')
+                        continue
+
                     committee_meeting_id = int(row['url'].strip("https://pmg.org.za/committee-meeting/"))
                     committee_meeting = CommitteeMeeting.query.get(committee_meeting_id)
 
@@ -136,22 +148,31 @@ if __name__ == "__main__":
                     committee_meeting.actual_start_time = ast
                     committee_meeting.actual_end_time = aet
 
-                    existing_attendance = CommitteeMeetingAttendance.query\
-                        .filter(CommitteeMeetingAttendance.meeting == committee_meeting)\
-                        .filter(CommitteeMeetingAttendance.member == member).first()
+                    if not (committee_meeting.id, member.id) in meeting_attendance:
+                        meeting_attendance.append((committee_meeting.id, member.id))
 
-                    if not existing_attendance:
-                        committee_meeting_attendance = CommitteeMeetingAttendance(
-                            alternate_member=alternate_member,
-                            attendance=attendance,
-                            chairperson=chairperson,
-                            meeting=committee_meeting,
-                            member=member)
+                        existing_attendance = CommitteeMeetingAttendance.query\
+                            .filter(CommitteeMeetingAttendance.meeting_id == committee_meeting.id)\
+                            .filter(CommitteeMeetingAttendance.member_id == member.id).first()
 
-                        db.session.add(committee_meeting_attendance)
-                        print 'Adding attendance: %s' % (reader.line_num)
+                        if not existing_attendance:
+                            committee_meeting_attendance = CommitteeMeetingAttendance(
+                                alternate_member=alternate_member,
+                                attendance=attendance,
+                                chairperson=chairperson,
+                                meeting=committee_meeting,
+                                member=member)
+
+                            db.session.add(committee_meeting_attendance)
+                            print 'Adding attendance: %s' % (reader.line_num)
+                        else:
+                            print 'Attendance exists: %s' % (reader.line_num)
                     else:
-                        print 'Attendance exists: %s' % (reader.line_num)
+                        log_error(writer, row, error='Duplicate member for meeting in sheet.')
+                        continue
+
+                    # if reader.line_num % 10 == 0:
+                    #     db.session.flush()
 
             # db.session.flush()
             db.session.commit()

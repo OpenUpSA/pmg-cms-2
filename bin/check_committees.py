@@ -10,12 +10,6 @@ sys.path.append(os.path.abspath(os.path.join(file_path, os.pardir)))
 
 from pmg.models.resources import Committee, House
 
-member_name_map = {
-    'Kohler, Ms D': 'Kohler-Barnard, Ms D',
-    'Michael, Ms N': 'Mazzone, Ms NW',
-    'Steenkamp, Ms J': 'Edwards, Ms J'
-}
-
 committee_name_map = {
     'Standing Committee on Finance': 'Finance Standing Committee',
     'Finance': 'NCOP Finance',
@@ -36,56 +30,50 @@ committee_name_map = {
     'Joint Subcommitteeon Review of the Joint Rules': 'Joint Rules',
 }
 
-def log_error(writer, committee_name, matched_name=None, error=None):
-    writer.writerow([
-        committee_name, matched_name, error
-    ])
-
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Check if members are matched correctly.')
     parser.add_argument('input', help='Path of file to check')
-    parser.add_argument('log', help='Path of file to log mismatches')
     args = parser.parse_args()
 
-    with open(args.log, 'wb') as logfile:
-        with open(args.input) as csvfile:
+    with open(args.input) as csvfile:
+        reader = csv.DictReader(csvfile)
 
-            writer = csv.writer(logfile)
-            reader = csv.DictReader(csvfile)
+        all_committees = Committee.query.all()
+        na_committees = Committee.query.filter(House.name_short == 'NA').all()
+        ncop_committees = Committee.query.filter(House.name_short == 'NCOP').all()
 
-            all_committees = Committee.query.all()
-            ncop_committees = Committee.query.filter(House.name_short == 'NCOP')
+        committee_dict = {}
 
-            committee_dict = {}
-
-            for row in reader:
-                committee_name = row['Name Committee']
-                select_committee = False
-
-                if 'Portfolio Committee on' in committee_name:
-                    # Remove from committee_name as it doesn't appear in the db
-                    committee_name = committee_name[len('Portfolio Committee on')+1:]
-                elif 'Select Committee on' in committee_name:
-                    select_committee = True
-                    committee_name = committee_name[len('Select Committee on')+1:]
-
-                if committee_name not in committee_dict:
+        for row in reader:
+            if reader.line_num >= 0:
+                if row['Name Committee'] not in committee_dict:
                     # Else already logged
+                    committee_name = row['Name Committee']
                     if committee_name in committee_name_map:
                         committee = Committee.query.filter(Committee.name == committee_name_map[committee_name]).first()
-                    elif select_committee:
+
+                    elif row['House'] == 'NA':
+                        if 'Portfolio Committee on' in committee_name:
+                            committee_name = committee_name[len('Portfolio Committee on')+1:]
+                        committee = Committee.find_by_inexact_name(committee_name, candidates=na_committees)
+
+                    elif row['House'] == 'NCOP':
+                        if 'Select Committee on' in committee_name:
+                            committee_name = committee_name[len('Select Committee on')+1:]
                         committee = Committee.find_by_inexact_name(committee_name, candidates=ncop_committees)
+
                     else:
                         committee = Committee.find_by_inexact_name(committee_name, candidates=all_committees)
-                    committee_dict[committee_name] = committee
+
+                    committee_dict[row['Name Committee']] = committee
 
                     if not committee:
                         # Committee not found
-                        log_error(writer, committee_name, error='Committee not found.')
+                        print "%s: Not found" % (row['Name Committee'])
 
-                    elif committee_name != committee.name:
-                        log_error(writer, committee_name, matched_name=committee.name)
+                    else:
+                        print "'%s': '%s'," % (row['Name Committee'], committee.name)
 
                 continue

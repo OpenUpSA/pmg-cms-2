@@ -35,6 +35,10 @@ def get_member(members, first_name, last_name, title):
         member = Member.query.filter(Member.name == "Kohler-Barnard, Ms D").first()
     elif "%s, %s %s" % (last_name, title, first_name[0]) == "Mthethwa, Mr E":
         member = Member.query.filter(Member.name == "Mthethwa, Mr EM").first()
+    elif "%s, %s %s" % (last_name, title, first_name[0]) == "Michael, Ms N":
+        member = Member.query.filter(Member.name == "Mazzone, Ms NW").first()
+    elif "%s, %s %s" % (last_name, title, first_name[0]) == "Steenkamp, Ms J":
+        member = Member.query.filter(Member.name == "Edwards, Ms J").first()
     else:
         member = Member.find_by_inexact_name(first_name, last_name, title, members=members)
     return member
@@ -48,7 +52,6 @@ if __name__ == "__main__":
 
     with open(args.log, 'wb') as logfile:
         with open(args.input) as csvfile:
-
             writer = csv.writer(logfile)
             reader = csv.DictReader(csvfile)
 
@@ -59,11 +62,6 @@ if __name__ == "__main__":
 
             for row in reader:
                 if reader.line_num >= 0:
-                    # Temp: Member mismatches
-                    if row['surname'] in ["Ramakatsa", "Michael"]:
-                        log_error(writer, row, error='Member incorrectly matched.')
-                        continue
-
                     if row['url'] == "Committee meeting not found.":
                         log_error(writer, row)
                         continue

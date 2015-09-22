@@ -73,28 +73,66 @@ missing_members = [
 ]
 
 committee_name_map = {
+    'Portfolio Committee on Police': 'Police',
     'Standing Committee on Finance': 'Finance Standing Committee',
-    'Finance': 'NCOP Finance',
-    'Economic Development': 'NCOP Economic and Business Development',
-    'Appropriations': 'NCOP Appropriations',
-    'Social Services': 'NCOP Social Services',
-    'Ad hoc Committee on Powers and Privileges  of Parlaiment': 'Powers and Privileges',
-    'Public Services and Administration': 'Public Service and Administration, as well as Performance Monitoring and Evaluation',
-    'Joint Standing Committee on Defence': 'Defence',
-    'Ad Hoc Committee on Open Democracy Bill': 'Promotion of Access to Information Bill (Open Democracy Bill)',
-    'Ad Hoc Committee Nkandla': 'Ad Hoc Committee - President\'s Submission in response to Public Protector\'s Report on Nkandla',
+    'Portfolio Committee on Justice and Correctional Services': 'Justice and Correctional Services',
     'Standing Committee on Public Accounts': 'Public Accounts',
-    'Subcommittee on Review of the Assembly Rules': 'Rules of the National Assembly',
-    'the Review of the National Assembly Rules': 'Rules of the National Assembly',
-    'International Relations and Co-operation': 'International Relations',
+    'Portfolio Committee on Sports and Recreation': 'Sport and Recreation',
+    'Portfolio Committee on Public Works': 'Public Works',
+    'Portfolio Committee on Telecommunicationsand Postal Services': 'Telecommunications and Postal Services',
+    'Portfolio Committee on Rural Development and Land Reform': 'Rural Development and Land Reform',
+    'Portfolio Committee on the Review of the National Assembly Rules': 'Rules of the National Assembly',
+    'Portfolio Committee on Trade and Industry': 'Trade and Industry',
+    'Select Committee on Co-operative Governance and Traditional Affairs': 'Cooperative Governance and Traditional Affairs',
+    'Portfolio Committee on Communications': 'Communications',
+    'Portfolio Committee on Home Affairs': 'Home Affairs',
+    'Select Committee on Appropriations': 'NCOP Appropriations',
+    'Portfolio Committee on Agriculture, Forestry and Fisheries': 'Agriculture, Forestry and Fisheries',
+    'Select Committee on Petitions and Executive Undertakings': 'NCOP Petitions and Executive Undertakings',
+    'Portfolio Committee on Small Business and Development': 'Small Business Development',
+    'Portfolio Committee on Mineral Resources': 'Mineral Resources',
+    'Portfolio Committee on Public Services and Administration': 'Public Service and Administration, as well as Performance Monitoring and Evaluation',
+    'Portfolio Committee on Higher Education and Training': 'Higher Education and Training',
+    'Portfolio Committee on Health': 'Health',
+    'Portfolio Committee on Labour': 'Labour',
+    'Portfolio Committee on Social Development': 'Social Development',
+    'Select Committee on Trade and International Relations': 'NCOP Trade and International Relations',
+    'Select Committee on Security and Justice': 'NCOP Security and Justice',
+    'Portfolio Committee on International Relations and Co-operation': 'International Relations',
+    'Select Committee on Communications and Public Enterprises': 'NCOP Communications and Public Enterprise',
+    'Portfolio Committee on Defence and Military Veterans': 'Defence and Military Veterans',
+    'Portfolio Committee on Water Affairs and Sanitation': 'Water and Sanitation',
+    'Portfolio Committee on Tourism': 'Tourism',
+    'Joint Standing Committee on Defence': 'Defence',
+    'Portfolio Committee on Human Settlements': 'Human Settlements',
+    'Portfolio Committee on Co-operative Governance and Traditional Affairs': 'Cooperative Governance and Traditional Affairs',
+    'Portfolio Committee on Arts and Culture': 'Arts and Culture',
+    'Joint Standing SubCommittee on Intelligence': 'Joint Standing on Intelligence',
+    'Portfolio Committee on Environmental Affairs': 'Environmental Affairs',
+    'Portfolio Committee on Basic Education': 'Basic Education',
+    'Portfolio Committee on Women in the Presidency': 'Women in The Presidency',
+    'Portfolio Committee on Transport': 'Transport',
+    'Portfolio Committee on Economic Development': 'Economic Development',
+    'Portfolio Committee on Energy': 'Energy',
+    'Select Committee on Economic Development': 'NCOP Economic and Business Development',
+    'Standing Committee on Appropriations': 'Standing Committee on Appropriations',
+    'Select Committee on Land and Mineral Resources': 'NCOP Land and Mineral Resources',
+    'Select Committee on Social Services': 'NCOP Social Services',
+    'Portfolio Committee on Public Enterprises': 'Public Enterprises',
+    'Portfolio Committee on Science and Technology': 'Science and Technology',
+    'Select Committee on Education and Recreation': 'NCOP Education and Recreation',
+    'Select Committee on Finance': 'NCOP Finance',
     'Joint Committee on Ethics and Members\' Interests': 'Ethics and Members\' Interest',
     'Joint Committee on Constitutional Review': 'Constitutional Review Committee',
-    'Joint Subcommitteeon Review of the Joint Rules' : 'Joint Rules',
+    'Adhoc Commitee on violence against foreign nationals': 'Ad Hoc Joint Committee on Probing Violence Against Foreign Nationals',
+    'Joint Subcommitteeon Review of the Joint Rules': 'Joint Rules',
+    'Adhoc Committee on Police minister\'s Report on Nkandla': 'Ad Hoc Committee on Police Minister\'s Report on Nkandla ',
 }
 
 missing_committees = [
     'Multiparty Women\'s Caucus',
     'Subcommittee on Communications',
+    'Subcommittee on Review of the Assembly Rules',
 ]
 
 
@@ -118,15 +156,10 @@ def get_member(members, first_name, last_name, title):
     else:
         return Member.find_by_inexact_name(first_name, last_name, title, members=members)
 
-def get_committee(all_committees, ncop_committees, committee_name, select_committee):
+def get_committee(committee_name):
     if committee_name in missing_committees:
         return None
-    if committee_name in committee_name_map:
-        return Committee.query.filter(Committee.name == committee_name_map[committee_name]).first()
-    elif select_committee:
-        return Committee.find_by_inexact_name(committee_name, candidates=ncop_committees)
-    else:
-        return Committee.find_by_inexact_name(committee_name, candidates=all_committees)
+    return Committee.query.filter(Committee.name == committee_name_map[committee_name]).first()
 
 
 if __name__ == "__main__":
@@ -218,28 +251,18 @@ if __name__ == "__main__":
                     if not member:
                         # Member not found
                         log_error(writer, row, error='Member not found.')
-                        print "Member not found: " + str(reader.line_num)
+                        print "Member not found: %s" % (str(reader.line_num))
                         continue
 
                     # Get committee
                     committee_name = row['Name Committee']
-                    select_committee = False
-
-                    # Remove from committee_name as it doesn't appear in the db
-                    if 'Portfolio Committee on' in committee_name:
-                        committee_name = committee_name[len('Portfolio Committee on')+1:]
-                    elif 'Select Committee on' in committee_name:
-                        select_committee = True
-                        committee_name = committee_name[len('Select Committee on')+1:]
-
                     if committee_name in committee_dict:
                         committee = committee_dict[committee_name]
                     else:
-                        committee = get_committee(all_committees, ncop_committees, committee_name, select_committee)
+                        committee = get_committee(committee_name)
                         committee_dict[committee_name] = committee
 
                     # Get the committee meeting results
-                    import ipdb; ipdb.set_trace()
                     if committee:
                         if (committee.name, meeting_date.date()) in committee_meeting_dict:
                             committee_meeting_results = committee_meeting_dict[(committee.name, meeting_date.date())]
@@ -261,9 +284,8 @@ if __name__ == "__main__":
                             error = "Multiple committee meetings for date found in database."
 
                         log_error(writer, row, error=error)
-                        print "Meetings error: " + str(reader.line_num)
-                        print "Number of Comittee meetings: " + str(len(committee_meeting_results))
-
+                        print "Meeting error: %s :: No of meetings: %s" % (
+                            str(reader.line_num), str(len(committee_meeting_results)))
                     else:
                         committee_meeting = committee_meeting_results[0]
 
@@ -292,7 +314,7 @@ if __name__ == "__main__":
                             log_error(writer, row, error='Duplicate attendance for meeting in sheet.')
                             continue
 
-            #         if reader.line_num % 10 == 0:
-            #             db.session.flush()
+                    if reader.line_num % 100 == 0:
+                        db.session.flush()
             db.session.flush()
             # db.session.commit()

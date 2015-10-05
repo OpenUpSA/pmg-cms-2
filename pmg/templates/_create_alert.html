@@ -13,9 +13,13 @@
     {% endfor %}
     <p></p>
   </div>
-  <div class="col-xs-4">
-    <a class="btn btn-info pull-right" type="button">Create alert</a>
-  </div>
+  {% if current_user.is_authenticated() %}
+    <div class="col-xs-4">
+      <a class="btn btn-info pull-right create-alert" type="button">Create alert</a>
+    </div>
+  {% else %}
+    <p>Register for an account or log in to create alerts.</p>
+  {% endif %}
 </div>
 
 <div class="row">

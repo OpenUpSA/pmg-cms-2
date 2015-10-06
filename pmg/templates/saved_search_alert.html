@@ -1,0 +1,26 @@
+<p>
+Dear *|NAME|*,
+</p>
+
+<p>
+We found <b>{{ results|length }} newly updated item{% if results|length > 0 %}s{% endif %}</b> for your search
+<a href="{{ search.url(_external=True) }}">{{ search.search }}</a>{%
+if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
+</p>
+
+<ul>
+{% for result in results %}
+  <li style="padding-bottom: 1em">
+    <h4><a href="{{ result.url }}">{{ result._source.title }}</a> - {{ result._source.date|pretty_date }}</h4>
+    {% if result.highlight %}
+    <p>
+      {% if result.highlight.description %}
+        {{ result.highlight.description|search_snippet|ellipse|safe }}
+      {% elif result.highlight.fulltext %}
+        {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
+      {% endif %}
+    </p>
+    {% endif %}
+  </li>
+{% endfor %}
+</ul>

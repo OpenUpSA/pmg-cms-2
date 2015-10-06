@@ -1,10 +1,10 @@
 import re
 import logging
-import datetime
+import arrow
 
 from sqlalchemy import func
 import mandrill
-from flask import render_template
+from flask import render_template, url_for
 
 from pmg import db, app
 
@@ -71,7 +71,7 @@ class SavedSearch(db.Model):
         us to send duplicate emails.
         """
         # we embed this into the actual email template
-        html = render_template('saved_search_alert.html', search=self, hits=hits)
+        html = render_template('saved_search_alert.html', search=self, results=hits)
 
         send_mandrill_email(
             subject="New items for '%s'" % self.search,
@@ -83,7 +83,7 @@ class SavedSearch(db.Model):
         )
 
         # save that we sent this alert
-        self.last_alerted_at = datetime.datetime.utcnow()
+        self.last_alerted_at = arrow.utcnow().datetime
         db.session.commit()
 
     def find_new_hits(self):
@@ -95,9 +95,29 @@ class SavedSearch(db.Model):
             log.warn("Error doing search for %s: %s" % (self, search))
             return
 
+        last = self.last_alerted_at.isoformat()
+
         # TODO: do we index the updated_at field?
         # find the most recent results
-        return [r for r in search['hits']['hits'] if r['_source']['date'] > self.last_alerted_at]
+        return [r for r in search['hits']['hits'] if r['_source']['date'] > last]
+
+    def url(self, **kwargs):
+        params = {'q': self.search}
+
+        if self.content_type:
+            params['filter[type]'] = self.content_type
+
+        if self.committee_id:
+            params['filter[committee]'] = self.committee_id
+
+        params.update(kwargs)
+        return url_for('search', **params)
+
+    @property
+    def friendly_content_type(self):
+        from pmg.search import Search
+        if self.content_type:
+            return Search.friendly_data_types[self.content_type]
 
     def __repr__(self):
         return u'<SavedSearch id=%s user=%s>' % (self.id, self.user)
@@ -122,7 +142,7 @@ class SavedSearch(db.Model):
         search = cls.find(user, q, content_type, committee_id)
         if not search:
             search = cls(user=user, search=q, content_type=content_type, committee_id=committee_id)
-            search.last_alerted_at = datetime.datetime.utcnow()
+            search.last_alerted_at = arrow.utcnow().datetime
             db.session.add(search)
         return search
 

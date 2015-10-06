@@ -74,12 +74,12 @@ class SavedSearch(db.Model):
         html = render_template('saved_search_alert.html', search=self, results=hits)
 
         send_mandrill_email(
-            subject="New items for '%s'" % self.search,
+            subject="New items for your search '%s'" % self.search,
             from_name="PMG Notifications",
             from_email="alerts@pmg.org.za",
             recipient_users=[self.user],
             html=html,
-            utc_campaign='searchalert',
+            utm_campaign='searchalert',
         )
 
         # save that we sent this alert

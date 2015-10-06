@@ -15,7 +15,7 @@ if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
     {% if result.highlight %}
     <p>
       {% if result.highlight.description %}
-        {{ result.highlight.description|search_snippet|ellipse|safe }}
+        {{ result.highlight.description|search_snippet(mark='b')|ellipse|safe }}
       {% elif result.highlight.fulltext %}
         {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
       {% endif %}

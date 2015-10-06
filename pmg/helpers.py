@@ -81,11 +81,13 @@ def _jinja2_filter_member_url(member):
 
 
 @app.template_filter('search_snippet')
-def _jinja2_filter_search_snippet(snippet):
+def _jinja2_filter_search_snippet(snippet, mark=None):
     if not snippet:
         return ""
     if isinstance(snippet, list):
         snippet = ' ... '.join(snippet)
+    if mark is not None:
+        snippet = snippet.replace('mark>', 'b>')
     return snippet
 
 

@@ -64,9 +64,13 @@ class SavedSearch(db.Model):
 
     def send_alert(self, hits):
         """ Send an email alert for the search results in +hits+.
+
+        NOTE: this commits the database session, to prevent later errors from causing
+        us to send duplicate emails.
         """
         self.last_alerted_at = datetime.datetime.utcnow()
         # TODO: send email
+        db.session.commit()
 
     def find_new_hits(self):
         from pmg.search import Search

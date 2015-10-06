@@ -22,24 +22,20 @@
   {% endif %}
 {% endif %}
 <div class="tabled-committee-report-stub">
-  <div class="row">
-    <div class="col-sm-10 col-xs-8">
-      <span class="label label-primary">Tabled Committee Report</span>
-      <a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=id) }}">{{ title|safe }}</a>
-      {% if committee_name %}
-      <div class="hidden-xs text-muted">{{ committee_name }}</div>
-      {% endif %} 
-    </div>
-  </div>
+  <div class="date">{{ date|pretty_date }}</div>
+  <h4><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=id) }}">{{ title|safe }}</a></h4>
+  <h5>
+    <span class="type">Tabled Committee Report {% if committee_name %}-{% endif %}</span>
+    {{ committee_name }}
+  </h5>
+
   {% if result.highlight %}
-  {% if result.highlight.description %}
-  <div>
-    {{ result.highlight.description|search_snippet|ellipse|safe }}
-  </div>
-  {% elif result.highlight.fulltext %}
-  <div>
-    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
-  </div>
-  {% endif %}
+    <p>
+    {% if result.highlight.description %}
+      {{ result.highlight.description|search_snippet|ellipse|safe }}
+    {% elif result.highlight.fulltext %}
+      {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
+    {% endif %}
+    </p>
   {% endif %}
 </div>

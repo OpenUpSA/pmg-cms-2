@@ -32,7 +32,10 @@
       {% endif %}
     </a>
   </h4>
-  <h5><span class="type">Question &amp; Reply</span></h5>
+  <h5>
+    <span class="type">Question &amp; Reply {% if committee_name %}-{% endif %}</span>
+    {{ committee_name }}
+  </h5>
 
   {% if result.highlight %}
     <p>

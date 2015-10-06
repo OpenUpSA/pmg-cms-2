@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
 
-      <div class="col-xs-9 col-md-3 clearfix">
+      <div class="col-xs-9 col-md-4 clearfix">
         <a class="navbar-brand" href="/">
           <img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group" class="img-responsive">
           </a>
@@ -55,12 +55,12 @@
         </div>
       </div>
 
-      <div class="col-xs-12 col-md-5 col-lg-6">
+      <div class="col-xs-12 col-md-4 col-lg-5">
         <form class="navbar-form" role="search" action="/search">
           <div class="input-group">
-            <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
+            <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
             <span class="input-group-btn">
-              <input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
+              <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Search</button>
             </span>
           </div>
         </form>

@@ -785,3 +785,9 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
+
+
+@app.route('/user/saved-search/', methods=['POST'])
+def saved_search():
+    import ipdb; ipdb.set_trace()
+    return ''

@@ -12,6 +12,33 @@ $(function() {
 		});
 	});
 
+
+	var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+	        }
+	    }
+	})
+
+	function getURLParameter(name) {
+   if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+      return decodeURIComponent(name[1]);
+	}
+
+	$(".create-alert").on("click", function(e) {
+		$.post(
+			'/user/saved-search/',
+			{
+				q: getURLParameter('q'),
+				committee_id: getURLParameter('filter[committee]'),
+				content_type: getURLParameter('filter[type]')
+			}
+		);
+	});
+
 	$(".chosen").chosen({width: "100%"});
 	$('[title]').tooltip();
 });

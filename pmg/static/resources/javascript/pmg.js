@@ -26,7 +26,7 @@ $(function() {
 	$(".create-alert").on("click", function(e) {
 
 		var q = $(this).data('q'),
-			  committee_id = $(this).data('commitee'),
+			  committee_id = parseInt($(this).data('committee')) || "",
 				content_type = $(this).data('type');
 
 		$.post(
@@ -38,17 +38,17 @@ $(function() {
 			}
 		).done(function(resp) {
 			$('.create-alert').addClass('hidden');
-			$('.remove-alert').removeClass('hidden').data('id', resp['id']);
+			$('.remove-alert').removeClass('hidden').data('id', resp.id);
 		});
 	});
 
 	$(".remove-alert").on("click", function(e) {
 
-		var id = $(this).data('id');
+		var id = parseInt($(this).data('id')) || "";
 
 		$.post(
 			'/user/saved-search/' + id
-		).done(function(resp) {
+		).always(function(resp) {
 			$('.remove-alert').addClass('hidden').data('id', '');
 			$('.create-alert').removeClass('hidden');
 		});

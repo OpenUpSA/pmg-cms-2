@@ -18,7 +18,7 @@
   {% if current_user.is_authenticated() %}
     <div class="col-xs-4">
         <a class="btn btn-info pull-right create-alert {% if saved_search %} hidden {% endif %}" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
-        <a class="btn btn-info pull-right remove-alert {% if not saved_search %} hidden {% endif %}" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+        <a class="btn btn-warning pull-right remove-alert {% if not saved_search %} hidden {% endif %}" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
     </div>
   {% else %}
     <p>Register for an account or log in to create alerts.</p>

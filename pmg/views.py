@@ -707,6 +707,14 @@ def search(page=0):
         args = {('filter[%s]' % k): v for k, v in args.iteritems() if v}
         return url_for('search', q=q, **args)
 
+    saved_search = None
+    if not current_user.is_anonymous():
+        saved_search = SavedSearch.find(
+            current_user,
+            q,
+            content_type=filters['type'] or None,
+            committee_id=filters['committee'] or None)
+
     return render_template(
         'search.html',
         q=q,
@@ -722,7 +730,8 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
-        search_types=Search.friendly_data_types.items())
+        search_types=Search.friendly_data_types.items(),
+        saved_search=saved_search)
 
 
 @app.route('/page/<path:pagename>')
@@ -788,18 +797,16 @@ def correct_this_page():
 
 @app.route('/user/saved-search/', methods=['POST'])
 def saved_search():
-    search = request.form.get('q')
-    content_type = request.form.get('content_type')
-    committee  = None
+    committee_id = None
     if request.form.get('committee_id'):
-        committee = Committee.query.get(request.form.get('committee_id'))
+        committee_id = Committee.query.get(request.form.get('committee_id')).id
 
     saved_search = SavedSearch.find_or_create(
-        user=current_user,
-        search=search,
-        content_type=content_type,
-        committee=committee)
+        current_user,
+        request.form.get('q'),
+        content_type=request.form.get('content_type'),
+        committee_id=committee_id)
 
-    db.session.commit()
+    db.session.flush()
 
     return jsonify(id=saved_search.id)

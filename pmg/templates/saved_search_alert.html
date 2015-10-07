@@ -11,7 +11,7 @@ if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
 <ul>
 {% for result in results %}
   <li style="padding-bottom: 1em">
-    <h4><a href="{{ result.url }}">{{ result._source.title }}</a> - {{ result._source.date|pretty_date }}</h4>
+    <h4><a href="{{ result._source.url }}">{{ result._source.title }}</a> - {{ result._source.date|pretty_date }}</h4>
     {% if result.highlight %}
     <p>
       {% if result.highlight.description %}

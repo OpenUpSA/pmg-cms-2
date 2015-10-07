@@ -47,7 +47,7 @@ $(function() {
 		var id = $(this).data('id') || "";
 
 		$.post(
-			'/user/saved-search/' + id
+			'/user/saved-search/' + id + '/delete'
 		).always(function(resp) {
 			$('.remove-alert').addClass('hidden').data('id', '');
 			$('.create-alert').removeClass('hidden');

@@ -788,19 +788,18 @@ def correct_this_page():
 
 @app.route('/user/saved-search/', methods=['POST'])
 def saved_search():
-    import ipdb; ipdb.set_trace()
     search = request.form.get('q')
     content_type = request.form.get('content_type')
     committee  = None
     if request.form.get('committee_id'):
-        committee = Committee.query.filter(Committee.id == request.form.get('committee_id')).first()
+        committee = Committee.query.get(request.form.get('committee_id'))
 
-    saved_search = SavedSearch(
+    saved_search = SavedSearch.find_or_create(
         user=current_user,
         search=search,
         content_type=content_type,
         committee=committee)
-    db.session.add(saved_search)
-    db.session.flush()
+
+    db.session.commit()
 
     return jsonify(id=saved_search.id)

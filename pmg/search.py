@@ -1,6 +1,7 @@
 import math
 import logging
 import json
+from collections import OrderedDict
 
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
@@ -24,6 +25,22 @@ class Search:
 
     reindex_changes = app.config['SEARCH_REINDEX_CHANGES']
     """ Should updates to models be reindexed? """
+
+    friendly_data_types = OrderedDict([
+        ("committee", "Committees"),
+        ("committee_meeting", "Committee Meetings"),
+        ("bill", "Bills"),
+        ("member", "MPs"),
+        ("hansard", "Hansards"),
+        ("briefing", "Media Briefings"),
+        # this is both QuestionReply and CommitteeQuestion objects
+        ("minister_question", "Questions & Replies"),
+        ("tabled_committee_report", "Tabled Committee Reports"),
+        ("call_for_comment", "Calls for Comments"),
+        ("policy_document", "Policy Documents"),
+        ("gazette", "Gazettes"),
+        ("daily_schedule", "Daily Schedules"),
+    ])
 
     def reindex_all(self, data_type):
         """ Index all content of a data_type """

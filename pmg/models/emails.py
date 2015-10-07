@@ -1,10 +1,12 @@
 import re
 import logging
-import datetime
+import arrow
 
 from sqlalchemy import func
+import mandrill
+from flask import render_template, url_for
 
-from pmg import db
+from pmg import db, app
 
 
 log = logging.getLogger(__name__)
@@ -68,8 +70,20 @@ class SavedSearch(db.Model):
         NOTE: this commits the database session, to prevent later errors from causing
         us to send duplicate emails.
         """
-        self.last_alerted_at = datetime.datetime.utcnow()
-        # TODO: send email
+        # we embed this into the actual email template
+        html = render_template('saved_search_alert.html', search=self, results=hits)
+
+        send_mandrill_email(
+            subject="New items for your search '%s'" % self.search,
+            from_name="PMG Notifications",
+            from_email="alerts@pmg.org.za",
+            recipient_users=[self.user],
+            html=html,
+            utm_campaign='searchalert',
+        )
+
+        # save that we sent this alert
+        self.last_alerted_at = arrow.utcnow().datetime
         db.session.commit()
 
     def find_new_hits(self):
@@ -81,9 +95,29 @@ class SavedSearch(db.Model):
             log.warn("Error doing search for %s: %s" % (self, search))
             return
 
+        last = self.last_alerted_at.isoformat()
+
         # TODO: do we index the updated_at field?
         # find the most recent results
-        return [r for r in search['hits']['hits'] if r['_source']['date'] > self.last_alerted_at]
+        return [r for r in search['hits']['hits'] if r['_source']['date'] > last]
+
+    def url(self, **kwargs):
+        params = {'q': self.search}
+
+        if self.content_type:
+            params['filter[type]'] = self.content_type
+
+        if self.committee_id:
+            params['filter[committee]'] = self.committee_id
+
+        params.update(kwargs)
+        return url_for('search', **params)
+
+    @property
+    def friendly_content_type(self):
+        from pmg.search import Search
+        if self.content_type:
+            return Search.friendly_data_types[self.content_type]
 
     def __repr__(self):
         return u'<SavedSearch id=%s user=%s>' % (self.id, self.user)
@@ -108,6 +142,51 @@ class SavedSearch(db.Model):
         search = cls.find(user, q, content_type, committee_id)
         if not search:
             search = cls(user=user, search=q, content_type=content_type, committee_id=committee_id)
-            search.last_alerted_at = datetime.datetime.utcnow()
+            search.last_alerted_at = arrow.utcnow().datetime
             db.session.add(search)
         return search
+
+
+def send_mandrill_email(subject, from_name, from_email, recipient_users, html, utm_campaign, subaccount=None):
+    """ Send an email using Mandrill, relying on Mandrill's templating system.
+
+    :param subject: email subject
+    :param from_name: name of the sender
+    :param from_email: email of the sender
+    :param recipient_users: array of `User` objects of recipients
+    :param html: HTML body of the email
+    :param utm_campaign: Google Analytics campaign (optional)
+    :param subaccount: Mandrill subaccount to use (optional)
+    """
+    subaccount = subaccount or app.config['MANDRILL_ALERTS_SUBACCOUNT']
+
+    recipients = [{'email': r.email} for r in recipient_users]
+    merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]} for r in recipient_users]
+
+    # NBNBNBNB: the email template MUST have a special DIV in it to place the content in.
+    # This gets removed when importing the template into Mandrill from Mailchimp
+    #  <div mc:edit="main"></div>
+
+    template_vars = [
+        {"name": "main", "content": html},
+    ]
+
+    msg = {
+        "subject": subject,
+        "from_name": from_name,
+        "from_email": from_email,
+        "to": recipients,
+        "merge_vars": merge_vars,
+        "track_opens": True,
+        "track_clicks": True,
+        "preserve_recipients": False,
+        "google_analytics_campaign": utm_campaign,
+        "google_analytics_domains": ["pmg.org.za"],
+        "subaccount": subaccount,
+    }
+
+    log.info("Email will be sent to %d recipients." % len(recipients))
+    log.info("Sending email via mandrill: %s" % msg)
+
+    mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
+    mandrill_client.messages.send_template(app.config["MANDRILL_ALERTS_TEMPLATE"], template_vars, msg)

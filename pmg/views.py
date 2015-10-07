@@ -12,6 +12,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api
 from pmg.models import Redirect, Page
+from pmg.search import Search
 
 import forms
 import utils
@@ -701,22 +702,6 @@ def search(page=0):
 
     committees = load_from_api('committee', return_everything=True)['results']
 
-    search_types = [
-        ("committee", "Committees"),
-        ("committee_meeting", "Committee Meetings"),
-        ("bill", "Bills"),
-        ("member", "MPs"),
-        ("hansard", "Hansards"),
-        ("briefing", "Media Briefings"),
-        # this is both QuestionReply and CommitteeQuestion objects
-        ("minister_question", "Questions & Replies"),
-        ("tabled_committee_report", "Tabled Committee Reports"),
-        ("call_for_comment", "Calls for Comments"),
-        ("policy_document", "Policy Documents"),
-        ("gazette", "Gazettes"),
-        ("daily_schedule", "Daily Schedules"),
-    ]
-
     def search_url(**kwargs):
         args = dict(filters)
         args.update(kwargs)
@@ -738,7 +723,7 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
-        search_types=search_types)
+        search_types=Search.friendly_data_types.items())
 
 
 @app.route('/page/<path:pagename>')

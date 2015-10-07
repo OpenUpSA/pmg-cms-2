@@ -371,6 +371,8 @@ class Transforms:
                 'url': obj.url,
                 'api_url': obj.api_url,
                 'slug_prefix': obj.slug_prefix,
+                'created_at': obj.created_at,
+                'updated_at': obj.updated_at,
             }
 
         rules = Transforms.convert_rules[obj.__class__]

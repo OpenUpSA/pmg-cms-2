@@ -1,14 +1,22 @@
 from inflection import underscore, dasherize
 from flask import url_for
+from sqlalchemy import func
+
+from pmg.models import db
 
 resource_slugs = {}
 
+
 class ApiResource(object):
     """ Mixin that defines some helpers for resources that we expose
-    directly through the API. 
+    directly through the API.
 
     Resources must be registered by calling :func:`register`.
     """
+
+    # ** db columns common to all API resources
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now(), onupdate=func.current_timestamp())
 
     @property
     def url(self):

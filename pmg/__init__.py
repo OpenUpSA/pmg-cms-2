@@ -88,6 +88,26 @@ assets.register('admin-js', Bundle(
     output='javascript/admin.%(version)s.js'))
 
 
+# background tasks
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from threading import Thread
+scheduler = BackgroundScheduler({
+    'apscheduler.jobstores.default': SQLAlchemyJobStore(engine=db.engine),
+    'apscheduler.executors.default': {
+        'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+        'max_workers': '2',
+    },
+    'apscheduler.timezone': 'UTC',
+})
+if not app.debug:
+    scheduler.start()
+
+# if we don't do this in a separate thread, we hang trying to connect to the db
+import pmg.tasks
+Thread(target=pmg.tasks.schedule).start()
+
+
 import helpers
 import views
 import user_management

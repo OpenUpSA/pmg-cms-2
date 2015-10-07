@@ -411,7 +411,7 @@ class BillUpdate(Event):
     }
 
 
-class MembershipType(ApiResource, db.Model):
+class MembershipType(db.Model):
 
     __tablename__ = "membership_type"
 

@@ -74,7 +74,7 @@ class SavedSearch(db.Model):
         html = render_template('saved_search_alert.html', search=self, results=hits)
 
         send_mandrill_email(
-            subject="New items for your search '%s'" % self.search,
+            subject="New matches for your search '%s'" % self.search,
             from_name="PMG Notifications",
             from_email="alerts@pmg.org.za",
             recipient_users=[self.user],
@@ -89,17 +89,14 @@ class SavedSearch(db.Model):
     def find_new_hits(self):
         from pmg.search import Search
 
-        # TODO: could also pass last_updated_at in as a filter
-        search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id)
+        # find hits updated since the last time we did this search
+        search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id,
+                                 updated_since=self.last_alerted_at.isoformat())
         if 'hits' not in search:
             log.warn("Error doing search for %s: %s" % (self, search))
             return
 
-        last = self.last_alerted_at.isoformat()
-
-        # TODO: do we index the updated_at field?
-        # find the most recent results
-        return [r for r in search['hits']['hits'] if r['_source']['date'] > last]
+        return search['hits']['hits']
 
     def url(self, **kwargs):
         params = {'q': self.search}

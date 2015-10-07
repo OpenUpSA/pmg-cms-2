@@ -1,4 +1,5 @@
 import logging
+import newrelic.agent
 
 log = logging.getLogger(__name__)
 
@@ -7,8 +8,10 @@ def send_saved_search_alerts():
     from pmg import app
     from pmg.models import SavedSearch
 
-    with app.app_context():
-        SavedSearch.send_all_alerts()
+    application = newrelic.agent.application()
+    with newrelic.agent.BackgroundTask(application, name='send_saved_search_alerts', group='Task'):
+        with app.app_context():
+            SavedSearch.send_all_alerts()
 
 
 def schedule():

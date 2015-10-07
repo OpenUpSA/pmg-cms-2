@@ -4,15 +4,15 @@ import math
 import random
 from urlparse import urlparse, urlunparse
 
-from flask import request, flash, url_for, session, render_template, abort, redirect, jsonify
+from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 
-from pmg import app, mail, db
+from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api
 from pmg.search import Search
-from pmg.models import Redirect, Page, Committee, SavedSearch
+from pmg.models import Redirect, Page, SavedSearch
 
 import forms
 import utils
@@ -794,25 +794,3 @@ def correct_this_page():
 
     return redirect(request.form.get('url', '/'))
 
-
-@app.route('/user/saved-search/', methods=['POST'])
-def create_search():
-    saved_search = SavedSearch.find_or_create(
-        current_user,
-        request.form.get('q'),
-        content_type=request.form.get('content_type') or None,
-        committee_id=request.form.get('committee_id') or None)
-
-    db.session.commit()
-
-    return jsonify(id=saved_search.id)
-
-@app.route('/user/saved-search/<int:id>/delete', methods=['POST'])
-def remove_search(id):
-    saved_search = SavedSearch.query.get(id)
-    if not saved_search:
-        abort(404)
-    db.session.delete(saved_search)
-    db.session.commit()
-
-    return ''

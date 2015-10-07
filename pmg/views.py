@@ -796,16 +796,12 @@ def correct_this_page():
 
 
 @app.route('/user/saved-search/', methods=['POST'])
-def saved_search():
-    committee_id = None
-    if request.form.get('committee_id'):
-        committee_id = Committee.query.get(request.form.get('committee_id')).id
-
+def create_search():
     saved_search = SavedSearch.find_or_create(
         current_user,
         request.form.get('q'),
-        content_type=request.form.get('content_type'),
-        committee_id=committee_id)
+        content_type=request.form.get('content_type') or None,
+        committee_id=request.form.get('committee_id') or None)
 
     db.session.commit()
 
@@ -813,8 +809,9 @@ def saved_search():
 
 @app.route('/user/saved-search/<int:id>', methods=['POST'])
 def remove_search(id):
-    import ipdb; ipdb.set_trace()
     saved_search = SavedSearch.query.get(id)
+    if not saved_search:
+        abort(404)
     db.session.delete(saved_search)
     db.session.commit()
 

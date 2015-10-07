@@ -807,6 +807,15 @@ def saved_search():
         content_type=request.form.get('content_type'),
         committee_id=committee_id)
 
-    db.session.flush()
+    db.session.commit()
 
     return jsonify(id=saved_search.id)
+
+@app.route('/user/saved-search/<int:id>', methods=['POST'])
+def remove_search(id):
+    import ipdb; ipdb.set_trace()
+    saved_search = SavedSearch.query.get(id)
+    db.session.delete(saved_search)
+    db.session.commit()
+
+    return ''

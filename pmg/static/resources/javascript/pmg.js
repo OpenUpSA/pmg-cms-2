@@ -42,6 +42,18 @@ $(function() {
 		});
 	});
 
+	$(".remove-alert").on("click", function(e) {
+
+		var id = $(this).data('id');
+
+		$.post(
+			'/user/saved-search/' + id
+		).done(function(resp) {
+			$('.remove-alert').addClass('hidden').data('id', '');
+			$('.create-alert').removeClass('hidden');
+		});
+	});
+
 	$(".chosen").chosen({width: "100%"});
 	$('[title]').tooltip();
 });

@@ -87,7 +87,7 @@ def _jinja2_filter_search_snippet(snippet, mark=None):
     if isinstance(snippet, list):
         snippet = ' ... '.join(snippet)
     if mark is not None:
-        snippet = snippet.replace('mark>', 'b>')
+        snippet = snippet.replace('mark>', '%s>' % mark)
     return snippet
 
 

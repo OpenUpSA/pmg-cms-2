@@ -137,7 +137,7 @@ class Search:
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
 
-    def build_filters(self, start_date, end_date, document_type, committee):
+    def build_filters(self, start_date, end_date, document_type, committee, updated_since):
         filters = {}
 
         if start_date and end_date:
@@ -160,10 +160,20 @@ class Search:
                 "term": {"_type": document_type},
             }
 
+        if updated_since:
+            filters["updated_at"] = {
+                "range": {
+                    "date": {
+                        "gte": updated_since,
+                    }
+                }
+            }
+
         return filters
 
-    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False):
-        filters = self.build_filters(start_date, end_date, document_type, committee)
+    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False,
+               updated_since=None):
+        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since)
 
         q = {
             # We do two queries, one is a general term query across the fields,

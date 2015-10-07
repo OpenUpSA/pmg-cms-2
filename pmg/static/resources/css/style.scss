@@ -419,6 +419,12 @@ mark {
   }
 }
 
+body.search {
+  .navbar-form {
+    display: none;
+  }
+}
+
 .search-filter {
   width: 100%;
 }

@@ -33,7 +33,7 @@
   {% block head_meta %}{% endblock %}
 </head>
 
-<body>
+<body class="{{ request.endpoint }}">
   <div id="wrapper">
     {% block content %}
     {% endblock content %}

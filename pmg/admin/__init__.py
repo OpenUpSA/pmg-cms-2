@@ -129,7 +129,7 @@ class MyModelView(RBACMixin, ModelView):
     list_template = 'admin/my_list.html'
 
     def frontend_url(self, model):
-        if model.id is not None:
+        if hasattr(model, 'url') and model.id is not None:
             return model.url
         return None
 

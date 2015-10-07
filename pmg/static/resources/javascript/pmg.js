@@ -29,14 +29,17 @@ $(function() {
 	}
 
 	$(".create-alert").on("click", function(e) {
+		var q = $('.search-q').text().slice(1, -1);
 		$.post(
 			'/user/saved-search/',
 			{
-				q: getURLParameter('q'),
+				q: q,
 				committee_id: getURLParameter('filter[committee]'),
 				content_type: getURLParameter('filter[type]')
 			}
-		);
+		).done(function( data ) {
+			console.log(data);
+		});
 	});
 
 	$(".chosen").chosen({width: "100%"});

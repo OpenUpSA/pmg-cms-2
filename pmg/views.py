@@ -4,15 +4,15 @@ import math
 import random
 from urlparse import urlparse, urlunparse
 
-from flask import request, flash, url_for, session, render_template, abort, redirect
+from flask import request, flash, url_for, session, render_template, abort, redirect, jsonify
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 
-from pmg import app, mail
+from pmg import app, mail, db
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api
-from pmg.models import Redirect, Page
 from pmg.search import Search
+from pmg.models import Redirect, Page, Committee, SavedSearch
 
 import forms
 import utils
@@ -680,7 +680,6 @@ def search(page=0):
     for k, v in filters.iteritems():
         if v == "None":
             filters[k] = None
-
     q = request.args.get('q', '').strip()
 
     params = dict(filters)
@@ -790,4 +789,18 @@ def correct_this_page():
 @app.route('/user/saved-search/', methods=['POST'])
 def saved_search():
     import ipdb; ipdb.set_trace()
-    return ''
+    search = request.form.get('q')
+    content_type = request.form.get('content_type')
+    committee  = None
+    if request.form.get('committee_id'):
+        committee = Committee.query.filter(Committee.id == request.form.get('committee_id')).first()
+
+    saved_search = SavedSearch(
+        user=current_user,
+        search=search,
+        content_type=content_type,
+        committee=committee)
+    db.session.add(saved_search)
+    db.session.flush()
+
+    return jsonify(id=saved_search.id)

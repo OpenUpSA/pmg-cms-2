@@ -23,22 +23,22 @@ $(function() {
 	    }
 	})
 
-	function getURLParameter(name) {
-   if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
-      return decodeURIComponent(name[1]);
-	}
-
 	$(".create-alert").on("click", function(e) {
-		var q = $('.search-q').text().slice(1, -1);
+
+		var q = $(this).data('q'),
+			  committee_id = $(this).data('commitee'),
+				content_type = $(this).data('type');
+
 		$.post(
 			'/user/saved-search/',
 			{
 				q: q,
-				committee_id: getURLParameter('filter[committee]'),
-				content_type: getURLParameter('filter[type]')
+				committee_id: committee_id,
+				content_type: content_type
 			}
-		).done(function( data ) {
-			console.log(data);
+		).done(function(resp) {
+			$('.create-alert').addClass('hidden');
+			$('.remove-alert').removeClass('hidden').data('id', resp['id']);
 		});
 	});
 

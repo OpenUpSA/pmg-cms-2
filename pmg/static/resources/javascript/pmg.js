@@ -26,7 +26,7 @@ $(function() {
 	$(".create-alert").on("click", function(e) {
 
 		var q = $(this).data('q'),
-			  committee_id = parseInt($(this).data('committee')) || "",
+			  committee_id = $(this).data('committee') || "",
 				content_type = $(this).data('type');
 
 		$.post(
@@ -44,7 +44,7 @@ $(function() {
 
 	$(".remove-alert").on("click", function(e) {
 
-		var id = parseInt($(this).data('id')) || "";
+		var id = $(this).data('id') || "";
 
 		$.post(
 			'/user/saved-search/' + id

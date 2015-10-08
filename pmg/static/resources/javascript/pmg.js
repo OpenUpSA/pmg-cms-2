@@ -39,6 +39,7 @@ $(function() {
 		).done(function(resp) {
 			$('.create-alert').addClass('hidden');
 			$('.remove-alert').removeClass('hidden').find('.btn').data('id', resp.id);
+			ga('send', 'event', 'user', 'add-search-alert');
 		});
 	});
 
@@ -51,6 +52,7 @@ $(function() {
 		).always(function(resp) {
 			$('.remove-alert').addClass('hidden').find('.btn').data('id', '');
 			$('.create-alert').removeClass('hidden');
+			ga('send', 'event', 'user', 'remove-search-alert');
 		});
 	});
 

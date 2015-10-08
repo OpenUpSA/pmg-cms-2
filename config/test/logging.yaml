@@ -1,0 +1,20 @@
+version: 1
+disable_existing_loggers: true
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: normal
+    stream: ext://sys.stdout
+formatters:
+  normal:
+    format: '%(asctime)s %(process)-6d %(name)-12s %(levelname)-8s %(message)s'
+loggers:
+  passlib:
+    level: INFO
+  sqlalchemy.engine:
+    level: WARN
+  pyelasticsearch:
+    level: INFO
+root:
+  handlers: [console]
+  level: DEBUG

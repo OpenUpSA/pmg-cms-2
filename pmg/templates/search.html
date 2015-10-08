@@ -6,6 +6,9 @@
 
 <div class="row search-box">
   <div class="col-sm-6 col-sm-offset-3">
+    {% if not q %}
+      <h2>Search PMG</h2>
+    {% endif %}
     <form class="search-page-form pull-right" role="search" action="/search">
       <div class="input-group">
         <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
@@ -17,58 +20,57 @@
   </div>
 </div>
 
-<div class="row"> 
-  <div class="col-sm-3">
-    {% block top_links %}
-      <div class="hidden-xs">
-        <h4>Refine your search</h4>
-      </div>
-      <form>
-        <input type="hidden" name="q" value="{{ q }}">
-        <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
-        <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
-        <input type="hidden" name="filter[type]" value="{{ filters.type }}">
-        {% include 'committee_select.html' %}
-      </form>
+{% if q %}
+  <div class="row"> 
+    <div class="col-sm-3">
+      {% block top_links %}
+        <div class="hidden-xs">
+          <h4>Refine your search</h4>
+        </div>
+        <form>
+          <input type="hidden" name="q" value="{{ q }}">
+          <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
+          <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
+          <input type="hidden" name="filter[type]" value="{{ filters.type }}">
+          {% include 'committee_select.html' %}
+        </form>
 
-      <div class="panel visible-xs visible-sm">
-        <a class="btn btn-primary form-control" type="button" data-toggle="collapse" href="#filter">
-          Refine your search <span class="caret"></span>
-        </a>
-        <div id="filter" class="panel-collapse collapse">
-          <div class="panel-body">
-            {% include "_filter_type_options.html" %}
-            {% include "_filter_year_options.html" %}
+        <div class="panel visible-xs visible-sm">
+          <a class="btn btn-primary form-control" type="button" data-toggle="collapse" href="#filter">
+            Refine your search <span class="caret"></span>
+          </a>
+          <div id="filter" class="panel-collapse collapse">
+            <div class="panel-body">
+              {% include "_filter_type_options.html" %}
+              {% include "_filter_year_options.html" %}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="list-group hidden-xs hidden-sm">
-        {% include "_filter_type_options.html" %}
-      </div>
+        <div class="list-group hidden-xs hidden-sm">
+          {% include "_filter_type_options.html" %}
+        </div>
 
-      <div class="list-group hidden-xs hidden-sm">
-        {% include "_filter_year_options.html" %}
-      </div>
-    {% endblock %}
-  </div>
+        <div class="list-group hidden-xs hidden-sm">
+          {% include "_filter_year_options.html" %}
+        </div>
+      {% endblock %}
+    </div>
 
-  <div class="col-sm-9">
-    {% if q %}
+    <div class="col-sm-9">
       {% include "_create_alert.html" %}
-    {% endif %}
-    <ul class="list-unstyled item-list search-list">
-      {% for result in search.results %}
-      <li>
-        {% include result._type + '_stub.html' %}
-      </li>
-      {% endfor %}
-    </ul>
+      <ul class="list-unstyled item-list search-list">
+        {% for result in search.results %}
+        <li>
+          {% include result._type + '_stub.html' %}
+        </li>
+        {% endfor %}
+      </ul>
 
-    {% include 'pagination.html' %}
+      {% include 'pagination.html' %}
+    </div>
   </div>
-</div>
-
+{% endif %}
 
 {% endblock %}
 

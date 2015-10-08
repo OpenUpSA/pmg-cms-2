@@ -423,3 +423,23 @@ mark {
   width: 100%;
 }
 
+.search-box {
+  padding: 10px 0px;
+  background-color: #EFEFEF;
+}
+
+.search-page-form {
+  width: 100%;
+  margin: 8px 0px;
+  .input-group {
+    width: 100%;
+  }
+}
+
+.search-summary {
+  margin-bottom: 10px;
+
+  h2 {
+    margin-top: 5px;
+  }
+}

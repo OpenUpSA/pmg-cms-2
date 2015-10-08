@@ -1,7 +1,7 @@
 from itertools import chain
 import logging
 
-from flask import redirect, request, url_for, jsonify, flash
+from flask import redirect, request, url_for, flash
 from flask.ext.admin import BaseView, expose
 from flask_mail import Message
 from flask_wtf import Form
@@ -11,13 +11,13 @@ from wtforms.fields.html5 import EmailField
 from sqlalchemy.orm import lazyload
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
-import mandrill
 
-from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting
-from pmg import app, db, mail
+from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting, db
+from pmg.models.emails import send_mandrill_email
 from rbac import RBACMixin
 
 log = logging.getLogger(__name__)
+
 
 class EmailAlertView(RBACMixin, BaseView):
     required_roles = ['editor']
@@ -26,7 +26,7 @@ class EmailAlertView(RBACMixin, BaseView):
     def index(self):
         templates = db.session.query(EmailTemplate).order_by(EmailTemplate.name).all()
         return self.render('admin/alerts/index.html',
-                templates=templates)
+                           templates=templates)
 
     @expose('/new', methods=['GET', 'POST'])
     def new(self):
@@ -63,8 +63,7 @@ class EmailAlertView(RBACMixin, BaseView):
         # force a preview before being sent again
         form.previewed.data = '0'
 
-        return self.render('admin/alerts/new.html',
-                form=form)
+        return self.render('admin/alerts/new.html', form=form)
 
     @expose('/preview', methods=['POST'])
     def preview(self):
@@ -76,10 +75,9 @@ class EmailAlertView(RBACMixin, BaseView):
         else:
             return ('validation failed', 400)
 
-
     @expose('/sent', methods=['GET'])
     def sent(self):
-        return self.render('admin/alerts/sent.html', form=form)
+        return self.render('admin/alerts/sent.html')
 
 
 class EmailAlertForm(Form):
@@ -102,7 +100,7 @@ class EmailAlertForm(Form):
         committee_list = Committee.query.order_by(Committee.house_id.desc()).order_by(Committee.name).all()
 
         # count of daily schedule subscribers
-        subs = User.query.filter(User.subscribe_daily_schedule == True).count()
+        subs = User.query.filter(User.subscribe_daily_schedule == True).count()  # noqa
         self.daily_schedule_subscribers.label.text += " (%d)" % subs
 
         # count subscribers for committees
@@ -145,51 +143,24 @@ class EmailAlertForm(Form):
                 field.errors.append("Couldn't substitute field %s" % e)
 
     def send_email(self):
-        # TODO: don't send in development?
-
         if not self.message:
             self.generate_email()
 
-        recipients = [{'email': r.email} for r in self.recipients]
-        merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]} for r in self.recipients]
-
-        # NBNBNBNB: the email template MUST have a special DIV in it to place the content in.
-        # This gets removed when importing the template into Mandrill from Mailchimp
-        #  <div mc:edit="main"></div>
-
-        template_vars = [
-            {"name": "main", "content": self.message.html},
-        ]
-
-        msg = {
-            "subject": self.message.subject,
-            "from_name": "PMG Notifications",
-            "from_email": self.message.sender,
-            "to": recipients,
-            "merge_vars": merge_vars,
-            "track_opens": True,
-            "track_clicks": True,
-            "preserve_recipients": False,
-            "google_analytics_campaign": self.template.utm_campaign,
-            "google_analytics_domains": ["pmg.org.za"],
-            "subaccount": app.config['MANDRILL_ALERTS_SUBACCOUNT'],
-        }
-
-        log.info("Email will be sent to %d recipients." % len(recipients))
-        log.info("Sending email via mandrill: %s" % msg)
-
-        mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
-        mandrill_client.messages.send_template(app.config["MANDRILL_ALERTS_TEMPLATE"], template_vars, msg)
+        send_mandrill_email(
+            subject=self.message.subject,
+            from_name="PMG Notifications",
+            from_email=self.message.sender,
+            recipient_users=self.recipients,
+            html=self.message.html,
+            utc_campaign=self.template.utm_campaign,
+        )
 
     def generate_email(self):
-        # TODO: render
-
         self.recipients = self.get_recipient_users()
-
         self.message = Message(
-                subject=self.subject.data,
-                sender=self.from_email.data,
-                html=self.body.data)
+            subject=self.subject.data,
+            sender=self.from_email.data,
+            html=self.body.data)
 
     def get_recipient_users(self):
         groups = []

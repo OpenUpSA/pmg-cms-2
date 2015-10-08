@@ -54,9 +54,9 @@
   </div>
 
   <div class="col-sm-9">
-    
-    {% include "_create_alert.html" %}
-
+    {% if q %}
+      {% include "_create_alert.html" %}
+    {% endif %}
     <ul class="list-unstyled item-list search-list">
       {% for result in search.results %}
       <li>

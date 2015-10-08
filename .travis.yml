@@ -5,7 +5,7 @@ python:
 addons:
   postgresql: "9.4"
 env:
-  - DATABASE_URL=postgres://postgres:@localhost:5432/pmg_test
+  - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:@localhost:5432/pmg_test?client_encoding=utf8
 before_script:
   - psql -c 'create database pmg_test;' -U postgres
 install: 

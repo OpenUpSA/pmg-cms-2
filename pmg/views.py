@@ -11,7 +11,8 @@ from flask.ext.mail import Message
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api
-from pmg.models import Redirect, Page
+from pmg.search import Search
+from pmg.models import Redirect, Page, SavedSearch
 
 import forms
 import utils
@@ -679,7 +680,6 @@ def search(page=0):
     for k, v in filters.iteritems():
         if v == "None":
             filters[k] = None
-
     q = request.args.get('q', '').strip()
 
     params = dict(filters)
@@ -701,27 +701,19 @@ def search(page=0):
 
     committees = load_from_api('committee', return_everything=True)['results']
 
-    search_types = [
-        ("committee", "Committees"),
-        ("committee_meeting", "Committee Meetings"),
-        ("bill", "Bills"),
-        ("member", "MPs"),
-        ("hansard", "Hansards"),
-        ("briefing", "Media Briefings"),
-        # this is both QuestionReply and CommitteeQuestion objects
-        ("minister_question", "Questions & Replies"),
-        ("tabled_committee_report", "Tabled Committee Reports"),
-        ("call_for_comment", "Calls for Comments"),
-        ("policy_document", "Policy Documents"),
-        ("gazette", "Gazettes"),
-        ("daily_schedule", "Daily Schedules"),
-    ]
-
     def search_url(**kwargs):
         args = dict(filters)
         args.update(kwargs)
         args = {('filter[%s]' % k): v for k, v in args.iteritems() if v}
         return url_for('search', q=q, **args)
+
+    saved_search = None
+    if not current_user.is_anonymous():
+        saved_search = SavedSearch.find(
+            current_user,
+            q,
+            content_type=filters['type'] or None,
+            committee_id=filters['committee'] or None)
 
     return render_template(
         'search.html',
@@ -738,7 +730,8 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
-        search_types=search_types)
+        search_types=Search.friendly_data_types.items(),
+        saved_search=saved_search)
 
 
 @app.route('/page/<path:pagename>')
@@ -800,3 +793,4 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
+

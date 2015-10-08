@@ -452,6 +452,32 @@ mark {
   }
 }
 
+body.search {
+  .navbar-form {
+    display: none;
+  }
+}
+
 .search-filter {
   width: 100%;
+}
+
+.search-box {
+  padding: 0px 0px 15px;
+}
+
+.search-page-form {
+  width: 100%;
+  margin: 8px 0px;
+  .input-group {
+    width: 100%;
+  }
+}
+
+.search-summary {
+  margin-bottom: 10px;
+
+  h2 {
+    margin-top: 5px;
+  }
 }

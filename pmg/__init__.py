@@ -20,6 +20,15 @@ with open('config/%s/logging.yaml' % env) as f:
 
 
 db = SQLAlchemy(app)
+# Define naming constraints so that Alembic just works
+# See http://docs.sqlalchemy.org/en/rel_0_9/core/constraints.html#constraint-naming-conventions
+db.metadata.naming_convention = {
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "%(table_name)s_%(column_0_name)s_key",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
 migrate = Migrate(app, db, transaction_per_migration=True)
 csrf = CsrfProtect(app)
 mail = Mail(app)
@@ -86,6 +95,26 @@ assets.register('admin-js', Bundle(
     'resources/javascript/admin/admin.js',
     'resources/javascript/admin/email_alerts.js',
     output='javascript/admin.%(version)s.js'))
+
+
+# background tasks
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from threading import Thread
+scheduler = BackgroundScheduler({
+    'apscheduler.jobstores.default': SQLAlchemyJobStore(engine=db.engine),
+    'apscheduler.executors.default': {
+        'class': 'apscheduler.executors.pool:ThreadPoolExecutor',
+        'max_workers': '2',
+    },
+    'apscheduler.timezone': 'UTC',
+})
+if not app.debug:
+    scheduler.start()
+
+# if we don't do this in a separate thread, we hang trying to connect to the db
+import pmg.tasks
+Thread(target=pmg.tasks.schedule).start()
 
 
 import helpers

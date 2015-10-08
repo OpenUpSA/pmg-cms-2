@@ -4,11 +4,25 @@
 
 {% block page %}
 
-<h3 class="red"><span class="fa fa-search"></span> Search</h3>
+<div class="row search-box">
+  <div class="col-sm-6 col-sm-offset-3">
+    <form class="search-page-form pull-right" role="search" action="/search">
+      <div class="input-group">
+        <input type="text" class="form-control" name="q" placeholder="Search for committee meetings, bills, ministers, schedules and documents" value="{{q}}">
+        <span class="input-group-btn">
+          <input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
+        </span>
+      </div>
+    </form>
+  </div>
+</div>
 
-<div class="row">
-  <div class="col-xs-12 col-sm-3">
+<div class="row"> 
+  <div class="col-sm-3">
     {% block top_links %}
+      <div class="hidden-xs">
+        <h4>Refine your search</h4>
+      </div>
       <form>
         <input type="hidden" name="q" value="{{ q }}">
         <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
@@ -18,14 +32,16 @@
       </form>
 
       <div class="panel visible-xs visible-sm">
-                <a class="btn btn-primary" type="button" data-toggle="collapse" href="#filter">Filter Results&nbsp;<span class="caret"></span></a>
-              <div id="filter" class="panel-collapse collapse">
-                  <div class="panel-body">
-                      {% include "_filter_type_options.html" %}
-                      {% include "_filter_year_options.html" %}
-                  </div>
-              </div>
+        <a class="btn btn-primary form-control" type="button" data-toggle="collapse" href="#filter">
+          Refine your search <span class="caret"></span>
+        </a>
+        <div id="filter" class="panel-collapse collapse">
+          <div class="panel-body">
+            {% include "_filter_type_options.html" %}
+            {% include "_filter_year_options.html" %}
           </div>
+        </div>
+      </div>
 
       <div class="list-group hidden-xs hidden-sm">
         {% include "_filter_type_options.html" %}
@@ -37,9 +53,10 @@
     {% endblock %}
   </div>
 
-  <div class="col-xs-12 col-md-9">
-    <h5>Total Results: {{ search.hits }}</h5>
-
+  <div class="col-sm-9">
+    {% if q %}
+      {% include "_create_alert.html" %}
+    {% endif %}
     <ul class="list-unstyled item-list search-list">
       {% for result in search.results %}
       <li>

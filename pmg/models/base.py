@@ -1,14 +1,22 @@
 from inflection import underscore, dasherize
 from flask import url_for
+from sqlalchemy import func
+
+from pmg.models import db
 
 resource_slugs = {}
 
+
 class ApiResource(object):
     """ Mixin that defines some helpers for resources that we expose
-    directly through the API. 
+    directly through the API.
 
     Resources must be registered by calling :func:`register`.
     """
+
+    # ** db columns common to all API resources
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now(), onupdate=func.current_timestamp())
 
     @property
     def url(self):
@@ -45,3 +53,14 @@ class FileLinkMixin(object):
     def to_dict(self, include_related=False):
         """ Delegate to the file's to_dict completely. """
         return self.file.to_dict(include_related)
+
+
+class APScheduler(db.Model):
+    """ This is the table expected by apscheduler. It will create it automatically,
+    but having it here ensures alembic is happy.
+    """
+    __tablename__ = 'apscheduler_jobs'
+
+    id = db.Column(db.Unicode(191, _warn_on_bytestring=False), primary_key=True)
+    next_run_time = db.Column(db.Float(25), index=True)
+    job_state = db.Column(db.LargeBinary, nullable=False)

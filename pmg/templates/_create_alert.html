@@ -17,23 +17,21 @@
     <h5>{{ search.hits }} matches</h5>
   
   </div>
-  {% if 'user-admin' in current_user.roles %}
-    {% if current_user.is_authenticated() %}
-      <div class="col-sm-4">
-        <div class="email-alert-box create-alert {% if saved_search %} hidden {% endif %}">
-          <p>
-            <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
-          </p>
-            Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information that match these search terms.
-        </div>
-
-        <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
-          <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
-        </div>
-
+  {% if current_user.is_authenticated() %}
+    <div class="col-sm-4">
+      <div class="email-alert-box create-alert {% if saved_search %} hidden {% endif %}">
+        <p>
+          <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
+        </p>
+          Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information that match these search terms.
       </div>
-    {% else %}
-      <p>Register for an account or log in to create alerts.</p>
-    {% endif %}
+
+      <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
+        <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+      </div>
+
+    </div>
+  {% else %}
+    <p>Register for an account or log in to create alerts.</p>
   {% endif %}
 </div>

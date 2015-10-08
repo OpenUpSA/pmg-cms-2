@@ -1,33 +1,37 @@
 <div class="row search-summary">
-  <div class="col-xs-8">
+  <div class="col-sm-8">
     <h2 class="search-q">"{{ q }}"</h2>
-    {% for committee in committees %}
-      {% if filters.committee|int == committee.id|int %}
-        <p>for <b>{{ committee.name }}</b></p>
-      {% endif %}
-    {% endfor %}
+    
+    <h5>{{ search.hits }} matches</h5>
+
     {% for data_type, name in search_types %}
       {% if filters.type == data_type %}
         <p>in <b>{{ name }}</b></p>
       {% endif %}
     {% endfor %}
-    <p></p>
+    
+    {% for committee in committees %}
+      {% if filters.committee|int == committee.id|int %}
+        <p>for <b>{{ committee.name }}</b></p>
+      {% endif %}
+    {% endfor %}
+  
   </div>
   {% if current_user.is_authenticated() %}
-    <div class="col-xs-4">
-        <a class="btn btn-info pull-right create-alert {% if saved_search %} hidden {% endif %}" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
-        <a class="btn btn-warning pull-right remove-alert {% if not saved_search %} hidden {% endif %}" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+    <div class="col-sm-4">
+      <div class="email-alert-box create-alert {% if saved_search %} hidden {% endif %}">
+        <p>
+          <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
+        </p>
+          Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information that match these search terms.
+      </div>
+
+      <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
+        <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+      </div>
+
     </div>
   {% else %}
     <p>Register for an account or log in to create alerts.</p>
   {% endif %}
-</div>
-
-<div class="row">
-  <div class="col-xs-12 col-sm-6">
-    <h5>Total Results: {{ search.hits }}</h5>
-  </div>
-  <div class="col-xs-6 col-sm-6">
-    <h5 class="pull-right">Create an alert to receive notifications of more results like these.</h5>
-  </div>
 </div>

@@ -165,6 +165,7 @@ def create_search():
 
     return jsonify(id=saved_search.id)
 
+
 @app.route('/user/saved-search/<int:id>/delete', methods=['POST'])
 def remove_search(id):
     saved_search = SavedSearch.query.get(id)

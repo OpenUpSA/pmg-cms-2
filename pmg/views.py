@@ -11,8 +11,8 @@ from flask.ext.mail import Message
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api
-from pmg.models import Redirect, Page
 from pmg.search import Search
+from pmg.models import Redirect, Page, SavedSearch
 
 import forms
 import utils
@@ -680,7 +680,6 @@ def search(page=0):
     for k, v in filters.iteritems():
         if v == "None":
             filters[k] = None
-
     q = request.args.get('q', '').strip()
 
     params = dict(filters)
@@ -708,6 +707,14 @@ def search(page=0):
         args = {('filter[%s]' % k): v for k, v in args.iteritems() if v}
         return url_for('search', q=q, **args)
 
+    saved_search = None
+    if not current_user.is_anonymous():
+        saved_search = SavedSearch.find(
+            current_user,
+            q,
+            content_type=filters['type'] or None,
+            committee_id=filters['committee'] or None)
+
     return render_template(
         'search.html',
         q=q,
@@ -723,7 +730,8 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
-        search_types=Search.friendly_data_types.items())
+        search_types=Search.friendly_data_types.items(),
+        saved_search=saved_search)
 
 
 @app.route('/page/<path:pagename>')
@@ -785,3 +793,4 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
+

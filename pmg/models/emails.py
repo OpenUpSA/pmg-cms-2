@@ -132,7 +132,7 @@ class SavedSearch(db.Model):
     def find(cls, user, q, content_type=None, committee_id=None):
         return cls.query.filter(
             cls.user == user,
-            cls.search == q,
+            cls.search == q.lower(),
             cls.content_type == content_type,
             cls.committee_id == committee_id).first()
 
@@ -140,7 +140,7 @@ class SavedSearch(db.Model):
     def find_or_create(cls, user, q, content_type=None, committee_id=None):
         search = cls.find(user, q, content_type, committee_id)
         if not search:
-            search = cls(user=user, search=q, content_type=content_type, committee_id=committee_id)
+            search = cls(user=user, search=q.lower(), content_type=content_type, committee_id=committee_id)
             search.last_alerted_at = arrow.utcnow().datetime
             db.session.add(search)
         return search

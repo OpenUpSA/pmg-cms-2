@@ -3,7 +3,7 @@ Dear *|NAME|*,
 </p>
 
 <p>
-We found <b>{{ results|length }} newly updated item{% if results|length > 0 %}s{% endif %}</b> for your search
+We found <b>{{ results|length }} recently updated item{% if results|length > 1 %}s{% endif %}</b> for your search
 <a href="{{ search.url(_external=True) }}">{{ search.search }}</a>{%
 if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
 </p>

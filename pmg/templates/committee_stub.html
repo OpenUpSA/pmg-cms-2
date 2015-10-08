@@ -13,10 +13,10 @@
 {% set id = result.id %}
 {% set house = result.house.name %}
 {% endif %}
-<div class="committee-stub space-bottom-sm">
-  <div class="title">
-    <span class="label label-success">Committee</span>
-    <a href="/committee/{{ id }}">{{ title|safe }}</a>
-    <span class="label label-info">{{ house }}</span>
-  </div>
+<div class="committee-stub">
+  <h4><a href="/committee/{{ id }}">{{ title|safe }}</a></h4>
+  <h5>
+    <span class="type">Committee</span>
+    <span class="committee-house">{{ house }}</span>
+  </h4>
 </div>

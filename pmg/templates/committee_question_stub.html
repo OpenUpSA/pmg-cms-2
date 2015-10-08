@@ -22,19 +22,13 @@
   {% endif %}
 {% endif %}
 <div class="committee_question-stub">
-  <div class="row">
-    <div class="col-sm-10 col-xs-8">
-      <span class="label label-primary">Questions and Replies</span>
-      <a href="{{ url_for('committee_question', question_id=id) }}">
-      {{ title|safe }}
-      </a>
-    </div>
-    <div class="col-sm-2 col-xs-4">{{ date|pretty_date }}</div>
-  </div>
+  <div class="date">{{ date|pretty_date }}</div>
+  <h4><a href="{{ url_for('committee_question', question_id=id) }}">{{ title|safe }}</a></h4>
+  <h5><span class="type">Question &amp; Reply</span></h5>
 
   {% if result.highlight.fulltext %}
-  <div>
+  <p>
     {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
-  </div>
+  </p>
   {% endif %}
 </div>

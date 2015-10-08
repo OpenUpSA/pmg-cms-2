@@ -57,15 +57,13 @@
     
     {% include "_create_alert.html" %}
 
-        <table class="table table-striped table-bordered">
-          {% for result in search.results %}
-          <tr>
-            <td>
-              {% include result._type + '_stub.html' %}
-            </td>
-          </tr>
-          {% endfor %}
-        </table>
+    <ul class="list-unstyled item-list search-list">
+      {% for result in search.results %}
+      <li>
+        {% include result._type + '_stub.html' %}
+      </li>
+      {% endfor %}
+    </ul>
 
     {% include 'pagination.html' %}
   </div>

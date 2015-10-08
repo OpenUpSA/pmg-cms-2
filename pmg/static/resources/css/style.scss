@@ -344,8 +344,41 @@ mark {
 
 // listing pages
 .content-list {
-  .label-primary {
+  .type {
     display: none;
+  }
+}
+
+// search results
+.item-list {
+  .date {
+    float: right;
+    text-align: right;
+    font-style: italic;
+  }
+
+  li {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
+  }
+
+  h4, h5 {
+    margin-top: 0px;
+    margin-bottom: 5px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  h5 {
+    font-size: 14px;
+    color: #777;
   }
 }
 

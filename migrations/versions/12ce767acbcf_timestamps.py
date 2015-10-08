@@ -24,6 +24,8 @@ def upgrade():
     op.add_column('call_for_comment', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_call_for_comment_created_at'), 'call_for_comment', ['created_at'], unique=False)
     op.create_index(op.f('ix_call_for_comment_updated_at'), 'call_for_comment', ['updated_at'], unique=False)
+    op.execute("COMMIT")
+
     op.add_column('committee', sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.add_column('committee', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_committee_created_at'), 'committee', ['created_at'], unique=False)
@@ -40,10 +42,14 @@ def upgrade():
     op.add_column('daily_schedule', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_daily_schedule_created_at'), 'daily_schedule', ['created_at'], unique=False)
     op.create_index(op.f('ix_daily_schedule_updated_at'), 'daily_schedule', ['updated_at'], unique=False)
+    op.execute("COMMIT")
+
     op.add_column('event', sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.add_column('event', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_event_created_at'), 'event', ['created_at'], unique=False)
     op.create_index(op.f('ix_event_updated_at'), 'event', ['updated_at'], unique=False)
+    op.execute("COMMIT")
+
     op.add_column('gazette', sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.add_column('gazette', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_gazette_created_at'), 'gazette', ['created_at'], unique=False)
@@ -56,6 +62,8 @@ def upgrade():
     op.add_column('minister', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_minister_created_at'), 'minister', ['created_at'], unique=False)
     op.create_index(op.f('ix_minister_updated_at'), 'minister', ['updated_at'], unique=False)
+    op.execute("COMMIT")
+
     op.add_column('policy_document', sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.add_column('policy_document', sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text(u'now()'), nullable=False))
     op.create_index(op.f('ix_policy_document_created_at'), 'policy_document', ['created_at'], unique=False)

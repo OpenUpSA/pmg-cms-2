@@ -20,5 +20,5 @@ def schedule():
     # day at 3am (UTC)
     job = scheduler.add_job('pmg.tasks:send_saved_search_alerts', 'cron',
                             id='send-saved-search-alerts', replace_existing=True,
-                            coalesce=True, hour=14, minute=10)
+                            coalesce=True, hour=3)
     log.info("Scheduled task: %s" % job)

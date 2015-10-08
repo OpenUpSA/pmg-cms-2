@@ -23,7 +23,7 @@ $(function() {
 	    }
 	})
 
-	$(".create-alert").on("click", function(e) {
+	$(".create-alert .btn").on("click", function(e) {
 
 		var q = $(this).data('q'),
 			  committee_id = $(this).data('committee') || "",
@@ -38,18 +38,18 @@ $(function() {
 			}
 		).done(function(resp) {
 			$('.create-alert').addClass('hidden');
-			$('.remove-alert').removeClass('hidden').data('id', resp.id);
+			$('.remove-alert').removeClass('hidden').find('.btn').data('id', resp.id);
 		});
 	});
 
-	$(".remove-alert").on("click", function(e) {
+	$(".remove-alert .btn").on("click", function(e) {
 
 		var id = $(this).data('id') || "";
 
 		$.post(
 			'/user/saved-search/' + id + '/delete'
 		).always(function(resp) {
-			$('.remove-alert').addClass('hidden').data('id', '');
+			$('.remove-alert').addClass('hidden').find('.btn').data('id', '');
 			$('.create-alert').removeClass('hidden');
 		});
 	});

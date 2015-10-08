@@ -113,7 +113,7 @@ class BillStatus(db.Model):
 
 class Bill(ApiResource, db.Model):
     __tablename__ = "bill"
-    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id'), {})
+    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', name='bill_number_year_type_id_key'), {})
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)

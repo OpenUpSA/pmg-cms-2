@@ -1,16 +1,21 @@
 <div class="row search-summary">
   <div class="col-sm-8">
     <h2 class="search-q">"{{ q }}"</h2>
+    
+    <h5>{{ search.hits }} matches</h5>
+
     {% for data_type, name in search_types %}
       {% if filters.type == data_type %}
         <p>in <b>{{ name }}</b></p>
       {% endif %}
     {% endfor %}
+    
     {% for committee in committees %}
       {% if filters.committee|int == committee.id|int %}
         <p>for <b>{{ committee.name }}</b></p>
       {% endif %}
     {% endfor %}
+  
   </div>
   {% if current_user.is_authenticated() %}
     <div class="col-sm-4">
@@ -30,7 +35,3 @@
     <p>Register for an account or log in to create alerts.</p>
   {% endif %}
 </div>
-
-<h5>{{ search.hits }} results: </h5>
-
-

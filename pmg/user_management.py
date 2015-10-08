@@ -6,13 +6,13 @@ import json
 import logging
 from ga import ga_event
 
-from flask import render_template, g, request, redirect, session, url_for, abort, flash
+from flask import render_template, g, request, redirect, session, url_for, abort, flash, jsonify
 from flask.ext.security import login_user, current_user
 from flask.ext.security.decorators import anonymous_user_required
 
 from pmg import app, db
 from pmg.api_client import ApiException, load_from_api, send_to_api
-from pmg.models import Committee
+from pmg.models import Committee, SavedSearch
 from pmg.models.users import security
 
 API_HOST = app.config['API_HOST']
@@ -151,3 +151,27 @@ def committee_subscriptions():
 
     premium_committees = load_from_api('committee/premium', return_everything=True)['results']
     return render_template('user_management/committee_subscriptions.html', premium_committees=premium_committees)
+
+
+@app.route('/user/saved-search/', methods=['POST'])
+def create_search():
+    saved_search = SavedSearch.find_or_create(
+        current_user,
+        request.form.get('q'),
+        content_type=request.form.get('content_type') or None,
+        committee_id=request.form.get('committee_id') or None)
+
+    db.session.commit()
+
+    return jsonify(id=saved_search.id)
+
+
+@app.route('/user/saved-search/<int:id>/delete', methods=['POST'])
+def remove_search(id):
+    saved_search = SavedSearch.query.get(id)
+    if not saved_search:
+        abort(404)
+    db.session.delete(saved_search)
+    db.session.commit()
+
+    return ''

@@ -1,5 +1,3 @@
-from random import random
-import string
 import datetime
 from dateutil.relativedelta import relativedelta
 
@@ -10,35 +8,6 @@ from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDat
 
 from pmg import app, db
 import serializers
-
-
-class ApiKey(db.Model):
-
-    __tablename__ = "api_key"
-
-    id = db.Column(db.Integer, primary_key=True)
-    key = db.Column(db.String(128), unique=True, nullable=False)
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('user.id'),
-        unique=True,
-        nullable=False)
-    user = db.relationship('User')
-
-    def generate_key(self):
-        self.key = ''.join(
-            random.choice(
-                string.ascii_uppercase +
-                string.digits) for _ in range(128))
-        return
-
-    def __unicode__(self):
-        s = u'%s' % self.key
-        return s
-
-    def to_dict(self, include_related=False):
-        return {'user_id': self.user_id, 'key': self.key}
 
 
 class Role(db.Model, RoleMixin):

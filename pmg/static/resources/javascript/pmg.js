@@ -12,6 +12,50 @@ $(function() {
 		});
 	});
 
+
+	var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+	$.ajaxSetup({
+	    beforeSend: function(xhr, settings) {
+	        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken)
+	        }
+	    }
+	})
+
+	$(".create-alert .btn").on("click", function(e) {
+
+		var q = $(this).data('q'),
+			  committee_id = $(this).data('committee') || "",
+				content_type = $(this).data('type');
+
+		$.post(
+			'/user/saved-search/',
+			{
+				q: q,
+				committee_id: committee_id,
+				content_type: content_type
+			}
+		).done(function(resp) {
+			$('.create-alert').addClass('hidden');
+			$('.remove-alert').removeClass('hidden').find('.btn').data('id', resp.id);
+			ga('send', 'event', 'user', 'add-search-alert');
+		});
+	});
+
+	$(".remove-alert .btn").on("click", function(e) {
+
+		var id = $(this).data('id') || "";
+
+		$.post(
+			'/user/saved-search/' + id + '/delete'
+		).always(function(resp) {
+			$('.remove-alert').addClass('hidden').find('.btn').data('id', '');
+			$('.create-alert').removeClass('hidden');
+			ga('send', 'event', 'user', 'remove-search-alert');
+		});
+	});
+
 	$(".chosen").chosen({width: "100%"});
 	$('[title]').tooltip();
 });

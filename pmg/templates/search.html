@@ -37,17 +37,16 @@
     {% endblock %}
   </div>
 
-  <div class="col-xs-12 col-md-9 justify-p">
+  <div class="col-xs-12 col-md-9">
     <h5>Total Results: {{ search.hits }}</h5>
-    <table class="table table-striped table-bordered">
+
+    <ul class="list-unstyled item-list search-list">
       {% for result in search.results %}
-      <tr>
-        <td>
-          {% include result._type + '_stub.html' %}
-        </td>
-      </tr>
+      <li>
+        {% include result._type + '_stub.html' %}
+      </li>
       {% endfor %}
-    </table>
+    </ul>
 
     {% include 'pagination.html' %}
   </div>

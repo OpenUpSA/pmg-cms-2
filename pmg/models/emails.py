@@ -123,8 +123,10 @@ class SavedSearch(db.Model):
     def send_all_alerts(cls):
         """ Find saved searches with new content and send the email alerts.
         """
+        log.info("Sending all alerts")
         for alert in SavedSearch.query.all():
             alert.check_and_send_alert()
+        log.info("Sending alerts finished")
 
     @classmethod
     def find(cls, user, q, content_type=None, committee_id=None):

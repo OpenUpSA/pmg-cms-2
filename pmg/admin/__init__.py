@@ -783,18 +783,18 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
 
 
 class GazetteView(ViewWithFiles, MyModelView):
+    column_list = ('title', 'effective_date', 'start_date')
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
-    column_exclude_list = ('nid', 'created_at', 'updated_at')
-    form_excluded_columns = ('nid', 'updated_at', 'created_at')
+    form_columns = ('title', 'effective_date', 'start_date', 'files')
     inline_models = [InlineFile(GazetteFile)]
 
 
 class PolicyDocumentView(ViewWithFiles, MyModelView):
+    column_list = ('title', 'effective_date', 'start_date')
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
-    column_exclude_list = ('nid', 'created_at', 'updated_at')
-    form_excluded_columns = ('nid', 'updated_at', 'created_at')
+    form_columns = ('title', 'effective_date', 'start_date', 'files')
     inline_models = [InlineFile(PolicyDocumentFile)]
 
 

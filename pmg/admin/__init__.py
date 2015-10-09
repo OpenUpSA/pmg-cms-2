@@ -287,8 +287,14 @@ class OrganisationView(MyModelView):
             'page_size': 25
         },
     }
-    form_excluded_columns = [
-        'created_at',
+    form_columns = [
+        'name',
+        'domain',
+        'contact',
+        'paid_subscriber',
+        'expiry',
+        'subscriptions',
+        'users',
     ]
     form_args = {
         'subscriptions': {
@@ -754,38 +760,49 @@ class CallForCommentView(MyModelView):
 
 
 class DailyScheduleView(ViewWithFiles, MyModelView):
-    column_exclude_list = (
-        'body',
+    column_list = (
+        'title',
+        'start_date',
+        'schedule_date',
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
+    form_columns = (
+        'title',
+        'start_date',
+        'schedule_date',
+        'body',
+        'files',
+    )
     form_widget_args = {
         'body': {
             'class': 'ckeditor'
         },
     }
-    form_excluded_columns = ('nid', )
     inline_models = [InlineFile(DailyScheduleFile)]
 
 
 class GazetteView(ViewWithFiles, MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
-    form_excluded_columns = ('nid', )
+    column_exclude_list = ('nid', 'created_at', 'updated_at')
+    form_excluded_columns = ('nid', 'updated_at', 'created_at')
     inline_models = [InlineFile(GazetteFile)]
 
 
 class PolicyDocumentView(ViewWithFiles, MyModelView):
     column_default_sort = ('effective_date', True)
     column_searchable_list = ('title', )
-    form_excluded_columns = ('nid', )
+    column_exclude_list = ('nid', 'created_at', 'updated_at')
+    form_excluded_columns = ('nid', 'updated_at', 'created_at')
     inline_models = [InlineFile(PolicyDocumentFile)]
 
 
 class TabledCommitteeReportView(ViewWithFiles, MyModelView):
-    column_exclude_list = (
-        'body',
-        'summary',
+    column_list = (
+        'committee',
+        'title',
+        'start_date',
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
@@ -793,7 +810,14 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
         'body': {'class': 'ckeditor'},
         'summary': {'class': 'ckeditor'},
     }
-    form_excluded_columns = ('nid', )
+    form_columns = (
+        'committee',
+        'title',
+        'start_date',
+        'body',
+        'summary',
+        'files',
+    )
     inline_models = [InlineFile(TabledCommitteeReportFile)]
 
 

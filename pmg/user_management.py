@@ -1,4 +1,3 @@
-import os
 import forms
 import requests
 from requests import ConnectionError
@@ -6,14 +5,13 @@ import json
 import logging
 from ga import ga_event
 
-from flask import render_template, g, request, redirect, session, url_for, abort, flash, jsonify
-from flask.ext.security import login_user, current_user
+from flask import render_template, request, redirect, session, url_for, abort, flash, jsonify
+from flask.ext.security import current_user, login_required
 from flask.ext.security.decorators import anonymous_user_required
 
 from pmg import app, db
-from pmg.api_client import ApiException, load_from_api, send_to_api
+from pmg.api_client import ApiException, load_from_api
 from pmg.models import Committee, SavedSearch
-from pmg.models.users import security
 
 API_HOST = app.config['API_HOST']
 logger = logging.getLogger(__name__)
@@ -154,6 +152,7 @@ def committee_subscriptions():
 
 
 @app.route('/user/saved-search/', methods=['POST'])
+@login_required
 def create_search():
     saved_search = SavedSearch.find_or_create(
         current_user,
@@ -167,9 +166,10 @@ def create_search():
 
 
 @app.route('/user/saved-search/<int:id>/delete', methods=['POST'])
+@login_required
 def remove_search(id):
     saved_search = SavedSearch.query.get(id)
-    if not saved_search:
+    if not saved_search or current_user != saved_search.user:
         abort(404)
     db.session.delete(saved_search)
     db.session.commit()

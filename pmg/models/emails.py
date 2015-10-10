@@ -34,7 +34,7 @@ class SavedSearch(db.Model):
     """ A search saved by a user that they get email
     alerts about.
     """
-    __tablename__ = 'search_alert'
+    __tablename__ = 'saved_search'
 
     id = db.Column(db.Integer, primary_key=True)
 

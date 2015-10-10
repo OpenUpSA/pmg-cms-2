@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
+import pytz
 
 from bs4 import BeautifulSoup
 
@@ -163,7 +164,7 @@ class Search:
         if updated_since:
             filters["updated_at"] = {
                 "range": {
-                    "date": {
+                    "updated_at": {
                         "gte": updated_since,
                     }
                 }
@@ -374,16 +375,14 @@ class Transforms:
 
     @classmethod
     def serialise(cls, obj):
-        # needed for the URLs
-        with app.app_context():
-            item = {
-                'model_id': obj.id,
-                'url': obj.url,
-                'api_url': obj.api_url,
-                'slug_prefix': obj.slug_prefix,
-                'created_at': obj.created_at,
-                'updated_at': obj.updated_at,
-            }
+        item = {
+            'model_id': obj.id,
+            'url': obj.url,
+            'api_url': obj.api_url,
+            'slug_prefix': obj.slug_prefix,
+            'created_at': obj.created_at.astimezone(pytz.utc).isoformat(),
+            'updated_at': obj.updated_at.astimezone(pytz.utc).isoformat(),
+        }
 
         rules = Transforms.convert_rules[obj.__class__]
         if 'id' not in rules:

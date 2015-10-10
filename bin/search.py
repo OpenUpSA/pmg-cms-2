@@ -6,6 +6,7 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../'))
 from pmg.search import Search, Transforms
+from pmg import app
 
 if __name__ == "__main__":
     data_types = Transforms.data_types() + ['all']
@@ -19,10 +20,11 @@ if __name__ == "__main__":
     search = Search()
 
     if args.reindex:
-        if args.data_type == 'all':
-            search.reindex_everything()
-        else:
-            search.reindex_all(args.data_type)
+        with app.app_context():
+            if args.data_type == 'all':
+                search.reindex_everything()
+            else:
+                search.reindex_all(args.data_type)
 
     if args.delete:
         search.delete_everything()

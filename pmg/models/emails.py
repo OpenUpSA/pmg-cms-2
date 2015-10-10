@@ -1,6 +1,7 @@
 import re
 import logging
 import arrow
+import pytz
 
 from sqlalchemy import func
 import mandrill
@@ -90,8 +91,9 @@ class SavedSearch(db.Model):
         from pmg.search import Search
 
         # find hits updated since the last time we did this search
+        timestamp = self.last_alerted_at.astimezone(pytz.utc)
         search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id,
-                                 updated_since=self.last_alerted_at.isoformat())
+                                 updated_since=timestamp.isoformat())
         if 'hits' not in search:
             log.warn("Error doing search for %s: %s" % (self, search))
             return

@@ -107,8 +107,7 @@ class Search:
 
     def indexable(self, obj):
         """ Should this object be indexed for searching? """
-        dt = getattr(obj, 'resource_content_type', None)
-        return self.reindex_changes and dt and dt in Transforms.convert_rules
+        return self.reindex_changes and obj.__class__ in Transforms.convert_rules
 
     def mapping(self, data_type):
         mapping = {

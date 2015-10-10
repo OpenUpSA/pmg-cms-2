@@ -67,6 +67,17 @@ Start the server:
 
 You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
 
+### Running tests
+
+Create a test database:
+
+    psql -c 'create database pmg_test'
+    psql -c 'grant all privileges on database pmg_test to pmg'
+
+Then run the tests:
+
+    nosetests tests
+
 ### Deployment instructions
 
 Deployment is to dokku, a Heroku-like environment. To deploy, simply push to the git remote:

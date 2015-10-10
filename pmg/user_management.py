@@ -123,11 +123,12 @@ def email_alerts():
     else:
         subscriptions = set()
 
-    return render_template('user_management/email_alerts.html',
-            committees=committees,
-            after_signup=bool(next_url),
-            subscriptions=subscriptions,
-            next_url=next_url)
+    return render_template(
+        'user_management/email_alerts.html',
+        committees=committees,
+        after_signup=bool(next_url),
+        subscriptions=subscriptions,
+        next_url=next_url)
 
 
 @app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])

@@ -1112,16 +1112,26 @@ def on_models_changed(sender, changes):
     for obj, change in changes:
         # obj is the changed object, change is one of: update, insert, delete
 
+        # NOTE: at this point, the db session is useless since it has already been
+        # committed. Any work we want to do needs to be done in a new session.
+
         if searcher.indexable(obj):
-            logger.info('Reindexing changed item: %s %s' % (change, obj))
+            logger.info('Reindexing changed item: %s %s(%s)' % (change, obj.__class__, obj.id))
 
             if change == 'delete':
                 # deleted
-                searcher.delete_obj(obj)
+                searcher.delete_obj(obj.__class__, obj.id)
             else:
                 # updated or inserted
-                searcher.add_obj(obj)
 
+                s = db.Session(bind=db.engine)
+                try:
+                    # reload it from the database, because at this point
+                    # the object is stale
+                    obj = s.query(obj.__class__).get(obj.id)
+                    searcher.add_obj(obj)
+                finally:
+                    s.close()
 
 # Register all the resource types. This ensures they show up in the API and are searchable
 ApiResource.register(Bill)

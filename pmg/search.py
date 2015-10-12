@@ -90,8 +90,8 @@ class Search:
     def add(self, data_type, item):
         self.add_many(data_type, [item])
 
-    def delete_obj(self, obj):
-        self.delete(obj.resource_content_type, obj.id)
+    def delete_obj(self, klass, id):
+        self.delete(klass.resource_content_type, id)
 
     def delete(self, data_type, uid):
         try:

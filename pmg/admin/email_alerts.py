@@ -152,7 +152,7 @@ class EmailAlertForm(Form):
             from_email=self.message.sender,
             recipient_users=self.recipients,
             html=self.message.html,
-            utc_campaign=self.template.utm_campaign,
+            utm_campaign=self.template.utm_campaign,
         )
 
     def generate_email(self):

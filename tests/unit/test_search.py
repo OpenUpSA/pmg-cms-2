@@ -3,8 +3,10 @@ from mock import patch
 from nose.tools import *  # noqa
 import arrow
 
+from pmg import app
 from pmg.models import db, CommitteeMeeting
 from pmg.search import Search
+from pyelasticsearch import ElasticSearch
 
 
 class TestSearch(unittest.TestCase):
@@ -15,49 +17,52 @@ class TestSearch(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    @patch.object(Search, 'add_obj')
+    @patch.object(ElasticSearch, 'bulk_index')
     @patch.multiple(Search, reindex_changes=True)
-    def test_new_object_reindexed(self, add_obj):
-        cm = CommitteeMeeting()
-        cm.date = arrow.now().datetime
-        cm.title = "Foo"
-        db.session.add(cm)
-        db.session.commit()
+    def test_new_object_reindexed(self, bulk_index):
+        with app.app_context():
+            cm = CommitteeMeeting()
+            cm.date = arrow.now().datetime
+            cm.title = "Foo"
+            db.session.add(cm)
+            db.session.commit()
 
-        assert_true(Search.add_obj.called)
+            assert_true(bulk_index.called)
 
-    @patch.object(Search, 'add_obj')
+    @patch.object(ElasticSearch, 'bulk_index')
     @patch.multiple(Search, reindex_changes=True)
-    def test_updated_object_reindexed(self, add_obj):
-        cm = CommitteeMeeting()
-        cm.date = arrow.now().datetime
-        cm.title = "Foo"
-        db.session.add(cm)
-        db.session.commit()
+    def test_updated_object_reindexed(self, bulk_index):
+        with app.app_context():
+            cm = CommitteeMeeting()
+            cm.date = arrow.now().datetime
+            cm.title = "Foo"
+            db.session.add(cm)
+            db.session.commit()
 
-        assert_true(Search.add_obj.called)
-        Search.add_obj.reset_mock()
+            assert_true(bulk_index.called)
+            bulk_index.reset_mock()
 
-        # now update it
-        cm.title = "Updated"
-        db.session.commit()
-        assert_true(Search.add_obj.called)
+            # now update it
+            cm.title = "Updated"
+            db.session.commit()
+            assert_true(bulk_index.called)
 
-    @patch.object(Search, 'add_obj')
-    @patch.object(Search, 'delete_obj')
+    @patch.object(ElasticSearch, 'bulk_index')
+    @patch.object(ElasticSearch, 'delete')
     @patch.multiple(Search, reindex_changes=True)
-    def test_deleted_object_reindexed(self, add_obj, delete_obj):
-        cm = CommitteeMeeting()
-        cm.date = arrow.now().datetime
-        cm.title = "Foo"
-        db.session.add(cm)
-        db.session.commit()
+    def test_deleted_object_reindexed(self, delete, bulk_index):
+        with app.app_context():
+            cm = CommitteeMeeting()
+            cm.date = arrow.now().datetime
+            cm.title = "Foo"
+            db.session.add(cm)
+            db.session.commit()
 
-        assert_true(Search.add_obj.called)
-        Search.add_obj.reset_mock()
+            assert_true(bulk_index.called)
+            bulk_index.reset_mock()
 
-        # now delete it
-        db.session.delete(cm)
-        db.session.commit()
-        assert_false(Search.add_obj.called)
-        assert_true(Search.delete_obj.called)
+            # now delete it
+            db.session.delete(cm)
+            db.session.commit()
+            assert_false(bulk_index.called)
+            assert_true(delete.called)

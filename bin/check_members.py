@@ -45,10 +45,15 @@ member_name_map = {
     'Mcloughlin, Mr A': 'McLoughlin, Mr AR',
     'Letsatsi-duba, Ms D': 'Letsatsi-Duba, Ms DB',
     'Kekana, Mr HB': 'Kekana, Ms HB',
+    'Faber, Mr W': 'Faber, Mr WF',
+    'Scheepers, Ms M': 'Scheepers Ms MA'
 }
 
 def get_member(members, initials, last_name, title):
     member_name = "%s, %s %s" % (last_name, title, first_name[0])
+
+    if member_name == 'Faber, Mr W':
+        import ipdb; ipdb.set_trace()
 
     if member_name in member_name_map:
         return Member.query.filter(Member.name == member_name_map[member_name]).first()

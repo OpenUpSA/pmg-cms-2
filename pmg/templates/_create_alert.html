@@ -1,18 +1,28 @@
+{% set filtered_committee = [] %}
+{% set filtered_data_type = [] %}
+
+{% for committee in committees %}
+  {% if filters.committee|int == committee.id|int %}
+    {% if filtered_committee.append(committee) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
+{% for data_type, name in search_types %}
+  {% if filters.type == data_type %}
+    {% if filtered_data_type.append(name) %}{% endif %}
+  {% endif %}
+{% endfor %}
+
 <div class="row search-summary">
   <div class="col-sm-8">
     <h2 class="search-q">"{{ q }}"</h2>
+    {% if filtered_data_type %}
+      <p>in <b>{{ filtered_data_type[0] }}</b></p>
+    {% endif %}
 
-    {% for data_type, name in search_types %}
-      {% if filters.type == data_type %}
-        <p>in <b>{{ name }}</b></p>
-      {% endif %}
-    {% endfor %}
-
-    {% for committee in committees %}
-      {% if filters.committee|int == committee.id|int %}
-        <p>for <b>{{ committee.name }}</b></p>
-      {% endif %}
-    {% endfor %}
+    {% if filtered_committee %}
+      <p>for <b>{{ filtered_committee[0].name }}</b></p>
+    {% endif %}
 
     <h5>{{ search.hits }} matches</h5>
 
@@ -27,7 +37,19 @@
       </div>
 
       <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
-        <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+        <p>
+          <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+        </p>
+          You are subscribed to <b>"{{ q }}"</b>
+          {% if filtered_data_type %}
+          <br>
+          in <b>{{ filtered_data_type[0] }}</b>
+          {% endif %}
+          {% if filtered_committee %}
+          <br>
+          for <b>{{ filtered_committee[0].name }}</b>
+          {% endif %}
+
       </div>
     </div>
   {% else %}

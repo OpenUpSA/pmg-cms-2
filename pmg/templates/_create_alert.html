@@ -1,18 +1,3 @@
-{% set filtered_committee = [] %}
-{% set filtered_data_type = [] %}
-
-{% for committee in committees %}
-  {% if filters.committee|int == committee.id|int %}
-    {% if filtered_committee.append(committee) %}{% endif %}
-  {% endif %}
-{% endfor %}
-
-{% for data_type, name in search_types %}
-  {% if filters.type == data_type %}
-    {% if filtered_data_type.append(name) %}{% endif %}
-  {% endif %}
-{% endfor %}
-
 <div class="row search-summary">
   <div class="col-sm-8">
     <h2 class="search-q">"{{ q }}"</h2>

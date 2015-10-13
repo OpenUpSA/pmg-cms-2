@@ -715,17 +715,12 @@ def search(page=0):
             content_type=filters['type'] or None,
             committee_id=filters['committee'] or None)
 
-    committee_name  = ''
+    search['filtered_committee_name'] = ''
     for committee in committees:
         if committee['id'] == filters['committee']:
-            committee_name = committee['name']
+            search['filtered_committee_name'] = committee['name']
 
-    context = {
-        'committee_id': filters['committee'],
-        'committee_name': committee_name,
-        'data_type': filters['type'],
-        'friendly_data_type': Search.friendly_data_types.get(filters['type'], '')
-    }
+    search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], '')
 
     return render_template(
         'search.html',
@@ -743,8 +738,7 @@ def search(page=0):
         yearcount=yearcount,
         committees=committees,
         search_types=Search.friendly_data_types.items(),
-        saved_search=saved_search,
-        context=context)
+        saved_search=saved_search)
 
 
 @app.route('/page/<path:pagename>')

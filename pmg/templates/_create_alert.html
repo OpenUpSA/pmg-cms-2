@@ -1,16 +1,17 @@
-<div class="row search-summary">
+<div class="row search-head">
   <div class="col-sm-8">
-    <h2 class="search-q">"{{ q }}"</h2>
-    {% if search.friendly_data_type %}
-      <p>in <b>{{ search.friendly_data_type }}</b></p>
-    {% endif %}
+    <div class="search-summary">
+      <h2 class="search-q">{{ q }}</h2>
+      {% if search.friendly_data_type %}
+        <p>in <b>{{ search.friendly_data_type }}</b></p>
+      {% endif %}
 
-    {% if search.filtered_committee_name %}
-      <p>for <b>{{ search.filtered_committee_name }}</b></p>
-    {% endif %}
+      {% if search.filtered_committee_name %}
+        <p>for <b>{{ search.filtered_committee_name }}</b></p>
+      {% endif %}
 
-    <h5>{{ search.hits }} matches</h5>
-
+      <h5>{{ search.hits }} matches</h5>
+    </div>
   </div>
   {% if current_user.is_authenticated() %}
     <div class="col-sm-4">

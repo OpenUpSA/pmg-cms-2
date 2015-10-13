@@ -474,10 +474,21 @@ body.search {
   }
 }
 
-.search-summary {
-  margin-bottom: 10px;
+.search-head {
+  margin: 0 0 10px 0;
+  background-color: #efefef;
+
 
   h2 {
     margin-top: 5px;
   }
+
+  .search-summary {
+    padding: 20px 0 0 30px;
+  }
+
+  .search-q {
+    text-transform: uppercase;
+  }
+
 }

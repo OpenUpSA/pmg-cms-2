@@ -16,12 +16,12 @@
 <div class="row search-summary">
   <div class="col-sm-8">
     <h2 class="search-q">"{{ q }}"</h2>
-    {% if filtered_data_type %}
-      <p>in <b>{{ filtered_data_type[0] }}</b></p>
+    {% if context.friendly_data_type %}
+      <p>in <b>{{ context.friendly_data_type }}</b></p>
     {% endif %}
 
-    {% if filtered_committee %}
-      <p>for <b>{{ filtered_committee[0].name }}</b></p>
+    {% if context.committee_name %}
+      <p>for <b>{{ context.committee_name }}</b></p>
     {% endif %}
 
     <h5>{{ search.hits }} matches</h5>
@@ -40,16 +40,7 @@
         <p>
           <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
         </p>
-          You are subscribed to <b>"{{ q }}"</b>
-          {% if filtered_data_type %}
-          <br>
-          in <b>{{ filtered_data_type[0] }}</b>
-          {% endif %}
-          {% if filtered_committee %}
-          <br>
-          for <b>{{ filtered_committee[0].name }}</b>
-          {% endif %}
-
+          You are subscribed to receive alerts for this search.</b>
       </div>
     </div>
   {% else %}

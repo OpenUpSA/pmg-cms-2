@@ -66,6 +66,8 @@ member_name_map = {
     'Mcloughlin, Mr A': 'McLoughlin, Mr AR',
     'Letsatsi-duba, Ms D': 'Letsatsi-Duba, Ms DB',
     'Kekana, Mr HB': 'Kekana, Ms HB',
+    'Faber, Mr W': 'Faber, Mr WF',
+    'Scheepers, Ms M': 'Scheepers Ms MA'
 }
 
 missing_members = [

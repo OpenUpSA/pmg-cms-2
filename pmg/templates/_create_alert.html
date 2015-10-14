@@ -19,14 +19,14 @@
         <p>
           <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
         </p>
-          Get free email alerts when we add new information that match this search..
+          Get free email alerts when we add new information that match this search.
       </div>
 
       <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
         <p>
           <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
         </p>
-          You are subscribed to receive alerts for this search.</b>
+          You are subscribed to receive email alerts for this search.</b>
       </div>
     </div>
   {% else %}

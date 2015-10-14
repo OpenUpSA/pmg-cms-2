@@ -1,0 +1,13 @@
+{% for search_phrase, saved_searches in search_alerts.iteritems() %}
+  {{ search_phrase }}
+  {% for saved_search in saved_searches %}
+    <div class="row">
+      <div class="col-xs-10">
+        in <b>{{ saved_search.friendly_content_type or 'All content types'}}</b> for <b>{{ saved_search.committee.name or 'All committees'}}</b>
+      </div>
+      <div class="col-xs-2">
+        <a class="btn btn-danger" type="button" data-id="{{ saved_search.id }}">Remove</a>
+      </div>
+    </div>
+  {% endfor %}
+{% endfor %}

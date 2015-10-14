@@ -4,6 +4,7 @@ from requests import ConnectionError
 import json
 import logging
 from ga import ga_event
+from collections import defaultdict
 
 from flask import render_template, request, redirect, session, url_for, abort, flash, jsonify
 from flask.ext.security import current_user, login_required
@@ -123,12 +124,18 @@ def email_alerts():
     else:
         subscriptions = set()
 
+    search_alerts = defaultdict(list)
+    saved_searches = current_user.saved_searches
+    for ss in saved_searches:
+        search_alerts[ss.search].append(ss)
+
     return render_template(
         'user_management/email_alerts.html',
         committees=committees,
         after_signup=bool(next_url),
         subscriptions=subscriptions,
-        next_url=next_url)
+        next_url=next_url,
+        search_alerts=search_alerts)
 
 
 @app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])

@@ -1,21 +1,17 @@
-<div class="row search-summary">
+<div class="row search-head">
   <div class="col-sm-8">
-    <h2 class="search-q">"{{ q }}"</h2>
-
-    {% for data_type, name in search_types %}
-      {% if filters.type == data_type %}
-        <p>in <b>{{ name }}</b></p>
+    <div class="search-summary">
+      <h2 class="search-q">{{ q }}</h2>
+      {% if search.friendly_data_type %}
+        <p>in <b>{{ search.friendly_data_type }}</b></p>
       {% endif %}
-    {% endfor %}
-    
-    {% for committee in committees %}
-      {% if filters.committee|int == committee.id|int %}
-        <p>for <b>{{ committee.name }}</b></p>
-      {% endif %}
-    {% endfor %}
 
-    <h5>{{ search.hits }} matches</h5>
-  
+      {% if search.filtered_committee_name %}
+        <p>for <b>{{ search.filtered_committee_name }}</b></p>
+      {% endif %}
+
+      <h5>{{ search.hits }} matches</h5>
+    </div>
   </div>
   {% if current_user.is_authenticated() %}
     <div class="col-sm-4">
@@ -23,15 +19,24 @@
         <p>
           <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
         </p>
-          Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information that match these search terms.
+          Get free email alerts when we add new information that match this search.
       </div>
 
       <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
-        <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+        <p>
+          <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+        </p>
+          You are subscribed to receive email alerts for this search.</b>
       </div>
-
     </div>
   {% else %}
-    <p>Register for an account or log in to create alerts.</p>
+    <div class="col-sm-4">
+      <div class="email-alert-box create-alert-anon">
+        <p>
+          <a class="btn btn-default disabled" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
+        </p>
+          <a href="{{ url_for('security.login', next=request.full_path) }}">Log in</a> or <a href="{{ url_for('security.register', next=request.full_path) }}"> create an account </a> to get free email alerts when we add new information that match this search.
+      </div>
+    </div>
   {% endif %}
 </div>

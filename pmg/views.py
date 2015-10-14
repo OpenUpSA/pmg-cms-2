@@ -716,9 +716,10 @@ def search(page=0):
             committee_id=filters['committee'] or None)
 
     search['filtered_committee_name'] = ''
-    for committee in committees:
-        if committee['id'] == filters['committee']:
-            search['filtered_committee_name'] = committee['name']
+    if filters['committee']:
+        for committee in committees:
+            if committee['id'] == int(filters['committee']):
+                search['filtered_committee_name'] = committee['name']
 
     search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], '')
 

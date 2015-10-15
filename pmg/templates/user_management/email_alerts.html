@@ -5,37 +5,20 @@
 {% block page %}
   <h1>Free Email Alerts</h1>
 
-  <p class="lead">Free email alerts are available for any Parliamentary Committee that PMG monitors.</p>
-
   {% if not current_user.is_authenticated() %}
     <p>To receive free email alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
   {% else %}
-
-    <p>Please choose which email alerts you wish to receive from us.</p>
-
     {% if after_signup %}
       <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
     {% endif %}
-
-    <div class="row">
-      <form method="post" action="{{ url_for('email_alerts') }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <input type="hidden" name="next" value="{{ next_url }}">
-        <div class="col-sm-9">
-        <ul class="list-unstyled">
-          <li class="checkbox">
-            <label>
-              <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
-              Daily schedule of parliament
-            </label>
-          </li>
-        </ul>
-        </div>
-        <div class="col-sm-3 submit-btn-container" style="display: none;">
-          <button type="submit" class="btn btn-primary btn-sm">Save changes to your email alerts</button>
-        </div>
-      </form>
-    </div>
+    <ul class="list-unstyled daily-schedule">
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
+          Receive a daily schedule of parliament
+        </label>
+      </li>
+    </ul>
 
     <div>
       <!-- Nav tabs -->
@@ -53,7 +36,6 @@
           {% include 'user_management/search_alerts.html' %}
         </div>
       </div>
-
     </div>
 
   {% endif %}

@@ -112,11 +112,12 @@ def email_alerts():
 
         # register a google analytics event
         ga_event('user', 'change-alerts')
-        flash("Your notification settings have been updated successfully.", "success")
-        if next_url:
-            return redirect(next_url)
 
-        return redirect(url_for('email_alerts'))
+        # When was this called?
+        # if next_url:
+        #     return redirect(next_url)
+
+        return ''
 
     committees = load_from_api('committee', return_everything=True)['results']
     if current_user.is_authenticated():

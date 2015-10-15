@@ -22,16 +22,13 @@
   </li>
 {% endmacro %}
 
-<form method="post" action="{{ url_for('email_alerts') }}">
+<p>Please choose which email alerts you wish to receive from us.</p>
+
+<form id="email-alerts" method="post" action="{{ url_for('email_alerts') }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="next" value="{{ next_url }}">
 
-  <div class="row text-center submit-btn-container" style="display: none;">
-    <div class="col-md-12">
-      <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-      <hr>
-    </div>
-  </div>
+  <input class="hidden" type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
 
   <h2>Committees</h2>
   <div class="row">
@@ -71,13 +68,6 @@
   </div>
   <hr>
 
-  <div class="row text-center submit-btn-container" style="display: none;">
-    <div class="col-md-12">
-      <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-      <hr>
-    </div>
-  </div>
-
   <h2>Ad-Hoc committees</h2>
   <div class="row">
     <div class="col-md-4">
@@ -115,11 +105,4 @@
     </div>
   </div>
 
-  <div class="row text-center submit-btn-container" style="display: none;">
-    <div class="col-md-12">
-      <hr>
-      <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-      <hr>
-    </div>
-  </div>
 </form>

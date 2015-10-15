@@ -489,5 +489,18 @@ body.search {
   .search-q {
     text-transform: uppercase;
   }
+}
 
+body.email_alerts {
+  .tab-content {
+    padding-top: 20px;
+  }
+
+  .search-alert {
+    padding: 5px 0 5px 10px;
+  }
+
+  .search-phrase {
+    text-transform: uppercase;
+  }
 }

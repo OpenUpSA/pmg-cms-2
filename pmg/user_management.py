@@ -124,10 +124,9 @@ def email_alerts():
     else:
         subscriptions = set()
 
-    search_alerts = defaultdict(list)
-    saved_searches = current_user.saved_searches
-    for ss in saved_searches:
-        search_alerts[ss.search].append(ss)
+    saved_searches = defaultdict(list)
+    for ss in current_user.saved_searches:
+        saved_searches[ss.search].append(ss)
 
     return render_template(
         'user_management/email_alerts.html',
@@ -135,7 +134,7 @@ def email_alerts():
         after_signup=bool(next_url),
         subscriptions=subscriptions,
         next_url=next_url,
-        search_alerts=search_alerts)
+        saved_searches=saved_searches)
 
 
 @app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])

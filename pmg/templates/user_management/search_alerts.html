@@ -1,13 +1,53 @@
-{% for search_phrase, saved_searches in search_alerts.iteritems() %}
-  {{ search_phrase }}
-  {% for saved_search in saved_searches %}
-    <div class="row">
-      <div class="col-xs-10">
-        in <b>{{ saved_search.friendly_content_type or 'All content types'}}</b> for <b>{{ saved_search.committee.name or 'All committees'}}</b>
-      </div>
-      <div class="col-xs-2">
-        <a class="btn btn-danger" type="button" data-id="{{ saved_search.id }}">Remove</a>
-      </div>
+{% if saved_searches %}
+  <p>You have asked to be notified when we add new content that match the following searches:
+  {% for search_phrase, search_alerts in saved_searches.iteritems() %}
+    <div class="grouped-search-alerts">
+      <h2 class="search-phrase">{{ search_phrase }}</h2>
+      {% for search_alert in search_alerts %}
+        <div class="row search-alert">
+          <div class="col-xs-8">
+            in <b>{{ search_alert.friendly_content_type or 'All content types'}}</b> for <b>{{ search_alert.committee.name or 'All committees'}}</b>
+          </div>
+          <div class="col-xs-4">
+            <a class="btn btn-danger " type="button" data-id="{{ search_alert.id }}" data-toggle="modal" data-target="#modal-{{ search_alert.id }}">Remove</a>
+          </div>
+
+          <div class="modal fade" id="modal-{{ search_alert.id }}">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Remove this search alert?</h4>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-danger remove-search-alert" data-id="{{ search_alert.id }}">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
     </div>
   {% endfor %}
-{% endfor %}
+
+{% else %}
+  <p>You currently have no saved search alerts. To create an alert, start by doign a search below.</p>
+{% endif %}
+
+<hr>
+<div class="row search-box">
+  <div class="col-sm-6 col-sm-offset-3">
+    {% if not q %}
+      <h2>Search PMG</h2>
+    {% endif %}
+    <form class="search-page-form pull-right" role="search" action="/search">
+      <div class="input-group">
+        <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
+        <span class="input-group-btn">
+          <input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
+        </span>
+      </div>
+    </form>
+  </div>
+</div>

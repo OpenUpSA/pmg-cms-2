@@ -38,5 +38,22 @@ $(function() {
     $(".submit-btn-container").each(function(){$(this).show();});
   });
 
+  $(".remove-search-alert").on("click", function(e) {
+
+    var btn = $(this),
+        id = btn.data('id') || "",
+        group = btn.closest('.grouped-search-alerts');
+
+    $.post(
+      '/user/saved-search/' + id + '/delete'
+    ).done(function(resp) {
+      btn.parents('.search-alert').remove();
+      if (group.children('.search-alert').length === 0) {
+        group.remove();
+      }
+      ga('send', 'event', 'user', 'remove-search-alert');
+    });
+  });
+
 });
 

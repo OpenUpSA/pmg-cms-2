@@ -40,17 +40,17 @@
     <div>
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
-        <li role="presentation"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee alerts</a></li>
+        <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee alerts</a></li>
+        <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
       </ul>
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="search-alerts">
-          {% include 'user_management/search_alerts.html' %}
-        </div>
-        <div role="tabpanel" class="tab-pane" id="committee-alerts">
+        <div role="tabpanel" class="tab-pane active" id="committee-alerts">
           {% include 'user_management/committee_alerts.html' %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="search-alerts">
+          {% include 'user_management/search_alerts.html' %}
         </div>
       </div>
 

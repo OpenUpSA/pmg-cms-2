@@ -18,6 +18,7 @@
     <label>
       <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committees" {{ check_subscribed(committee.id) }} value="{{ committee.id }}">
       {{- committee.name -}}
+      <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
     </label>
   </li>
 {% endmacro %}

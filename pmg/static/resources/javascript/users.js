@@ -37,26 +37,17 @@ $(function() {
   $("input").on('change', function(){
     var input = $(this),
         checked = input.prop('checked');
-    if (input.prop('id') === 'select-daily-schedule' ) {
 
+    if (input.prop('id') === 'select-daily-schedule' ) {
       $('form#email-alerts #select-daily-schedule').prop('checked', checked);
     }
+    input.siblings('.status-indicator').addClass('hidden');
+
     $.post(
       '/email-alerts/',
       $( "#email-alerts" ).serialize()
     ).done(function(resp) {
-      if (checked) {
-        input.parents('.checkbox').addClass('list-group-item-success')
-        setTimeout(function(){
-          input.parents().removeClass('list-group-item-success');
-        },500);
-      }
-      else {
-       input.parents('.checkbox').addClass('list-group-item-danger');
-       setTimeout(function(){
-          input.parents().removeClass('list-group-item-danger');
-        },500);
-      }
+      input.siblings('.status-indicator').removeClass('hidden');
     });
   });
 

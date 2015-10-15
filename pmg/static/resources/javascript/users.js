@@ -41,13 +41,27 @@ $(function() {
     if (input.prop('id') === 'select-daily-schedule' ) {
       $('form#email-alerts #select-daily-schedule').prop('checked', checked);
     }
-    input.siblings('.status-indicator').addClass('hidden');
+      if (input.hasClass('select-all')) {
+        input.closest('.checkbox').siblings('.checkbox').find('.status-indicator').addClass('hidden');
+      }
+      else
+      {
+        input.siblings('.status-indicator').addClass('hidden');
+      }
+
 
     $.post(
       '/email-alerts/',
       $( "#email-alerts" ).serialize()
     ).done(function(resp) {
-      input.siblings('.status-indicator').removeClass('hidden');
+      if (input.hasClass('select-all')) {
+        input.closest('.checkbox').siblings('.checkbox').find('.status-indicator').removeClass('hidden');
+      }
+      else
+      {
+        input.siblings('.status-indicator').removeClass('hidden');
+      }
+
     });
   });
 

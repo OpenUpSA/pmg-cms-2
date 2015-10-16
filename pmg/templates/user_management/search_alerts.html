@@ -1,8 +1,9 @@
 {% if saved_searches %}
-  <p>You have asked to be notified when we add new content that match the following searches:
+  <p class="lead">We'll email you when we find new items for these searches:</p>
+
   {% for search_phrase, search_alerts in saved_searches.iteritems() %}
     <div class="grouped-search-alerts">
-      <h2 class="search-phrase">{{ search_phrase }}</h2>
+      <h3 class="search-phrase">{{ search_phrase }}</h3>
       {% for search_alert in search_alerts %}
         <div class="row search-alert">
           <div class="col-xs-8">
@@ -32,14 +33,13 @@
   {% endfor %}
 
 {% else %}
-  <p>You currently have no saved search alerts. To create an alert, start by doign a search below.</p>
+  <p class="lead">You currently have no saved search alerts. To create an alert, start by doign a search below.</p>
 {% endif %}
 
-<hr>
 <div class="row search-box">
-  <div class="col-sm-6 col-sm-offset-3">
+  <div class="col-sm-6">
     {% if not q %}
-      <h2>Search PMG</h2>
+      <h3>Add an aleart by searching PMG</h3>
     {% endif %}
     <form class="search-page-form pull-right" role="search" action="/search">
       <div class="input-group">

@@ -24,7 +24,7 @@
   </li>
 {% endmacro %}
 
-<p>Please choose which email alerts you wish to receive from us.</p>
+<p class="lead">Which committees should we send you email alerts for?</p>
 
 <form id="email-alerts" method="post" action="{{ url_for('email_alerts') }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -32,7 +32,6 @@
 
   <input class="hidden" type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
 
-  <h2>Committees</h2>
   <div class="row">
     <div class="col-md-4">
       <h3>National Assembly</h3>
@@ -68,7 +67,6 @@
       </ul>
     </div>
   </div>
-  <hr>
 
   <h2>Ad-Hoc committees</h2>
   <div class="row">

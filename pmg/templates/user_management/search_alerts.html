@@ -6,11 +6,12 @@
       <h3 class="search-phrase">{{ search_phrase }}</h3>
       {% for search_alert in search_alerts %}
         <div class="row search-alert">
-          <div class="col-xs-8">
+          <div class="col-sm-6">
             in <b>{{ search_alert.friendly_content_type or 'All content types'}}</b> for <b>{{ search_alert.committee.name or 'All committees'}}</b>
           </div>
-          <div class="col-xs-4 col-md-2 text-right">
-            <a class="btn btn-danger " type="button" data-id="{{ search_alert.id }}" data-toggle="modal" data-target="#modal-{{ search_alert.id }}">Remove <span class="hidden-xs">Alert</span></a>
+          <div class="col-md-4 text-right buttons">
+            <a href="{{ search_alert.url() }}" class="btn btn-success">View <span class="hidden-xs">search</span></a>&nbsp;
+            <button class="btn btn-danger" data-id="{{ search_alert.id }}" data-toggle="modal" data-target="#modal-{{ search_alert.id }}">Remove <span class="hidden-xs">alert</span></button>
           </div>
 
           <div class="modal fade" id="modal-{{ search_alert.id }}">
@@ -38,12 +39,11 @@
 
 <div class="row search-box">
   <div class="col-sm-6">
-    {% if not q %}
-      <h3>Add an aleart by searching PMG</h3>
-    {% endif %}
+    <h3>Add an alert by searching PMG</h3>
+
     <form class="search-page-form pull-right" role="search" action="/search">
       <div class="input-group">
-        <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
+        <input type="text" class="form-control" name="q" placeholder="What are you looking for?">
         <span class="input-group-btn">
           <input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
         </span>

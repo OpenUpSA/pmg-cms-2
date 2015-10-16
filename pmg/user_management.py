@@ -113,9 +113,8 @@ def email_alerts():
         # register a google analytics event
         ga_event('user', 'change-alerts')
 
-        # When was this called?
-        # if next_url:
-        #     return redirect(next_url)
+        if next_url:
+            return redirect(next_url)
 
         return ''
 

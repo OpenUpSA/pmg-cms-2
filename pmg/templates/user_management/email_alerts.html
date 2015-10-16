@@ -2,162 +2,44 @@
 
 {% block title %}Free email alerts | PMG{% endblock %}
 
-{% macro check_subscribed(committee_id) %}
-  {% if committee_id in subscriptions %}
-    checked
-  {% endif %}
-{% endmacro %}
-
-{% macro render_select_all() %}
-  <li class="checkbox">
-    <label>
-      <input type="checkbox" class="select-all">
-      <strong>Select all</strong>
-    </label>
-  </li>
-{% endmacro %}
-
-{% macro render_committee_checkbox(committee) %}
-  <li class="checkbox">
-    <label>
-      <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committees" {{ check_subscribed(committee.id) }} value="{{ committee.id }}">
-      {{- committee.name -}}
-    </label>
-  </li>
-{% endmacro %}
-
 {% block page %}
-<h1>Free Email Alerts</h1>
+  <h1>Free Email Alerts</h1>
 
-<p class="lead">Free email alerts are available for any Parliamentary Committee that PMG monitors.</p>
+  <p class="lead">Which email alerts should we send to you?</p>
 
-{% if not current_user %}
-  <p>To receive free alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
-
-{% else %}
-
-  <p>Please choose which email alerts you wish to receive from us.</p>
-
-  {% if after_signup %}
-  <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
-  {% endif %}
-
-  <hr>
-
-  <form method="post" action="{{ url_for('email_alerts') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <input type="hidden" name="next" value="{{ next_url }}">
-
-    <h2>General updates</h2>
-    <ul class="list-unstyled">
+  {% if not current_user.is_authenticated() %}
+    <p>To receive free email alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
+  {% else %}
+    {% if after_signup %}
+      <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
+    {% endif %}
+    <ul class="list-unstyled daily-schedule">
       <li class="checkbox">
         <label>
           <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
-          Daily schedule of parliament
+          Receive a daily schedule for Parliament
+          <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
         </label>
       </li>
     </ul>
 
-    <hr>
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee Alerts</a></li>
+        <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
+      </ul>
 
-    <div class="row text-center submit-btn-container" style="display: none;">
-      <div class="col-md-12">
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-        <hr>
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="committee-alerts">
+          {% include 'user_management/committee_alerts.html' %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="search-alerts">
+          {% include 'user_management/search_alerts.html' %}
+        </div>
       </div>
     </div>
 
-    <h2>Committees</h2>
-    <div class="row">
-      <div class="col-md-4">
-        <h3>National Assembly</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 3 and not committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h3>National Council of Provinces</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 2 and not committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h3>Joint Committees</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 1 and not committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-    <hr>
-
-    <div class="row text-center submit-btn-container" style="display: none;">
-      <div class="col-md-12">
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-        <hr>
-      </div>
-    </div>
-
-    <h2>Ad-Hoc committees</h2>
-    <div class="row">
-      <div class="col-md-4">
-        <h3>National Assembly</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 3 and committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h3>National Council of Provinces</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 2 and committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h3>Joint Committees</h3>
-        <ul class="list-unstyled">
-          {{ render_select_all() }}
-          {% for committee in committees %}
-            {% if committee.house.id == 1 and committee.ad_hoc %}
-              {{ render_committee_checkbox(committee) }}
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-
-    <div class="row text-center submit-btn-container" style="display: none;">
-      <div class="col-md-12">
-        <hr>
-        <button type="submit" class="btn btn-primary btn-lg">Save changes to your email alerts</button>
-        <hr>
-      </div>
-    </div>
-  </form>
-
-{% endif %}
-
+  {% endif %}
 {% endblock page %}

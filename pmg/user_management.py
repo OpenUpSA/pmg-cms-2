@@ -4,6 +4,7 @@ from requests import ConnectionError
 import json
 import logging
 from ga import ga_event
+from collections import defaultdict
 
 from flask import render_template, request, redirect, session, url_for, abort, flash, jsonify
 from flask.ext.security import current_user, login_required
@@ -111,11 +112,11 @@ def email_alerts():
 
         # register a google analytics event
         ga_event('user', 'change-alerts')
-        flash("Your notification settings have been updated successfully.", "success")
+
         if next_url:
             return redirect(next_url)
 
-        return redirect(url_for('email_alerts'))
+        return ''
 
     committees = load_from_api('committee', return_everything=True)['results']
     if current_user.is_authenticated():
@@ -123,12 +124,17 @@ def email_alerts():
     else:
         subscriptions = set()
 
+    saved_searches = defaultdict(list)
+    for ss in current_user.saved_searches:
+        saved_searches[ss.search].append(ss)
+
     return render_template(
         'user_management/email_alerts.html',
         committees=committees,
         after_signup=bool(next_url),
         subscriptions=subscriptions,
-        next_url=next_url)
+        next_url=next_url,
+        saved_searches=saved_searches)
 
 
 @app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])

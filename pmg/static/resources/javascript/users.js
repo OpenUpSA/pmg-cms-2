@@ -35,7 +35,51 @@ $(function() {
   });
 
   $("input").on('change', function(){
-    $(".submit-btn-container").each(function(){$(this).show();});
+    var input = $(this),
+        checked = input.prop('checked');
+
+    if (input.prop('id') === 'select-daily-schedule' ) {
+      $('form#email-alerts #select-daily-schedule').prop('checked', checked);
+    }
+      if (input.hasClass('select-all')) {
+        input.closest('.checkbox').siblings('.checkbox').find('.status-indicator').addClass('hidden');
+      }
+      else
+      {
+        input.siblings('.status-indicator').addClass('hidden');
+      }
+
+
+    $.post(
+      '/email-alerts/',
+      $( "#email-alerts" ).serialize()
+    ).done(function(resp) {
+      if (input.hasClass('select-all')) {
+        input.closest('.checkbox').siblings('.checkbox').find('.status-indicator').removeClass('hidden');
+      }
+      else
+      {
+        input.siblings('.status-indicator').removeClass('hidden');
+      }
+
+    });
+  });
+
+  $(".remove-search-alert").on("click", function(e) {
+
+    var btn = $(this),
+        id = btn.data('id') || "",
+        group = btn.closest('.grouped-search-alerts');
+
+    $.post(
+      '/user/saved-search/' + id + '/delete'
+    ).done(function(resp) {
+      btn.parents('.search-alert').remove();
+      if (group.children('.search-alert').length === 0) {
+        group.remove();
+      }
+      ga('send', 'event', 'user', 'remove-search-alert');
+    });
   });
 
 });

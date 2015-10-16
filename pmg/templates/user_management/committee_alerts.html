@@ -1,0 +1,108 @@
+{% macro check_subscribed(committee_id) %}
+  {% if committee_id in subscriptions %}
+    checked
+  {% endif %}
+{% endmacro %}
+
+{% macro render_select_all() %}
+  <li class="checkbox">
+    <label>
+      <input type="checkbox" class="select-all">
+      <strong>Select all</strong>
+      <span class="status-indicator hidden">
+    </label>
+  </li>
+{% endmacro %}
+
+{% macro render_committee_checkbox(committee) %}
+  <li class="checkbox">
+    <label>
+      <input type="checkbox" class="select-committee" id="committee-id-{{ committee.id }}" name="committees" {{ check_subscribed(committee.id) }} value="{{ committee.id }}">
+      {{- committee.name -}}
+      <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
+    </label>
+  </li>
+{% endmacro %}
+
+<p class="lead">Which committees should we send you email alerts for?</p>
+
+<form id="email-alerts" method="post" action="{{ url_for('email_alerts') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="next" value="{{ next_url }}">
+
+  <input class="hidden" type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
+
+  <div class="row">
+    <div class="col-md-4">
+      <h3>National Assembly</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 3 and not committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h3>National Council of Provinces</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 2 and not committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h3>Joint Committees</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 1 and not committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <h2>Ad-Hoc committees</h2>
+  <div class="row">
+    <div class="col-md-4">
+      <h3>National Assembly</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 3 and committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h3>National Council of Provinces</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 2 and committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <h3>Joint Committees</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 1 and committee.ad_hoc %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</form>

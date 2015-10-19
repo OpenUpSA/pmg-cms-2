@@ -137,7 +137,7 @@ class Search:
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
 
-    def build_filters(self, start_date, end_date, document_type, committee, updated_since):
+    def build_filters(self, start_date, end_date, document_type, committee, updated_since, exclude_document_types):
         filters = {}
 
         if start_date and end_date:
@@ -160,6 +160,13 @@ class Search:
                 "term": {"_type": document_type},
             }
 
+        if exclude_document_types:
+            filters["document_type_excludes"] = {
+                "not": {
+                    "or": [{"term": {"_type": dt}} for dt in exclude_document_types],
+                }
+            }
+
         if updated_since:
             filters["updated_at"] = {
                 "range": {
@@ -172,8 +179,8 @@ class Search:
         return filters
 
     def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False,
-               updated_since=None):
-        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since)
+               updated_since=None, exclude_document_types=None):
+        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since, exclude_document_types)
 
         q = {
             # We do two queries, one is a general term query across the fields,

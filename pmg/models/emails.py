@@ -8,6 +8,7 @@ import mandrill
 from flask import render_template, url_for
 
 from pmg import db, app
+from pmg.models.resources import DailySchedule
 
 
 log = logging.getLogger(__name__)
@@ -91,14 +92,18 @@ class SavedSearch(db.Model):
         from pmg.search import Search
 
         # find hits updated since the last time we did this search
-        timestamp = self.last_alerted_at.astimezone(pytz.utc)
         search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id,
-                                 updated_since=timestamp.isoformat())
+                                 exclude_document_types=[DailySchedule.resource_content_type])
+
         if 'hits' not in search:
             log.warn("Error doing search for %s: %s" % (self, search))
             return
 
-        return search['hits']['hits']
+        timestamp = self.last_alerted_at.astimezone(pytz.utc)
+        hits = search['hits']['hits']
+        hits = [h for h in hits if arrow.get(h['_source']['updated_at']).datetime >= timestamp]
+
+        return hits
 
     def url(self, **kwargs):
         params = {'q': self.search}

@@ -115,17 +115,19 @@ class Search:
                 "title": {
                     "type": "string",
                     "analyzer": "english",
-                    "index_options": "offsets"
+                    "index_options": "offsets",
                 },
                 "fulltext": {
                     "type": "string",
                     "analyzer": "english",
-                    "index_options": "offsets"
+                    "index_options": "offsets",
+                    "term_vector": "with_positions_offsets",
                 },
                 "description": {
                     "type": "string",
                     "analyzer": "english",
-                    "index_options": "offsets"
+                    "index_options": "offsets",
+                    "term_vector": "with_positions_offsets",
                 },
                 "number": {
                     "type": "integer",
@@ -245,7 +247,6 @@ class Search:
                 "pre_tags": ["<mark>"],
                 "post_tags": ["</mark>"],
                 "order": "score",
-                "fragment_size": 80,
                 "no_match_size": 0,
                 "fields": {
                     "title": {

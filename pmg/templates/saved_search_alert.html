@@ -24,3 +24,7 @@ if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
   </li>
 {% endfor %}
 </ul>
+
+<p>
+Click here to <a href="{{ url_for('email_alerts', _external=True) }}">manage your email alerts</a>.
+</p>

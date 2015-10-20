@@ -8,7 +8,6 @@ import mandrill
 from flask import render_template, url_for
 
 from pmg import db, app
-from pmg.models.resources import DailySchedule
 
 
 log = logging.getLogger(__name__)
@@ -92,8 +91,7 @@ class SavedSearch(db.Model):
         from pmg.search import Search
 
         # find hits updated since the last time we did this search
-        search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id,
-                                 exclude_document_types=[DailySchedule.resource_content_type])
+        search = Search().search(self.search, document_type=self.content_type, committee=self.committee_id)
 
         if 'hits' not in search:
             log.warn("Error doing search for %s: %s" % (self, search))

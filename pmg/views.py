@@ -597,7 +597,7 @@ def daily_schedules(page=0):
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']
-    url = "/daily_schedules"
+    url = "/daily-schedules"
     return render_template(
         'list.html',
         results=daily_schedules,

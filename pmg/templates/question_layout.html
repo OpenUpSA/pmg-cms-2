@@ -25,6 +25,7 @@
       <div class="col-md-6">
         <form action="/search">
           <input type="hidden" name="filter[type]" value="{{content_type}}">
+          <input type="hidden" name="filter[committee]" value="{{filters.committee}}">
           <div class="input-group">
             <input type="text" name="q" placeholder="Search in {{title}}" class="form-control">
             <span class="input-group-btn">

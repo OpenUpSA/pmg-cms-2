@@ -467,6 +467,18 @@ class Member(ApiResource, db.Model):
 
         return tmp
 
+    @validates('pa_link')
+    def validate_pa_link(self, key, value):
+        if value and not value.startswith('http://'):
+            value = 'http://www.pa.org.za' + value
+        return value
+
+    @property
+    def url(self):
+        if self.pa_link:
+            return self.pa_link
+        return super(Member, self).url
+
     @classmethod
     def list(cls):
         return cls.query\

@@ -4,49 +4,21 @@
   {% else %}  
     {% set title = result._source.title %}
   {% endif %}
-  {% set date = result._source.date %}
+  {% set link = result._source.url %}
   {% set id = result._id %}
 {% else %}
   {% set title = result.name %}
-  {% set date = result.start_date %}
   {% set id = result.id %}
   {% set party = result.party %}
   {% set pic = result.profile_pic_url %}
+  {% set link = result.url %}
 {% endif %}
-{% if result.pa_url %}
-  {% set link = result.pa_url %}
-{% else %}
-  {% set link = "/member/" + id|string %}
-{% endif %}
-<div class="member-stub space-bottom-sm">
-  <div class="row">
-    <div class="col-md-10">
-      <span class="label label-primary">Member</span>
-      {% if pic %}
-        <img src="{{ pic }}" alt="{{title}}" style="max-height: 40px">
-      {% endif %}
-    
-      <a href="{{ link }}">{{ title|safe }}</a>
-      {{ date|human_date }} - {{ date|pretty_date }}
-      {% if party %}
-        <span class="label label-info">{{ party.name }}</span>
-      {% endif %}  
-    </div>
-    
-  </div>
-  {% if result.highlight %}
-  {% if result.highlight.description %}
-  <div class="row">
-    <div class="col-md-12">
-      {{ result.highlight.description|search_snippet|ellipse|safe }}
-    </div>
-  </div>
-  {% elif result.highlight.fulltext %}
-  <div class="row">
-    <div class="col-md-12">
-      {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
-    </div>
-  </div>
-  {% endif %}
-  {% endif %}
+<div class="member-stub">
+  <h4><a href="{{ link }}">{{ title|safe }}</a></h4>
+  <h5>
+    <span class="type">Member of Parliament</span>
+    {% if party %}
+      - {{ party.name }}
+    {% endif %}  
+  </h5>
 </div>

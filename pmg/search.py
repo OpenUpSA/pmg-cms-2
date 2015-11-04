@@ -218,11 +218,11 @@ class Search:
                 "query": q,
                 "gauss": {
                     "date": {
-                        # Scores must decay, starting at docs from 5 days ago
+                        # Scores must decay, starting at docs from 7 days ago
                         # such that docs 30 days ago are at 0.6.
                         # See https://www.elastic.co/blog/found-function-scoring
-                        "scale": "30d",
                         "offset": "7d",
+                        "scale": "30d",
                         "decay": 0.6,
                     }
                 }

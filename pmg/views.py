@@ -779,7 +779,10 @@ def docs(path, dir=''):
         dir = dir + '/'
 
     # report to google analytics
-    utils.track_pageview()
+    try:
+        utils.track_pageview()
+    except StandardError as e:
+        logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     return redirect(app.config['STATIC_HOST'] + dir + path)
 

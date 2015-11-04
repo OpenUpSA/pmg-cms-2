@@ -33,7 +33,7 @@
   {% block head_meta %}{% endblock %}
 </head>
 
-<body class="{{ request.endpoint }}">
+<body class="{{ request.endpoint }} {% if current_user.is_authenticated() %}logged-in{% else %}not-logged-in{% endif %}">
   <div id="wrapper">
     {% block content %}
     {% endblock content %}

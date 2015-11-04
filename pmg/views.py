@@ -184,8 +184,8 @@ def committee_detail(committee_id):
     committee = load_from_api('committee', committee_id)
 
     params = {
-      'filter[committee_id]': committee_id,
-      'per_page': 5
+        'filter[committee_id]': committee_id,
+        'per_page': 5
     }
     recent_questions = load_from_api(
         'minister-questions-combined',
@@ -779,7 +779,10 @@ def docs(path, dir=''):
         dir = dir + '/'
 
     # report to google analytics
-    utils.track_pageview()
+    try:
+        utils.track_pageview()
+    except StandardError as e:
+        logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     return redirect(app.config['STATIC_HOST'] + dir + path)
 
@@ -801,4 +804,3 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
-

@@ -7,6 +7,7 @@ from flask import flash, redirect, url_for, request, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.babel import gettext
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
@@ -36,12 +37,30 @@ logger = logging.getLogger(__name__)
 SAST = psycopg2.tz.FixedOffsetTimezone(offset=120, name=None)
 
 
+def strip_filter(value):
+    if value is not None and hasattr(value, 'strip'):
+        return value.strip()
+    return value
+
+
 # Our base form extends flask_wtf.Form to get CSRF support,
 # and adds the _obj property required by Flask Admin
 class BaseForm(flask_wtf.Form):
     def __init__(self, formdata=None, obj=None, prefix=u'', **kwargs):
         self._obj = obj
         super(BaseForm, self).__init__(formdata=formdata, obj=obj, prefix=prefix, **kwargs)
+
+    class Meta:
+        def bind_field(self, form, unbound_field, options):
+            # ensure that all form fields strip() their values,
+            # so that we don't get random whitespace at the end
+            # of a field. Why WTForms doesn't do this by default
+            # is beyond me.
+            if unbound_field.field_class != InlineModelFormList:
+                filters = unbound_field.kwargs.get('filters', [])
+                filters.append(strip_filter)
+                return unbound_field.bind(form=form, filters=filters, **options)
+            return unbound_field.bind(form=form, **options)
 
 
 class MyIndexView(RBACMixin, AdminIndexView):

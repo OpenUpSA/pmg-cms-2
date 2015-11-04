@@ -210,6 +210,22 @@ class Search:
                         "type": "phrase"
                     },
                 }
+            },
+        }
+
+        q = {
+            "function_score": {
+                "query": q,
+                "gauss": {
+                    "date": {
+                        # Scores must decay, starting at docs from 7 days ago
+                        # such that docs 30 days ago are at 0.6.
+                        # See https://www.elastic.co/blog/found-function-scoring
+                        "offset": "7d",
+                        "scale": "30d",
+                        "decay": 0.6,
+                    }
+                }
             }
         }
 
@@ -322,7 +338,6 @@ class Transforms:
         Member: {
             "title": "name",
             "description": "bio",
-            "date": "start_date",
         },
         Bill: {
             "title": "title",

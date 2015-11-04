@@ -125,8 +125,9 @@ def email_alerts():
         subscriptions = set()
 
     saved_searches = defaultdict(list)
-    for ss in current_user.saved_searches:
-        saved_searches[ss.search].append(ss)
+    if current_user.is_authenticated():
+        for ss in current_user.saved_searches:
+            saved_searches[ss.search].append(ss)
 
     return render_template(
         'user_management/email_alerts.html',

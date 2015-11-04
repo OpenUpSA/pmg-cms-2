@@ -5,41 +5,59 @@
 {% block page %}
   <h1>Free Email Alerts</h1>
 
-  <p class="lead">Which email alerts should we send to you?</p>
-
   {% if not current_user.is_authenticated() %}
-    <p>To receive free email alerts, <a href="{{ url_for('register') }}">sign up with PMG for free</a> or <a href="{{ url_for('login') }}">log in</a>.</p>
-  {% else %}
-    {% if after_signup %}
-      <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
-    {% endif %}
-    <ul class="list-unstyled daily-schedule">
-      <li class="checkbox">
-        <label>
-          <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
-          Receive a daily schedule for Parliament
-          <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
-        </label>
-      </li>
-    </ul>
+    <div class="row">
+      <div class="col-sm-5 col-sm-offset-4">
+        <div class="alert alert-info">
+          <h4>Sign up with PMG</h4>
+          <p>To receive free email alerts you need a PMG account.</p>
+          <br>
 
-    <div>
-      <!-- Nav tabs -->
-      <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee Alerts</a></li>
-        <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
-      </ul>
-
-      <!-- Tab panes -->
-      <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="committee-alerts">
-          {% include 'user_management/committee_alerts.html' %}
-        </div>
-        <div role="tabpanel" class="tab-pane" id="search-alerts">
-          {% include 'user_management/search_alerts.html' %}
+          <div class="row">
+            <div class="col-xs-6">
+              <a class="form-control btn btn-primary" href="{{ url_for('security.login', next=request.full_path) }}">Log in</a>
+            </div>
+            <div class="col-xs-6">
+              <a class="form-control btn btn-primary" href="{{ url_for('security.register', next=request.full_path) }}">Sign up</a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
   {% endif %}
+
+  <p class="lead">Which email alerts should we send to you?</p>
+
+  {% if current_user.is_authenticated() and after_signup %}
+    <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
+  {% endif %}
+
+  <ul class="list-unstyled daily-schedule">
+    <li class="checkbox">
+      <label>
+        <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
+        Receive a daily schedule for Parliament
+        <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
+      </label>
+    </li>
+  </ul>
+
+  <div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee Alerts</a></li>
+      <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="committee-alerts">
+        {% include 'user_management/committee_alerts.html' %}
+      </div>
+      <div role="tabpanel" class="tab-pane" id="search-alerts">
+        {% include 'user_management/search_alerts.html' %}
+      </div>
+    </div>
+  </div>
+
 {% endblock page %}

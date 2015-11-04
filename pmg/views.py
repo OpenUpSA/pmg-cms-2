@@ -184,8 +184,8 @@ def committee_detail(committee_id):
     committee = load_from_api('committee', committee_id)
 
     params = {
-      'filter[committee_id]': committee_id,
-      'per_page': 5
+        'filter[committee_id]': committee_id,
+        'per_page': 5
     }
     recent_questions = load_from_api(
         'minister-questions-combined',
@@ -801,4 +801,3 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
-

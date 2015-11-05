@@ -33,7 +33,7 @@
 
 {% macro render_external_link(model, column) %}
   {% if model['pa_link'] -%}
-    <a class="btn btn-default btn-sm" href="http://www.pa.org.za{{ model['pa_link'] }}" target="_blank"><i class="fa fa-chevron-right"></i> view profile on PA</a>
+    <a class="btn btn-default btn-sm" href="{{ model['pa_link'] }}" target="_blank"><i class="fa fa-chevron-right"></i> view profile on PA</a>
   {% endif %}
 {% endmacro %}
 

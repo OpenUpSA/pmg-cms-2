@@ -441,7 +441,7 @@ class Member(ApiResource, db.Model):
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
     province = db.relationship(Province)
     start_date = db.Column(db.Date())
-    pa_link = db.Column(db.String(255))
+    pa_link = db.Column(db.String(255), unique=True)
     # is this person *currently* an MP?
     current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
 

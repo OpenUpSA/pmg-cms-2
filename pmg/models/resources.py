@@ -431,7 +431,7 @@ class Member(ApiResource, db.Model):
     __tablename__ = "member"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
     profile_pic_url = db.Column(db.String(255))
     bio = db.Column(db.Text())
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))

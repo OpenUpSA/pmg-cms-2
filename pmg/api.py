@@ -209,14 +209,18 @@ def search():
     except ValueError:
         per_page = app.config['SEARCH_RESULTS_PER_PAGE']
 
-    searchresult = Search().search(
-        q,
-        per_page,
-        page * per_page,
-        document_type=request.args.get('type'),
-        start_date=request.args.get('start_date'),
-        end_date=request.args.get('end_date'),
-        committee=request.args.get('committee'))
+    try:
+        searchresult = Search().search(
+            q,
+            per_page,
+            page * per_page,
+            document_type=request.args.get('type'),
+            start_date=request.args.get('start_date'),
+            end_date=request.args.get('end_date'),
+            committee=request.args.get('committee'))
+    except ValueError:
+        # no query passed in
+        raise ApiException(422, "No search term given.")
 
     aggs = searchresult["aggregations"]
 

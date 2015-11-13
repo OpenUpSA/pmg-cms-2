@@ -224,6 +224,10 @@ def search():
 
     aggs = searchresult["aggregations"]
 
+    # ensure all results have a highlight field
+    for result in searchresult['hits']['hits']:
+        result.setdefault('highlight', {})
+
     result = {
         "took": searchresult["took"],
         "results": searchresult["hits"]["hits"],

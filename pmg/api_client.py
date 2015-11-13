@@ -2,7 +2,7 @@ import logging
 import requests
 import urllib
 
-from flask import flash, session, abort, redirect, url_for, request
+from flask import flash, session, abort, redirect, url_for, request, render_template
 from werkzeug.exceptions import HTTPException
 from flask.ext.security import current_user
 

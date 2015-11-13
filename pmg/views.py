@@ -10,7 +10,7 @@ from flask.ext.mail import Message
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
-from pmg.api_client import load_from_api
+from pmg.api_client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
 
@@ -687,17 +687,30 @@ def search(page=0):
     params["page"] = page
 
     # do the search
-    search = load_from_api('search', params=params)
+    search = {}
+    try:
+        if q:
+            search = load_from_api('search', params=params)
+    except ApiException as e:
+        if e.code == 422:
+            # bad search, eg: "   "
+            q = ""
+        else:
+            raise e
 
     years = range(1997, datetime.now().year + 1)
     years.reverse()
 
     bincount = {}
-    for bin in search["bincount"]["types"]:
-        bincount[bin["key"]] = bin["doc_count"]
     yearcount = {}
-    for year in search["bincount"]["years"]:
-        yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
+    if search:
+        for bin in search["bincount"]["types"]:
+            bincount[bin["key"]] = bin["doc_count"]
+
+        for year in search["bincount"]["years"]:
+            yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
+
+        search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], None)
 
     committees = load_from_api('committee', return_everything=True)['results']
 
@@ -721,15 +734,13 @@ def search(page=0):
                 search['filtered_committee_name'] = committee['name']
                 break
 
-    search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], None)
-
     return render_template(
         'search.html',
         q=q,
         search=search,
-        num_pages=search["pages"],
-        page=search["page"],
-        per_page=search["per_page"],
+        num_pages=search.get("pages"),
+        page=search.get("page"),
+        per_page=search.get("per_page"),
         search_url=search_url,
         url=url_for('search')[:-1],
         query_string=request.query_string,

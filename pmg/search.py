@@ -2,6 +2,8 @@ import math
 import logging
 import json
 from collections import OrderedDict
+import re
+import copy
 
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
@@ -12,6 +14,9 @@ from bs4 import BeautifulSoup
 from . import db, app
 from pmg.models.resources import *  # noqa
 from pmg.models.base import resource_slugs
+
+
+PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 
 
 class Search:
@@ -180,38 +185,71 @@ class Search:
 
         return filters
 
-    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False,
-               updated_since=None, exclude_document_types=None):
-        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since, exclude_document_types)
+    def build_query(self, query):
+        """ Build an return the query and highlight query portions of an ES call.
+        This splits handles both phrases and simple terms.
+        """
 
-        q = {
+        phrases = [p[0].strip() for p in PHRASE_RE.findall(query)]
+        phrases = [p for p in phrases if p]
+        terms = PHRASE_RE.sub('', query).strip()
+
+        if not terms and not phrases:
+            raise ValueError("No search given")
+
+        q = {"bool": {"must": []}}
+
+        if phrases:
+            # match to a phrase
+            q["bool"]["must"].extend({
+                "multi_match": {
+                    "query": p,
+                    "fields": self.search_fields,
+                    "type": "phrase",
+                },
+            } for p in phrases)
+
+        if terms:
             # We do two queries, one is a general term query across the fields,
             # the other is a phrase query. At the very least, items *must*
             # match the term search, and items are preferred if they
             # also match the phrase search.
-            "bool": {
-                "must": {
-                    # best across all the fields
-                    "multi_match": {
-                        "query": query,
-                        "fields": self.search_fields,
-                        "type": "best_fields",
-                        # this helps skip stopwords, see
-                        # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
-                        "cutoff_frequency": 0.0007,
-                        "operator": "and",
-                    },
-                },
-                "should": {
-                    # try to match to a phrase
-                    "multi_match": {
-                        "query": query,
-                        "fields": self.search_fields,
-                        "type": "phrase"
-                    },
+
+            q["bool"]["must"].append({
+                # best across all the fields
+                "multi_match": {
+                    "query": terms,
+                    "fields": self.search_fields,
+                    "type": "best_fields",
+                    # this helps skip stopwords, see
+                    # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
+                    "cutoff_frequency": 0.0007,
+                    "operator": "and",
                 }
-            },
-        }
+            })
+            q["bool"]["should"] = {
+                # try to match to a phrase
+                "multi_match": {
+                    "query": terms,
+                    "fields": self.search_fields,
+                    "type": "phrase",
+                },
+            }
+
+        highlight_q = copy.deepcopy(q)
+        highlight_q['bool'].pop('should', None)
+        # boost phrase matches in highlight query
+        for mm in [m['multi_match'] for m in highlight_q['bool']['must']]:
+            if mm['type'] == 'phrase':
+                mm['boost'] = 5
+
+        return q, highlight_q
+
+    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False,
+               updated_since=None, exclude_document_types=None):
+        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since, exclude_document_types)
+
+        q, highlight_q = self.build_query(query)
 
         q = {
             "function_score": {
@@ -264,6 +302,7 @@ class Search:
                 "post_tags": ["</mark>"],
                 "order": "score",
                 "no_match_size": 0,
+                "highlight_query": highlight_q,
                 "fields": {
                     "title": {
                         "number_of_fragments": 0,

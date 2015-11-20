@@ -23,7 +23,7 @@ class Search:
 
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
-    search_fields = ["title^2", "description", "fulltext"]
+    search_fields = ["title^2", "description", "fulltext", "attachments"]
     search_type = "cross_fields"
     es = ElasticSearch(esserver)
     per_batch = 200
@@ -139,6 +139,17 @@ class Search:
                 },
                 "year": {
                     "type": "integer",
+                },
+                "attachments": {
+                    "type": "attachment",
+                    "fields": {
+                        "attachments": {
+                            "type": "string",
+                            "analyzer": "english",
+                            "term_vector": "with_positions_offsets",
+                            "store": "yes",
+                        },
+                    },
                 },
             }
         }
@@ -290,7 +301,7 @@ class Search:
             "size": size,
             "sort": {'_score': {'order': 'desc'}},
             # don't return big fields
-            "_source": {"exclude": ["fulltext", "description"]},
+            "_source": {"exclude": ["fulltext", "description", "attachments"]},
             "query": q,
             # filter the results after the query, so that the per-aggregation filters
             # aren't impacted by these filters. See
@@ -311,6 +322,9 @@ class Search:
                         "number_of_fragments": 2,
                     },
                     "fulltext": {
+                        "number_of_fragments": 2,
+                    },
+                    "attachments": {
                         "number_of_fragments": 2,
                     }
                 }
@@ -383,6 +397,7 @@ class Transforms:
             "year": "year",
             "number": "number",
             "code": "code",
+            "attachments": "latest_version_for_indexing",
         },
         Hansard: {
             "title": "title",

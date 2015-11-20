@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 import re
+import base64
 
 from sqlalchemy import desc, func, sql
 from sqlalchemy.orm import backref, joinedload, validates
@@ -140,6 +141,22 @@ class Bill(ApiResource, db.Model):
         out += "-" + str(self.year)
         return unicode(out)
 
+    @property
+    def latest_version(self):
+        versions = sorted(self.versions, key=lambda v: v.date, reverse=True)
+        return versions[0] if versions else None
+
+    @property
+    def latest_version_for_indexing(self):
+        """ ElasticSearch-friendly indexing the version PDFs.
+        See https://github.com/elastic/elasticsearch-mapper-attachments
+        """
+        version = self.latest_version
+        if not version:
+            # don't return None
+            return []
+        return base64.encodestring(version.file.get_bytes())
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['code'] = self.code
@@ -216,6 +233,11 @@ class File(db.Model):
         logger.info("Deleting %s from S3" % self.file_path)
         key = s3_bucket.bucket.get_key(self.file_path)
         key.delete()
+
+    def get_bytes(self):
+        """ Raw bytes for this file. """
+        key = s3_bucket.bucket.get_key(self.file_path)
+        return key.get_contents_as_string()
 
     def __unicode__(self):
         if self.title:

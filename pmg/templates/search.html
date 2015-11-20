@@ -10,6 +10,13 @@
       <h2>Search PMG</h2>
     {% endif %}
     <form class="search-page-form pull-right" role="search" action="/search">
+      {% if q %}
+        <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
+        <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
+        <input type="hidden" name="filter[type]" value="{{ filters.type }}">
+        <input type="hidden" name="filter[committee]" value="{{ filters.committee }}">
+      {% endif %}
+
       <div class="input-group">
         <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
         <span class="input-group-btn">

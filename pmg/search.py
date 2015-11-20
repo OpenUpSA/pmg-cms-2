@@ -65,15 +65,20 @@ class Search:
         """ Index all content of type +model+ """
         ids = [r[0] for r in db.session.query(model.id).all()]
 
+        if model.__name__ == 'Bill':
+            per_batch = 10
+        else:
+            per_batch = self.per_batch
+
         count = len(ids)
-        pages = int(math.ceil(float(count) / float(self.per_batch)))
+        pages = int(math.ceil(float(count) / float(per_batch)))
         self.logger.info("Reindexing for %s" % model.__name__)
-        self.logger.info("Pages %s, count %s" % (pages, count))
+        self.logger.info("Pages %s, %s per page, %s items" % (pages, per_batch, count))
 
         while len(ids):
             self.logger.info("Items left %s" % len(ids))
             id_subsection = []
-            for x in xrange(0, self.per_batch):
+            for x in xrange(0, per_batch):
                 if ids:
                     id_subsection.append(ids.pop())
 

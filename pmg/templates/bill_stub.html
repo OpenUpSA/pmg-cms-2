@@ -15,15 +15,15 @@
 <div class="bill-stub">
   <div class="row">
     <div class="col-xs-6 col-md-8">
-      <h4 class="title">
-        <a href="/bill/{{ id }}">{{ title|safe }}</a>
-      </h4>
+      <h4><a href="{{ url_for('bill', bill_id=id) }}">{{ title|safe }}</a></h4>
+      <span class="type">Bill</span>
     </div>
     <div class="col-xs-3 col-md-2">
       {% if code %}
       {{ code }}
       {% endif %}
     </div>
+
     <div class="col-xs-3 col-md-2">
       {% if result.status %}
         {% if status_dict[result.status.name] %}
@@ -36,4 +36,12 @@
       {% endif %}
     </div>
   </div>
+
+  {% if result.highlight %}
+  <p>
+  {% if result.highlight.attachments %}
+    {{ result.highlight.attachments|search_snippet|ellipse|safe }}
+  {% endif %}
+  </p>
+  {% endif %}
 </div>

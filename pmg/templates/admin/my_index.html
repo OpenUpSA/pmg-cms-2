@@ -15,7 +15,11 @@
           {% for item in record_counts %}
             <tr>
               <th>
+                {% if item[1] %}
                 <a href="{{ url_for(item[1]) }}">{{ item[0] }}</a>
+                {% else %}
+                {{ item[0] }}
+                {% endif %}
               </th>
               <td class="text-center">
                 {{ item[2] | add_commas }}

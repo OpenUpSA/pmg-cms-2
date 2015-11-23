@@ -83,6 +83,7 @@ class MyIndexView(RBACMixin, AdminIndexView):
             ('Policy Documents', 'policy.index_view', PolicyDocument.query.count()),
             ('Tabled Committee Reports', 'tabled-committee-report.index_view', TabledCommitteeReport.query.count()),
             ('Uploaded Files', 'files.index_view', File.query.count()),
+            ('Search Alerts', '', SavedSearch.query.count()),
         ]
         record_counts = sorted(record_counts, key=itemgetter(2), reverse=True)
 

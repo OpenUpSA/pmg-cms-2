@@ -18,6 +18,8 @@ if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
         {{ result.highlight.description|search_snippet(mark='b')|ellipse|safe }}
       {% elif result.highlight.fulltext %}
         {{ result.highlight.fulltext|search_snippet(mark='b')|ellipse|safe }}
+      {% elif result.highlight.attachments %}
+        {{ result.highlight.attachments|search_snippet(mark='b')|ellipse|safe }}
       {% endif %}
     </p>
     {% endif %}

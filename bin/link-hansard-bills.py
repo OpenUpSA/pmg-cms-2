@@ -13,7 +13,7 @@ from pmg.search import Search
 Search.reindex_changes = False
 
 
-BILL_RE = re.compile('bill[, ]*\[B\s*(\d+)(\s*[a-z])?[\s–-]+(\d\d\d\d)', re.IGNORECASE)
+BILL_RE = re.compile(u'bill[, ]*\[B\s*(\d+)(\s*[a-z])?[\s–-]+(\d\d\d\d)', re.IGNORECASE)
 
 
 def fixbills():

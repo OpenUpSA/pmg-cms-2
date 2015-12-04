@@ -4,7 +4,7 @@
 {% macro render_event_field(field) %}
 {% set model = field.object_data %}
 {% if model and model.type == 'committee-meeting' %}
-  <a href="/admin/committee_meeting/edit/?id={{ model.id }}">{{ model.date.strftime("%Y-%m-%d") }} - {{ model.title }}</a>
+  <a href="/admin/committee-meeting/edit/?id={{ model.id }}">{{ model.date.strftime("%Y-%m-%d") }} - {{ model.title }}</a>
 {% else %}
   {{ field }}
 {% endif %}

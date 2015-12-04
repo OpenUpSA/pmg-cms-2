@@ -900,7 +900,7 @@ class InlineBillVersionForm(InlineFormAdmin):
     )
     form_ajax_refs = {
         'file': {
-            'fields': ('title',),
+            'fields': ('title', 'file_path'),
             'page_size': 25
         }
     }

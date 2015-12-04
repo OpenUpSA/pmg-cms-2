@@ -7,6 +7,9 @@ import re
 
 
 from pmg.models import Hansard, Bill, db
+from pmg.search import Search
+
+Search.reindex_changes = False
 
 
 BILL_RE = re.compile('bill[, ]*\[B\s*(\d+)(\s*[a-z])?[\s-]+(\d\d\d\d)', re.IGNORECASE)

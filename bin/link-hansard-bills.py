@@ -1,4 +1,5 @@
 #!/bin/env python
+# -*- coding: utf-8 -*-
 
 """ Script to ensure that hansards mentioning bills in their
 titles are correctly linked to those bills.
@@ -12,7 +13,7 @@ from pmg.search import Search
 Search.reindex_changes = False
 
 
-BILL_RE = re.compile('bill[, ]*\[B\s*(\d+)(\s*[a-z])?[\s-]+(\d\d\d\d)', re.IGNORECASE)
+BILL_RE = re.compile('bill[, ]*\[B\s*(\d+)(\s*[a-z])?[\s–-]+(\d\d\d\d)', re.IGNORECASE)
 
 
 def fixbills():

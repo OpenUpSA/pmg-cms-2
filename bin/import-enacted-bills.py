@@ -79,6 +79,7 @@ for bill in bills:
     if any(v.enacted for v in bill_obj.versions):
         already_enacted += 1
         print "Already have enacted, skipping"
+        continue
 
     for version in (e for e in bill['entries'] if e['type'] == 'act'):
         # find the file details

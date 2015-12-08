@@ -90,10 +90,7 @@ for bill in bills:
         # does the file exist?
         file = File.query.filter(File.file_path == info['filepath']).first()
         if not file:
-            file = File()
-            file.file_mime = info['filemime']
-            file.origname = info['origname']
-            file.file_path = info['filepath']
+            raise ValueError("File %s doesn't exist" % info['filepath'])
 
         if not file.title:
             file.title = info['description']

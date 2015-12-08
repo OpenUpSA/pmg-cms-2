@@ -435,6 +435,8 @@ class EventView(ViewWithFiles, MyModelView):
         if model.date:
             model.date = model.date.replace(tzinfo=SAST)
 
+        model.autolink_bills()
+
     def get_query(self):
         """
         Add filter to return only records of the specified type.

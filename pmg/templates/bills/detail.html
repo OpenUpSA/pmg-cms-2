@@ -100,6 +100,14 @@
                       {% if event.public_participation %}
                       <span class="label label-success">public participation</span>
                       {% endif %}
+
+                      {% if event.type == 'bill-signed' and bill.versions %}
+                        {% for version in bill.versions %}
+                          {% if version.enacted %}
+                          — <a href="{{ version.file.url }}" target="_blank"><i class="fa fa-file-text"></i> {{ version.title }}</a>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
                     </div>
                   </div>
                 </li>

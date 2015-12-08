@@ -182,6 +182,7 @@ class BillVersion(db.Model):
     bill_id = db.Column(db.Integer, db.ForeignKey('bill.id', ondelete='CASCADE'), nullable=False)
     file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete='CASCADE'))
     file = db.relationship('File', backref='bill_version', lazy=False)
+    enacted = db.Column(db.Boolean, default=False, server_default=sql.expression.false(), nullable=False)
 
 
 class File(db.Model):

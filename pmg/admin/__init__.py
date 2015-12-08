@@ -896,8 +896,10 @@ class InlineBillVersionForm(InlineFormAdmin):
         'id',
         'date',
         'title',
+        'enacted',
         'file',
     )
+    column_labels = {'enacted': 'As enacted?'}
     form_ajax_refs = {
         'file': {
             'fields': ('title', 'file_path'),

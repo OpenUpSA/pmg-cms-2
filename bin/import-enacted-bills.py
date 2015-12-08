@@ -52,6 +52,13 @@ missing = 0
 already_enacted = 0
 already_exists = 0
 
+def commit():
+    #db.session.commit()
+    print "added %d" % added
+    print "missing %d" % missing
+    print "already_enacted %d" % already_enacted
+    print "already_exists %d" % already_exists
+
 # now load files into db
 not_found = []
 for bill in bills:
@@ -112,9 +119,7 @@ for bill in bills:
         db.session.add(bill_version)
         db.session.flush()
 
-print "added %d" % added
-print "missing %d" % missing
-print "already_enacted %d" % already_enacted
-print "already_exists %d" % already_exists
+        if added % 10 == 0:
+            commit()
 
-# db.session.commit()
+commit()

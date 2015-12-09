@@ -300,7 +300,7 @@ class Event(ApiResource, db.Model):
     # optional file attachments
     files = db.relationship('EventFile', lazy=True, cascade="all, delete, delete-orphan")
 
-    BILL_MENTION_RE = re.compile(u'bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d\d\d\d)', re.IGNORECASE)
+    BILL_MENTION_RE = re.compile(u'bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d+)', re.IGNORECASE)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -311,6 +311,8 @@ class Event(ApiResource, db.Model):
             prefix = match.group(1)
             num = int(match.group(2))
             year = int(match.group(4))
+            if year < 1000:
+                year += 2000
             code = '%s%s-%s' % (prefix.upper(), num, year)
 
             bill = Bill.query.filter(Bill.year == year, Bill.number == num).first()

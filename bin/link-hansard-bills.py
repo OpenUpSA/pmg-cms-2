@@ -4,17 +4,11 @@
 """ Script to ensure that events mentioning bills in their
 titles are correctly linked to those bills.
 """
-import re
-
-
 from pmg.models import Event, Bill, db
 from pmg.search import Search
 from sqlalchemy.orm import subqueryload
 
 Search.reindex_changes = False
-
-
-BILL_RE = re.compile(u'bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d\d\d\d)', re.IGNORECASE)
 
 
 def fixbills():
@@ -29,10 +23,12 @@ def fixbills():
         .all()
 
     for event in events:
-        for match in BILL_RE.finditer(event.title):
+        for match in Event.BILL_MENTION_RE.finditer(event.title):
             prefix = match.group(1)
             num = int(match.group(2))
             year = int(match.group(4))
+            if year < 1000:
+                year += 2000
             code = '%s%s-%s' % (prefix, num, year)
 
             bill = bills.get(code)

@@ -27,8 +27,11 @@ def fixbills():
             prefix = match.group(1)
             num = int(match.group(2))
             year = int(match.group(4))
-            if year < 1000:
-                year += 2000
+            if year < 100:
+                if year >= 90:
+                    year += 1900
+                else:
+                    year += 2000
             code = '%s%s-%s' % (prefix, num, year)
 
             bill = bills.get(code)

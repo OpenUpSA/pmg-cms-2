@@ -120,8 +120,8 @@ class UsageReportView(RBACMixin, BaseView):
         return self.render('admin/usage_report.html', org_list=self.get_list(months), num_months=months, today=datetime.date.today())
 
     def xlsx(self, users, filename):
-        out = XLSXBuilder(users)
-        xlsx = out.build()
+        builder = XLSXBuilder()
+        xlsx = builder.from_orgs(users)
         resp = make_response(xlsx)
         resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         resp.headers['Content-Disposition'] = "attachment;filename=" + filename

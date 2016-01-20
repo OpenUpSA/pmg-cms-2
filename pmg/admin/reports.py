@@ -1,7 +1,8 @@
-from flask import abort
+from flask import abort, request, make_response
 from flask.ext.admin import expose, BaseView
 
 from .rbac import RBACMixin
+from .xlsx import XLSXBuilder
 from pmg import db
 
 
@@ -15,6 +16,18 @@ class Report(object):
     def run(self):
         return db.engine.execute(self.sql)
 
+    def as_xlsx(self):
+        result = self.run()
+        xlsx = XLSXBuilder().from_resultset(result)
+
+        resp = make_response(xlsx)
+        resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        resp.headers['Content-Disposition'] = "attachment;filename=%s.xlsx" % self.filename()
+        return resp
+
+    def filename(self):
+        return self.name.replace(r'[^A-Za-z0-9]', '')
+
 
 class ReportView(RBACMixin, BaseView):
     required_roles = ['editor', ]
@@ -22,7 +35,7 @@ class ReportView(RBACMixin, BaseView):
     REPORTS = (
         Report(1,
                name="Files linked to committees",
-               description="Uploaded files linked to committees by month",
+               description="Number of uploaded files linked to committees, by month",
                sql="""
 select
   to_char(e.date, 'YYYY-MM') as "date",
@@ -49,5 +62,9 @@ order by
         if not reports:
             return abort(404)
         report = reports[0]
+
+        if request.args.get('format') == 'xlsx':
+            return report.as_xlsx()
+
         result = report.run()
         return self.render('admin/reports/report.html', report=report, result=result)

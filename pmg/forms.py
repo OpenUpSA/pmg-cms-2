@@ -2,6 +2,8 @@ from flask import request, current_app, url_for
 from flask_wtf import Form as BaseForm
 from wtforms import TextField, PasswordField, validators, SubmitField, HiddenField
 from wtforms.fields.html5 import EmailField
+from flask.ext.wtf.recaptcha import RecaptchaField
+
 
 
 _default_field_labels = {
@@ -251,6 +253,4 @@ class CorrectThisPageForm(Form):
     email = TextField('Email', [validators.Optional()])
     details = TextField('Details', [validators.Optional()])
     url = TextField('URL', [validators.Optional()])
-    # this is a honeypot field which, if filled, means it's probably spam
-    # so ignore the feedback
-    website = TextField('Website', [validators.Optional()])
+    recaptcha = RecaptchaField()

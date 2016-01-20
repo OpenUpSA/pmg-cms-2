@@ -802,15 +802,13 @@ def docs(path, dir=''):
 def correct_this_page():
     form = forms.CorrectThisPageForm(request.form)
     if form.validate_on_submit():
-        # if honeypot is filled in, ignore this feedback
-        if not form.website.data:
-            msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
-            msg.html = render_template('correct_this_page.html', submission={
-                'url': form.url.data,
-                'details': form.details.data,
-                'email': form.email.data,
-            })
-            mail.send(msg)
+        msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
+        msg.html = render_template('correct_this_page.html', submission={
+            'url': form.url.data,
+            'details': form.details.data,
+            'email': form.email.data,
+        })
+        mail.send(msg)
 
         flash('Thanks for your feedback.', 'info')
 

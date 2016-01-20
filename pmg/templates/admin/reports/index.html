@@ -1,0 +1,16 @@
+{% extends 'admin/my_base.html' %}
+
+{% block body %}
+  <div class="container">
+    <h1>PMG Reports</h1>
+
+    <table class="table table-striped table-condensed">
+      {% for report in reports %}
+      <tr>
+        <td><a href="{{ url_for('reports.report', id=report.id) }}">{{ report.name }}</a></td>
+        <td>{{ report.description}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

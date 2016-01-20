@@ -29,6 +29,7 @@ from pmg.models import *  # noqa
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
+from .reports import ReportView
 import widgets
 
 logger = logging.getLogger(__name__)
@@ -1119,3 +1120,7 @@ admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Template
 # ---------------------------------------------------------------------------------
 # Members
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+
+# ---------------------------------------------------------------------------------
+# Reports
+admin.add_view(ReportView(name="General reports", endpoint='reports', category='Reports'))

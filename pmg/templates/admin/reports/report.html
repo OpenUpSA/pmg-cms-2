@@ -1,0 +1,26 @@
+{% extends 'admin/my_base.html' %}
+
+{% block body %}
+  <div class="container">
+    <h1>PMG Reports</h1>
+    <h2>{{ report.name }}</h2>
+
+    <p>{{ report.description }}</p>
+
+    <hr>
+
+    <table class="table table-striped table-condensed table-bordered">
+      {% for key in result.keys() %}
+      <th>{{ key }}</th>
+      {% endfor %}
+
+      {% for row in result %}
+        <tr>
+        {% for key in result.keys() %}
+          <td>{{ row[key] }}</td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

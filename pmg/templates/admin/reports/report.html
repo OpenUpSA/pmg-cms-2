@@ -2,12 +2,10 @@
 
 {% block body %}
   <div class="container">
-    <h1>PMG Reports</h1>
-    <h2>{{ report.name }}</h2>
+    <h2><a href="{{ url_for('reports.index') }}">← PMG Reports</a></h2>
+    <h1>{{ report.name }}</h1>
 
-    <p>{{ report.description }}</p>
-
-    <hr>
+    <p class="lead">{{ report.description }}</p>
 
     <table class="table table-striped table-condensed table-bordered">
       {% for key in result.keys() %}

@@ -1123,4 +1123,4 @@ admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member')
 
 # ---------------------------------------------------------------------------------
 # Reports
-admin.add_view(ReportView(name="General reports", endpoint='reports', category='Reports'))
+admin.add_view(ReportView(name="Reports", endpoint='reports'))

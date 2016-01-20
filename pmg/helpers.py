@@ -7,8 +7,11 @@ from flask import request, url_for
 
 from pmg import app
 from pmg.ga import get_ga_events
+from pmg.forms import CorrectThisPageForm
+
 
 logger = logging.getLogger(__name__)
+
 
 @app.context_processor
 def pagination_processor():
@@ -107,9 +110,15 @@ def _jinja2_filter_humandate(iso_str):
         return ""
     return arrow.get(iso_str).humanize()
 
+
 @app.context_processor
 def get_ga_events_helper():
     return {'get_ga_events': get_ga_events}
+
+
+@app.context_processor
+def feedback_form():
+    return {'correct_this_page_form': CorrectThisPageForm()}
 
 
 @app.context_processor
@@ -118,7 +127,7 @@ def inject_paths():
         'FRONTEND_HOST': app.config['FRONTEND_HOST'],
         'API_HOST': app.config['API_HOST'],
         'STATIC_HOST': app.config['STATIC_HOST'],
-        }
+    }
     return context_vars
 
 

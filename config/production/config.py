@@ -17,6 +17,9 @@ S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
 UPLOAD_PATH = "/tmp/pmg_upload/"
 
+RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY')
+
 # must match client_max_body_size in nginx.conf
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # size cap on uploads
 

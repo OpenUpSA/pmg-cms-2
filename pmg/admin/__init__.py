@@ -491,12 +491,10 @@ class CommitteeMeetingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
-    form_columns = (
+    form_edit_rules = (
         'committee',
         'title',
         'date',
-        'actual_start_time',
-        'actual_end_time',
         'chairperson',
         'featured',
         'public_participation',
@@ -504,7 +502,11 @@ class CommitteeMeetingView(EventView):
         'summary',
         'body',
         'files',
+        rules.FieldSet(
+            ['actual_start_time', 'actual_end_time', 'attendance'],
+            'Member Attendance Record')
     )
+    form_create_rules = form_edit_rules
     form_args = {
         'summary': {'default': '<p>Report of the meeting to follow.</p>'},
         'committee': {'validators': [data_required()]},

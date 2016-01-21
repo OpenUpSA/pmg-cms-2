@@ -29,6 +29,7 @@ from pmg.models import *  # noqa
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
+from .reports import ReportView
 import widgets
 
 logger = logging.getLogger(__name__)
@@ -119,8 +120,8 @@ class UsageReportView(RBACMixin, BaseView):
         return self.render('admin/usage_report.html', org_list=self.get_list(months), num_months=months, today=datetime.date.today())
 
     def xlsx(self, users, filename):
-        out = XLSXBuilder(users)
-        xlsx = out.build()
+        builder = XLSXBuilder()
+        xlsx = builder.from_orgs(users)
         resp = make_response(xlsx)
         resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         resp.headers['Content-Disposition'] = "attachment;filename=" + filename
@@ -1119,3 +1120,7 @@ admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Template
 # ---------------------------------------------------------------------------------
 # Members
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member'))
+
+# ---------------------------------------------------------------------------------
+# Reports
+admin.add_view(ReportView(name="Reports", endpoint='reports'))

@@ -1,0 +1,30 @@
+{% extends 'admin/my_base.html' %}
+
+{% block body %}
+  <div class="container">
+    <h2><a href="{{ url_for('reports.index') }}">← PMG Reports</a></h2>
+    <h1>{{ report.name }}</h1>
+
+    <div class="pull-right">
+      <a class="btn btn-primary" href="{{ url_for('reports.report', id=report.id, format='xlsx') }}">
+        <i class="fa fa-download"></i> Download .xlsx
+      </a>
+    </div>
+
+    <p class="lead">{{ report.description }}</p>
+
+    <table class="table table-striped table-condensed table-bordered">
+      {% for key in result.keys() %}
+      <th>{{ key }}</th>
+      {% endfor %}
+
+      {% for row in result %}
+        <tr>
+        {% for key in result.keys() %}
+          <td>{{ row[key] }}</td>
+        {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

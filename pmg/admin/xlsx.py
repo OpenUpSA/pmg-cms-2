@@ -2,25 +2,6 @@ import xlsxwriter
 import StringIO
 
 
-def organisations_to_excel(org_list):
-
-    headings = [
-        "Organisation",
-        "Domain",
-        "Number of active users",
-    ]
-
-    list_out = [headings, ]
-    # assemble list of organisations
-    for org in org_list:
-        cells = []
-        cells.append(org[0])
-        cells.append(org[1])
-        cells.append(org[2])
-        list_out.append(cells)
-    return list_out
-
-
 class XLSXBuilder:
     def __init__(self):
         self.formats = {}
@@ -29,8 +10,10 @@ class XLSXBuilder:
         output, wb = self.new_workbook()
 
         ws = wb.add_worksheet('Active organisations')
-        tmp = organisations_to_excel(org_list)
-        self.write_table(ws, tmp)
+
+        rows = [["Organisation", "Domain", "Number of active users"]]
+        rows += [org[0:3] for org in org_list]
+        self.write_table(ws, rows)
 
         wb.close()
         output.seek(0)

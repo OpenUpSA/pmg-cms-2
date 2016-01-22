@@ -504,12 +504,17 @@ class Member(ApiResource, db.Model):
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
 
         if tmp['pa_link']:
-            link = tmp['pa_link']
-            if not link.startswith('http://'):
-                link = 'http://www.pa.org.za' + link
-            tmp['pa_url'] = link
+            tmp['pa_url'] = self.pa_url
 
         return tmp
+
+    @property
+    def pa_url(self):
+        if self.pa_link:
+            url = self.pa_link
+            if not url.startswith('http://'):
+                url = 'http://www.pa.org.za' + url
+            return url
 
     @validates('pa_link')
     def validate_pa_link(self, key, value):

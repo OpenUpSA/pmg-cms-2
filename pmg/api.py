@@ -478,15 +478,16 @@ def committee_meeting_attendance_summary():
 
         for member_id, member_rows in groupby(year_rows, lambda r: r.member_id):
             m = members.get(member_id)
+            member = {'id': member_id}
+            if m:
+                member['name'] = m.name
+                member['party_id'] = m.party.id
+                member['party_name'] = m.party.name
+                member['pa_url'] = m.pa_url
 
             summaries.append({
-                'member': {
-                    'id': member_id,
-                    'name': m.name if m else None,
-                    'party_id': m.party.id if m else None,
-                    'party_name': m.party.name if m else None,
-                },
-                'attendance': [{row.attendance: row.cnt} for row in member_rows],
+                'member': member,
+                'attendance': {row.attendance: row.cnt for row in member_rows},
             })
 
         data.append({

@@ -14,7 +14,6 @@ from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
 from flask.ext.admin.helpers import is_form_submitted, get_url
 from flask.ext.security.changeable import change_user_password
-import flask_wtf
 from wtforms import fields
 from wtforms.validators import data_required
 from sqlalchemy import func
@@ -23,6 +22,7 @@ from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
 import psycopg2
+import flask_wtf
 
 from pmg import app, db
 from pmg.models import *  # noqa
@@ -165,6 +165,11 @@ class MyModelView(RBACMixin, ModelView):
                 params["committee_ids"] = model.committee_id
                 params["prefill"] = "1"
                 return url_for('alerts.new', **params)
+
+    def _validate_form_instance(self, *args, **kwargs):
+        # XXX: hack around rulesets removing CSRF tokens
+        # XXX: see https://github.com/flask-admin/flask-admin/issues/1180
+        pass
 
 
 class HasExpiredFilter(BaseSQLAFilter):
@@ -991,7 +996,9 @@ class FileView(MyModelView):
 
     class SizeRule(rules.BaseRule):
         def __call__(self, form, form_opts=None, field_args={}):
-            return humanize.naturalsize(form.file_bytes.data) if form.file_bytes.data else '-'
+            if form._obj.file_bytes:
+                return humanize.naturalsize(form._obj.file_bytes)
+            return '-'
 
     class UrlRule(rules.BaseRule):
         def __call__(self, form, form_opts=None, field_args={}):
@@ -1027,14 +1034,6 @@ class FileView(MyModelView):
         form.upload = fields.FileField('Upload a file', [data_required()])
         return form
 
-    def validate_form(self, form):
-        if is_form_submitted():
-            if hasattr(form, 'upload') and request.files.get(form.upload.name):
-                file_data = request.files.get(form.upload.name)
-                # ensures validation works, will be overwritten
-                form.file_path.raw_data = secure_filename(file_data.filename)
-        return super(FileView, self).validate_form(form)
-
     def on_model_change(self, form, model, is_create):
         if is_create:
             file_data = request.files.get(form.upload.name)
@@ -1045,6 +1044,14 @@ class RedirectView(MyModelView):
     column_list = ('old_url', 'new_url', 'nid')
     column_searchable_list = ('old_url', 'new_url')
     column_default_sort = 'old_url'
+
+
+class BillStatusView(MyModelView):
+    column_default_sort = 'name'
+    column_list = ('name', 'description')
+    form_columns = column_list
+    edit_modal = True
+    create_modal = True
 
 
 class PageView(ViewWithFiles, MyModelView):
@@ -1110,7 +1117,7 @@ admin.add_view(FileView(File, db.session, category='Other Content', name="Upload
 
 # ---------------------------------------------------------------------------------
 # Form options
-admin.add_view(MyModelView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
+admin.add_view(BillStatusView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
 admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
 admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
 

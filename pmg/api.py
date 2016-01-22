@@ -481,8 +481,8 @@ def committee_meeting_attendance_summary():
             member = {'id': member_id}
             if m:
                 member['name'] = m.name
-                member['party_id'] = m.party.id
-                member['party_name'] = m.party.name
+                member['party_id'] = m.party.id if m.party else None
+                member['party_name'] = m.party.name if m.party else None
                 member['pa_url'] = m.pa_url
 
             summaries.append({

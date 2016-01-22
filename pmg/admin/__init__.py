@@ -1116,12 +1116,6 @@ admin.add_view(PageView(Page, db.session, category='Other Content', name="Static
 admin.add_view(FileView(File, db.session, category='Other Content', name="Uploaded Files", endpoint='files'))
 
 # ---------------------------------------------------------------------------------
-# Form options
-admin.add_view(BillStatusView(BillStatus, db.session, name="Bill Status", endpoint='bill-status', category="Form Options"))
-admin.add_view(MyModelView(BillType, db.session, name="Bill Type", endpoint='bill-type', category="Form Options"))
-admin.add_view(MyModelView(MembershipType, db.session, name="Membership Type", endpoint='membership-type', category="Form Options"))
-
-# ---------------------------------------------------------------------------------
 # Email alerts
 admin.add_view(EmailAlertView(category='Email Alerts', name="Send Emails", endpoint='alerts'))
 admin.add_view(EmailTemplateView(EmailTemplate, db.session, name="Email Templates", category='Email Alerts', endpoint='email-templates'))

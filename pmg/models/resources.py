@@ -1132,6 +1132,24 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     def list(cls):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
+    @classmethod
+    def summary(cls):
+        year = func.date_part('year', CommitteeMeeting.date).label('year')
+
+        rows = db.session.query(
+            cls.member_id,
+            cls.attendance,
+            year,
+            func.count(1).label('cnt')
+        )\
+            .select_from(cls)\
+            .join(CommitteeMeeting)\
+            .group_by(cls.member_id, cls.attendance, year)\
+            .order_by(year.desc(), cls.member_id)\
+            .all()
+
+        return rows
+
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
 

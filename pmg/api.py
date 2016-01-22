@@ -1,5 +1,6 @@
 import logging
 from functools import wraps
+from itertools import groupby
 import re
 import math
 
@@ -456,3 +457,42 @@ def committee_meeting_attendance(committee_meeting_id):
         .options(lazyload('member.memberships'))
 
     return api_resource_list(query)
+
+
+@api.route('/committee-meeting-attendance/summary/')
+def committee_meeting_attendance_summary():
+    """
+    Summary of MP attendance of committee meetings.
+    """
+    rows = CommitteeMeetingAttendance.summary()
+    members = Member.query\
+        .options(joinedload('house'),
+                 lazyload('memberships'))\
+        .all()
+
+    members = {m.id: m for m in members}
+
+    data = []
+    for year, year_rows in groupby(rows, lambda r: int(r.year)):
+        summaries = []
+
+        for member_id, member_rows in groupby(year_rows, lambda r: r.member_id):
+            m = members.get(member_id)
+
+            summaries.append({
+                'member': {
+                    'id': member_id,
+                    'name': m.name if m else None,
+                    'party_id': m.party.id if m else None,
+                    'party_name': m.party.name if m else None,
+                },
+                'attendance': [{row.attendance: row.cnt} for row in member_rows],
+            })
+
+        data.append({
+            'start_date': '%d-01-01' % year,
+            'end_date': '%d-12-31' % year,
+            'attendance_summary': summaries,
+        })
+
+    return send_api_response({'results': data})

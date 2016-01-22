@@ -504,12 +504,17 @@ class Member(ApiResource, db.Model):
             tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
 
         if tmp['pa_link']:
-            link = tmp['pa_link']
-            if not link.startswith('http://'):
-                link = 'http://www.pa.org.za' + link
-            tmp['pa_url'] = link
+            tmp['pa_url'] = self.pa_url
 
         return tmp
+
+    @property
+    def pa_url(self):
+        if self.pa_link:
+            url = self.pa_link
+            if not url.startswith('http://'):
+                url = 'http://www.pa.org.za' + url
+            return url
 
     @validates('pa_link')
     def validate_pa_link(self, key, value):
@@ -1131,6 +1136,24 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     @classmethod
     def list(cls):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
+
+    @classmethod
+    def summary(cls):
+        year = func.date_part('year', CommitteeMeeting.date).label('year')
+
+        rows = db.session.query(
+            cls.member_id,
+            cls.attendance,
+            year,
+            func.count(1).label('cnt')
+        )\
+            .select_from(cls)\
+            .join(CommitteeMeeting)\
+            .group_by(cls.member_id, cls.attendance, year)\
+            .order_by(year.desc(), cls.member_id)\
+            .all()
+
+        return rows
 
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)

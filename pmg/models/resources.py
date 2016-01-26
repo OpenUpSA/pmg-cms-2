@@ -1133,6 +1133,16 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
     member = db.relationship('Member', lazy=False)
 
+    ATTENDANCE_CODES = {
+        "A": "Absent",
+        "AP": "Absent with Apologies",
+        "DE": "Departed Early",
+        "L": "Arrived Late",
+        "LDE": "Arrived Late and Departed Early",
+        "P": "Present",
+        "U": "Unknown",
+    }
+
     @classmethod
     def list(cls):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())

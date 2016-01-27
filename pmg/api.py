@@ -528,30 +528,6 @@ def committee_meeting_attendance_download():
     ws = wb.add_worksheet('summary')
     builder.write_table(ws, rows)
 
-    # add raw data worksheet
-    raw_data = CommitteeMeetingAttendance.query\
-        .options(joinedload('meeting'),
-                 lazyload('meeting.house'),
-                 joinedload('meeting.committee'),
-                 lazyload('meeting.committee.house'),
-                 joinedload('member'),
-                 joinedload('member.party'),
-                 lazyload('member.memberships'),
-                 lazyload('member.house'))\
-        .order_by(desc('event_1.date'))\
-        .all()
-    rows = [["date", "commmittee", "member", "party", "attendance"]]
-    rows += [[
-        r.meeting.date.isoformat(),
-        r.meeting.committee.name,
-        r.member.name,
-        r.member.party.name if r.member.party else None,
-        CommitteeMeetingAttendance.ATTENDANCE_CODES[r.attendance],
-    ] for r in raw_data]
-
-    ws = wb.add_worksheet('raw data')
-    builder.write_table(ws, rows)
-
     # all done
     wb.close()
     output.seek(0)

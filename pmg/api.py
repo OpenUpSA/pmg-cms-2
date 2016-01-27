@@ -5,7 +5,7 @@ import re
 import math
 
 import flask
-from flask import request, redirect, url_for, Blueprint
+from flask import request, redirect, url_for, Blueprint, make_response
 from flask.ext.security import current_user
 from flask.ext.security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
@@ -18,6 +18,7 @@ from pmg import db, app
 from pmg.search import Search
 from pmg.models import *  # noqa
 from pmg.models.base import resource_slugs
+from pmg.admin.xlsx import XLSXBuilder
 import pmg.models.serializers as serializers
 
 logger = logging.getLogger(__name__)
@@ -497,3 +498,62 @@ def committee_meeting_attendance_summary():
         })
 
     return send_api_response({'results': data})
+
+
+@api.route('/committee-meeting-attendance/data.xlsx')
+def committee_meeting_attendance_download():
+    """
+    Download committee meeting attendance data in raw form.
+    """
+    builder = XLSXBuilder()
+    output, wb = builder.new_workbook()
+
+    # attendance summary, by MP
+    members = {m.id: m for m in Member.query.all()}
+    keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
+    rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
+
+    raw_data = CommitteeMeetingAttendance.summary()
+
+    for grp, group in groupby(raw_data, lambda r: [r.year, r.member_id]):
+        year, member_id = grp
+        member = members[member_id]
+        party = member.party.name if member.party else None
+        attendance = {r.attendance: r.cnt for r in group}
+
+        row = [year, member.name, party]
+        row.extend(attendance.get(k, 0) for k in keys)
+        rows.append(row)
+
+    ws = wb.add_worksheet('summary')
+    builder.write_table(ws, rows)
+
+    # add raw data worksheet
+    raw_data = CommitteeMeetingAttendance.list()\
+        .options(joinedload('meeting'),
+                 joinedload('meeting.committee'),
+                 joinedload('member'),
+                 joinedload('member.party'))\
+        .all()
+    rows = [["date", "commmittee", "member", "party", "attendance"]]
+    rows += [[
+        r.meeting.date.isoformat(),
+        r.meeting.committee.name,
+        r.member.name,
+        r.member.party.name if r.member.party else None,
+        CommitteeMeetingAttendance.ATTENDANCE_CODES[r.attendance],
+    ] for r in raw_data]
+
+    ws = wb.add_worksheet('raw data')
+    builder.write_table(ws, rows)
+
+    # all done
+    wb.close()
+    output.seek(0)
+
+    xlsx = output.read()
+
+    resp = make_response(xlsx)
+    resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    resp.headers['Content-Disposition'] = "attachment;filename=committee-attendance.xlsx"
+    return resp

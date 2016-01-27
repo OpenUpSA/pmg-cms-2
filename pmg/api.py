@@ -529,11 +529,16 @@ def committee_meeting_attendance_download():
     builder.write_table(ws, rows)
 
     # add raw data worksheet
-    raw_data = CommitteeMeetingAttendance.list()\
+    raw_data = CommitteeMeetingAttendance.query\
         .options(joinedload('meeting'),
+                 lazyload('meeting.house'),
                  joinedload('meeting.committee'),
+                 lazyload('meeting.committee.house'),
                  joinedload('member'),
-                 joinedload('member.party'))\
+                 joinedload('member.party'),
+                 lazyload('member.memberships'),
+                 lazyload('member.house'))\
+        .order_by(desc('event_1.date'))\
         .all()
     rows = [["date", "commmittee", "member", "party", "attendance"]]
     rows += [[

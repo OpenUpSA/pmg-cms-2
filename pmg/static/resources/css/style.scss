@@ -124,21 +124,17 @@ article.page {
   }
 }
 
+.home-banner {
+  background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
+  width: 100%;
+  height: 250px;
+  background-size: cover;
+  cursor: pointer;
+}
 
-
-#news {
-  .news-pic {
-    background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
-    width: 100%;
-    height: 250px;
-    background-size: cover;
-    cursor: pointer;
-  }
-
-  .news-pic:hover {
-     .blurb {
-      opacity: 1;
-    }
+.home-banner:hover {
+   .blurb {
+    opacity: 1;
   }
 
   .blurb {

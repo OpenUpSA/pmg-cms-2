@@ -1,151 +1,158 @@
-{% extends "base.html" %}
+{% extends 'layout.html' %}
 
 {% block style %}
-
 {% endblock %}
 
-{% block page %}
+{% block content %}
+{% include "_header.html" %}
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="row">
-      {% if featured_content.feature %}
-        <div id="news" class="col-md-12">
 
-          <div class="news-pic" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
-            <div class="text-background bottom">
-              <h4 class=""><a href="{{ featured_content.feature.link }}">{{ featured_content.feature.title }}</a></h4>
-
-            </div>
-            <div class="blurb">
-              {{ featured_content.feature.blurb }}
-            </div>
+<section class="home-banner" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
+ {% if featured_content.feature %}
+    <div class="container container-body">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="text-background bottom">
+            <h4 class=""><a href="{{ featured_content.feature.link }}">{{ featured_content.feature.title }}</a></h4>
+          </div>
+          <div class="blurb">
+            {{ featured_content.feature.blurb }}
           </div>
         </div>
-      {% endif %}
-    </div>
-  </div>
 
-  <div class="col-md-4">
-    <div class="pa-button clearfix">
-      <a href="http://www.pa.org.za/">
-        <img class="pull-left" src="/static/resources/images/pa-logo.png">
-        <div>Connect with your representatives and find out more about them.</div>
-      </a>
-    </div>
+        <div class="col-md-4">
+          <div class="pa-button clearfix">
+            <a href="http://www.pa.org.za/">
+              <img class="pull-left" src="/static/resources/images/pa-logo.png">
+              <div>Connect with your representatives and find out more about them.</div>
+            </a>
+          </div>
 
-    <div class="schedule-button">
-      <h3><i class="fa fa-calendar"></i> Parliamentary Schedules</h3>
-      <ul class="list-unstyled">
-        <li><a href="{{ url_for('daily_schedules') }}">Daily Schedule for Committee Meetings</a></li>
-        <li><a href="/page/parliamentary-programme">Parliament & Plenary Programme</a></li>
-      </ul>
+          <div class="schedule-button">
+            <h3><i class="fa fa-calendar"></i> Parliamentary Schedules</h3>
+            <ul class="list-unstyled">
+              <li><a href="{{ url_for('daily_schedules') }}">Daily Schedule for Committee Meetings</a></li>
+              <li><a href="/page/parliamentary-programme">Parliament & Plenary Programme</a></li>
+            </ul>
+          </div>
+          <div class="schedule-button">
+            <h3><i class="fa fa-mail"></i> Subscribe to our newsletter</h3>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="schedule-button">
-      <h3><i class="fa fa-mail"></i> Subscribe to our newsletter</h3>
-    </div>
-
-  </div>
-</div>
-<hr>
-
-<div class="feature-set">
- {% if featured_content.committee_meetings %}
-  <h4><span class="fa fa-comment"></span> Featured Content</h4>
-  <div class="row row-horizon">
-   {% for meeting in featured_content.committee_meetings %}
-    <div class="feature-item col-xs-6 col-sm-4 col-md-3">
-      <div class="date">{{ meeting.date|pretty_date|nbsp|safe }}</div>
-      <h6 class="name">
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
-          {{ meeting.title|truncate(100) }}
-        </a>
-      </h6>
-    </div>
-   {% endfor %}
-  </div>
  {% endif %}
-</div>
+</section>
 
-<div class="row search">
-  <div class="col-md-6">
-    <form class="home-search" role="search" action="/search">
-      <div class="input-group">
-        <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
-        <span class="input-group-btn">
-          <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Search</button>
-        </span>
-      </div>
-    </form>
-  </div>
-  <div class="col-md-6">
-    <p>e.g. "mineral resources"</p>
-  </div>
-</div>
+<div class="container container-body">
+  {% block breadcrumb %}{% endblock %}
 
-<div class="row">
-  <div class="col-md-8">
-    <div class="latest-set">
-      <h4><span class="fa fa-institution"></span> Recent Committee meetings</h4>
+  <article class="page">
+  {% include "_messages.html" %}
+
+    <div class="row">
+    <div class="feature-set">
+     {% if featured_content.committee_meetings %}
+      <h4><span class="fa fa-comment"></span> Featured Content</h4>
       <div class="row row-horizon">
-        {% for committee_meeting in committee_meetings %}
-        <div class="latest-item col-xs-6 col-sm-4">
-          <div class="date">{{ committee_meeting.date|pretty_date|nbsp|safe }}</div>
-          <h4 class="name">
-            <a href="{{ url_for('committee_detail', committee_id=committee_meeting.committee.id) }}">
-              {{ committee_meeting.committee.name }}
+       {% for meeting in featured_content.committee_meetings %}
+        <div class="feature-item col-xs-6 col-sm-4 col-md-3">
+          <div class="date">{{ meeting.date|pretty_date|nbsp|safe }}</div>
+          <h6 class="name">
+            <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
+              {{ meeting.title|truncate(100) }}
             </a>
-          </h4>
-          <div class='title'>
-            <span class="fa fa-headphones"></span> <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id) }}">
-              {{ committee_meeting.title|truncate(100) }}
-            </a>
+          </h6>
+        </div>
+       {% endfor %}
+      </div>
+     {% endif %}
+    </div>
+
+    <div class="row search">
+      <div class="col-md-6">
+        <form class="home-search" role="search" action="/search">
+          <div class="input-group">
+            <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Search</button>
+            </span>
+          </div>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <p>e.g. "mineral resources"</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-8">
+        <div class="latest-set">
+          <h4><span class="fa fa-institution"></span> Recent Committee meetings</h4>
+          <div class="row row-horizon">
+            {% for committee_meeting in committee_meetings %}
+            <div class="latest-item col-xs-6 col-sm-4">
+              <div class="date">{{ committee_meeting.date|pretty_date|nbsp|safe }}</div>
+              <h4 class="name">
+                <a href="{{ url_for('committee_detail', committee_id=committee_meeting.committee.id) }}">
+                  {{ committee_meeting.committee.name }}
+                </a>
+              </h4>
+              <div class='title'>
+                <span class="fa fa-headphones"></span> <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id) }}">
+                  {{ committee_meeting.title|truncate(100) }}
+                </a>
+              </div>
+            </div>
+            {% endfor %}
           </div>
         </div>
-        {% endfor %}
-      </div>
-    </div>
 
-    <div class="latest-set">
-      <h4><span class="fa fa-file-text-o"></span> Latest Bills</h4>
-      <div class="row row-horizon">
-       {% for bill in bills %}
-        <div class="latest-item col-xs-6 col-sm-4">
-          <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
-          <h4 class="name">
-            <a href="{{ url_for('bill', bill_id=bill.id) }}">
-              {{ bill.title }}
-            </a>
-          </h4>
+        <div class="latest-set">
+          <h4><span class="fa fa-file-text-o"></span> Latest Bills</h4>
+          <div class="row row-horizon">
+           {% for bill in bills %}
+            <div class="latest-item col-xs-6 col-sm-4">
+              <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
+              <h4 class="name">
+                <a href="{{ url_for('bill', bill_id=bill.id) }}">
+                  {{ bill.title }}
+                </a>
+              </h4>
+            </div>
+           {% endfor %}
+          </div>
         </div>
-       {% endfor %}
-      </div>
-    </div>
 
-    <div class="latest-set">
-      <h4><span class="fa fa-file-text-o"></span> Questions and Replies</h4>
-      <div class="row row-horizon">
-       {% for bill in bills %}
-        <div class="latest-item col-xs-6 col-sm-4">
-          <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
-          <h4 class="name">
-            <a href="{{ url_for('bill', bill_id=bill.id) }}">
-              {{ bill.title }}
-            </a>
-          </h4>
+        <div class="latest-set">
+          <h4><span class="fa fa-file-text-o"></span> Questions and Replies</h4>
+          <div class="row row-horizon">
+           {% for bill in bills %}
+            <div class="latest-item col-xs-6 col-sm-4">
+              <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
+              <h4 class="name">
+                <a href="{{ url_for('bill', bill_id=bill.id) }}">
+                  {{ bill.title }}
+                </a>
+              </h4>
+            </div>
+           {% endfor %}
+          </div>
         </div>
-       {% endfor %}
+
+      </div>
+      <div class="col-md-3 col-md-offset-1">
+        <div class="hidden-xs">
+          <a class="twitter-timeline" href="https://twitter.com/PMG_SA/mps" data-widget-id="298744494742966272" data-chrome="noheader">Tweets from @PMG_SA/mps</a>
+          <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+          </script>
+        </div>
       </div>
     </div>
 
-  </div>
-  <div class="col-md-3 col-md-offset-1">
-    <div class="hidden-xs">
-      <a class="twitter-timeline" href="https://twitter.com/PMG_SA/mps" data-widget-id="298744494742966272" data-chrome="noheader">Tweets from @PMG_SA/mps</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
-      </script>
-    </div>
-  </div>
+  </article>
 </div>
 
-{% endblock page %}
+{% include "_footer.html" %}
+
+{% endblock %}

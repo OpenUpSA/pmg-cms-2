@@ -89,6 +89,7 @@ def index():
     stock_pic = random.choice(["ncop.jpg", "na.jpg"])
 
     featured_content = load_from_api('featured')
+    featured_content['committee_meetings'] = featured_content['committee_meetings'][:10]
 
     return render_template(
         'index.html',

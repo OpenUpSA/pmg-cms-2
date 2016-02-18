@@ -217,17 +217,19 @@ article.page {
 
       .banner-content {
         height: 100%;
+        position: relative;
       }
 
       .call-to-action {
+        position: absolute;
+        bottom: 10px;
         color: #fff;
         transition: 0.3s ease-out;
         background-color: $grey-dark;
         opacity: 0.7;
         width: 40%;
         padding: 15px;
-        margin: 15px;
-        float: left;
+        max-height: 100%;
 
         &:hover {
           opacity: 1;

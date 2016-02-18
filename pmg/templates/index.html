@@ -8,53 +8,55 @@
 
 
 <section class="home-banner" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
- {% if featured_content.feature %}
-    <div class="container">
-      <div class="row">
-        <div class="col-md-9 banner-content">
-          <div class="call-to-action">
-            <p>{{ featured_content.feature.title }}</p>
-            <a class="btn pull-right" href="{{ featured_content.feature.link }}">View</a>
-          </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9 banner-content">
+       {% if featured_content.feature %}
+        <div class="call-to-action">
+          <p>{{ featured_content.feature.title }}</p>
+          <a class="btn pull-right" href="{{ featured_content.feature.link }}">View</a>
         </div>
+       {% endif %}
+      </div>
 
-        <div class="col-md-3 hidden-xs hidden-sm banner-content banner-blocks">
-          <div class="banner-block first">
-            <ul class="list-unstyled">
-              <li><a href="{{ url_for('daily_schedules') }}">Committee Meeting Schedule</a></li>
-              <li><a href="/page/parliamentary-programme">Plenary Schedule</a></li>
-            </ul>
-          </div>
-          <div class="banner-block">
-            <h3><i class="fa fa-mail"></i> Subscribe to our newsletter</h3>
-          </div>
-          <div class="banner-block last pa-link">
-            <a href="http://www.pa.org.za/">
-              <div class="logo pull-left">
-                <span class="vertical-align-helper"></span><img class="" src="/static/resources/images/pa-logo.png">
-              </div>
-              <div class="text">Connect with your representatives and find out more about them.</div>
-            </a>
-          </div>
+
+      <div class="col-md-3 hidden-xs hidden-sm banner-content banner-blocks">
+        <div class="banner-block first">
+          <ul class="list-unstyled">
+            <li><a href="{{ url_for('daily_schedules') }}">Committee Meeting Schedule</a></li>
+            <li><a href="/page/parliamentary-programme">Plenary Schedule</a></li>
+          </ul>
+        </div>
+        <div class="banner-block">
+          <h3><i class="fa fa-mail"></i> Subscribe to our newsletter</h3>
+        </div>
+        <div class="banner-block last pa-link">
+          <a href="http://www.pa.org.za/">
+            <div class="logo pull-left">
+              <span class="vertical-align-helper"></span><img class="" src="/static/resources/images/pa-logo.png">
+            </div>
+            <div class="text">Connect with your representatives and find out more about them.</div>
+          </a>
         </div>
       </div>
     </div>
- {% endif %}
+  </div>
 </section>
 
-<div class="container container-body">
-  {% block breadcrumb %}{% endblock %}
-
-  <article class="page">
+<section class="featured-content">
+  <div class="container">
   {% include "_messages.html" %}
-
-    <div class="row">
-    <div class="feature-set">
-     {% if featured_content.committee_meetings %}
-      <h4><span class="fa fa-comment"></span> Featured Content</h4>
-      <div class="row row-horizon">
-       {% for meeting in featured_content.committee_meetings %}
-        <div class="feature-item col-xs-6 col-sm-4 col-md-3">
+   {% if featured_content.committee_meetings %}
+    <h4><span class="fa fa-comment"></span> Featured Content</h4>
+    {% for meeting in featured_content.committee_meetings %}
+    {% if loop.index == 9 %}
+    <div id="feature-collapse" class="collapse">
+    {% endif %}
+    {% if loop.first or (loop.index - 1) % 4 == 0 %}
+    <div class="row {% if loop.first or (loop.index - 1) / 4 in [2,4,6] %}grey{% endif %}">
+    {% endif %}
+      <div class="col-xs-6 col-md-3">
+        <div class="feature-block ">
           <div class="date">{{ meeting.date|pretty_date|nbsp|safe }}</div>
           <h6 class="name">
             <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
@@ -62,9 +64,29 @@
             </a>
           </h6>
         </div>
-       {% endfor %}
       </div>
-     {% endif %}
+    {% if loop.last or loop.index % 4 == 0 %}
+    </div>
+    {% endif %}
+    {% if loop.last %}
+    </div>
+    {% endif %}
+    {% endfor %}
+   {% endif %}
+    <div class="show-more" data-toggle="collapse" data-target="#feature-collapse">
+      Show more
+    </div>
+  </div>
+
+</section>
+<div class="container">
+
+  <article class="page">
+
+
+    <div class="row">
+    <div class="feature-set">
+
     </div>
 
     <div class="row search">

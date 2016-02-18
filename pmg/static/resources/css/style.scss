@@ -17,6 +17,11 @@ $grey-medium: #dddddd;
 $grey-dark: #777777;
 $grey-darkest: #444444;
 
+$blue-light: #83bcec;
+$blue-medium: #338fdb;
+$blue-dark: #0e79d2;
+$blue-darkest: #075ba1;
+
 $orange: #ff8856;
 $green: #27df95;
 
@@ -338,10 +343,31 @@ article.page {
   background-color: #efefef;
 }
 
+.featured-content {
+  .feature-block {
+    padding: 10px;
+    margin: 10px 0;
+    min-height: 100px;
+    background-color: $grey-light;
+  }
+
+  .grey {
+    .feature-block {
+      background-color: $grey-light;
+    }
+  }
+}
+
+.show-more {
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background-color: $grey-medium;
+  color: $blue-medium;
+}
+
 .feature-set, .latest_set {
   padding: 20px 0;
-  .feature-item {
-    margin: 10px 0;
 
     .date {
       font-size: 12px;
@@ -363,7 +389,6 @@ article.page {
         color: $gray-dark;
       }
     }
-  }
 }
 
 

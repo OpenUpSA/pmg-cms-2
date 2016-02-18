@@ -103,13 +103,15 @@
               <div class="row">
                 {% for committee_meeting in committee_meetings %}
                   <div class="col-xs-6 col-sm-4">
+
                     <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id) }}">
                       <div class="card">
-                        <h5>{{ committee_meeting.date|pretty_date|nbsp|safe }}</h5>
-                        <div class="title">{{ committee_meeting.title|truncate(100) }}</div>
                         <h4>{{ committee_meeting.committee.name }}</h4>
+                        <h5>{{ committee_meeting.title|truncate(100) }}</h5>
+                        <h6>{{ committee_meeting.date|pretty_date|nbsp|safe }}</h6>
                       </div>
                     </a>
+
                   </div>
                 {% endfor %}
               </div>

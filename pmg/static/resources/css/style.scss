@@ -327,6 +327,13 @@ article.page {
   }
 }
 
+.home-recent-items {
+  .subsection {
+    padding: 20px;
+    background-color: $grey-light;
+  }
+}
+
 .vertical-align-helper {
   content: "";
   display: inline-block;
@@ -369,16 +376,42 @@ article.page {
 }
 
 .content-cards {
-  transition: max-height 2s ease;
-  -moz-transition: max-height 2s ease;
-  -webkit-transition: max-height 2s ease;
+  transition: max-height 0.2s ease;
+  -moz-transition: max-height 0.2s ease;
+  -webkit-transition: max-height 0.2s ease;
+
+  a, a:link, a:hover {
+    text-decoration: none;
+    color: $black;
+  }
 
   .card {
+    position: relative;
     padding: 10px;
     margin: 10px 0;
-    min-height: 100px;
     border-radius: 5px;
     border-bottom: 1px solid #ddd;
+    background-color: white;
+
+    height: 140px;
+
+    h4 {
+      margin-top: 0px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    h5 {
+      margin-top: 0px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    h6 {
+      position: absolute;
+      bottom: 0px;
+      color: #777;
+    }
   }
 
   .feature-card {
@@ -389,23 +422,8 @@ article.page {
     }
   }
 
-  h4 {
-    margin-top: 0px;
-    font-size: 14px;
-  }
-
-  h5 {
-    margin-top: 0px;
-    color: black;
-  }
-
-  a, a:link, a:hover {
-    text-decoration: none;
-    color: $link-color;
-  }
-
   &.moreable {
-    max-height: 245px;
+    max-height: 320px;
     overflow-y: hidden;
 
     &.expanded {

@@ -1,5 +1,7 @@
 $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
 
+$black = #333;
+
 //** Global textual link color.
 $link-color:            #0178d8;
 
@@ -215,7 +217,11 @@ article.page {
   h1:first-child,
   h2:first-child,
   h3:first-child {
-    padding-top: 0px;
+    margin-top: 0px;
+  }
+
+  h3 {
+    color: $orange;
   }
 }
 
@@ -362,21 +368,37 @@ article.page {
   background-color: #efefef;
 }
 
-.featured-content {
-  .feature-block {
+.content-cards {
+  .card {
     padding: 10px;
     margin: 10px 0;
     min-height: 100px;
-    background-color: $grey-light;
+    border-radius: 5px;
+    border-bottom: 1px solid #ddd;
   }
-}
 
-.show-more {
-  padding: 12px;
-  text-align: center;
-  cursor: pointer;
-  background-color: $grey-medium;
-  color: $blue-medium;
+  .feature-card {
+    background-color: $grey-light;
+
+    &:hover {
+      background-color: $grey-medium;
+    }
+  }
+
+  h4 {
+    margin-top: 0px;
+    font-size: 14px;
+  }
+
+  h5 {
+    margin-top: 0px;
+    color: black;
+  }
+
+  a, a:link, a:hover {
+    text-decoration: none;
+    color: $link-color;
+  }
 }
 
 .feature-set, .latest_set {
@@ -402,6 +424,14 @@ article.page {
         color: $gray-dark;
       }
     }
+}
+
+.show-more {
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  background-color: $grey-medium;
+  color: $blue-medium;
 }
 
 

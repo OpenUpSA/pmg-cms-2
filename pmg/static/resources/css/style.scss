@@ -221,46 +221,96 @@ article.page {
   cursor: pointer;
 }
 
+.home-banner {
+  .container {
+    height: 100%;
+
+    .row {
+      height: 100%;
+
+      .banner-content {
+        height: 100%;
+      }
+
+      .banner-blocks {
+        padding-top: 10px;
+        padding-bottom: 10px;
+
+        .banner-block {
+          height: 29%;
+          background-color: #efefef;
+          padding: 10px;
+          margin: 15px 0;
+
+          &:hover {
+            background-color: #ddd;
+          }
+
+          a {
+            color: $gray-dark;
+
+            &:hover {
+              text-decoration: none;
+            }
+          }
+
+          h3 {
+            margin: 0px;
+            vertical-align: middle;
+          }
+        }
+
+        .pa-link {
+          .logo {
+            height: 100%;
+
+            img {
+              max-width: 90px;
+              max-height: 100%;
+              vertical-align: middle;
+            }
+          }
+          .text {
+            font-size: 12px;
+            padding-left: 10px;
+            text-align: center;
+          }
+        }
+
+        .banner-block.first {
+          margin-top: 0;
+        }
+        .banner-block.last {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.vertical-align-helper {
+  content: "";
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
 // PA button on landing page
-.pa-button {
-  text-align: center;
-  background-color: #efefef;
-  padding: 10px;
-  margin-bottom: 10px;
+.banner-button {
 
-    &:hover {
-      background-color: #ddd;
-    }
+  // @media (max-width:768px) {
+  //   margin-top: 10px;
+  // }
 
-  a {
-    color: $gray-dark;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-
-  img {
-    max-width: 120px;
-  }
-
-  @media (max-width:768px) {
-    margin-top: 10px;
-  }
+  // ul {
+  //   margin-bottom: 0px;
+  // }
 }
 
 .schedule-button {
   background-color: #efefef;
   padding: 10px;
   margin: 10px 0;
-
-  h3 {
-    margin: 0px;
-  }
-
-  ul {
-    margin-bottom: 0px;
-  }
 }
 
 .search {

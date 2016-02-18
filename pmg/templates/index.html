@@ -46,36 +46,24 @@
 <section class="featured-content">
   <div class="container">
   {% include "_messages.html" %}
-   {% if featured_content.committee_meetings %}
-    <h4><span class="fa fa-comment"></span> Featured Content</h4>
-    {% for meeting in featured_content.committee_meetings %}
-    {% if loop.index == 9 %}
-    <div id="feature-collapse" class="collapse">
-    {% endif %}
-    {% if loop.first or (loop.index - 1) % 4 == 0 %}
-    <div class="row {% if loop.first or (loop.index - 1) / 4 in [2,4,6] %}grey{% endif %}">
-    {% endif %}
-      <div class="col-xs-6 col-md-3">
-        <div class="feature-block ">
-          <div class="date">{{ meeting.date|pretty_date|nbsp|safe }}</div>
-          <h6 class="name">
-            <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
-              {{ meeting.title|truncate(100) }}
-            </a>
-          </h6>
-        </div>
+    {% if featured_content.committee_meetings %}
+      <h4><span class="fa fa-comment"></span> Featured Content</h4>
+      <div class="row">
+        {% for meeting in featured_content.committee_meetings %}
+          <div class="col-xs-6 col-md-3">
+            <div class="feature-block">
+              <div class="date">{{ meeting.date|pretty_date|nbsp|safe }}</div>
+              <h6 class="name">
+                <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
+                  {{ meeting.title|truncate(100) }}
+                </a>
+              </h6>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-    {% if loop.last or loop.index % 4 == 0 %}
-    </div>
+      <div class="show-more">Show more</div>
     {% endif %}
-    {% if loop.last %}
-    </div>
-    {% endif %}
-    {% endfor %}
-   {% endif %}
-    <div class="show-more" data-toggle="collapse" data-target="#feature-collapse">
-      Show more
-    </div>
   </div>
 
 </section>

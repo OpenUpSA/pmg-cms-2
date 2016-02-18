@@ -12,6 +12,14 @@ $font-size-h3:            ceil(($font-size-base * 1.25));
 $font-family-sans-serif: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
+$grey-light: #efefef;
+$grey-medium: #dddddd;
+$grey-dark: #777777;
+$grey-darkest: #444444;
+
+$orange: #ff8856;
+$green: #27df95;
+
 @import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
 
 .top-links,
@@ -124,32 +132,6 @@ article.page {
   }
 }
 
-.home-banner {
-  background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
-  width: 100%;
-  height: 250px;
-  background-size: cover;
-  cursor: pointer;
-}
-
-.home-banner:hover {
-   .blurb {
-    opacity: 1;
-  }
-
-  .blurb {
-    transition: 0.3s ease-out;
-    background-color: white;
-    opacity: 0.85;
-
-    width: 30%;
-    padding: 15px;
-    margin: 15px;
-    float: right;
-    border-radius: 4px;
-  }
-}
-
 .dateline {
   font-weight: bold;
   margin: 5px 0px;
@@ -222,6 +204,11 @@ article.page {
 }
 
 .home-banner {
+  background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
+  width: 100%;
+  height: 250px;
+  background-size: cover;
+
   .container {
     height: 100%;
 
@@ -230,6 +217,26 @@ article.page {
 
       .banner-content {
         height: 100%;
+      }
+
+      .call-to-action {
+        color: #fff;
+        transition: 0.3s ease-out;
+        background-color: $grey-dark;
+        opacity: 0.7;
+        width: 40%;
+        padding: 15px;
+        margin: 15px;
+        float: left;
+
+        &:hover {
+          opacity: 1;
+        }
+
+        a {
+          background-color: $orange;
+          color: #fff;
+        }
       }
 
       .banner-blocks {

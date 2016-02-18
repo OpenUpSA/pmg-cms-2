@@ -66,3 +66,19 @@ $(function() {
 		ga('send', 'event', '404', document.location.pathname, document.referrer);
 	}
 });
+
+$(function() {
+	// show more buttons on home page
+	$('.show-more').on('click', function() {
+		var $btn = $(this);
+		var $target = $btn.prev();
+
+		if ($target.hasClass('expanded')) {
+			$target.removeClass('expanded');
+			$btn.text('Show more');
+		} else {
+			$target.addClass('expanded');
+			$btn.text('Show less');
+		}
+	});
+});

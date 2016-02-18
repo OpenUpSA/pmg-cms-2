@@ -208,6 +208,17 @@ article.page {
   cursor: pointer;
 }
 
+// sections on the home page
+.index article section {
+  padding: 40px 0px;
+
+  h1:first-child,
+  h2:first-child,
+  h3:first-child {
+    padding-top: 0px;
+  }
+}
+
 .home-banner {
   background: #444 url(../images/sa-parliament.jpg) 50% 50% no-repeat;
   width: 100%;
@@ -299,6 +310,14 @@ article.page {
         }
       }
     }
+  }
+}
+
+.index .home-search-banner {
+  background-color: $grey-light;
+
+  h2 {
+    margin: 0px 0px 20px;
   }
 }
 

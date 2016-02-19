@@ -331,6 +331,7 @@ article.page {
   .subsection {
     padding: 20px;
     background-color: $grey-light;
+    margin-bottom: 15px;
   }
 }
 
@@ -369,8 +370,12 @@ article.page {
 
     height: 140px;
 
-    @media (max-width:768px) {
+    @media (max-width: $screen-xs-max) {
       height: 115px;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      height: 130px;
     }
 
     h4 {
@@ -396,7 +401,7 @@ article.page {
     background-color: $grey-light;
     height: 130px;
 
-    @media (max-width:768px) {
+    @media (max-width: $screen-xs-max) {
       height: 115px;
     }
 
@@ -409,22 +414,27 @@ article.page {
     max-height: 160px;
     overflow: hidden;
 
-    &.feature-cards {
-      max-height: 320px;
-
-      @media (max-width:768px) {
-        max-height: 270px;
-      }
+    @media (max-width: $screen-xs-max) {
+      max-height: 270px;
     }
 
-    @media (max-width:768px) {
-      max-height: 270px;
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      max-height: 160px;
+    }
+
+    &.feature-cards {
+      max-height: 310px;
+
+      @media (max-width: $screen-xs-max) {
+        max-height: 270px;
+      }
+
     }
 
     &.expanded {
       max-height: 900px;
 
-      @media (max-width:768px) {
+      @media (max-width: $screen-xs-max) {
         max-height: 810px;
       }
     }

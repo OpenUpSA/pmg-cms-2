@@ -413,21 +413,21 @@ article.page {
       max-height: 270px;
     }
 
-    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
-      max-height: 160px;
-    }
-
     &.feature-cards {
-      max-height: 310px;
+      max-height: 320px;
 
       @media (max-width: $screen-xs-max) {
         max-height: 270px;
       }
 
+      @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+        max-height: 310px;
+      }
+
     }
 
     &.expanded {
-      max-height: 900px;
+      max-height: 910px;
 
       @media (max-width: $screen-xs-max) {
         max-height: 810px;

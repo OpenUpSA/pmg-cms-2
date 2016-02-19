@@ -50,10 +50,10 @@
       {% if featured_content.committee_meetings %}
         <h3>Featured Content</h3>
 
-        <div class="content-cards moreable">
+        <div class="content-cards feature-cards moreable">
           <div class="row">
             {% for meeting in featured_content.committee_meetings %}
-              <div class="col-xs-6 col-md-3">
+              <div class="col-xs-12 col-sm-6 col-md-3">
                 <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">
 
                   <div class="card feature-card">
@@ -97,12 +97,11 @@
       <div class="row">
         <div class="col-md-8">
           <div class="subsection">
-            <h3><i class="fa fa-institution"></i> Recent Committee meetings</h3>
-
+            <h3><i class="fa fa-users"></i> Recent Committee meetings</h3>
             <div class="content-cards moreable">
               <div class="row">
                 {% for committee_meeting in committee_meetings %}
-                  <div class="col-xs-6 col-sm-4">
+                  <div class="col-xs-12 col-sm-6 col-md-4">
 
                     <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id) }}">
                       <div class="card">
@@ -119,36 +118,49 @@
             <div class="show-more">Show more</div>
           </div>
 
-          <div class="latest-set">
-            <h4><span class="fa fa-file-text-o"></span> Latest Bills</h4>
-            <div class="row row-horizon">
-             {% for bill in bills %}
-              <div class="latest-item col-xs-6 col-sm-4">
-                <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
-                <h4 class="name">
-                  <a href="{{ url_for('bill', bill_id=bill.id) }}">
-                    {{ bill.title }}
-                  </a>
-                </h4>
+          <div class="subsection">
+            <h3><i class="fa fa-file-text-o"></i> Latest Bills</h4>
+            <div class="content-cards moreable">
+              <div class="row">
+                {% for bill in bills %}
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <a href="{{ url_for('bill', bill_id=bill.id) }}">
+                      <div class="card">
+                        <h4>{{ bill.introduced_by }}</h4>
+                        <h5>{{ bill.title }}</h5>
+                        <h6>{{ bill.updated_at|pretty_date|nbsp|safe }}</h6>
+                      </div>
+                    </a>
+                  </div>
+                {% endfor %}
               </div>
-             {% endfor %}
             </div>
+            <div class="show-more">Show more</div>
           </div>
 
-          <div class="latest-set">
-            <h4><span class="fa fa-file-text-o"></span> Questions and Replies</h4>
-            <div class="row row-horizon">
-             {% for bill in bills %}
-              <div class="latest-item col-xs-6 col-sm-4">
-                <div class="date">{{ bill.updated_at|pretty_date|nbsp|safe }}</div>
-                <h4 class="name">
-                  <a href="{{ url_for('bill', bill_id=bill.id) }}">
-                    {{ bill.title }}
-                  </a>
-                </h4>
+          <div class="subsection">
+            <h3><i class="fa fa-exchange"></i> Questions and Replies</h4>
+            <div class="content-cards moreable">
+              <div class="row">
+                {% for question in questions %}
+                  <div class="col-xs-12 col-sm-6 col-md-4">
+                    <a href="{{ url_for('committee_question', question_id=question.id) }}">
+                      <div class="card">
+                      {% if question.code %}
+                        <h4>Asked to {{ question.question_to_name }}</h4>
+                        <h5>{{ question.question|truncate(100) }}</h5>
+                        <h6>{{ question.date|pretty_date|nbsp|safe }}</h6>
+                      {% else %}
+                        <h4>Asked to Minister of {{ question.title }}</h4>
+                        <h6>{{ question.start_date|pretty_date|nbsp|safe }}</h6>
+                      {% endif %}
+                      </div>
+                    </a>
+                  </div>
+                {% endfor %}
               </div>
-             {% endfor %}
             </div>
+            <div class="show-more">Show more</div>
           </div>
 
         </div>

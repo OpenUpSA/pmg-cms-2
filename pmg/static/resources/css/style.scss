@@ -212,7 +212,7 @@ article.page {
 
 // sections on the home page
 .index article section {
-  padding: 40px 0px;
+  padding: 30px 0px;
 
   h1:first-child,
   h2:first-child,
@@ -331,6 +331,7 @@ article.page {
   .subsection {
     padding: 20px;
     background-color: $grey-light;
+    margin-bottom: 15px;
   }
 }
 
@@ -369,6 +370,14 @@ article.page {
 
     height: 140px;
 
+    @media (max-width: $screen-xs-max) {
+      height: 115px;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      height: 130px;
+    }
+
     h4 {
       margin-top: 0px;
       font-size: 14px;
@@ -397,11 +406,32 @@ article.page {
   }
 
   &.moreable {
-    max-height: 320px;
+    max-height: 160px;
     overflow: hidden;
+
+    @media (max-width: $screen-xs-max) {
+      max-height: 270px;
+    }
+
+    @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+      max-height: 160px;
+    }
+
+    &.feature-cards {
+      max-height: 310px;
+
+      @media (max-width: $screen-xs-max) {
+        max-height: 270px;
+      }
+
+    }
 
     &.expanded {
       max-height: 900px;
+
+      @media (max-width: $screen-xs-max) {
+        max-height: 810px;
+      }
     }
   }
 }

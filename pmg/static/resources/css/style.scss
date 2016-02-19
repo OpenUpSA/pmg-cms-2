@@ -397,8 +397,12 @@ article.page {
   }
 
   &.moreable {
-    max-height: 320px;
+    max-height: 160px;
     overflow: hidden;
+
+    &.feature-cards {
+      max-height: 320px;
+    }
 
     &.expanded {
       max-height: 900px;

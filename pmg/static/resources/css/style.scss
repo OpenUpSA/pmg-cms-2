@@ -406,11 +406,10 @@ article.page {
 
   &.moreable {
     max-height: 320px;
-    overflow-y: hidden;
+    overflow: hidden;
 
     &.expanded {
       max-height: 900px;
-      overflow-y: scroll;
     }
   }
 }
@@ -424,6 +423,11 @@ article.page {
   border-radius: 5px;
 }
 
+.home-recent-items {
+  .show-more {
+    background-color: $grey-medium;
+  }
+}
 
 .correct-this-page-footer {
   margin-top: 40px;

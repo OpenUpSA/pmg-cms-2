@@ -399,11 +399,6 @@ article.page {
 
   .feature-card {
     background-color: $grey-light;
-    height: 130px;
-
-    @media (max-width: $screen-xs-max) {
-      height: 115px;
-    }
 
     &:hover {
       background-color: $grey-medium;

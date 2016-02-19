@@ -97,7 +97,7 @@ $green: #27df95;
 }
 
 nav.top-links {
-  background-color: #efefef;
+  background-color: $grey-light;
 
   ul {
     padding: 10px 0px;
@@ -269,7 +269,7 @@ article.page {
 
         .banner-block {
           height: 29%;
-          background-color: #efefef;
+          background-color: $grey-light;
           padding: 10px;
           margin: 15px 0;
 
@@ -342,19 +342,11 @@ article.page {
 }
 
 .search {
-  background-color: #efefef;
+  background-color: $grey-light;
   padding-top: 30px;
   padding-bottom: 30px;
   margin-top: 30px;
   margin-bottom: 30px;
-}
-
-.feature-set {
-  margin-bottom: 30px;
-}
-
-.light-grey {
-  background-color: #efefef;
 }
 
 .content-cards {
@@ -462,7 +454,7 @@ article.page {
   .pa-link {
     margin-top: 10px;
     img {
-      background-color: #efefef;
+      background-color: $grey-light;
       padding: 5px;
       border-radius: 5px;
     }
@@ -633,7 +625,7 @@ mark {
   text-align: center;
   padding: 20px;
   border-radius: 5px;
-  background-color: #efefef;
+  background-color: $grey-light;
 
   button {
     white-space: normal;
@@ -665,7 +657,7 @@ body.search {
 
 .search-head {
   margin: 0 0 10px 0;
-  background-color: #efefef;
+  background-color: $grey-light;
 
   h2 {
     margin-top: 5px;

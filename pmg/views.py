@@ -77,9 +77,9 @@ def classify_attachments(files):
 @app.route('/')
 def index():
     logger.info("Loading index page")
-    committee_meetings = load_from_api('committee-meeting')['results'][:12]
-    bills = load_from_api('bill')["results"][:12]
-    questions = load_from_api('minister-questions-combined')['results'][:12]
+    committee_meetings = load_from_api('committee-meeting')['results'][:11]
+    bills = load_from_api('bill')["results"][:11]
+    questions = load_from_api('minister-questions-combined')['results'][:11]
     schedule = load_from_api('schedule')["results"]
     scheduledates = []
     curdate = False

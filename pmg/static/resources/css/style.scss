@@ -414,6 +414,14 @@ article.page {
     &:hover {
       background-color: $grey-medium;
     }
+
+    &.more {
+      background-color: $grey-medium;
+      text-align: right;
+      &:hover {
+        background-color: #fff;
+      }
+    }
   }
 
   .feature-card {
@@ -462,6 +470,10 @@ article.page {
   background-color: $grey-light;
   color: $green-medium;
   border-radius: 5px;
+
+  &.show-less {
+    color: $orange;
+  }
 
   &:hover {
     background-color: $grey-medium;

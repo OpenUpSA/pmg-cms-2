@@ -410,6 +410,10 @@ article.page {
       bottom: 0px;
       color: #777;
     }
+
+    &:hover {
+      background-color: $grey-medium;
+    }
   }
 
   .feature-card {
@@ -456,14 +460,23 @@ article.page {
   text-align: center;
   cursor: pointer;
   background-color: $grey-light;
-  color: $blue-medium;
+  color: $green-medium;
   border-radius: 5px;
+
+  &:hover {
+    background-color: $grey-medium;
+  }
 }
 
 .home-recent-items {
   .show-more {
     background-color: $grey-medium;
+
+    &:hover {
+      background-color: #fff;
+    }
   }
+
 }
 
 .correct-this-page-footer {

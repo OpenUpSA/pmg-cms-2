@@ -19,21 +19,36 @@ $grey-medium: #dddddd;
 $grey-dark: #777777;
 $grey-darkest: #444444;
 
-$blue-light: #83bcec;
-$blue-medium: #338fdb;
-$blue-dark: #0e79d2;
-$blue-darkest: #075ba1;
+$blue-light: #6998DD;
+$blue-medium: #1f69cd;
+$blue-dark: #0A54B9;
+$blue-darkest: #083E89;
 
 $orange: #ff8856;
-$green: #27df95;
+
+$green-light: #33D2AE;
+$green-medium: #0ECBA1;
+$green-dark: #00B78E;
+$green-darkest: #008668;
+
 
 @import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
 
+$brand-success:         #5cb85c;
 .top-links,
 .breadcrumb {
   font-family: $headings-font-family;
 }
 
+.btn-success {
+  background-color: $green-medium;
+  border-color: $green-dark;
+}
+
+.btn-success:hover, .btn-success:focus, .btn-success.focus, .btn-success:active, .btn-success.active {
+  background-color: $green-dark;
+  border-color: $green-darkest;
+}
 
 // Navbar
 

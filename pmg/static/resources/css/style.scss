@@ -410,6 +410,18 @@ article.page {
       bottom: 0px;
       color: #777;
     }
+
+    &:hover {
+      background-color: $grey-medium;
+    }
+
+    &.more {
+      background-color: $grey-medium;
+      text-align: right;
+      &:hover {
+        background-color: #fff;
+      }
+    }
   }
 
   .feature-card {
@@ -456,14 +468,27 @@ article.page {
   text-align: center;
   cursor: pointer;
   background-color: $grey-light;
-  color: $blue-medium;
+  color: $green-medium;
   border-radius: 5px;
+
+  &.show-less {
+    color: $orange;
+  }
+
+  &:hover {
+    background-color: $grey-medium;
+  }
 }
 
 .home-recent-items {
   .show-more {
     background-color: $grey-medium;
+
+    &:hover {
+      background-color: #fff;
+    }
   }
+
 }
 
 .correct-this-page-footer {

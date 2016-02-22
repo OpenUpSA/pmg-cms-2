@@ -75,9 +75,11 @@ $(function() {
 
     if ($target.hasClass('expanded')) {
       $target.removeClass('expanded');
+      $btn.removeClass('show-less');
       $btn.text('Show more');
     } else {
       $target.addClass('expanded');
+      $btn.addClass('show-less');
       $btn.text('Show less');
     }
   });

@@ -241,6 +241,9 @@ article.page {
   }
 }
 
+
+// Home page banner and elements
+
 .home-banner {
   width: 100%;
   height: 260px;
@@ -360,6 +363,35 @@ article.page {
     padding: 20px;
     background-color: $grey-light;
     margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+
+    &:after {
+      font-family: FontAwesome;
+      right: 25px;
+      position: absolute;
+      top: 10px;
+      font-size: 3em;
+      line-height: 1;
+      color: #e1e1e1;
+      z-index: -1;
+    }
+
+    &.committee-meetings {
+      &:after {
+        content: "\f0c0";
+     }
+    }
+    &.bills {
+      &:after {
+        content: "\f0f6";
+     }
+    }
+    &.questions {
+      &:after {
+        content: "\f128";
+     }
+    }
   }
 }
 
@@ -382,6 +414,8 @@ article.page {
   transition: max-height 0.2s ease;
   -moz-transition: max-height 0.2s ease;
   -webkit-transition: max-height 0.2s ease;
+  position: relative;
+  z-index: 1;
 
   a, a:link, a:hover {
     text-decoration: none;
@@ -431,9 +465,23 @@ article.page {
     &.more {
       background-color: $grey-medium;
       text-align: right;
+      z-index: 1;
+
       &:hover {
-        background-color: $green-lightest;
+        background-color: #e1e1e1;
       }
+
+      &:before {
+        content: "\f105";
+        font-family: FontAwesome;
+        left: 60%;
+        position: absolute;
+        top: -25%;
+        font-size: 15em;
+        line-height: 1;
+        color: $grey-light;
+        z-index: -1;
+     }
     }
   }
 
@@ -480,9 +528,13 @@ article.page {
   padding: 8px;
   text-align: center;
   cursor: pointer;
-  background-color: $grey-light;
+  background-color: #e1e1e1;
   color: $green-medium;
   border-radius: 5px;
+
+  &.feature {
+    background-color: $grey-light;
+  }
 
   &.show-less {
     color: $orange;
@@ -491,17 +543,6 @@ article.page {
   &:hover {
     background-color: $grey-medium;
   }
-}
-
-.home-recent-items {
-  .show-more {
-    background-color: $grey-medium;
-
-    &:hover {
-      background-color: #fff;
-    }
-  }
-
 }
 
 .correct-this-page-footer {

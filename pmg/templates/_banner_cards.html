@@ -1,0 +1,29 @@
+{% if current_user.is_authenticated() %}
+  <a href="{{ url_for('email_alerts') }}">
+    <div class="banner-card first">
+      <h4>Manage your alerts</h4>
+    </div>
+  </a>
+{% else %}
+  <a href="{{ url_for('security.register', next=request.path) }}">
+    <div class="banner-card first">
+      <h4>Sign up to receive committee meeting alerts</h4>
+    </div>
+  </a>
+{% endif %}
+<a href="{{ url_for('daily_schedules') }}">
+  <div class="banner-card">
+    <h4>Committee Meeting Schedule</h4>
+  </div>
+</a>
+<a href="/page/parliamentary-programme">
+  <div class="banner-card">
+    <h4>Plenary Schedule</h4>
+  </div>
+</a>
+<a href="http://www.pa.org.za/">
+  <div class="banner-card last pa-link">
+    <img class="" src="/static/resources/images/pa-logo.png">
+    <div class="text">Connect with your representatives and find out more about them.</div>
+  </div>
+</a>

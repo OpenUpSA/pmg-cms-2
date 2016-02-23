@@ -363,6 +363,35 @@ article.page {
     padding: 20px;
     background-color: $grey-light;
     margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+
+    &:after {
+      font-family: FontAwesome;
+      right: 25px;
+      position: absolute;
+      top: 10px;
+      font-size: 3em;
+      line-height: 1;
+      color: #e1e1e1;
+      z-index: -1;
+    }
+
+    &.committee-meetings {
+      &:after {
+        content: "\f0c0";
+     }
+    }
+    &.bills {
+      &:after {
+        content: "\f0f6";
+     }
+    }
+    &.questions {
+      &:after {
+        content: "\f128";
+     }
+    }
   }
 }
 
@@ -385,6 +414,8 @@ article.page {
   transition: max-height 0.2s ease;
   -moz-transition: max-height 0.2s ease;
   -webkit-transition: max-height 0.2s ease;
+  position: relative;
+  z-index: 1;
 
   a, a:link, a:hover {
     text-decoration: none;

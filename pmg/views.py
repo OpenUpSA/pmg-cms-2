@@ -87,7 +87,8 @@ def index():
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
-    stock_pic = random.choice(["ncop.jpg", "na.jpg"])
+    # stock_pic = random.choice(["ncop.jpg", "na.jpg"])
+    stock_pic = random.choice(["sa-parliament.jpg"])
 
     featured_content = load_from_api('featured')
     featured_content['committee_meetings'] = featured_content['committee_meetings'][:12]

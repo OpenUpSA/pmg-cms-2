@@ -10,38 +10,30 @@
   <header class="home-banner" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
     <div class="container">
       <div class="row">
-        <div class="col-md-9 banner-content">
+        <div class="col-lg-9 col-md-8 banner-content">
          {% if featured_content.feature %}
-          <div class="call-to-action">
-            <p>{{ featured_content.feature.title }}</p>
-            <a class="btn pull-right" href="{{ featured_content.feature.link }}">View</a>
-          </div>
+          <a href="">
+            <div class="call-to-action">
+              <h2>{{ featured_content.feature.title }}</h2>
+            </div>
+          </a>
          {% endif %}
         </div>
 
-
-        <div class="col-md-3 hidden-xs hidden-sm banner-content banner-blocks">
-          <div class="banner-block first">
-            <ul class="list-unstyled">
-              <li><a href="{{ url_for('daily_schedules') }}">Committee Meeting Schedule</a></li>
-              <li><a href="/page/parliamentary-programme">Plenary Schedule</a></li>
-            </ul>
-          </div>
-          <div class="banner-block">
-            <h3><i class="fa fa-mail"></i> Subscribe to our newsletter</h3>
-          </div>
-          <div class="banner-block last pa-link">
-            <a href="http://www.pa.org.za/">
-              <div class="logo pull-left">
-                <span class="vertical-align-helper"></span><img class="" src="/static/resources/images/pa-logo.png">
-              </div>
-              <div class="text">Connect with your representatives and find out more about them.</div>
-            </a>
-          </div>
+        <div class="col-lg-3 col-md-4 hidden-xs hidden-sm banner-content banner-cards">
+          {% include "_banner_cards.html" %}
         </div>
       </div>
     </div>
   </header>
+
+  <div class="container">
+    <div class="row hidden-md hidden-lg banner-cards">
+      <div class="col-xs-12">
+        {% include "_banner_cards.html" %}
+      </div>
+    </div>
+  </div>
 
   <section class="featured-content">
     <div class="container">

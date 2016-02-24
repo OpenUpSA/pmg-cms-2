@@ -465,10 +465,18 @@ def committee_meeting_attendance_summary():
     """
     Summary of MP attendance of committee meetings.
     """
+
+    # This is a temporary fix to only show attendance for members
+    # of the three major parties until we determine how to present
+    # faulty passed records for alternate members
+    parties = ['ANC', 'DA', 'EFF']
+
     rows = CommitteeMeetingAttendance.summary()
     members = Member.query\
         .options(joinedload('house'),
                  lazyload('memberships'))\
+        .join(Member.party)\
+        .filter(Party.name.in_(parties))\
         .all()
 
     members = {m.id: m for m in members}
@@ -509,7 +517,13 @@ def committee_meeting_attendance_download():
     output, wb = builder.new_workbook()
 
     # attendance summary, by MP
-    members = {m.id: m for m in Member.query.all()}
+
+    # This is a temporary fix to only show attendance for members
+    # of the three major parties until we determine how to present
+    # faulty passed records for alternate members
+    parties = ['ANC', 'DA', 'EFF']
+
+    members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(parties)).all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
     rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 

@@ -25,6 +25,10 @@ logger = logging.getLogger(__name__)
 
 api = Blueprint('api', __name__)
 
+# This is a temporary fix to only show attendance for members
+# of the three major parties until we determine how to present
+# faulty passed records for alternate members
+MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
 
 def load_user():
     login_mechanisms = {
@@ -465,10 +469,17 @@ def committee_meeting_attendance_summary():
     """
     Summary of MP attendance of committee meetings.
     """
+
+    # This is a temporary fix to only show attendance for members
+    # of the three major parties until we determine how to present
+    # faulty passed records for alternate members
+
     rows = CommitteeMeetingAttendance.summary()
     members = Member.query\
         .options(joinedload('house'),
                  lazyload('memberships'))\
+        .join(Member.party)\
+        .filter(Party.name.in_(MAJOR_PARTIES))\
         .all()
 
     members = {m.id: m for m in members}
@@ -509,7 +520,12 @@ def committee_meeting_attendance_download():
     output, wb = builder.new_workbook()
 
     # attendance summary, by MP
-    members = {m.id: m for m in Member.query.all()}
+
+    # This is a temporary fix to only show attendance for members
+    # of the three major parties until we determine how to present
+    # faulty passed records for alternate members
+
+    members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
     rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 

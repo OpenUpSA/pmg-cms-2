@@ -521,11 +521,7 @@ def committee_meeting_attendance_download():
 
     # attendance summary, by MP
 
-    # This is a temporary fix to only show attendance for members
-    # of the three major parties until we determine how to present
-    # faulty passed records for alternate members
-
-    members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
+    members = {m.id: m for m in Member.query.all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
     rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 

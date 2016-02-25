@@ -469,7 +469,6 @@ def committee_meeting_attendance_summary():
     """
     Summary of MP attendance of committee meetings.
     """
-
     # This is a temporary fix to only show attendance for members
     # of the three major parties until we determine how to present
     # faulty passed records for alternate members
@@ -521,7 +520,10 @@ def committee_meeting_attendance_download():
 
     # attendance summary, by MP
 
-    members = {m.id: m for m in Member.query.all()}
+    # This is a temporary fix to only show attendance for members
+    # of the three major parties until we determine how to present
+    # faulty passed records for alternate members
+    members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
     rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 
@@ -529,13 +531,15 @@ def committee_meeting_attendance_download():
 
     for grp, group in groupby(raw_data, lambda r: [r.year, r.member_id]):
         year, member_id = grp
-        member = members[member_id]
-        party = member.party.name if member.party else None
-        attendance = {r.attendance: r.cnt for r in group}
+        member = members.get(member_id, None)
+        # This check can be removed once we return all party members
+        if member:
+            party = member.party.name if member.party else None
+            attendance = {r.attendance: r.cnt for r in group}
 
-        row = [year, member.name, party]
-        row.extend(attendance.get(k, 0) for k in keys)
-        rows.append(row)
+            row = [year, member.name, party]
+            row.extend(attendance.get(k, 0) for k in keys)
+            rows.append(row)
 
     ws = wb.add_worksheet('summary')
     builder.write_table(ws, rows)

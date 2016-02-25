@@ -118,15 +118,15 @@
           </div>
 
           <div class="subsection bills">
-            <h3>Latest Bills</h4>
+            <h3>Current Bills</h4>
             <div class="content-cards moreable">
               <div class="row">
                 {% for bill in bills %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
                     <a href="{{ url_for('bill', bill_id=bill.id) }}">
                       <div class="card">
-                        <h4>{{ bill.introduced_by }}</h4>
-                        <h5>{{ bill.title }}</h5>
+                        <h4>{{ bill.title }}</h4>
+                        <h5>{{ bill.introduced_by }}</h5>
                         <h6>{{ bill.updated_at|pretty_date|nbsp|safe }}</h6>
                       </div>
                     </a>

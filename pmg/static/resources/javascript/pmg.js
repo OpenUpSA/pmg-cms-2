@@ -88,7 +88,7 @@ $(function() {
   $('.search-form').submit(function(e) {
     var medium = e.target.name;
     ga('send', 'event', medium, 'search');
-    return true;
+
 });
 
 });

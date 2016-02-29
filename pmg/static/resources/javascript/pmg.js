@@ -84,11 +84,4 @@ $(function() {
       ga('send', 'event', 'show-more', 'click');
     }
   });
-
-  $('.search-form').submit(function(e) {
-    var medium = e.target.name;
-    ga('send', 'event', medium, 'search');
-
-});
-
 });

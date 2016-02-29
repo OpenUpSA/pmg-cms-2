@@ -41,16 +41,6 @@ $brand-success:         #5cb85c;
   font-family: $headings-font-family;
 }
 
-.btn-success {
-  background-color: $green-medium;
-  border-color: $green-dark;
-}
-
-.btn-success:hover, .btn-success:focus, .btn-success.focus, .btn-success:active, .btn-success.active {
-  background-color: $green-dark;
-  border-color: $green-darkest;
-}
-
 // Navbar
 
 .navbar-pmg {

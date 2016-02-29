@@ -47,8 +47,7 @@
           <div class="row">
             {% for meeting in featured_content.committee_meetings %}
               <div class="col-xs-12 col-sm-6 col-md-3">
-                <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}?utm_source=homepage&utm_medium=feature">
-
+                <a href="{{ url_for('committee_meeting', event_id=meeting.id, utm_source='homepage', utm_medium='featured') }}">
                   <div class="card feature-card">
                     <h4>{{ meeting.committee.name }}</h4>
                     <h5>{{ meeting.title|truncate(100) }}</h5>
@@ -97,7 +96,7 @@
                 {% for committee_meeting in committee_meetings %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
 
-                    <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id) }}?utm_source=homepage&utm_medium=meeting_card">
+                    <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id, utm_source='homepage', utm_medium='meeting-card') }}">
                       <div class="card">
                         <h4>{{ committee_meeting.committee.name }}</h4>
                         <h5>{{ committee_meeting.title|truncate(100) }}</h5>
@@ -125,7 +124,7 @@
               <div class="row">
                 {% for bill in bills %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
-                    <a href="{{ url_for('bill', bill_id=bill.id) }}?utm_source=homepage&utm_medium=bill_card">
+                    <a href="{{ url_for('bill', bill_id=bill.id, utm_source='homepage', utm_medium='bill-card') }}">
                       <div class="card">
                         <h4>{{ bill.title }}</h4>
                         <h5>{{ bill.introduced_by }}</h5>
@@ -152,7 +151,7 @@
               <div class="row">
                 {% for question in questions %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
-                    <a href="{{ url_for('committee_question', question_id=question.id) }}?utm_source=homepage&utm_medium=qr_card">
+                    <a href="{{ url_for('committee_question', question_id=question.id, utm_source='homepage', utm_medium='qr-card') }}">
                       <div class="card">
                       {% if question.code %}
                         <h4>Asked to {{ question.question_to_name }}</h4>

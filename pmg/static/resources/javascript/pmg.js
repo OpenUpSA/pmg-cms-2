@@ -81,7 +81,21 @@ $(function() {
       $target.addClass('expanded');
       $btn.addClass('show-less');
       $btn.text('Show less');
-      ga('send', 'event', 'show-more', 'click');
+      if ($target.hasClass('feature-cards')) {
+      	ga('send', 'event', 'featured', 'show-more');
+      } else {
+      	switch ($target.parent().attr('class').replace('subsection', '').trim()) {
+      		case 'committee-meetings':
+      			ga('send', 'event', 'committee-meetings', 'show-more');
+      			break;
+      		case 'bills':
+      			ga('send', 'event', 'bills', 'show-more');
+      			break;
+      		case 'questions':
+      			ga('send', 'event', 'questions', 'show-more');
+      			break;
+      	}
+      }
     }
   });
 });

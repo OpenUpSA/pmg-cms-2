@@ -47,7 +47,7 @@
           <div class="row">
             {% for meeting in featured_content.committee_meetings %}
               <div class="col-xs-12 col-sm-6 col-md-3">
-                <a href="{{ url_for('committee_meeting', event_id=meeting.id, utm_source='homepage', utm_medium='featured') }}">
+                <a href="{{ url_for('committee_meeting', event_id=meeting.id, utm_source='homepage', utm_medium='featured-card') }}">
                   <div class="card feature-card">
                     <h4>{{ meeting.committee.name }}</h4>
                     <h5>{{ meeting.title|truncate(100) }}</h5>
@@ -152,7 +152,7 @@
               <div class="row">
                 {% for question in questions %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
-                    <a href="{{ url_for('committee_question', question_id=question.id, utm_source='homepage', utm_medium='qr-card') }}">
+                    <a href="{{ url_for('committee_question', question_id=question.id, utm_source='homepage', utm_medium='question-card') }}">
                       <div class="card">
                       {% if question.code %}
                         <h4>Asked to {{ question.question_to_name }}</h4>

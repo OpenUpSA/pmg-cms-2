@@ -26,7 +26,6 @@ $blue-darkest: #083E89;
 
 $orange: #ff8856;
 
-$green-lightest: #5ADCBF;
 $green-light: #33D2AE;
 $green-medium: #0ECBA1;
 $green-dark: #00B78E;
@@ -35,7 +34,6 @@ $green-darkest: #008668;
 
 @import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
 
-$brand-success:         #5cb85c;
 .top-links,
 .breadcrumb {
   font-family: $headings-font-family;
@@ -382,13 +380,6 @@ article.page {
      }
     }
   }
-}
-
-.vertical-align-helper {
-  content: "";
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
 }
 
 .search {

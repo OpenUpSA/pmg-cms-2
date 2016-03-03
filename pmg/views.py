@@ -77,8 +77,10 @@ def classify_attachments(files):
 @app.route('/')
 def index():
     logger.info("Loading index page")
-    committee_meetings = load_from_api('committee-meeting')['results'][:10]
-    bills = load_from_api('bill')["results"][:10]
+    committee_meetings = load_from_api('committee-meeting')['results'][:11]
+    bills = load_from_api('bill/current')["results"][:11]
+    bills.sort(key=lambda b: [-b['year'], b['type']['prefix'], b.get('number', 0), b['title']])
+    questions = load_from_api('minister-questions-combined')['results'][:11]
     schedule = load_from_api('schedule')["results"]
     scheduledates = []
     curdate = False
@@ -86,14 +88,17 @@ def index():
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
-    stock_pic = random.choice(["ncop.jpg", "na.jpg"])
+    # stock_pic = random.choice(["ncop.jpg", "na.jpg"])
+    stock_pic = random.choice(["sa-parliament.jpg"])
 
     featured_content = load_from_api('featured')
+    featured_content['committee_meetings'] = featured_content['committee_meetings'][:12]
 
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,
         bills=bills,
+        questions=questions,
         schedule=schedule,
         scheduledates=scheduledates,
         stock_pic=stock_pic,

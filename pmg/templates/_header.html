@@ -56,8 +56,12 @@
       </div>
 
       <div class="col-xs-12 col-md-4 col-lg-5">
-        <form class="navbar-form" role="search" action="/search">
+        <form class="navbar-form search-form" role="search" action="/search">
           <div class="input-group">
+            {% if request.endpoint == 'index' %}
+            <input name="utm_source" type="hidden" value="homepage">
+            <input name="utm_medium" type="hidden" value="s-top">
+            {% endif %}
             <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
             <span class="input-group-btn">
               <button type="submit" class="btn btn-success"><i class="fa fa-search"></i> Search</button>

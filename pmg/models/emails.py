@@ -4,7 +4,7 @@ import arrow
 import pytz
 
 from sqlalchemy import func
-import mandrill
+import sendgrid
 from flask import render_template, url_for
 
 from pmg import db, app
@@ -74,7 +74,7 @@ class SavedSearch(db.Model):
         # we embed this into the actual email template
         html = render_template('saved_search_alert.html', search=self, results=hits)
 
-        send_mandrill_email(
+        send_sendgrid_email(
             subject="New matches for your search '%s'" % self.search,
             from_name="PMG Notifications",
             from_email="alerts@pmg.org.za",
@@ -151,8 +151,8 @@ class SavedSearch(db.Model):
         return search
 
 
-def send_mandrill_email(subject, from_name, from_email, recipient_users, html, utm_campaign, subaccount=None):
-    """ Send an email using Mandrill, relying on Mandrill's templating system.
+def send_sendgrid_email(subject, from_name, from_email, recipient_users, html, utm_campaign):
+    """ Send an email using Sendgrid, relying on Sendgrid's templating system.
 
     :param subject: email subject
     :param from_name: name of the sender
@@ -160,37 +160,26 @@ def send_mandrill_email(subject, from_name, from_email, recipient_users, html, u
     :param recipient_users: array of `User` objects of recipients
     :param html: HTML body of the email
     :param utm_campaign: Google Analytics campaign (optional)
-    :param subaccount: Mandrill subaccount to use (optional)
     """
-    subaccount = subaccount or app.config['MANDRILL_ALERTS_SUBACCOUNT']
+    sg = sendgrid.SendGridClient(app.config['SENDGRID_API_KEY'])
 
-    recipients = [{'email': r.email} for r in recipient_users]
-    merge_vars = [{"rcpt": r.email, "vars": [{"name": "NAME", "content": r.name or 'Subscriber'}]} for r in recipient_users]
+    recipients = [r.email for r in recipient_users]
 
-    # NBNBNBNB: the email template MUST have a special DIV in it to place the content in.
-    # This gets removed when importing the template into Mandrill from Mailchimp
-    #  <div mc:edit="main"></div>
+    message = sendgrid.Mail()
 
-    template_vars = [
-        {"name": "main", "content": html},
-    ]
+    message.add_to(recipients)
+    message.set_subject(subject)
+    message.add_filter('templates', 'enable', '1')
+    message.add_filter('templates', 'template_id', app.config['SENDGRID_TRANSACTIONAL_TEMPLATE_ID'])
 
-    msg = {
-        "subject": subject,
-        "from_name": from_name,
-        "from_email": from_email,
-        "to": recipients,
-        "merge_vars": merge_vars,
-        "track_opens": True,
-        "track_clicks": True,
-        "preserve_recipients": False,
-        "google_analytics_campaign": utm_campaign,
-        "google_analytics_domains": ["pmg.org.za"],
-        "subaccount": subaccount,
-    }
+    message.add_filter('clicktrack', 'enable', '1')
+
+    message.set_substitutions({'*|NAME|*': [r.name or 'Subscriber' for r in recipient_users]})
+    message.set_html(html)
+    message.set_from(from_email)
+    status, msg = sg.send(message)
 
     log.info("Email will be sent to %d recipients." % len(recipients))
-    log.info("Sending email via mandrill: %s" % msg)
+    log.info("Sending email via sendgrid: %s" % msg)
+    print(status, msg)
 
-    mandrill_client = mandrill.Mandrill(app.config['MANDRILL_API_KEY'])
-    mandrill_client.messages.send_template(app.config["MANDRILL_ALERTS_TEMPLATE"], template_vars, msg)

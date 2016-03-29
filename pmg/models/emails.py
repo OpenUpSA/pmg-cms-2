@@ -5,6 +5,7 @@ import pytz
 
 from sqlalchemy import func
 import sendgrid
+from smtpapi import SMTPAPIHeader
 from flask import render_template, url_for
 
 from pmg import db, app
@@ -159,22 +160,27 @@ def send_sendgrid_email(subject, from_name, from_email, recipient_users, html, u
     :param from_email: email of the sender
     :param recipient_users: array of `User` objects of recipients
     :param html: HTML body of the email
-    :param utm_campaign: Google Analytics campaign (optional)
+    :param utm_campaign: Google Analytics campaign
     """
-    sg = sendgrid.SendGridClient(app.config['SENDGRID_API_KEY'])
+    sg = sendgrid.SendGridClient(app.config['SENDGRID_API_KEY'], raise_errors=True)
 
     recipients = [r.email for r in recipient_users]
 
     message = sendgrid.Mail()
 
-    message.add_to(recipients)
+    message.smtpapi.add_to(recipients)
     message.set_subject(subject)
     message.add_filter('templates', 'enable', '1')
     message.add_filter('templates', 'template_id', app.config['SENDGRID_TRANSACTIONAL_TEMPLATE_ID'])
 
+    message.smtpapi.set_substitutions({'*|NAME|*': [r.name or 'Subscriber' for r in recipient_users]})
+
+    message.add_filter('ganalytics', 'enable', '1')
+    message.add_filter('ganalytics', 'utm_medium', 'email')
+    message.add_filter('ganalytics', 'utm_source', 'transactional')
+    message.add_filter('ganalytics', 'utm_campaign', utm_campaign)
     message.add_filter('clicktrack', 'enable', '1')
 
-    message.set_substitutions({'*|NAME|*': [r.name or 'Subscriber' for r in recipient_users]})
     message.set_html(html)
     message.set_from(from_email)
     status, msg = sg.send(message)

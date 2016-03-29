@@ -43,13 +43,22 @@ if not os.path.isdir(UPLOAD_PATH):
 
 # override flask mail's send operation to inject some customer headers
 original_send = mail.send
-def send_email_with_subaccount(message):
+def send_email_with_sendgrid(message):
     extra_headers = {
         "filters": {
             "templates": {
                 "settings": {
                     "enable": "1",
                     "template_id": app.config['SENDGRID_TRANSACTIONAL_TEMPLATE_ID']
+                }
+            },
+            "ganalytics": {
+                "settings": {
+                    "enable": "1",
+                    "utm_source": "some_source",
+                    "utm_medium": "email",
+                    "utm_source": "transactional",
+                    "utm_campaign": "user-account"
                 }
             }
         }
@@ -58,7 +67,7 @@ def send_email_with_subaccount(message):
         'X-SMTPAPI': json.dumps(extra_headers)
     }
     original_send(message)
-app.extensions.get('mail').send = send_email_with_subaccount
+app.extensions.get('mail').send = send_email_with_sendgrid
 
 
 # setup assets

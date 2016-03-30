@@ -55,7 +55,6 @@ def send_email_with_sendgrid(message):
             "ganalytics": {
                 "settings": {
                     "enable": "1",
-                    "utm_source": "some_source",
                     "utm_medium": "email",
                     "utm_source": "transactional",
                     "utm_campaign": "user-account"

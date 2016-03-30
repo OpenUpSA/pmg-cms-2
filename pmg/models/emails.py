@@ -190,5 +190,4 @@ def send_sendgrid_email(subject, from_name, from_email, recipient_users, html, u
     status, msg = sg.send(message)
 
     log.info("Sending email via Sendgrid: %s %s" % (status, json.loads(msg)['message']))
-    print(status, json.loads(msg)['message'])
 

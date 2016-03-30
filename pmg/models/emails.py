@@ -2,6 +2,7 @@ import re
 import logging
 import arrow
 import pytz
+import json
 
 from sqlalchemy import func
 import sendgrid
@@ -183,9 +184,11 @@ def send_sendgrid_email(subject, from_name, from_email, recipient_users, html, u
 
     message.set_html(html)
     message.set_from(from_email)
-    status, msg = sg.send(message)
 
     log.info("Email will be sent to %d recipients." % len(recipients))
-    log.info("Sending email via sendgrid: %s" % msg)
-    print(status, msg)
+
+    status, msg = sg.send(message)
+
+    log.info("Sending email via Sendgrid: %s %s" % (status, json.loads(msg)['message']))
+    print(status, json.loads(msg)['message'])
 

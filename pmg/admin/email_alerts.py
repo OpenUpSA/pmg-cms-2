@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
 
 from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting, db
-from pmg.models.emails import send_mandrill_email
+from pmg.models.emails import send_sendgrid_email
 from rbac import RBACMixin
 
 log = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ class EmailAlertForm(Form):
         if not self.message:
             self.generate_email()
 
-        send_mandrill_email(
+        send_sendgrid_email(
             subject=self.message.subject,
             from_name="PMG Notifications",
             from_email=self.message.sender,

@@ -1,13 +1,13 @@
 Parliamentary Monitoring Group website
 ======================================
 
-Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa. 
+Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa.
 See: https://www.pmg.org.za.
 
 ## What does this project do
 
-Allow citizens and other interested parties to monitor what's going on in the South African parliament. With specific 
-focus on tracking the progress of legislation as it moves through the various phases: from being introduced for the 
+Allow citizens and other interested parties to monitor what's going on in the South African parliament. With specific
+focus on tracking the progress of legislation as it moves through the various phases: from being introduced for the
 first time to finally being approved and signed into law.
 
 The purpose of the project is to improve parliamentary oversight, make the parliamentary process more accessible
@@ -31,7 +31,7 @@ The project consists of the following major components:
 All of the data that is displayed through the frontend website, is served
 through an API at https://api.pmg.org.za which is freely accessible.  However,
 please note that access to some content on the frontend website is restricted,
-and the same restrictions apply for the API. 
+and the same restrictions apply for the API.
 
 * [More details on the API and what it contains are in API.md](API.md)
 
@@ -90,6 +90,7 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * FLASK_ENV=production
 * AWS_ACCESS_KEY_ID
 * AWS_SECRET_ACCESS_KEY
+* SENDGRID_API_KEY
 * MAIL_PASSWORD
 * SECURITY_PASSWORD_SALT
 
@@ -109,6 +110,6 @@ We use [Flask-Migrate](https://flask-migrate.readthedocs.org/en/latest/) and [Al
 
     python app.py db migrate -m "<revision description>"
 
-Then to run the script on your local machine: 
+Then to run the script on your local machine:
 
     python app.py db upgrade

@@ -8,6 +8,8 @@ from flask.ext.migrate import Migrate
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
 
+import json
+
 env = os.environ.get('FLASK_ENV', 'development')
 
 app = Flask(__name__, static_folder="static")
@@ -41,14 +43,30 @@ if not os.path.isdir(UPLOAD_PATH):
 
 # override flask mail's send operation to inject some customer headers
 original_send = mail.send
-def send_email_with_subaccount(message):
+def send_email_with_sendgrid(message):
+    extra_headers = {
+        "filters": {
+            "templates": {
+                "settings": {
+                    "enable": "1",
+                    "template_id": app.config['SENDGRID_TRANSACTIONAL_TEMPLATE_ID']
+                }
+            },
+            "ganalytics": {
+                "settings": {
+                    "enable": "1",
+                    "utm_medium": "email",
+                    "utm_source": "transactional",
+                    "utm_campaign": "user-account"
+                }
+            }
+        }
+    }
     message.extra_headers = {
-        'X-MC-Subaccount': app.config['MANDRILL_TRANSACTIONAL_SUBACCOUNT'],
-        'X-MC-Template': app.config['MANDRILL_TRANSACTIONAL_TEMPLATE'],
-        'X-MC-GoogleAnalytics': 'pmg.org.za',
+        'X-SMTPAPI': json.dumps(extra_headers)
     }
     original_send(message)
-app.extensions.get('mail').send = send_email_with_subaccount
+app.extensions.get('mail').send = send_email_with_sendgrid
 
 
 # setup assets

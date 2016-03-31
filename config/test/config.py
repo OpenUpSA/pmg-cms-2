@@ -35,19 +35,16 @@ ALLOWED_EXTENSIONS = set(
     ]
 )
 
-# Mandrill
-MANDRILL_API_KEY = env.get('MAIL_PASSWORD')
-MANDRILL_TRANSACTIONAL_TEMPLATE = 'notification-template'
-MANDRILL_TRANSACTIONAL_SUBACCOUNT = 'transactional'
-MANDRILL_ALERTS_TEMPLATE = 'notification-template'
-MANDRILL_ALERTS_SUBACCOUNT = 'alerts'
+# Sendgrid
+SENDGRID_API_KEY = env.get('SENDGRID_API_KEY')
+SENDGRID_TRANSACTIONAL_TEMPLATE_ID = '18988dde-425f-4abc-a62f-36f9221e3ff1'
 
 # Flask-Mail
-MAIL_SERVER = 'smtp.mandrillapp.com'
+MAIL_SERVER = 'test'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'webapps+pmg@code4sa.org'
-MAIL_PASSWORD = MANDRILL_API_KEY
+MAIL_USERNAME = 'test'
+MAIL_PASSWORD = 'test'
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 
 # Flask-Security config

@@ -43,13 +43,13 @@ ALLOWED_EXTENSIONS = set(
 
 # Sendgrid
 SENDGRID_API_KEY = env.get('SENDGRID_API_KEY')
-SENDGRID_TRANSACTIONAL_TEMPLATE_ID = '18988dde-425f-4abc-a62f-36f9221e3ff1'
+SENDGRID_TRANSACTIONAL_TEMPLATE_ID = '2ef9656f-db37-4072-9ed8-449368b73617'
 
 # Flask-Mail
 MAIL_SERVER = 'smtp.sendgrid.com'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'code4sa-general'
+MAIL_USERNAME = 'pmg-website'
 MAIL_PASSWORD = env.get('MAIL_PASSWORD')
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 

@@ -49,7 +49,7 @@ SENDGRID_TRANSACTIONAL_TEMPLATE_ID = '2ef9656f-db37-4072-9ed8-449368b73617'
 MAIL_SERVER = 'smtp.sendgrid.com'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
-MAIL_USERNAME = 'code4sa-general'
+MAIL_USERNAME = 'pmg-website'
 MAIL_PASSWORD = env.get('MAIL_PASSWORD')
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 

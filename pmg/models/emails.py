@@ -182,12 +182,13 @@ def send_sendgrid_email(subject, from_name, from_email, recipient_users, html, u
     message.add_filter('ganalytics', 'utm_campaign', utm_campaign)
     message.add_filter('clicktrack', 'enable', '1')
 
+    message.add_category(utm_campaign)
+
     message.set_html(html)
     message.set_from(from_email)
 
-    log.info("Email will be sent to %d recipients." % len(recipients))
+    log.info("Email will be sent to %d recipients, campaign=%s subject=\"%s\"" % (len(recipients), utm_campaign, subject))
 
     status, msg = sg.send(message)
 
-    log.info("Sending email via Sendgrid: %s %s" % (status, json.loads(msg)['message']))
-
+    log.info("Sent email via Sendgrid: %s %s" % (status, json.loads(msg)['message']))

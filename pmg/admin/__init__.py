@@ -1085,7 +1085,6 @@ admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_vie
 
 # ---------------------------------------------------------------------------------
 # Users
-admin.add_view(UsageReportView(name="Usage report", endpoint='usage_report', category='Users'))
 admin.add_view(UserView(User, db.session, name="Users", endpoint='user', category='Users'))
 admin.add_view(OrganisationView(Organisation, db.session, name="Organisations", endpoint='organisation', category='Users'))
 
@@ -1126,4 +1125,5 @@ admin.add_view(MemberView(Member, db.session, name="Members", endpoint='member')
 
 # ---------------------------------------------------------------------------------
 # Reports
-admin.add_view(ReportView(name="Reports", endpoint='reports'))
+admin.add_view(ReportView(name="General reports", endpoint='reports', category='Reports'))
+admin.add_view(UsageReportView(name="User usage report", endpoint='usage_report', category='Reports'))

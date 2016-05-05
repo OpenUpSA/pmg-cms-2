@@ -7,6 +7,7 @@ import re
 import base64
 
 from sqlalchemy import desc, func, sql
+from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import backref, joinedload, validates
 
 from flask import url_for
@@ -677,7 +678,7 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     # TODO: delete this reference and use the minister relation instead
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('questions'), lazy='joined')
+    committee = db.relationship('Committee', backref=db.backref('questions', order_by=desc('date')), lazy='joined')
 
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
     minister = db.relationship('Minister', lazy='joined')
@@ -969,7 +970,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
     nid = db.Column(db.Integer())
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports'), lazy=False)
+    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc('start_date'))), lazy=False)
     files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     def __unicode__(self):
@@ -977,7 +978,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(desc(cls.start_date))
+        return cls.query.order_by(nullslast(desc(cls.start_date)))
 
 
 class TabledCommitteeReportFile(FileLinkMixin, db.Model):
@@ -998,7 +999,7 @@ class CallForComment(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('calls_for_comments'), lazy='joined')
+    committee = db.relationship('Committee', backref=db.backref('calls_for_comments', order_by=desc('start_date')), lazy='joined')
     title = db.Column(db.Text(), nullable=False)
     start_date = db.Column(db.Date(), nullable=False)
     end_date = db.Column(db.Date())

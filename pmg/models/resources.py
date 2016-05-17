@@ -1150,6 +1150,9 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def summary(cls):
+        # Remove the filter by 2016 once the records have been deleted where:
+        # alternate_member == True & attendance == 'A'
+
         year = func.date_part('year', CommitteeMeeting.date).label('year')
 
         rows = db.session.query(
@@ -1162,6 +1165,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             .join(CommitteeMeeting)\
             .group_by(cls.member_id, cls.attendance, year)\
             .order_by(year.desc(), cls.member_id)\
+            .filter(year == 2016) \
             .all()
 
         return rows

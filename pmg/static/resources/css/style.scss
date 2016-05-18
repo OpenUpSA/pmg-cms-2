@@ -793,4 +793,23 @@ body.email_alerts {
 
 #survey-banner {
   margin-bottom: 0px;
+
+  .share-survey-form {
+
+    @media (min-width: 1024px) {
+      float: right;
+      margin-right: 150px;
+      .share-button {
+        float: left;
+        margin-left: 10px;
+      }
+    }
+    @media (max-width: 768px) {
+      .share-button {
+        float: right;
+        margin-left: 10px;
+        margin-top: 5px;
+      }
+    }
+  }
 }

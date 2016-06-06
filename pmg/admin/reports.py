@@ -50,6 +50,36 @@ group by
 order by
   to_char(e.date, 'YYYY-MM') desc
 """),
+
+        Report(2,
+               name="Bill events",
+               description="Events dates for bills",
+               sql="""
+select
+  b.id,
+  b.year,
+  b.number,
+  bt.name,
+  b.title,
+  bs.description as "status",
+  b.date_of_introduction,
+  (select to_char(e.date, 'YYYY-MM-DD') as "event_date"
+   from event e
+   inner join event_bills eb on e.id = eb.event_id and eb.bill_id = b.id
+   where e.type = 'bill-passed'
+   limit 1) as "date_of_adoption",
+  b.date_of_assent,
+  (select to_char(e.date, 'YYYY-MM-DD') as "event_date"
+   from event e
+   inner join event_bills eb on e.id = eb.event_id and eb.bill_id = b.id
+   where e.type = 'bill-enacted'
+   limit 1) as "date_of_enactment"
+from
+  bill b
+  inner join bill_type bt on b.type_id = bt.id
+  inner join bill_status bs on bs.id = b.status_id
+order by b.year desc nulls last, number asc nulls last
+"""),
     )
 
     @expose('/')

@@ -21,7 +21,7 @@
       {% for row in result %}
         <tr>
         {% for key in result.keys() %}
-          <td>{{ row[key] }}</td>
+          <td>{{ row[key] if row[key] is not none }}</td>
         {% endfor %}
         </tr>
       {% endfor %}

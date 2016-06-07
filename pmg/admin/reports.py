@@ -73,7 +73,12 @@ select
    from event e
    inner join event_bills eb on e.id = eb.event_id and eb.bill_id = b.id
    where e.type = 'bill-enacted'
-   limit 1) as "date_of_enactment"
+   limit 1) as "date_of_enactment",
+  (select to_char(e.date, 'YYYY-MM-DD') as "event_date"
+   from event e
+   inner join event_bills eb on e.id = eb.event_id and eb.bill_id = b.id
+   where e.type = 'bill-act-commenced'
+   limit 1) as "date_of_commencement"
 from
   bill b
   inner join bill_type bt on b.type_id = bt.id

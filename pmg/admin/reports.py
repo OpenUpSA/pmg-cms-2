@@ -66,7 +66,8 @@ select
   (select to_char(e.date, 'YYYY-MM-DD') as "event_date"
    from event e
    inner join event_bills eb on e.id = eb.event_id and eb.bill_id = b.id
-   where e.type = 'bill-passed'
+   where e.type in ('bill-passed', 'bill-updated')
+   order by e.date desc
    limit 1) as "date_of_adoption",
   to_char(b.date_of_assent, 'YYYY-MM-DD') as "date_of_assent",
   (select to_char(e.date, 'YYYY-MM-DD') as "event_date"

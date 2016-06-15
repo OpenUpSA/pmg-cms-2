@@ -50,7 +50,6 @@ group by
 order by
   to_char(e.date, 'YYYY-MM') desc
 """),
-
         Report(2,
                name="Bill events",
                description="Events dates for bills",
@@ -86,6 +85,49 @@ from
   inner join bill_status bs on bs.id = b.status_id
 order by b.year desc nulls last, number asc nulls last
 """),
+        Report(3,
+               name="Committee meeting summary",
+               description="Committee meeting dates, times and durations",
+               sql="""
+select
+  to_char(e.date, 'YYYY-MM') as "date",
+  to_char(e.date, 'YYYY') as "year",
+  to_char(e.date, 'MM') as "month",
+  h.name_short as "house",
+  c.name as "committee",
+  to_char(date '2011-01-01' + e.actual_start_time, 'HH12:MI') as "actual_start_time",
+  to_char(date '2011-01-01' + e.actual_end_time, 'HH12:MI') as "actual_end_time",
+  case when e.actual_start_time is not null and e.actual_end_time is not null
+  then extract(epoch from ((date '2011-01-01' + e.actual_end_time) - (date '2011-01-01' + e.actual_start_time)))/60
+  else null end as "minutes",
+  e.title,
+  e.id as "meeting-id",
+  concat('https://pmg.org.za/committee-meeting/', e.id, '/') as "url"
+from
+  event e
+  inner join committee c on c.id = e.committee_id
+  inner join house h on h.id = c.house_id
+where e.type = 'committee-meeting'
+order by e.date desc
+"""),
+        Report(4,
+               name="Minister questions summary",
+               description="Questions to ministers",
+               sql="""
+select
+  to_char(q.date, 'YYYY-MM') as "date",
+  to_char(q.date, 'YYYY') as "year",
+  to_char(q.date, 'MM') as "month",
+  m.name as "minister",
+  coalesce(mem.name, q.asked_by_name) as "asked by",
+  q.id as "question-id",
+  concat('https://pmg.org.za/committee-question/', q.id, '/') as "url"
+from
+  committee_question q
+  inner join minister m on m.id = q.minister_id
+  left outer join member mem on mem.id = q.asked_by_member_id
+order by q.date desc
+"""),
     )
 
     @expose('/')
@@ -103,4 +145,14 @@ order by b.year desc nulls last, number asc nulls last
             return report.as_xlsx()
 
         result = report.run()
-        return self.render('admin/reports/report.html', report=report, result=result)
+        truncated = result.rowcount > 500
+        rows = list(result)
+        if truncated:
+            rows = rows[0:500]
+
+        return self.render(
+            'admin/reports/report.html',
+            report=report,
+            result=result,
+            rows=rows,
+            truncated=truncated)

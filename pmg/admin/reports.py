@@ -110,6 +110,24 @@ from
 where e.type = 'committee-meeting'
 order by e.date desc
 """),
+        Report(4,
+               name="Minister questions summary",
+               description="Questions to ministers",
+               sql="""
+select
+  to_char(q.date, 'YYYY-MM') as "date",
+  to_char(q.date, 'YYYY') as "year",
+  to_char(q.date, 'MM') as "month",
+  m.name as "minister",
+  coalesce(mem.name, q.asked_by_name) as "asked by",
+  q.id as "question-id",
+  concat('https://pmg.org.za/committee-question/', q.id, '/') as "url"
+from
+  committee_question q
+  inner join minister m on m.id = q.minister_id
+  left outer join member mem on mem.id = q.asked_by_member_id
+order by q.date desc
+"""),
     )
 
     @expose('/')

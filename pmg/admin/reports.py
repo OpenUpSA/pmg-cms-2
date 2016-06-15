@@ -120,12 +120,14 @@ select
   to_char(q.date, 'MM') as "month",
   m.name as "minister",
   coalesce(mem.name, q.asked_by_name) as "asked by",
+  p.name as "asked by party",
   q.id as "question-id",
   concat('https://pmg.org.za/committee-question/', q.id, '/') as "url"
 from
   committee_question q
   inner join minister m on m.id = q.minister_id
   left outer join member mem on mem.id = q.asked_by_member_id
+  left outer join party p on p.id = mem.party_id
 order by q.date desc
 """),
     )

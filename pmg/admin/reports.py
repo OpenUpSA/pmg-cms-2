@@ -127,4 +127,14 @@ order by e.date desc
             return report.as_xlsx()
 
         result = report.run()
-        return self.render('admin/reports/report.html', report=report, result=result)
+        truncated = result.rowcount > 500
+        rows = list(result)
+        if truncated:
+            rows = rows[0:500]
+
+        return self.render(
+            'admin/reports/report.html',
+            report=report,
+            result=result,
+            rows=rows,
+            truncated=truncated)

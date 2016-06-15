@@ -3,7 +3,7 @@
 {% block body %}
   <div class="container">
     <h2><a href="{{ url_for('reports.index') }}">← PMG Reports</a></h2>
-    <h1>{{ report.name }}</h1>
+    <h1>{{ report.name }} ({{ result.rowcount }} rows)</h1>
 
     <div class="pull-right">
       <a class="btn btn-primary" href="{{ url_for('reports.report', id=report.id, format='xlsx') }}">
@@ -13,12 +13,16 @@
 
     <p class="lead">{{ report.description }}</p>
 
+    {% if truncated %}
+    <div class="alert alert-info">This report has {{ result.rowcount }} rows but only the first 1000 are shown here. Download the report for all rows.</div>
+    {% endif %}
+
     <table class="table table-striped table-condensed table-bordered">
       {% for key in result.keys() %}
       <th>{{ key }}</th>
       {% endfor %}
 
-      {% for row in result %}
+      {% for row in rows %}
         <tr>
         {% for key in result.keys() %}
           <td>{{ row[key] if row[key] is not none }}</td>

@@ -50,7 +50,6 @@ group by
 order by
   to_char(e.date, 'YYYY-MM') desc
 """),
-
         Report(2,
                name="Bill events",
                description="Events dates for bills",
@@ -85,6 +84,31 @@ from
   inner join bill_type bt on b.type_id = bt.id
   inner join bill_status bs on bs.id = b.status_id
 order by b.year desc nulls last, number asc nulls last
+"""),
+        Report(3,
+               name="Committee meeting summary",
+               description="Committee meeting dates, times and durations",
+               sql="""
+select
+  to_char(e.date, 'YYYY-MM') as "date",
+  to_char(e.date, 'YYYY') as "year",
+  to_char(e.date, 'MM') as "month",
+  h.name_short as "house",
+  c.name as "committee",
+  to_char(date '2011-01-01' + e.actual_start_time, 'HH12:MI') as "actual_start_time",
+  to_char(date '2011-01-01' + e.actual_end_time, 'HH12:MI') as "actual_end_time",
+  case when e.actual_start_time is not null and e.actual_end_time is not null
+  then extract(epoch from ((date '2011-01-01' + e.actual_end_time) - (date '2011-01-01' + e.actual_start_time)))/60
+  else null end as "minutes",
+  e.title,
+  e.id as "meeting-id",
+  concat('https://pmg.org.za/committee-meeting/', e.id, '/') as "url"
+from
+  event e
+  inner join committee c on c.id = e.committee_id
+  inner join house h on h.id = c.house_id
+where e.type = 'committee-meeting'
+order by e.date desc
 """),
     )
 

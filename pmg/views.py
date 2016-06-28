@@ -213,6 +213,7 @@ def committee_question(question_id):
                            committee=committee,
                            question=question,
                            hide_replies=False,
+                           content_date=question['date'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
 
@@ -283,6 +284,7 @@ def committee_meeting(event_id):
         audio=audio,
         related_docs=related_docs,
         premium_committees=premium_committees,
+        content_date=event['date'],
         admin_edit_url=admin_url('committee-meeting', event_id))
 
 
@@ -335,6 +337,7 @@ def tabled_committee_report(tabled_committee_report_id):
     return render_template(
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
+        content_date=tabled_committee_report['start_date'],
         admin_edit_url=admin_url('tabled-committee-report', tabled_committee_report_id))
 
 
@@ -387,6 +390,7 @@ def call_for_comment(call_for_comment_id):
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,
+        content_date=call_for_comment['start_date'],
         admin_edit_url=admin_url('call-for-comment', call_for_comment_id))
 
 
@@ -427,6 +431,7 @@ def policy_document(policy_document_id):
     return render_template(
         'policy_document_detail.html',
         policy_document=policy_document,
+        content_date=policy_document['start_date'],
         admin_edit_url=admin_url('policy', policy_document_id))
 
 
@@ -467,6 +472,7 @@ def gazette(gazette_id):
     return render_template(
         'gazette_detail.html',
         gazette=gazette,
+        content_date=gazette['start_date'],
         admin_edit_url=admin_url('gazette', gazette_id))
 
 
@@ -509,6 +515,7 @@ def hansard(event_id):
         event=event,
         audio=audio,
         related_docs=related_docs,
+        content_date=event['date'],
         admin_edit_url=admin_url('hansard', event_id))
 
 
@@ -549,6 +556,7 @@ def briefing(event_id):
         event=event,
         audio=audio,
         related_docs=related_docs,
+        content_date=event['date'],
         admin_edit_url=admin_url('briefing', event_id))
 
 
@@ -628,6 +636,7 @@ def question_reply(question_reply_id):
         template,
         question_reply=question_reply,
         committee=question_reply.get('committee'),
+        content_date=question_reply['start_date'],
         admin_edit_url=admin_url('question', question_reply_id))
 
 

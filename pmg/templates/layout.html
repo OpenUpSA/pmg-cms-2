@@ -76,6 +76,17 @@
     {% endif %}
   {% endif %}
 
+  {# record content date? #}
+  {% if content_date is defined and content_date %}
+  ga('set', 'dimension2', '{{ content_date|pretty_date("date") }}');
+  {% endif %}
+
+  {# link this hit to a committee? #}
+  {% if committee is defined and committee.id and committee.name %}
+  ga('set', 'dimension3', '{{ committee.id }} - {{ committee.name }}');
+  {% endif %}
+
+
   ga('send', 'pageview');
 
   {% for cat, action, label, value in get_ga_events() %}

@@ -72,6 +72,8 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
     format = '%d %b %Y'
     if format_option == "long":
         format = '%d %B %Y'
+    elif format_option == "date":
+        format = '%Y-%m-%d'
 
     return d.strftime(format)
 

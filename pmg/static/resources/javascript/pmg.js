@@ -99,3 +99,8 @@ $(function() {
     }
   });
 });
+
+// user creation form
+$('form[name=register_user_form]').on('submit', function() {
+  $(this).find('input[type=submit]').prop('disabled', true);
+});

@@ -85,6 +85,7 @@ class Page(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
+        tmp['type'] = 'page'
         return tmp
 
 

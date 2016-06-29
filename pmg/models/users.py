@@ -3,7 +3,7 @@ import uuid
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
 
-from sqlalchemy import sql, event
+from sqlalchemy import sql, event, func
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
@@ -93,6 +93,8 @@ class User(db.Model, UserMixin):
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
     subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now(), onupdate=func.current_timestamp())
     # when does this subscription expire?
     expiry = db.Column(db.Date(), default=one_year_later)
 

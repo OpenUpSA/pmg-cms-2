@@ -72,6 +72,12 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
     format = '%d %b %Y'
     if format_option == "long":
         format = '%d %B %Y'
+    elif format_option == "ga":
+        # format for google analytics dimension2
+        # we exclude the day because it makes it easier
+        # to use in GA, and the day isn't all that useful
+        # as an reporting axis
+        format = '%Y-%m'
 
     return d.strftime(format)
 

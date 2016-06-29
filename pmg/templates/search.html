@@ -78,6 +78,10 @@
             {% endif %}
 
             <h5>{{ search.hits }} matches</h5>
+
+            {% if suggest_phrase %}
+            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> instead.</p>
+            {% endif %}
           </div>
         </div>
         {% if current_user.is_authenticated() %}

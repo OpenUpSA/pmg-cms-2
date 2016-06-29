@@ -748,6 +748,16 @@ def search(page=0):
                 search['filtered_committee_name'] = committee['name']
                 break
 
+    # suggest a phrase search?
+    if q and '"' not in q:
+        suggest_phrase = '"%s"' % q
+        kwargs = {('filter[%s]' % k): v for k, v in filters.iteritems() if v}
+        kwargs['q'] = suggest_phrase
+        suggest_phrase_url = url_for('search', **kwargs)
+    else:
+        suggest_phrase = False
+        suggest_phrase_url = None
+
     return render_template(
         'search.html',
         q=q,
@@ -764,7 +774,9 @@ def search(page=0):
         yearcount=yearcount,
         committees=committees,
         search_types=Search.friendly_data_types.items(),
-        saved_search=saved_search)
+        saved_search=saved_search,
+        suggest_phrase=suggest_phrase,
+        suggest_phrase_url=suggest_phrase_url)
 
 
 @app.route('/page/<path:pagename>')

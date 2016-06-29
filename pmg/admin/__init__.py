@@ -230,7 +230,7 @@ class UserView(MyModelView):
     column_list = [
         'email',
         'active',
-        'confirmed_at',
+        'created_at',
         'current_login_at',
         'login_count',
         'expiry',
@@ -256,6 +256,7 @@ class UserView(MyModelView):
             'widget': widgets.CheckboxSelectWidget(multiple=True),
         }
     }
+    column_default_sort = (User.created_at, True)
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_searchable_list = ('email',)
     column_filters = [

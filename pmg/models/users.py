@@ -1,13 +1,19 @@
 import datetime
+import uuid
 from dateutil.relativedelta import relativedelta
+from logging import getLogger
 
-from sqlalchemy import sql, event
+from sqlalchemy import sql, event, func
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+import requests
 
 from pmg import app, db
 import serializers
+
+
+log = getLogger(__name__)
 
 
 class Role(db.Model, RoleMixin):
@@ -87,6 +93,8 @@ class User(db.Model, UserMixin):
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
     subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now(), onupdate=func.current_timestamp())
     # when does this subscription expire?
     expiry = db.Column(db.Date(), default=one_year_later)
 
@@ -172,6 +180,40 @@ class User(db.Model, UserMixin):
                 alerts_dict[committee['id']] = committee.get('name')
         tmp['committee_alerts'] = alerts_dict
         return tmp
+
+
+@event.listens_for(User, 'after_insert')
+def user_created(mapper, connection, user):
+    subscribe_to_newsletter(user)
+
+
+def subscribe_to_newsletter(user):
+    """ Add this user to the sharpspring PMG Monitor newsletter mailing list
+    """
+    if app.config.get('SHARPSPRING_API_SECRET'):
+        body = {
+            'id': uuid.uuid4().get_hex(),
+            'method': 'addListMemberEmailAddress',
+            'params': {'emailAddress': user.email, 'listID': '310799364'},
+        }
+        log.info("Subscribing to SharpSpring mailing list: %s" % body)
+
+        resp = requests.post(
+            'http://api.sharpspring.com/pubapi/v1/',
+            params={
+                'accountID': app.config['SHARPSPRING_API_KEY'],
+                'secretKey': app.config['SHARPSPRING_API_SECRET'],
+            }, json=body)
+        resp.raise_for_status()
+
+        data = resp.json()
+        # 213 means already subscribed
+        if not data['error'] or data['error']['code'] == 213 or data['result']['creates'][0]['success']:
+            # all good
+            log.info("Subscribed")
+        else:
+            log.error("Couldn't subscribe to SharpSpring: %s" % data)
+            raise ValueError("Couldn't subscribe to SharpSpring: %s" % data)
 
 
 roles_users = db.Table(

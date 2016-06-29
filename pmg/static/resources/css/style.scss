@@ -345,6 +345,26 @@ article.page {
   }
 }
 
+.featured-content .committee-meeting:after {
+  content: "\f0c0";
+  font-family: FontAwesome;
+  position: relative;
+  bottom: 50px;
+  right: -81%;
+  color: lightgrey;
+  font-size: 2em;
+}
+
+.featured-content .page:after {
+  content: "\f15c";
+  font-family: FontAwesome;
+  position: relative;
+  bottom: 50px;
+  right: -81%;
+  color: lightgrey;
+  font-size: 2em;
+}
+
 .home-recent-items {
   .subsection {
     padding: 20px;

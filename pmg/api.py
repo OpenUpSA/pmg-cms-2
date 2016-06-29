@@ -21,6 +21,8 @@ from pmg.models.base import resource_slugs
 from pmg.admin.xlsx import XLSXBuilder
 import pmg.models.serializers as serializers
 
+import random
+
 logger = logging.getLogger(__name__)
 
 api = Blueprint('api', __name__)
@@ -269,12 +271,14 @@ def featured():
     if feature:
         info['feature'] = serializers.to_dict(feature)
 
-    info['committee_meetings'] = CommitteeMeeting.query\
+    committee_meetings = CommitteeMeeting.query\
         .filter(CommitteeMeeting.featured == True)\
         .order_by(desc(CommitteeMeeting.date))\
         .all()  # noqa
-    info['committee_meetings'] = [serializers.to_dict(c) for c in info['committee_meetings']]
-
+    pages = Page.query\
+        .all()  # noqa
+    info['committee_meetings'] = [serializers.to_dict(c) for c in committee_meetings]
+    info['pages'] = [serializers.to_dict(c) for c in pages]
     return send_api_response(info)
 
 

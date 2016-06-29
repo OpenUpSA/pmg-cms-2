@@ -40,22 +40,33 @@
     <div class="container">
       {% include "_messages.html" %}
 
-      {% if featured_content.committee_meetings %}
+      {% if featured_content.content %}
         <h3>Featured Content</h3>
 
         <div class="content-cards feature-cards moreable">
           <div class="row">
-            {% for meeting in featured_content.committee_meetings %}
-              <div class="col-xs-12 col-sm-6 col-md-3">
-                <a href="{{ url_for('committee_meeting', event_id=meeting.id, utm_source='homepage', utm_medium='featured-card') }}">
-                  <div class="card feature-card">
-                    <h4>{{ meeting.committee.name }}</h4>
-                    <h5>{{ meeting.title|truncate(100) }}</h5>
-                    <h6 class="date">{{ meeting.date|pretty_date|nbsp|safe }}</h6>
-                  </div>
+            {% for item in featured_content.content %}
+            {% if item.type == 'committee-meeting' %}
+            <div class="col-xs-12 col-sm-6 col-md-3 committee-meeting">
+              <a href="{{ url_for('committee_item', event_id=item.id, utm_source='homepage', utm_medium='featured-card') }}">
+                <div class="card feature-card">
+                  <h4>{{ item.committee.name }}</h4>
+                  <h5>{{ item.title|truncate(100) }}</h5>
+                  <h6 class="date">{{ item.date|pretty_date|nbsp|safe }}</h6>
+                </div>
 
-                </a>
-              </div>
+              </a>
+            </div>
+            {% elif item.type == 'page' %}
+            <div class="col-xs-12 col-sm-6 col-md-3 page">
+              <a href="{{ url_for('page', id=item.id, utm_source='homepage', utm_medium='featured-card') }}">
+                <div class="card feature-card">
+                  <h5>{{ item.title|truncate(100) }}</h5>
+                </div>
+
+              </a>
+            </div>
+            {% endif %}
             {% endfor %}
           </div>
         </div>

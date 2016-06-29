@@ -78,8 +78,8 @@ def classify_attachments(files):
 def index():
     logger.info("Loading index page")
     committee_meetings = load_from_api('committee-meeting')['results'][:11]
-    bills = load_from_api('bill/current')["results"][:11]
-    bills.sort(key=lambda b: [-b['year'], b['type']['prefix'], b.get('number', 0), b['title']])
+    bills = load_from_api('bill/current', return_everything=True)["results"]
+    bills.sort(key=lambda b: b['updated_at'], reverse=True)
     questions = load_from_api('minister-questions-combined')['results'][:11]
     schedule = load_from_api('schedule')["results"]
     scheduledates = []
@@ -97,7 +97,7 @@ def index():
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,
-        bills=bills,
+        bills=bills[:11],
         questions=questions,
         schedule=schedule,
         scheduledates=scheduledates,

@@ -1,42 +1,47 @@
 from os import environ as env
 
+# dev mode?
+DEBUG = env.get('FLASK_ENV', 'development') != 'production'
+
 WTF_CSRF_ENABLED = True
-SERVER_NAME = 'pmg.dev:5000'
-DEBUG = True
-SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8'
-SECRET_KEY = "AEORJAEONIAEGCBGKMALMAENFXGOAERGN"
-API_HOST = "http://api.pmg.dev:5000/"
-FRONTEND_HOST = "http://pmg.dev:5000/"
-SESSION_COOKIE_DOMAIN = "pmg.dev"
+SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
+GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
+
+SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI', 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
+SQLALCHEMY_ECHO = DEBUG
+
 RESULTS_PER_PAGE = 50
+
+ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
+SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models
 SEARCH_RESULTS_PER_PAGE = 20
-SQLALCHEMY_ECHO = False
+
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
-SEARCH_REINDEX_CHANGES = False # don't reindex changes to models
 UPLOAD_PATH = "/tmp/pmg_upload/"
-ES_SERVER = "http://localhost:9200"
-MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # size cap on uploads
-ALLOWED_EXTENSIONS = set(
-    [
-        "doc",
-        "docx",
-        "jpg",
-        "jpeg",
-        "mp3",
-        "pdf",
-        "ppt",
-        "pptx",
-        "rtf",
-        "txt",
-        "wav",
-        "xls",
-        "xlsx",
-    ]
-)
 
 RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY')
 RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY')
+
+# must match client_max_body_size in nginx.conf
+MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # size cap on uploads
+
+# uploadable files
+ALLOWED_EXTENSIONS = set([
+    "doc",
+    "docx",
+    "jpg",
+    "jpeg",
+    "mp3",
+    "pdf",
+    "ppt",
+    "pptx",
+    "rtf",
+    "txt",
+    "wav",
+    "xls",
+    "xlsx",
+])
 
 # Sendgrid
 SENDGRID_API_KEY = env.get('SENDGRID_API_KEY')
@@ -68,7 +73,6 @@ SECURITY_REGISTER_URL = "/register/"
 SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"
 
-
 # Flask-Security features
 SECURITY_CONFIRMABLE = False
 SECURITY_LOGIN_WITHOUT_CONFIRMATION = True
@@ -76,3 +80,14 @@ SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
+
+if DEBUG:
+    SERVER_NAME = 'pmg.dev:5000'
+    API_HOST = "http://api.pmg.dev:5000/"
+    FRONTEND_HOST = "http://pmg.dev:5000/"
+    SESSION_COOKIE_DOMAIN = "pmg.dev"
+else:
+    SERVER_NAME = 'pmg.org.za'
+    API_HOST = "https://api.pmg.org.za/"
+    FRONTEND_HOST = "https://pmg.org.za/"
+    SESSION_COOKIE_DOMAIN = "pmg.org.za"

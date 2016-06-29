@@ -78,7 +78,7 @@
 
   {# record content date? #}
   {% if content_date is defined and content_date %}
-  ga('set', 'dimension2', '{{ content_date|pretty_date("date") }}');
+  ga('set', 'dimension2', '{{ content_date|pretty_date("ga") }}');
   {% endif %}
 
   {# link this hit to a committee? #}

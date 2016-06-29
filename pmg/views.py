@@ -78,7 +78,7 @@ def classify_attachments(files):
 def index():
     logger.info("Loading index page")
     committee_meetings = load_from_api('committee-meeting')['results'][:11]
-    bills = load_from_api('bill/current')["results"]
+    bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
     questions = load_from_api('minister-questions-combined')['results'][:11]
     schedule = load_from_api('schedule')["results"]

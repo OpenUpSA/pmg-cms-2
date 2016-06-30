@@ -21,8 +21,6 @@ from pmg.models.base import resource_slugs
 from pmg.admin.xlsx import XLSXBuilder
 import pmg.models.serializers as serializers
 
-import random
-
 logger = logging.getLogger(__name__)
 
 api = Blueprint('api', __name__)

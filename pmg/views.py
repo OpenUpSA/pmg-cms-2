@@ -92,7 +92,10 @@ def index():
     stock_pic = random.choice(["sa-parliament.jpg"])
 
     featured_content = load_from_api('featured')
-    featured_sample = featured_content['committee_meetings'][:6] + featured_content['pages'][:12]
+    pages = featured_content['pages'][:12]
+    for p in pages:
+        p['type'] = 'page'
+    featured_sample = featured_content['committee_meetings'][:12] + pages
     random.shuffle(featured_sample)
     featured_content['content'] = featured_sample[:12]
 

@@ -97,11 +97,14 @@ def index():
     for page in pages:
         page['type'] = 'page'
         soup = BeautifulSoup(page['body'], "html.parser")
-        for p in soup.findAll('p'):
-            if p.findAll('strong'):
+        for idx, p in enumerate(soup.findAll('p')):
+            if idx == 0 and p.findAll('strong'):
+                # Skip first para if it contains strong - probably a heading
                 continue
-            page['first_para'] = p.findAll(text=True)[0]
-            break
+            p_texts = p.findAll(text=True)
+            if p_texts:
+                page['first_para'] = p_texts[0]
+                break
 
 
     featured_sample = featured_content['committee_meetings'][:12] + pages

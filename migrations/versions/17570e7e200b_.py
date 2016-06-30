@@ -1,14 +1,14 @@
-"""empty message
+"""page-feature-flag
 
 Revision ID: 17570e7e200b
-Revises: 8939e1ee328
+Revises: 4b9d9e9bee64
 Create Date: 2016-06-30 10:20:31.170514
 
 """
 
 # revision identifiers, used by Alembic.
 revision = '17570e7e200b'
-down_revision = '8939e1ee328'
+down_revision = '4b9d9e9bee64'
 
 from alembic import op
 import sqlalchemy as sa

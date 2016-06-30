@@ -93,7 +93,7 @@ def index():
     stock_pic = random.choice(["sa-parliament.jpg"])
 
     featured_content = load_from_api('featured')
-    pages = featured_content['pages'][:12]
+    pages = featured_content.get('pages', [])[:12]
     for page in pages:
         page['type'] = 'page'
         soup = BeautifulSoup(page['body'], "html.parser")

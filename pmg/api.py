@@ -269,12 +269,16 @@ def featured():
     if feature:
         info['feature'] = serializers.to_dict(feature)
 
-    info['committee_meetings'] = CommitteeMeeting.query\
+    committee_meetings = CommitteeMeeting.query\
         .filter(CommitteeMeeting.featured == True)\
         .order_by(desc(CommitteeMeeting.date))\
         .all()  # noqa
-    info['committee_meetings'] = [serializers.to_dict(c) for c in info['committee_meetings']]
-
+    pages = Page.query\
+        .filter(Page.featured == True)\
+        .order_by(desc(Page.updated_at))\
+        .all()  # noqa
+    info['committee_meetings'] = [serializers.to_dict(c) for c in committee_meetings]
+    info['pages'] = [serializers.to_dict(c) for c in pages]
     return send_api_response(info)
 
 

@@ -1,11 +1,12 @@
 import re
 
-from sqlalchemy import desc, func, sql
+from sqlalchemy import func, sql
 from sqlalchemy.orm import validates
 
 from pmg import app, db
 from .base import resource_slugs, FileLinkMixin
 
+import serializers
 
 class Redirect(db.Model):
     __tablename__ = 'redirect'
@@ -77,10 +78,16 @@ class Page(db.Model):
 
     files = db.relationship("PageFile", lazy='joined')
     show_files = db.Column(db.Boolean, nullable=False, default=True, server_default=sql.expression.true())
+    featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
 
     @validates('slug')
     def validate_slug(self, key, value):
         return value.strip('/')
+
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        return tmp
+
 
 
 class PageFile(FileLinkMixin, db.Model):

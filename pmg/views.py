@@ -3,6 +3,7 @@ from datetime import datetime, date
 import math
 import random
 from urlparse import urlparse, urlunparse
+from bs4 import BeautifulSoup
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -92,7 +93,25 @@ def index():
     stock_pic = random.choice(["sa-parliament.jpg"])
 
     featured_content = load_from_api('featured')
-    featured_content['committee_meetings'] = featured_content['committee_meetings'][:12]
+    pages = featured_content['pages'][:12]
+    for page in pages:
+        page['type'] = 'page'
+        soup = BeautifulSoup(page['body'], "html.parser")
+        for idx, p in enumerate(soup.findAll('p')):
+            if idx == 0 and (p.findAll('strong')
+                             or p.findAll('h1')
+                             or p.findAll('h2')):
+                # Skip first para if it contains strong - probably a heading
+                continue
+            p_texts = p.findAll(text=True)
+            if p_texts:
+                page['first_para'] = p_texts[0]
+                break
+
+    # pick 12 randomly from up to 12 pages and up to 12 meetings
+    featured_sample = featured_content['committee_meetings'][:12] + pages
+    random.shuffle(featured_sample)
+    featured_content['content'] = featured_sample[:12]
 
     return render_template(
         'index.html',

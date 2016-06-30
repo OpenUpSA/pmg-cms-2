@@ -351,9 +351,10 @@ article.page {
     position: absolute;
     bottom: 14px;
     right: 24px;
-    color: lightgrey;
+    color: $grey-medium;
     font-size: 2em;
   }
+
   .committee-meeting {
     &:after {
       content: "\f0c0";

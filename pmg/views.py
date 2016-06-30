@@ -98,7 +98,9 @@ def index():
         page['type'] = 'page'
         soup = BeautifulSoup(page['body'], "html.parser")
         for idx, p in enumerate(soup.findAll('p')):
-            if idx == 0 and p.findAll('strong'):
+            if idx == 0 and (p.findAll('strong')
+                             or p.findAll('h1')
+                             or p.findAll('h2')):
                 # Skip first para if it contains strong - probably a heading
                 continue
             p_texts = p.findAll(text=True)

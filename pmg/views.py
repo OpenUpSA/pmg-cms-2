@@ -3,6 +3,7 @@ from datetime import datetime, date
 import math
 import random
 from urlparse import urlparse, urlunparse
+from bs4 import BeautifulSoup
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -93,8 +94,16 @@ def index():
 
     featured_content = load_from_api('featured')
     pages = featured_content['pages'][:12]
-    for p in pages:
-        p['type'] = 'page'
+    for page in pages:
+        page['type'] = 'page'
+        soup = BeautifulSoup(page['body'], "html.parser")
+        for p in soup.findAll('p'):
+            if p.findAll('strong'):
+                continue
+            page['first_para'] = p.findAll(text=True)[0]
+            break
+
+
     featured_sample = featured_content['committee_meetings'][:12] + pages
     random.shuffle(featured_sample)
     featured_content['content'] = featured_sample[:12]

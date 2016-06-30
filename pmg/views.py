@@ -108,7 +108,7 @@ def index():
                 page['first_para'] = p_texts[0]
                 break
 
-
+    # pick 12 randomly from up to 12 pages and up to 12 meetings
     featured_sample = featured_content['committee_meetings'][:12] + pages
     random.shuffle(featured_sample)
     featured_content['content'] = featured_sample[:12]

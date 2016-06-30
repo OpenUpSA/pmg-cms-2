@@ -1,7 +1,4 @@
 <li><a href="{{ url_for('security.change_password') }}">Change password</a></li>
-{% if not current_user.confirmed %}
-  <li><a href="{{ url_for('send_confirmation') }}">Confirm email address</a></li>
-{% endif %}
 <li><a href="{{ url_for('committee_subscriptions') }}">Committee subscriptions</a></li>
 <li><a href="{{ url_for('email_alerts') }}">Email alerts</a></li>
 {% for role in current_user.roles %}

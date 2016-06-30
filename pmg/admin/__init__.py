@@ -1056,11 +1056,11 @@ class BillStatusView(MyModelView):
 
 
 class PageView(ViewWithFiles, MyModelView):
-    column_list = ('slug', 'title')
+    column_list = ('slug', 'title', 'featured')
     column_searchable_list = ('slug', 'title')
     column_default_sort = 'slug'
 
-    form_columns = ('title', 'slug', 'path', 'body', 'show_files', 'files')
+    form_columns = ('title', 'slug', 'path', 'body', 'featured', 'show_files', 'files')
     form_extra_fields = {
         'path': fields.TextField('Path'),
     }

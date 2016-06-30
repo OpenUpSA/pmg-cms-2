@@ -274,6 +274,8 @@ def featured():
         .order_by(desc(CommitteeMeeting.date))\
         .all()  # noqa
     pages = Page.query\
+        .filter(Page.featured == True)\
+        .order_by(desc(Page.updated_at))\
         .all()  # noqa
     info['committee_meetings'] = [serializers.to_dict(c) for c in committee_meetings]
     info['pages'] = [serializers.to_dict(c) for c in pages]

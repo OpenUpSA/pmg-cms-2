@@ -969,7 +969,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
+    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False, index=True)
     committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc('start_date'))), lazy=False)
     files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 

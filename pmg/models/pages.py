@@ -78,6 +78,7 @@ class Page(db.Model):
 
     files = db.relationship("PageFile", lazy='joined')
     show_files = db.Column(db.Boolean, nullable=False, default=True, server_default=sql.expression.true())
+    featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
 
     @validates('slug')
     def validate_slug(self, key, value):

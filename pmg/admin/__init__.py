@@ -839,14 +839,12 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     column_searchable_list = ('title', )
     form_widget_args = {
         'body': {'class': 'ckeditor'},
-        'summary': {'class': 'ckeditor'},
     }
     form_columns = (
         'committee',
         'title',
         'start_date',
         'body',
-        'summary',
         'files',
     )
     inline_models = [InlineFile(TabledCommitteeReportFile)]

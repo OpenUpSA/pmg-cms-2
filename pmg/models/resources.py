@@ -966,7 +966,6 @@ class TabledCommitteeReport(ApiResource, db.Model):
     title = db.Column(db.Text())
     start_date = db.Column(db.Date())
     body = db.Column(db.Text())
-    summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False, index=True)

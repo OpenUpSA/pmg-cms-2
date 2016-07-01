@@ -345,28 +345,6 @@ article.page {
   }
 }
 
-.featured-content {
-  :after {
-    font-family: FontAwesome;
-    position: absolute;
-    bottom: 14px;
-    right: 24px;
-    color: $grey-medium;
-    font-size: 2em;
-  }
-
-  .committee-meeting {
-    &:after {
-      content: "\f0c0";
-    }
-  }
-  .page {
-    &:after {
-        content: "\f15c";
-    }
-  }
-}
-
 .home-recent-items {
   .subsection {
     padding: 20px;
@@ -484,6 +462,27 @@ article.page {
 
     &:hover {
       background-color: $grey-medium;
+    }
+
+    &::after {
+      font-family: FontAwesome;
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+      color: $grey-medium;
+      font-size: 2em;
+    }
+
+    &:hover::after {
+      color: $grey-light;
+    }
+
+    &.committee-meeting::after {
+      content: "\f0c0";
+    }
+
+    &.page::after {
+      content: "\f15c";
     }
   }
 

@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime, date
 import math
-import random
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 
@@ -89,13 +88,14 @@ def index():
         if item["meeting_date"] != curdate:
             curdate = item["meeting_date"]
             scheduledates.append(curdate)
-    # stock_pic = random.choice(["ncop.jpg", "na.jpg"])
-    stock_pic = random.choice(["sa-parliament.jpg"])
+    stock_pic = "sa-parliament.jpg"
 
     featured_content = load_from_api('featured')
     pages = featured_content.get('pages', [])[:12]
     for page in pages:
         page['type'] = 'page'
+
+        # use the first sentence as an excerpt for the page
         soup = BeautifulSoup(page['body'], "html.parser")
         for idx, p in enumerate(soup.findAll('p')):
             if idx == 0 and (p.findAll('strong')
@@ -108,9 +108,9 @@ def index():
                 page['first_para'] = p_texts[0]
                 break
 
-    # pick 12 randomly from up to 12 pages and up to 12 meetings
+    # choose most recent 12 pages and meetings
     featured_sample = featured_content['committee_meetings'][:12] + pages
-    random.shuffle(featured_sample)
+    featured_sample.sort(key=lambda x: x.get('date') or x.get('updated_at'), reverse=True)
     featured_content['content'] = featured_sample[:12]
 
     return render_template(

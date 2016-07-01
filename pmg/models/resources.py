@@ -1165,6 +1165,11 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         return rows
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        # Don't show URL while it's not served on the API.
+        del tmp['url']
+        return tmp
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
 

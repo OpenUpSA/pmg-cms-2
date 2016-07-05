@@ -11,6 +11,7 @@ import requests
 
 from pmg import app, db
 import serializers
+import pmg.forms as forms
 
 
 log = getLogger(__name__)
@@ -265,4 +266,4 @@ user_committee_alerts = db.Table(
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+security = Security(app, user_datastore, register_form=forms.RegisterForm)

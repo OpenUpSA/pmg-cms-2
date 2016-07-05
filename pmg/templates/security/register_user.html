@@ -37,6 +37,11 @@
           {% if register_user_form.password_confirm %}
             {{ render_field(register_user_form.password_confirm) }}
           {% endif %}
+          <div class="form-group">
+            <div class="col-sm-6 col-sm-offset-3">
+              {{ register_user_form.recaptcha }}
+            </div>
+          </div>
           {{ render_field(register_user_form.next) }}
           {{ render_field(register_user_form.submit) }}
         </form>

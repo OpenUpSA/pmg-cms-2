@@ -768,7 +768,7 @@ def search(page=0):
                 break
 
     # suggest a phrase search?
-    if q and '"' not in q:
+    if q and ' ' in q and '"' not in q:
         suggest_phrase = '"%s"' % q
         kwargs = {('filter[%s]' % k): v for k, v in filters.iteritems() if v}
         kwargs['q'] = suggest_phrase

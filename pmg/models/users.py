@@ -208,13 +208,17 @@ def subscribe_to_newsletter(user):
         resp.raise_for_status()
 
         data = resp.json()
-        # 213 means already subscribed
-        if not data['error'] or data['error']['code'] == 213 or data['result']['creates'][0]['success']:
-            # all good
-            log.info("Subscribed")
-        else:
-            log.error("Couldn't subscribe to SharpSpring: %s" % data)
-            raise ValueError("Couldn't subscribe to SharpSpring: %s" % data)
+        try:
+            # 213 means already subscribed
+            if not data['error'] or data['error']['code'] == 213 or (data['result'] and data['result']['creates'][0]['success']):
+                # all good
+                log.info("Subscribed")
+            else:
+                log.error("Couldn't subscribe to SharpSpring: %s" % data)
+                raise ValueError("Couldn't subscribe to SharpSpring: %s" % data)
+        except Exception as e:
+            log.error("Problem handling response from SharpSpring: %s; Response=%s" % (e.message, data), exc_info=e)
+            raise e
 
 
 roles_users = db.Table(

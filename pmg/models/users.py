@@ -191,7 +191,7 @@ def user_created(mapper, connection, user):
 def subscribe_to_newsletter(user):
     """ Add this user to the sharpspring PMG Monitor newsletter mailing list
     """
-    if app.config.get('SHARPSPRING_API_SECRET'):
+    if False and app.config.get('SHARPSPRING_API_SECRET'):
         body = {
             'id': uuid.uuid4().get_hex(),
             'method': 'addListMemberEmailAddress',

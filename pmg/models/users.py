@@ -1,5 +1,4 @@
 import datetime
-import uuid
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
 
@@ -7,7 +6,6 @@ from sqlalchemy import sql, event, func
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
-import requests
 
 from pmg import app, db
 import serializers
@@ -191,34 +189,9 @@ def user_created(mapper, connection, user):
 def subscribe_to_newsletter(user):
     """ Add this user to the sharpspring PMG Monitor newsletter mailing list
     """
-    if False and app.config.get('SHARPSPRING_API_SECRET'):
-        body = {
-            'id': uuid.uuid4().get_hex(),
-            'method': 'addListMemberEmailAddress',
-            'params': {'emailAddress': user.email, 'listID': '310799364'},
-        }
-        log.info("Subscribing to SharpSpring mailing list: %s" % body)
-
-        resp = requests.post(
-            'http://api.sharpspring.com/pubapi/v1/',
-            params={
-                'accountID': app.config['SHARPSPRING_API_KEY'],
-                'secretKey': app.config['SHARPSPRING_API_SECRET'],
-            }, json=body)
-        resp.raise_for_status()
-
-        data = resp.json()
-        try:
-            # 213 means already subscribed
-            if not data['error'] or data['error']['code'] == 213 or (data['result'] and data['result']['creates'][0]['success']):
-                # all good
-                log.info("Subscribed")
-            else:
-                log.error("Couldn't subscribe to SharpSpring: %s" % data)
-                raise ValueError("Couldn't subscribe to SharpSpring: %s" % data)
-        except Exception as e:
-            log.error("Problem handling response from SharpSpring: %s; Response=%s" % (e.message, data), exc_info=e)
-            raise e
+    if app.config.get('SHARPSPRING_API_SECRET'):
+        from pmg.sharpspring import Sharpspring
+        Sharpspring().subscribeToList(user, '310799364')
 
 
 roles_users = db.Table(

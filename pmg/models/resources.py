@@ -541,7 +541,8 @@ class Member(ApiResource, db.Model):
     @classmethod
     def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
         # in the db, the name format is "last_name, title initial"
-        seeking = "%s, %s %s" % (last_name, title, first_name[0])
+        first_name = first_name[0] if first_name else ''
+        seeking = "%s, %s %s" % (last_name, title, first_name)
 
         members = members or Member.query.all()
         best = None

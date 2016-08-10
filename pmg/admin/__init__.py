@@ -12,13 +12,12 @@ from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilt
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
-from flask.ext.admin.helpers import is_form_submitted, get_url
+from flask.ext.admin.helpers import get_url
 from flask.ext.security.changeable import change_user_password
 from wtforms import fields
 from wtforms.validators import data_required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
-from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
 import psycopg2
@@ -497,6 +496,7 @@ class CommitteeMeetingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
+    column_filters = ['committee.name', 'date']
     form_edit_rules = (
         'committee',
         'title',

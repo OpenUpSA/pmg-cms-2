@@ -60,6 +60,7 @@ simplejson==3.6.5
 six==1.8.0
 smtpapi==0.3.1
 SQLAlchemy==1.0.8
+tablib==0.11.2
 tzlocal==1.2
 universal-analytics-python==0.2.4
 watchdog==0.8.3

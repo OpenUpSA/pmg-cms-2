@@ -509,6 +509,7 @@ class CommitteeMeetingView(EventView):
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
     column_filters = ['committee.name', 'date']
+    column_export_exclude_list = ['summary', 'body']
     form_edit_rules = (
         'committee',
         'title',

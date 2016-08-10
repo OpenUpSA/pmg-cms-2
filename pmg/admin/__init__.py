@@ -12,13 +12,12 @@ from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilt
 from flask.ext.admin.model.form import InlineFormAdmin
 from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
-from flask.ext.admin.helpers import is_form_submitted, get_url
+from flask.ext.admin.helpers import get_url
 from flask.ext.security.changeable import change_user_password
 from wtforms import fields
 from wtforms.validators import data_required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
-from werkzeug import secure_filename
 from jinja2 import Markup
 import humanize
 import psycopg2
@@ -145,6 +144,8 @@ class MyModelView(RBACMixin, ModelView):
     can_create = True
     can_edit = True
     can_delete = True
+    can_export = True
+    export_types = ['csv', 'xlsx']
     edit_template = 'admin/my_edit.html'
     create_template = 'admin/my_create.html'
     list_template = 'admin/my_list.html'
@@ -170,6 +171,14 @@ class MyModelView(RBACMixin, ModelView):
         # XXX: hack around rulesets removing CSRF tokens
         # XXX: see https://github.com/flask-admin/flask-admin/issues/1180
         pass
+
+    def get_export_columns(self):
+        """ Export all columns by default.
+        """
+        return self.get_column_names(
+            only_columns=self.scaffold_list_columns(),
+            excluded_columns=self.column_export_exclude_list,
+        )
 
 
 class HasExpiredFilter(BaseSQLAFilter):
@@ -239,6 +248,7 @@ class UserView(MyModelView):
         'current_login_at': "Last seen",
         'subscriptions': "User's premium subscriptions",
     }
+    column_export_exclude_list = ['password']
     form_columns = [
         'email',
         'name',
@@ -258,6 +268,7 @@ class UserView(MyModelView):
     }
     column_default_sort = (User.created_at, True)
     column_formatters = {'current_login_at': macro("datetime_as_date")}
+    column_formatters_export = {}
     column_searchable_list = ('email',)
     column_filters = [
         HasExpiredFilter(User.expiry, 'Subscription expiry'),
@@ -497,6 +508,7 @@ class CommitteeMeetingView(EventView):
     )
     column_default_sort = (Event.date, True)
     column_searchable_list = ('committee.name', 'title')
+    column_filters = ['committee.name', 'date']
     form_edit_rules = (
         'committee',
         'title',
@@ -635,6 +647,7 @@ class MemberView(MyModelView):
         memberships=macro('render_committee_membership'),
         pa_link=macro('render_external_link'),
     )
+    column_formatters_export = {}
     column_filters = ['current', 'house.name', 'party.name', 'province.name']
     form_columns = (
         'name',

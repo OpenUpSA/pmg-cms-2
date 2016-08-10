@@ -12,7 +12,7 @@ ecdsa==0.11
 enum34==1.0.4
 Fabric==1.10.0
 Flask==0.10.1
-Flask-Admin==1.4.0
+Flask-Admin==1.4.2
 Flask-Assets==0.10
 Flask-Login==0.2.11
 Flask-Mail==0.9.1
@@ -60,6 +60,7 @@ simplejson==3.6.5
 six==1.8.0
 smtpapi==0.3.1
 SQLAlchemy==1.0.8
+tablib==0.11.2
 tzlocal==1.2
 universal-analytics-python==0.2.4
 watchdog==0.8.3

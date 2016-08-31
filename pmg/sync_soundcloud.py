@@ -9,13 +9,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_unstarted_query():
-    return db.session.query(File, Event.title.label('event_title')) \
-                     .join(EventFile) \
-                     .join(Event) \
+    return db.session.query(File) \
                      .outerjoin(SoundcloudTrack) \
                      .filter(SoundcloudTrack.file_id == None) \
                      .filter(File.file_mime.like('audio/%')) \
-                     .order_by(desc(Event.date))
+                     .order_by(desc(File.id))
 
 
 def get_unstarted_count(q):
@@ -27,27 +25,44 @@ def get_unstarted_batch(q):
 
 
 def sync():
-    q = get_unstarted_query()
-    logging.info("Audio files yet to be uploaded to SoundCloud: %d" % get_unstarted_count(q))
-    batch = get_unstarted_batch(q)
-    logging.info("Uploading %d files to SoundCloud" % get_unstarted_count(q))
-    for file, event_title in batch:
-        upload_file(file, event_title)
-
-
-def upload_file(file, event_title):
-    logging.info("Downloading from S3: %s" % file)
-    file_handle = file.download()
-    # create client object with app and user credentials
     client = soundcloud.Client(client_id=app.config['SOUNDCLOUD_APP_KEY_ID'],
                                client_secret=app.config['SOUNDCLOUD_APP_KEY_SECRET'],
                                username=app.config['SOUNDCLOUD_USERNAME'],
                                password=app.config['SOUNDCLOUD_PASSWORD'])
+    sync_upload_state(client)
+    upload_files(client)
+    sync_upload_state(client)
+
+
+def sync_upload_state(client):
+    tracks = db.session.query(SoundcloudTrack) \
+                       .filter(SoundcloudTrack.state == 'processing') \
+                       .order_by(SoundcloudTrack.created_at).all()
+    for track in tracks:
+        soundcloud_track = client.get(track.uri)
+        if soundcloud_track.state != track.state:
+            track.state = soundcloud_track.state
+            logger.info("SoundCloud track %s state is now [%s]" % (track, track.state))
+        db.session.commit()
+
+
+def upload_files(client):
+    q = get_unstarted_query()
+    logging.info("Audio files yet to be uploaded to SoundCloud: %d" % get_unstarted_count(q))
+    batch = get_unstarted_batch(q)
+    logging.info("Uploading %d files to SoundCloud" % len(batch))
+    for file in batch:
+        upload_file(client, file)
+
+
+def upload_file(client, file):
+    logging.info("Downloading from S3: %s" % file)
+    file_handle = file.download()
 
     logging.info("Uploading to SoundCloud: %s" % file)
     track = client.post('/tracks', track={
         'title': file.title,
-        'description': event_title,
+        'description': '<br>'.join(ef.event.title for ef in file.event_files),
         'sharing': 'private',
         'asset_data': file_handle,
     })

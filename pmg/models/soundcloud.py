@@ -1,6 +1,6 @@
 from datetime import datetime
-
 from pmg import db
+from sqlalchemy import func
 
 
 class SoundcloudTrack(db.Model):
@@ -16,11 +16,12 @@ class SoundcloudTrack(db.Model):
     modified_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
-        default=datetime.utcnow
+        default=datetime.utcnow,
+        onupdate=func.current_timestamp()
     )
     file_id = db.Column(
         db.Integer,
-        db.ForeignKey('file.id', ondelete='CASCADE'),
+        db.ForeignKey('file.id'),
         nullable=False
     )
     uri = db.Column(db.String())

@@ -1,4 +1,4 @@
-"""Add SoundcloudTrack model
+"""Add tabled_committee_report constraint
 
 Revision ID: 8cbc3d8dd55
 Revises: 17570e7e200b

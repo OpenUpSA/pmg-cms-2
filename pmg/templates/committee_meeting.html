@@ -54,6 +54,8 @@
 
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="summary">
+            <h4 class="visible-print-block">Summary</h4>
+
             {% if event.summary %}
               {{ event.summary | safe }}
             {% else %}
@@ -62,6 +64,8 @@
           </div>
 
           <div role="tabpanel" class="tab-pane" id="minutes">
+            <h4 class="visible-print-block">Full minutes</h4>
+
             {% if event.body %}
               {{ event.body | safe }}
             {% else %}

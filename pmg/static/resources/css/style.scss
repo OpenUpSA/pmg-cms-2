@@ -842,6 +842,17 @@ body.email_alerts {
       font-weight: 600;
       color: $black;
     }
+
+    @media print {
+      .nav-tabs {
+        display: none;
+      }
+
+      .tab-content > .tab-pane {
+        display: block;
+        visibility: visible;
+      }
+    }
   }
 }
 

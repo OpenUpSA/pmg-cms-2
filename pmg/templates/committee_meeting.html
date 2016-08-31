@@ -10,8 +10,16 @@
 
 
 {% block committee_title %}
-  {{ super() }}
-  <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
+  <h1>{{ event.title }}</h1>
+  <h3><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h3>
+
+  {% if event.date %}
+    <h4 class="date">{{ event.date | pretty_date("long") }}</h4>
+  {% endif %}
+
+  {% if event.chairperson %}
+    <h4>Chairperson: {{ event.chairperson }}</h4>
+  {% endif %}
 {% endblock %}
 
 
@@ -38,19 +46,6 @@
 
     <div class="row">
       <div class="col-sm-8">
-
-        {% if event.chairperson %}
-          <h3>Chairperson: {{ event.chairperson }}</h3>
-        {% endif %}
-
-        <h3>
-          Date of Meeting:
-          {% if event.date %}
-            {{ event.date | pretty_date("long") }}
-          {% else %}
-            (unknown)
-          {% endif %}
-        </h3>
 
         <h2>Summary</h2>
         {% if event.summary %}

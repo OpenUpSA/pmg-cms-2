@@ -11,14 +11,14 @@
 
 {% block committee_title %}
   <h1>{{ event.title }}</h1>
-  <h3><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h3>
+  <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
 
   {% if event.date %}
-    <h4 class="date">{{ event.date | pretty_date("long") }}</h4>
+    <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
   {% endif %}
 
   {% if event.chairperson %}
-    <h4>Chairperson: {{ event.chairperson }}</h4>
+    <h5>Chairperson: {{ event.chairperson }}</h5>
   {% endif %}
 {% endblock %}
 
@@ -44,22 +44,31 @@
 
   {% else %}
 
-    <div class="row">
+    <div class="row committee-meeting-content">
       <div class="col-sm-8">
 
-        <h2>Summary</h2>
-        {% if event.summary %}
-          {{ event.summary | safe }}
-        {% else %}
-          <p><em>No summary available for this committee meeting.</em></p>
-        {% endif %}
-        <hr>
+        <ul class="nav nav-tabs">
+          <li role="presentation" class="active"><a href="#summary" data-toggle="tab">Meeting summary</a></li>
+          <li role="presentation"><a href="#minutes" data-toggle="tab">Full minutes</a></li>
+        </ul>
 
-        {% if event.body %}
-          <h2>Minutes</h2>
-          {{ event.body | safe }}
-        {% endif %}
-        <hr>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="summary">
+            {% if event.summary %}
+              {{ event.summary | safe }}
+            {% else %}
+              <p><em>A summary of this committee meeting is not yet available.</em></p>
+            {% endif %}
+          </div>
+
+          <div role="tabpanel" class="tab-pane" id="minutes">
+            {% if event.body %}
+              {{ event.body | safe }}
+            {% else %}
+              <p><em>Minutes for this committee meeting are not yet available.</em></p>
+            {% endif %}
+          </div>
+        </div>
       </div>
 
       <div class="col-sm-4">

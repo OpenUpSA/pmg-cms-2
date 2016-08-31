@@ -819,16 +819,29 @@ body.email_alerts {
 }
 
 .committee-header {
-  h1, h3 {
+  h1, h4 {
     margin: 0px 0px 10px;
   }
 
-  h4 {
+  h5 {
     margin: 0px 0px 5px;
   }
 
-  h3, h4 {
+  h4, h5 {
     color: $grey-dark;
+  }
+}
+
+.committee_meeting {
+  .committee-meeting-content {
+    .tab-pane {
+      margin-top: 20px;
+    }
+
+    .nav-tabs .active a {
+      font-weight: 600;
+      color: $black;
+    }
   }
 }
 

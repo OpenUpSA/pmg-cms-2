@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import base64
+import tempfile
 
 from sqlalchemy import desc, func, sql
 from sqlalchemy.sql.expression import nullslast
@@ -233,6 +234,13 @@ class File(db.Model):
         else:
             self.file_path = s3_bucket.upload_file(path, filename)
 
+    def download(self):
+        f = tempfile.NamedTemporaryFile(delete=True)
+        key = s3_bucket.bucket.get_key(self.file_path)
+        key.get_contents_to_file(f)
+        f.seek(0)
+        return f
+
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)
         key = s3_bucket.bucket.get_key(self.file_path)
@@ -242,6 +250,9 @@ class File(db.Model):
         """ Raw bytes for this file. """
         key = s3_bucket.bucket.get_key(self.file_path)
         return key.get_contents_as_string()
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
 
     def __unicode__(self):
         if self.title:

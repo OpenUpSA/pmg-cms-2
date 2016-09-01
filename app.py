@@ -1,5 +1,5 @@
 from pmg import app
-import pmg.sync_soundcloud as soundcloud
+from pmg.models.soundcloud_track import SoundcloudTrack
 from flask.ext.script import Server, Manager
 from flask.ext.migrate import MigrateCommand
 
@@ -10,7 +10,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def sync_soundcloud():
-    soundcloud.sync()
+    SoundcloudTrack.sync()
 
 if __name__ == '__main__':
     manager.run()

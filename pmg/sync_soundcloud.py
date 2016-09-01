@@ -67,6 +67,9 @@ def upload_file(client, file):
             'artwork_data': open('pmg/static/resources/images/logo-artwork.png', 'rb'),
             'genre': file.event_files[0].event.type,
             'tag_list': file.event_files[0].event.type,
+            'downloadable': 'true',
+            'streamable': 'true',
+            'feedable': 'true',
         })
         logging.info("Done uploading to SoundCloud: %s" % file)
         file_handle.close()

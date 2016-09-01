@@ -235,12 +235,18 @@ class File(db.Model):
         else:
             self.file_path = s3_bucket.upload_file(path, filename)
 
-    def download(self):
-        f = tempfile.NamedTemporaryFile(delete=True)
-        key = s3_bucket.bucket.get_key(self.file_path)
-        key.get_contents_to_file(f)
-        f.seek(0)
-        return f
+    def open(self):
+        # Ugly hack for local testing
+        if self.file_path.startswith('/tmp/'):
+            logging.info("Opening file %s locally", self.file_path)
+            return open(self.file_path)
+        else:
+            logging.info("Downloading file %s from S3 to open locally", self.file_path)
+            f = tempfile.NamedTemporaryFile(delete=True)
+            key = s3_bucket.bucket.get_key(self.file_path)
+            key.get_contents_to_file(f)
+            f.seek(0)
+            return f
 
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)

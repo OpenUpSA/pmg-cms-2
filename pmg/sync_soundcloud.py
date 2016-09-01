@@ -56,18 +56,16 @@ def upload_files(client):
 
 
 def upload_file(client, file):
-    logging.info("Downloading from S3: %s" % file)
-    file_handle = file.download()
-
-    logging.info("Uploading to SoundCloud: %s" % file)
-    track = client.post('/tracks', track={
-        'title': file.title,
-        'description': '<br>'.join(ef.event.title for ef in file.event_files),
-        'sharing': 'private',
-        'asset_data': file_handle,
-    })
-    logging.info("Done Uploading to SoundCloud: %s" % file)
-    file_handle.close()
+    with file.open() as file_handle:
+        logging.info("Uploading to SoundCloud: %s" % file)
+        track = client.post('/tracks', track={
+            'title': file.title,
+            'description': '<br>'.join(ef.event.title for ef in file.event_files),
+            'sharing': 'private',
+            'asset_data': file_handle,
+        })
+        logging.info("Done Uploading to SoundCloud: %s" % file)
+        file_handle.close()
 
     # Do a transaction per track to be as sure as we can that each
     # uploaded track is recorded on our side in case of unexpected errors.

@@ -19,7 +19,7 @@ def upgrade():
     op.create_table('soundcloud_track',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-    sa.Column('modified_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
     sa.Column('file_id', sa.Integer(), nullable=False),
     sa.Column('uri', sa.String(), nullable=True),
     sa.Column('state', sa.String(), nullable=True),

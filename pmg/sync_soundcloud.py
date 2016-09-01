@@ -60,11 +60,15 @@ def upload_file(client, file):
         logging.info("Uploading to SoundCloud: %s" % file)
         track = client.post('/tracks', track={
             'title': file.title,
-            'description': '<br>'.join(ef.event.title for ef in file.event_files),
+            'description': description(file),
             'sharing': 'private',
             'asset_data': file_handle,
+            'license': 'cc-by',
+            'artwork_data': open('pmg/static/resources/images/logo-artwork.png', 'rb'),
+            'genre': file.event_files[0].event.type,
+            'tag_list': file.event_files[0].event.type,
         })
-        logging.info("Done Uploading to SoundCloud: %s" % file)
+        logging.info("Done uploading to SoundCloud: %s" % file)
         file_handle.close()
 
     # Do a transaction per track to be as sure as we can that each
@@ -72,3 +76,8 @@ def upload_file(client, file):
     soundcloud_track = SoundcloudTrack(file, track)
     db.session.add(soundcloud_track)
     db.session.commit()
+
+
+def description(file):
+    return '<br>'.join("<a href='%s'>%s</a>" % (ef.event.url, ef.event.title)
+                       for ef in file.event_files),

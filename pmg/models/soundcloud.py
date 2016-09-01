@@ -13,7 +13,7 @@ class SoundcloudTrack(db.Model):
         nullable=False,
         default=datetime.utcnow
     )
-    modified_at = db.Column(
+    updated_at = db.Column(
         db.DateTime(timezone=True),
         nullable=False,
         default=datetime.utcnow,

@@ -239,7 +239,7 @@ class File(db.Model):
         # Ugly hack for local testing
         if self.file_path.startswith('/tmp/'):
             logging.info("Opening file %s locally", self.file_path)
-            return open(self.file_path)
+            return open(self.file_path, 'rb')
         else:
             logging.info("Downloading file %s from S3 to open locally", self.file_path)
             f = tempfile.NamedTemporaryFile(delete=True)

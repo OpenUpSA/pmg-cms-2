@@ -1,9 +1,10 @@
 from datetime import datetime
 from pmg import db, app
 from pmg.models import File
-from sqlalchemy import desc, func
-import logging
 from soundcloud import Client
+from sqlalchemy import desc, func
+from sqlalchemy.orm import backref
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ class SoundcloudTrack(db.Model):
         nullable=False,
         unique=True
     )
+    file = db.relationship('File', backref=backref('soundcloud_track', uselist=False))
     uri = db.Column(db.String())
     state = db.Column(db.String())
 
@@ -53,7 +55,7 @@ class SoundcloudTrack(db.Model):
             track = client.post('/tracks', track={
                 'title': file.title,
                 'description': cls._html_description(file),
-                'sharing': 'private',
+                'sharing': 'public',
                 'asset_data': file_handle,
                 'license': 'cc-by',
                 'artwork_data': open(SOUNDCLOUD_ARTWORK_PATH, 'rb'),

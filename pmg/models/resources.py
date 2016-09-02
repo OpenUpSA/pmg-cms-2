@@ -206,6 +206,8 @@ class File(db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = self.url
+        if self.soundcloud_track and self.soundcloud_track.state == "finished":
+            tmp['soundcloud_uri'] = self.soundcloud_track.uri
         return tmp
 
     @property

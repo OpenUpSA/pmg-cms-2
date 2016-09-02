@@ -21,8 +21,31 @@
 {%- endmacro %}
 
 
-{% macro audio_attachments(audio) -%}
-  {{ attachments_panel("Audio", audio, "fa-headphones") }}
+{% macro audio_attachments(SOUNDCLOUD_APP_KEY_ID, items) -%}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">Audio</h4>
+    </div>
+    <div class="panel-body">
+      {% if items %}
+        <div id="soundcloud-container" data-soundcloud-id="{{ SOUNDCLOUD_APP_KEY_ID }}"></div>
+        <ul class="fa-ul">
+          {% for item in items %}
+          <li>
+            <i class="fa fa-li fa-headphones"></i>
+            <a href="{{ item.url }}"
+               target="_blank"
+               data-soundcloud-uri="{{ item.soundcloud_uri }}"
+               class="audio">
+              {{ item.title or item.description or item.origname or item.file_path }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">No related {{ title|lower }}</p>
+      {% endif %}
+    </div>
 {%- endmacro %}
 
 {% macro related_attachments(related_docs) -%}

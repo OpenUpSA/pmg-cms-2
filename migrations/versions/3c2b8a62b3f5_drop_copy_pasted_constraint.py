@@ -1,4 +1,4 @@
-"""something
+"""Drop copy pasta constraint
 
 Revision ID: 3c2b8a62b3f5
 Revises: 3160b5df63b4

@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import base64
+import tempfile
 
 from sqlalchemy import desc, func, sql
 from sqlalchemy.sql.expression import nullslast
@@ -200,10 +201,13 @@ class File(db.Model):
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
     playtime = db.Column(db.String(10))
+    event_files = db.relationship("EventFile", lazy='joined')
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['url'] = self.url
+        if self.soundcloud_track and self.soundcloud_track.state == "finished":
+            tmp['soundcloud_uri'] = self.soundcloud_track.uri
         return tmp
 
     @property
@@ -233,6 +237,19 @@ class File(db.Model):
         else:
             self.file_path = s3_bucket.upload_file(path, filename)
 
+    def open(self):
+        # Ugly hack for local testing
+        if self.file_path.startswith('/tmp/'):
+            logging.info("Opening file %s locally", self.file_path)
+            return open(self.file_path, 'rb')
+        else:
+            logging.info("Downloading file %s from S3 to open locally", self.file_path)
+            f = tempfile.NamedTemporaryFile(delete=True)
+            key = s3_bucket.bucket.get_key(self.file_path)
+            key.get_contents_to_file(f)
+            f.seek(0)
+            return f
+
     def delete_from_s3(self):
         logger.info("Deleting %s from S3" % self.file_path)
         key = s3_bucket.bucket.get_key(self.file_path)
@@ -242,6 +259,9 @@ class File(db.Model):
         """ Raw bytes for this file. """
         key = s3_bucket.bucket.get_key(self.file_path)
         return key.get_contents_as_string()
+
+    def __str__(self):
+        return unicode(self).encode('utf-8')
 
     def __unicode__(self):
         if self.title:

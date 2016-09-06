@@ -1,14 +1,24 @@
-.committees {
-  .tab-content {
-    margin-top:20px;
+.committee-nav {
+  ul {
+    li {
+      &.active {
+        font-weight:bold;
+      }
+    }
   }
+}
 
+.committee-list {
   h3 {
     margin-top:0;
+    margin-left:25px;
   }
 
   ul {
+    list-style:none;
     li {
+      margin:3px 0;
+
       .premium {
         color:#F5A623;
 
@@ -29,6 +39,18 @@
   h2 {
     margin: 0px 0px 5px;
     color: #777;
+  }
+}
+
+.committee-search {
+  margin-top:20px;
+  margin-left:25px;
+
+  .fa-search {
+    position:absolute;
+    right:25px;
+    top:37px;
+    font-size:18px;
   }
 }
 

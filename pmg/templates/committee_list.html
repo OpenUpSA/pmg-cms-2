@@ -5,7 +5,7 @@
 {% block page %}
   <h1><i class="fa fa-icon fa-group"></i> Parliamentary Committees</h1>
 
-  <nav class="committee-list" id="committee-list">
+  <nav class="committee-nav" id="committee-nav">
     <ul class="nav nav-tabs">
       <li role="presentation" class="active" data-toggle="tab">
           <a href="#na">National Assembly committees</a>
@@ -22,7 +22,19 @@
     </ul>
   </nav>
 
-  <div class="row tab-content committees">
+  <div class="committee-search row">
+    <div class="col-md-4 col-xs-12">
+      <p>
+        <strong>Committee name</strong>
+      </p>
+      <div class="search-box form-group" id="committee-search">
+        <i class="fa fa-search"></i>
+        <input class="form-control" placeholder="Find a committee" name="cmt-search" />
+      </div>
+    </div>
+  </div>
+
+  <div class="row tab-content committee-list">
     <div class="col-xs-12 tab-pane active" id="na">
       <ul>
         {% for committee in committees %}

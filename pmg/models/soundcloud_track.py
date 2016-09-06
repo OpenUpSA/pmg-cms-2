@@ -33,7 +33,7 @@ class SoundcloudTrack(db.Model):
         nullable=False,
         unique=True
     )
-    file = db.relationship('File', backref=backref('soundcloud_track', uselist=False))
+    file = db.relationship('File', backref=backref('soundcloud_track', uselist=False, lazy='joined'), lazy=True)
     uri = db.Column(db.String())
     state = db.Column(db.String())
 

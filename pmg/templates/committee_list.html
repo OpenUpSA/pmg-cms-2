@@ -29,6 +29,9 @@
           {% if committee.house.id == 3 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
@@ -40,6 +43,9 @@
           {% if committee.house.id == 2 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
@@ -51,6 +57,9 @@
           {% if committee.house.id == 1 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
@@ -65,6 +74,9 @@
               {% if committee.house.id == 3 and committee.ad_hoc %}
                 <li>
                   <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
                 </li>
               {% endif %}
             {% endfor %}
@@ -77,6 +89,9 @@
               {% if committee.house.id == 2 and committee.ad_hoc %}
                 <li>
                   <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
                 </li>
               {% endif %}
             {% endfor %}
@@ -89,6 +104,9 @@
               {% if committee.house.id == 1 and committee.ad_hoc %}
                 <li>
                   <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
                 </li>
               {% endif %}
             {% endfor %}

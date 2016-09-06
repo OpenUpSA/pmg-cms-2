@@ -6,6 +6,19 @@
   h3 {
     margin-top:0;
   }
+
+  ul {
+    li {
+      .premium {
+        color:#F5A623;
+
+        .text {
+          text-decoration:underline;
+          font-size:13px;
+        }
+      }
+    }
+  }
 }
 
 .committee-header {

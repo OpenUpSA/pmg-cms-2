@@ -53,7 +53,7 @@
     </div>
 
     <div class="col-sm-4">
-      {{ audio_attachments(audio) }}
+      {{ audio_attachments(SOUNDCLOUD_APP_KEY_ID, audio) }}
       {{ related_attachments(related_docs) }}
 
       {% if event.bills %}
@@ -65,4 +65,3 @@
 
 {% include "_correct_this_page.html" %}
 {% endblock %}
-

@@ -33,6 +33,7 @@ $green-medium: #0ECBA1;
 $green-dark: #00B78E;
 $green-darkest: #008668;
 
+$yellow: #F5A623;
 
 @import "/bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
 
@@ -815,6 +816,30 @@ body.email_alerts {
   .status-indicator {
     margin-left: 5px;
     color: #6CC644;
+  }
+}
+
+.committees {
+  .tab-content {
+    margin-top:20px;
+  }
+
+  h3 {
+    margin-top:0;
+  }
+
+
+  ul {
+    li {
+      .premium {
+        color: $yellow;
+
+        .text {
+          text-decoration:underline;
+          font-size:13px;
+        }
+      }
+    }
   }
 }
 

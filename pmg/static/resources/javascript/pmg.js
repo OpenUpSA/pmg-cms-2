@@ -104,3 +104,28 @@ $(function() {
 $('form[name=register_user_form]').on('submit', function() {
   $(this).find('input[type=submit]').prop('disabled', true);
 });
+
+$(function() {
+  var initialised = false;
+  var initialise = function() {
+    SC.initialize({
+      client_id: $('#soundcloud-continer').data('soundcloud-id')
+    });
+  };
+  $('a.audio').each(function(i, a) {
+    a = $(a);
+    if (a.data('soundcloud-uri')) {
+      var uri = a.data('soundcloud-uri');
+      a.on('click', function(e) {
+        if (!initialised) initialise();
+        SC.oEmbed(uri, {
+          element: document.getElementById('soundcloud-container'),
+          maxheight: 166,
+          show_comments: false,
+          auto_play: false,
+        });
+        return false;
+      });
+    }
+  });
+});

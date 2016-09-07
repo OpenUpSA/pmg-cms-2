@@ -304,7 +304,8 @@ def committee_meeting(event_id):
         related_docs=related_docs,
         premium_committees=premium_committees,
         content_date=event['date'],
-        admin_edit_url=admin_url('committee-meeting', event_id))
+        admin_edit_url=admin_url('committee-meeting', event_id),
+        SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID'])
 
 
 @app.route('/tabled-committee-reports/')
@@ -535,7 +536,8 @@ def hansard(event_id):
         audio=audio,
         related_docs=related_docs,
         content_date=event['date'],
-        admin_edit_url=admin_url('hansard', event_id))
+        admin_edit_url=admin_url('hansard', event_id),
+        SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID'])
 
 
 @app.route('/hansards/')
@@ -576,7 +578,8 @@ def briefing(event_id):
         audio=audio,
         related_docs=related_docs,
         content_date=event['date'],
-        admin_edit_url=admin_url('briefing', event_id))
+        admin_edit_url=admin_url('briefing', event_id),
+        SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID'])
 
 
 @app.route('/briefings/')

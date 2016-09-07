@@ -16,6 +16,13 @@ ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
 SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models
 SEARCH_RESULTS_PER_PAGE = 20
 
+SOUNDCLOUD_APP_KEY_ID = env.get("SOUNDCLOUD_APP_KEY_ID", '')
+SOUNDCLOUD_APP_KEY_SECRET = env.get("SOUNDCLOUD_APP_KEY_SECRET", '')
+SOUNDCLOUD_USERNAME = env.get("SOUNDCLOUD_USERNAME", '')
+SOUNDCLOUD_PASSWORD = env.get("SOUNDCLOUD_PASSWORD", '')
+
+MAX_SOUNDCLOUD_BATCH = int(env.get("MAX_SOUNDCLOUD_BATCH", '1'))
+
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
 UPLOAD_PATH = "/tmp/pmg_upload/"

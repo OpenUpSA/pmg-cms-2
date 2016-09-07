@@ -5,83 +5,114 @@
 {% block page %}
   <h1><i class="fa fa-icon fa-group"></i> Parliamentary Committees</h1>
 
-  <div class="row">
-    <div class="col-md-4">
-      <h3>National Assembly</h3>
+  <nav class="committee-list" id="committee-list">
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="active" data-toggle="tab">
+          <a href="#na">National Assembly committees</a>
+      </li>
+      <li role="presentation" data-toggle="tab">
+        <a href="#ncp">National Council of Provinces committees</a>
+      </li>
+      <li role="presentation" data-toggle="tab">
+        <a href="#joint">Joint committees</a>
+      </li>
+      <li role="presentation" data-toggle="tab">
+        <a href="#adhoc">Ad-hoc committees</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="row tab-content committees">
+    <div class="col-xs-12 tab-pane active" id="na">
       <ul>
         {% for committee in committees %}
           {% if committee.house.id == 3 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
       </ul>
     </div>
-    <div class="col-md-4">
-      <h3>National Council of Provinces</h3>
+    <div class="col-xs-12 tab-pane" id="ncp">
       <ul>
         {% for committee in committees %}
           {% if committee.house.id == 2 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
       </ul>
     </div>
-    <div class="col-md-4">
-      <h3>Joint Committees</h3>
+    <div class="col-xs-12 tab-pane" id="joint">
       <ul>
         {% for committee in committees %}
           {% if committee.house.id == 1 and not committee.ad_hoc %}
             <li>
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
       </ul>
     </div>
-  </div>
-
-  <hr>
-  <h2>Ad-Hoc committees</h2>
-  <div class="row">
-    <div class="col-md-4">
-      <h3>National Assembly</h3>
-      <ul>
-        {% for committee in committees %}
-          {% if committee.house.id == 3 and committee.ad_hoc %}
-            <li>
-              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="col-md-4">
-      <h3>National Council of Provinces</h3>
-      <ul>
-        {% for committee in committees %}
-          {% if committee.house.id == 2 and committee.ad_hoc %}
-            <li>
-              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="col-md-4">
-      <h3>Joint Committees</h3>
-      <ul>
-        {% for committee in committees %}
-          {% if committee.house.id == 1 and committee.ad_hoc %}
-            <li>
-              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
+    <div class="col-xs-12 tab-pane" id="adhoc">
+      <div class="row">
+        <div class="col-md-4">
+          <h3>National Assembly</h3>
+          <ul>
+            {% for committee in committees %}
+              {% if committee.house.id == 3 and committee.ad_hoc %}
+                <li>
+                  <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h3>National Council of Provinces</h3>
+          <ul>
+            {% for committee in committees %}
+              {% if committee.house.id == 2 and committee.ad_hoc %}
+                <li>
+                  <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h3>Joint Committees</h3>
+          <ul>
+            {% for committee in committees %}
+              {% if committee.house.id == 1 and committee.ad_hoc %}
+                <li>
+                  <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+                  {% if committee.premium %}
+                    <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  {% endif %}
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 

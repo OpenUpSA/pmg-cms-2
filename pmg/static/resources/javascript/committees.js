@@ -6,6 +6,7 @@ var $noResults = $('.no-results');
 var $clearResults = $('.clear-results');
 var $committees = $('.committees-list .nat .committee');
 var $committeesList = $('.committees-list');
+var $committeeNavItem = $('#committee-nav a');
 var showingSearchResult = false;
 
 function clearSearchResult() {
@@ -17,7 +18,7 @@ function clearSearchResult() {
   $committeesList.show();
 }
 
-$('#committee-nav a').on('click', function (e) {
+$committeeNavItem.on('click', function (e) {
   e.preventDefault();
   $(this).tab('show');
   $committees = $('.committees-list .tab-pane.active .committee');

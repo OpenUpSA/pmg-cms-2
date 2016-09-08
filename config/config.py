@@ -3,6 +3,8 @@ from os import environ as env
 # dev mode?
 DEBUG = env.get('FLASK_ENV', 'development') != 'production'
 
+RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
+
 WTF_CSRF_ENABLED = True
 SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'

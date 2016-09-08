@@ -12,7 +12,12 @@ SOUNDCLOUD_ARTWORK_PATH = 'pmg/static/resources/images/logo-artwork.png'
 
 
 class SoundcloudTrack(db.Model):
-
+    """
+    - Tracks where uri and state is null are either busy being uploaded,
+      or failed to upload to SoundCloud.
+    - Tracks where state is 'failed' reflect that soundcloud
+      failed to process the track.
+    """
     __tablename__ = "soundcloud_track"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -34,13 +39,10 @@ class SoundcloudTrack(db.Model):
         unique=True
     )
     file = db.relationship('File', backref=backref('soundcloud_track', uselist=False, lazy='joined'), lazy=True)
+    # Soundcloud resource URI for the track (i.e. https://api.soundcloud...id)
     uri = db.Column(db.String())
+    # Last known value of SoundCloud's opinion of the track state
     state = db.Column(db.String())
-
-    def __init__(self, file, track):
-        self.file_id = file.id
-        self.uri = track.uri
-        self.state = track.state
 
     def __str__(self):
         return unicode(self).encode('utf-8')
@@ -50,6 +52,18 @@ class SoundcloudTrack(db.Model):
 
     @classmethod
     def new_from_file(cls, client, file):
+        if db.session.query(cls.id).filter(cls.file_id == file.id).scalar() is not None:
+            logging.info("File already started being uploaded to Soundcloud: %s" % file)
+            db.session.rollback()
+            return
+        # Immediately create the SoundcloudTrack to indicate that work
+        # has started for this track and may be in progress.
+        # Potential concurrent runs can rely on an exception here to avoid
+        # uploading the same file twice.
+        soundcloud_track = cls(file=file)
+        db.session.add(soundcloud_track)
+        db.session.commit()
+
         with file.open() as file_handle:
             logging.info("Uploading to SoundCloud: %s" % file)
             track = client.post('/tracks', track={
@@ -68,11 +82,10 @@ class SoundcloudTrack(db.Model):
             logging.info("Done uploading to SoundCloud: %s" % file)
             file_handle.close()
 
-        # Do a transaction per track to be as sure as we can that each
-        # uploaded track is recorded on our side in case of unexpected errors.
-        soundcloud_track = cls(file, track)
-        db.session.add(soundcloud_track)
-        db.session.commit()
+            soundcloud_track.uri = track.uri
+            soundcloud_track.state = track.state
+            db.session.commit()
+
 
     @staticmethod
     def _html_description(file):
@@ -99,6 +112,8 @@ class SoundcloudTrack(db.Model):
         logging.info("Audio files yet to be uploaded to SoundCloud: %d"
                      % cls.get_unstarted_count(q))
         batch = cls.get_unstarted_batch(q)
+        # Rollback this transaction - it was just to gather candidates for upload
+        db.session.rollback()
         logging.info("Uploading %d files to SoundCloud" % len(batch))
         for file in batch:
             cls.new_from_file(client, file)

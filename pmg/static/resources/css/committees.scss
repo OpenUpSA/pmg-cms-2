@@ -1,13 +1,10 @@
-.committees {
-  .tab-content {
-    margin-top:20px;
-  }
-
-  h3 {
-    margin-top:0;
-  }
+.committees-list {
+  margin-top:20px;
 
   ul {
+    list-style:none;
+    padding-left:15px;
+
     li {
       .premium {
         color:#F5A623;
@@ -17,6 +14,13 @@
           font-size:13px;
         }
       }
+    }
+  }
+
+  .adhoc {
+    h3 {
+      margin-top:0;
+      margin-left:15px;
     }
   }
 }

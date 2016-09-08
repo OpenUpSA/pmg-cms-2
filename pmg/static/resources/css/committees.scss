@@ -1,14 +1,29 @@
-.committees {
-  .tab-content {
-    margin-top:20px;
-  }
-
-  h3 {
-    margin-top:0;
-  }
-
+.committee-nav {
   ul {
     li {
+      &.active {
+        font-weight:bold;
+      }
+    }
+  }
+}
+
+.committee-dd-nav {
+  display:none;
+
+  .btn {
+    width:100%;
+  }
+}
+
+.committees-list, .committee-search-result {
+  ul {
+    list-style:none;
+    padding-left:15px;
+
+    li {
+      margin:3px 0;
+
       .premium {
         color:#F5A623;
 
@@ -21,6 +36,16 @@
   }
 }
 
+.committees-list {
+  margin-top:20px;
+
+  .adhoc {
+    h3 {
+      margin-top:0;
+    }
+  }
+}
+
 .committee-header {
   h1 {
     margin: 0px 0px 10px;
@@ -29,6 +54,55 @@
   h2 {
     margin: 0px 0px 5px;
     color: #777;
+  }
+}
+
+.committee-search {
+  margin-top:20px;
+  padding-left:15px;
+
+  .form-group {
+    margin-bottom:0;
+    padding-bottom:0;
+  }
+  .fa-search {
+    position:absolute;
+    right:25px;
+    top:37px;
+    font-size:18px;
+  }
+  .clear-results {
+    display:none;
+    padding-top:35px;
+
+    .clear-button {
+      border-radius:6px;
+      outline:none;
+      background:none;
+      cursor:pointer;
+      display:inline-block;
+
+      &:hover, &:active {
+        color:#555;
+      }
+
+      .text {
+        padding-left:5px;
+      }
+    }
+  }
+}
+
+.committee-search-result {
+  .no-results {
+    display:none;
+    margin-left:15px;
+  }
+  .results-found {
+    display:none;
+    h3 {
+      margin-left:30px;
+    }
   }
 }
 
@@ -101,6 +175,47 @@
     // Account for multiple tbody instances
     > tbody + tbody {
       border-top: 2px solid #ddd;
+    }
+  }
+}
+
+@media screen and (max-width:992px) {
+  .hide-md {
+    display:none;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .committee-nav {
+    display:none;
+  }
+  .committee-dd-nav {
+    display:block;
+  }
+
+  .committees-list, .committee-search-result {
+    ul {
+      padding-left:0;
+      margin-bottom:0;
+    }
+  }
+
+  .committee-search {
+    padding-left:0;
+
+    .clear-results {
+      padding-top:15px;
+    }
+  }
+
+  .committee-search-result {
+    .results-found {
+      h3 {
+        margin-left:15px;
+      }
+    }
+    .no-results {
+      margin-left:0;
     }
   }
 }

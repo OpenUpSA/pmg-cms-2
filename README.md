@@ -93,6 +93,7 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * SENDGRID_API_KEY
 * MAIL_PASSWORD
 * SECURITY_PASSWORD_SALT
+* RUN_PERIODIC_TASKS=true
 
 ### Reindexing for Search
 

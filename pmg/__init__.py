@@ -128,7 +128,7 @@ scheduler = BackgroundScheduler({
     },
     'apscheduler.timezone': 'UTC',
 })
-if not app.debug:
+if app.config['RUN_PERIODIC_TASKS']:
     scheduler.start()
 
 # if we don't do this in a separate thread, we hang trying to connect to the db

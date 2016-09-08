@@ -244,7 +244,23 @@ def committees():
 
     logger.debug("committees page called")
     committees = load_from_api('committee', return_everything=True)['results']
-    return render_template('committee_list.html', committees=committees, )
+
+    def filter_committees(c,id,is_adhoc):
+        return c['house_id'] == id and c['ad_hoc'] == is_adhoc
+
+    reg_committees = {
+        'nat': filter(lambda c: filter_committees(c,3,False), committees),
+        'ncp': filter(lambda c: filter_committees(c,2,False), committees),
+        'jnt': filter(lambda c: filter_committees(c,1,False), committees)
+    }
+
+    adhoc_committees = {
+        'nat': filter(lambda c: filter_committees(c,3,True), committees),
+        'ncp': filter(lambda c: filter_committees(c,2,True), committees),
+        'jnt': filter(lambda c: filter_committees(c,1,True), committees)
+    }
+
+    return render_template('committee_list.html', reg_committees=reg_committees,adhoc_committees=adhoc_committees, )
 
 
 @app.route('/committee-meetings/')

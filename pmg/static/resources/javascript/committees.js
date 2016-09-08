@@ -6,7 +6,7 @@ var $noResults = $('.no-results');
 var $clearResults = $('.clear-results');
 var $committees = $('.committees-list .nat .committee');
 var $committeesList = $('.committees-list');
-var $committeeNavItem = $('#committee-nav a');
+var $committeeNavItem = $('.committee-nav a, .committee-dd-nav a');
 var showingSearchResult = false;
 
 function clearSearchResult() {

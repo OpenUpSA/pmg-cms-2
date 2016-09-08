@@ -94,6 +94,12 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * MAIL_PASSWORD
 * SECURITY_PASSWORD_SALT
 * RUN_PERIODIC_TASKS=true
+* SOUNDCLOUD_APP_KEY_ID
+* SOUNDCLOUD_APP_KEY_SECRET
+* SOUNDCLOUD_USERNAME
+* SOUNDCLOUD_PASSWORD
+* SOUNDCLOUD_PERIOD_MINUTES=5
+* MAX_SOUNDCLOUD_BATCH=10
 
 ### Reindexing for Search
 

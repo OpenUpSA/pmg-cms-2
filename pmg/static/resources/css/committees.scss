@@ -8,9 +8,7 @@
   }
 }
 
-.committees-list {
-  margin-top:20px;
-
+.committees-list, .committee-search-result {
   ul {
     list-style:none;
     padding-left:15px;
@@ -28,6 +26,10 @@
       }
     }
   }
+}
+
+.committees-list {
+  margin-top:20px;
 
   .adhoc {
     h3 {
@@ -50,13 +52,50 @@
 
 .committee-search {
   margin-top:20px;
-  margin-left:25px;
+  margin-left:0;
 
+  .form-group {
+    margin-bottom:0;
+    padding-bottom:0;
+  }
   .fa-search {
     position:absolute;
     right:25px;
     top:37px;
     font-size:18px;
+  }
+  .clear-results {
+    display:none;
+    padding-top:35px;
+
+    .clear-button {
+      border-radius:6px;
+      outline:none;
+      background:none;
+      cursor:pointer;
+      display:inline-block;
+
+      &:hover, &:active {
+        color:#555;
+      }
+
+      .text {
+        padding-left:5px;
+      }
+    }
+  }
+}
+
+.committee-search-result {
+  .no-results {
+    display:none;
+    margin-left:15px;
+  }
+  .results-found {
+    display:none;
+    h3 {
+      margin-left:30px;
+    }
   }
 }
 

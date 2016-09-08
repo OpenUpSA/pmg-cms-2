@@ -14,6 +14,9 @@ from pmg.api_client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
 
+from copy import deepcopy
+from collections import OrderedDict
+
 import forms
 import utils
 
@@ -245,22 +248,39 @@ def committees():
     logger.debug("committees page called")
     committees = load_from_api('committee', return_everything=True)['results']
 
-    def filter_committees(c,id,is_adhoc):
-        return c['house_id'] == id and c['ad_hoc'] == is_adhoc
-
-    reg_committees = {
-        'nat': filter(lambda c: filter_committees(c,3,False), committees),
-        'ncp': filter(lambda c: filter_committees(c,2,False), committees),
-        'jnt': filter(lambda c: filter_committees(c,1,False), committees)
+    nat = {
+        'name': 'National Assembly',
+        'committees': []
+    }
+    ncp = {
+        'name': 'National Council of Provinces',
+        'committees': []
+    }
+    jnt = {
+        'name': 'Joint Committees',
+        'committees': []
     }
 
-    adhoc_committees = {
-        'nat': filter(lambda c: filter_committees(c,3,True), committees),
-        'ncp': filter(lambda c: filter_committees(c,2,True), committees),
-        'jnt': filter(lambda c: filter_committees(c,1,True), committees)
-    }
+    adhoc_committees = OrderedDict((('nat',nat),('ncp',ncp),('jnt',jnt)))
+    reg_committees = deepcopy(adhoc_committees)
+    committees_type = None
 
-    return render_template('committee_list.html', reg_committees=reg_committees,adhoc_committees=adhoc_committees, )
+    for committee in committees:
+        if committee['ad_hoc'] is True:
+            committees_type = adhoc_committees
+        else:
+            committees_type = reg_committees
+
+        if committee['house_id'] is 3:
+            committees_type['nat']['committees'].append(committee)
+        elif committee['house_id'] is 2:
+            committees_type['ncp']['committees'].append(committee)
+        elif committee['house_id'] is 1:
+            committees_type['jnt']['committees'].append(committee)
+
+    return render_template('committee_list.html',
+        reg_committees=reg_committees,
+        adhoc_committees=adhoc_committees)
 
 
 @app.route('/committee-meetings/')

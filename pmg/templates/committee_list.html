@@ -8,13 +8,13 @@
   <nav class="committee-nav" id="committee-nav">
     <ul class="nav nav-tabs">
       <li role="presentation" class="active" data-toggle="tab">
-          <a href="#na">National Assembly committees</a>
+          <a href="#nat">National Assembly committees</a>
       </li>
       <li role="presentation" data-toggle="tab">
         <a href="#ncp">National Council of Provinces committees</a>
       </li>
       <li role="presentation" data-toggle="tab">
-        <a href="#joint">Joint committees</a>
+        <a href="#jnt">Joint committees</a>
       </li>
       <li role="presentation" data-toggle="tab">
         <a href="#adhoc">Ad-hoc committees</a>
@@ -32,64 +32,58 @@
         <input class="form-control" placeholder="Find a committee" name="cmt-search" />
       </div>
     </div>
+    <div class="col-xs-12 col-md-4 text-danger clear-results">
+      <span class="clear-button">
+        <i class="fa fa-times-circle"></i>
+        <span class="text">Clear search results</span>
+      </span>
+    </div>
+  </div>
+
+  <div class="committee-search-result row">
+    <h3 class="no-results col-xs-12">No results found.</h3>
+    <div class="results-found">
+      <h3>Results:</h3>
+      <div class="col-xs-12 col-md-6 left">
+        <ul></ul>
+      </div>
+      <div class="col-xs-12 col-md-6 right">
+        <ul></ul>
+      </div>
+    </div>
   </div>
 
   <div class="row tab-content committees-list">
-    <div class="col-xs-12 tab-pane active row" id="na">
-        {% for column in reg_committees.nat|slice(2) %}
-        <div class="col-xs-6">
-          <ul>
-            {% for committee in column %}
-              <li>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-                {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endfor %}
+    {% for key,ctype in reg_committees.iteritems() %}
+    {% if key == 'nat' %}
+    <div class="col-xs-12 active tab-pane row {{ key }}" id="{{ key }}">
+    {% else %}
+    <div class="col-xs-12 tab-pane row {{ key }}" id="{{ key }}">
+    {% endif %}
+      {% for column in ctype.committees|slice(2) %}
+      <div class="col-xs-6">
+        <ul>
+          {% for committee in column %}
+            <li class="committee">
+              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              {% if committee.premium %}
+                <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
     </div>
-    <div class="col-xs-12 tab-pane row" id="ncp">
-        {% for column in reg_committees.ncp|slice(2) %}
-        <div class="col-xs-6">
-          <ul>
-            {% for committee in column %}
-              <li>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-                {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="col-xs-12 tab-pane row" id="joint">
-        {% for column in reg_committees.nat|slice(2) %}
-        <div class="col-xs-6">
-          <ul>
-            {% for committee in column %}
-              <li>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-                {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
     <div class="col-xs-12 tab-pane adhoc" id="adhoc">
       <div class="row">
+        {% for key, ctype in adhoc_committees.iteritems() %}
         <div class="col-md-4">
-          <h3>National Assembly</h3>
+          <h3>{{ ctype.name }}</h3>
           <ul>
-            {% for committee in adhoc_committees.nat %}
-              <li>
+            {% for committee in ctype.committees %}
+              <li class="committee">
                 <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
                 {% if committee.premium %}
                   <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
@@ -98,32 +92,7 @@
             {% endfor %}
           </ul>
         </div>
-        <div class="col-md-4">
-          <h3>National Council of Provinces</h3>
-          <ul>
-            {% for committee in adhoc_committees.ncp %}
-              <li>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-                {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="col-md-4">
-          <h3>Joint Committees</h3>
-          <ul>
-            {% for committee in adhoc_committees.jnt %}
-              <li>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-                {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
-                {% endif %}
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </div>

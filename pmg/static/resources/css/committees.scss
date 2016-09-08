@@ -8,14 +8,13 @@
   }
 }
 
-.committee-list {
-  h3 {
-    margin-top:0;
-    margin-left:25px;
-  }
+.committees-list {
+  margin-top:20px;
 
   ul {
     list-style:none;
+    padding-left:15px;
+
     li {
       margin:3px 0;
 
@@ -27,6 +26,13 @@
           font-size:13px;
         }
       }
+    }
+  }
+
+  .adhoc {
+    h3 {
+      margin-top:0;
+      margin-left:15px;
     }
   }
 }

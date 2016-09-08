@@ -52,6 +52,10 @@ class SoundcloudTrack(db.Model):
 
     @classmethod
     def new_from_file(cls, client, file):
+        if not file.event_files:
+            logging.info("Skipping SoundCloud upload for file without events: %s" % file)
+            return
+
         if db.session.query(cls.id).filter(cls.file_id == file.id).scalar() is not None:
             logging.info("File already started being uploaded to Soundcloud: %s" % file)
             db.session.rollback()

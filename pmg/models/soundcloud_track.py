@@ -1,6 +1,6 @@
 from datetime import datetime
 from pmg import db, app
-from pmg.models import File
+from pmg.models import File, EventFile
 from soundcloud import Client
 from sqlalchemy import desc, func
 from sqlalchemy.orm import backref
@@ -52,10 +52,6 @@ class SoundcloudTrack(db.Model):
 
     @classmethod
     def new_from_file(cls, client, file):
-        if not file.event_files:
-            logging.info("Skipping SoundCloud upload for file without events: %s" % file)
-            return
-
         if db.session.query(cls.id).filter(cls.file_id == file.id).scalar() is not None:
             logging.info("File already started being uploaded to Soundcloud: %s" % file)
             db.session.rollback()
@@ -137,10 +133,19 @@ class SoundcloudTrack(db.Model):
         Get audio files for which there's no SoundcloudTrack.
         Order by id as a hacky way to roughly get the latest files first
         """
+        # Query files that aren't connected to events so we can ignore them for
+        # now - it's not clear that they're actually visible - they might well
+        # have been mistaken uploads that shouldn't suddenly appear on PMG's
+        # public soundcloud profile.
+        q_files_with_meetings = db.session.query(File.id) \
+                                          .outerjoin(EventFile) \
+                                          .filter(EventFile.file_id == None) \
+                                          .filter(File.file_mime.like('audio/%'))
         return db.session.query(File) \
                          .outerjoin(cls) \
                          .filter(cls.file_id == None) \
                          .filter(File.file_mime.like('audio/%')) \
+                         .filter(~File.id.in_(q_files_with_meetings)) \
                          .order_by(desc(File.id))
 
     @staticmethod

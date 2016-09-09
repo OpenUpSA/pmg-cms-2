@@ -13,6 +13,7 @@ from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
+from pmg.models.resources import Committee
 
 from copy import deepcopy
 from collections import OrderedDict
@@ -271,11 +272,11 @@ def committees():
         else:
             committees_type = reg_committees
 
-        if committee['house_id'] is 3:
+        if committee['house_id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
-        elif committee['house_id'] is 2:
+        elif committee['house_id'] is Committee.NAT_COUNCIL_OF_PROV:
             committees_type['ncp']['committees'].append(committee)
-        elif committee['house_id'] is 1:
+        elif committee['house_id'] is Committee.JOINT_COMMITTEE:
             committees_type['jnt']['committees'].append(committee)
 
     return render_template('committee_list.html',

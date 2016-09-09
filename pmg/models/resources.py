@@ -594,6 +594,10 @@ class Committee(ApiResource, db.Model):
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
     minister = db.relationship('Minister', lazy=True)
 
+    NATIONAL_ASSEMBLY = 3
+    NAT_COUNCIL_OF_PROV = 2
+    JOINT_COMMITTEE = 1
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)

@@ -14,7 +14,6 @@ var clearSearchResult = function() {
     .empty();
   $noResults.hide();
   $resultsFound.hide();
-  $searchInput.val('');
   $committeesList.show();
 }
 
@@ -36,6 +35,7 @@ var debounce = function(func, wait, immediate) {
 
 var typeAhead = debounce(function() {
   var value = $searchInput.val();
+  clearSearchResult();
   if(!!value.length) {
     var $results = [];
     var resultsCount = 0;
@@ -43,6 +43,7 @@ var typeAhead = debounce(function() {
     showingSearchResult = true;
 
     $committeesList.hide();
+    $noResults.hide();
     $clearResults.show();
 
     $committees.each(function() {
@@ -58,7 +59,7 @@ var typeAhead = debounce(function() {
     if(!!resultsCount) {
       $resultsFound.show();
 
-      if(resultsCount >= 20) {
+      if(resultsCount >= 40) {
         $searchResult.find('.left ul')
           .append($results.slice(0,resultsCount / 2 - 1));
         $searchResult.find('.right ul')
@@ -68,10 +69,9 @@ var typeAhead = debounce(function() {
           .append($results);
       }
     } else {
+      $resultsFound.hide();
       $noResults.show();
     }
-  } else {
-    clearSearchResult();
   }
 },500);
 

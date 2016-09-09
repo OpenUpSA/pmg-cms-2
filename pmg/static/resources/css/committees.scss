@@ -71,26 +71,6 @@
     top:37px;
     font-size:18px;
   }
-  .clear-results {
-    display:none;
-    padding-top:35px;
-
-    .clear-button {
-      border-radius:6px;
-      outline:none;
-      background:none;
-      cursor:pointer;
-      display:inline-block;
-
-      &:hover, &:active {
-        color:#555;
-      }
-
-      .text {
-        padding-left:5px;
-      }
-    }
-  }
 }
 
 .committee-search-result {
@@ -100,6 +80,8 @@
   }
   .results-found {
     display:none;
+    margin-top:20px;
+    
     h3 {
       margin-left:30px;
     }

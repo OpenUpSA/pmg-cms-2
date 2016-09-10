@@ -5,11 +5,13 @@ $black = #333;
 //** Global textual link color.
 $link-color:            #0178d8;
 
-// scale down heading font sizes, h1 is like h2, h2 like h3, etc.
+// scale down heading font sizes
 $font-size-base:          14px !default;
-$font-size-h1:            floor(($font-size-base * 2.15));
-$font-size-h2:            floor(($font-size-base * 1.7));
-$font-size-h3:            ceil(($font-size-base * 1.25));
+$font-size-h1:            26px;
+$font-size-h2:            23px;
+$font-size-h3:            18px;
+$font-size-h4:            16px;
+$font-size-h5:            14px;
 
 $font-family-sans-serif: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $headings-font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -817,25 +819,137 @@ body.email_alerts {
   }
 }
 
-#survey-banner {
-  margin-bottom: 0px;
+.committees {
+  .tab-content {
+    margin-top:20px;
+  }
 
-  .share-survey-form {
+  h3 {
+    margin-top:0;
+  }
 
-    @media (min-width: 1024px) {
-      float: right;
-      margin-right: 150px;
-      .share-button {
-        float: left;
-        margin-left: 10px;
+
+  ul {
+    li {
+      .premium {
+        color: $yellow;
+
+        .text {
+          text-decoration:underline;
+          font-size:13px;
+        }
       }
     }
-    @media (max-width: 768px) {
-      .share-button {
-        float: right;
-        margin-left: 10px;
-        margin-top: 5px;
+  }
+}
+
+.committee-header {
+  h1, h4 {
+    margin: 0px 0px 10px;
+  }
+
+  h5 {
+    margin: 0px 0px 5px;
+  }
+
+  h4, h5 {
+    color: $grey-dark;
+  }
+}
+
+.committee_meeting {
+  .committee-meeting-content {
+    .tab-pane {
+      margin-top: 20px;
+    }
+
+    .nav-tabs .active a {
+      font-weight: 600;
+      color: $black;
+    }
+
+    @media print {
+      .nav-tabs {
+        display: none;
       }
+
+      .tab-content > .tab-pane {
+        display: block;
+        visibility: visible;
+      }
+    }
+  }
+}
+
+// committee detail page
+.member-profile-pic{
+  max-width: 50px;
+  max-height: 75px;
+}
+
+.member-profile-pic.chairperson{
+  max-width: 100px;
+  max-height: 150px;
+}
+
+// committee questions
+.committee-question-list {
+  .committee-question-detail {
+    padding-bottom: 50px;
+  }
+  .question-reply-detail {
+    padding-bottom: 20px;
+  }
+}
+.committee-question-detail {
+
+  .media-object {
+    width: 64px;
+
+    img {
+      max-width: 64px;
+    }
+  }
+}
+
+.committee-question-reply {
+  table {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 10px;
+
+    // Cells
+    > thead,
+    > tbody,
+    > tfoot {
+      > tr {
+        > th,
+        > td {
+          padding: 5px;
+          vertical-align: top;
+          border: 1px solid #ddd;
+        }
+      }
+    }
+    // Bottom align for column headings
+    > thead > tr > th {
+      vertical-align: bottom;
+      border-bottom: 2px solid #ddd;
+    }
+    // Remove top border from thead by default
+    > caption + thead,
+    > colgroup + thead,
+    > thead:first-child {
+      > tr:first-child {
+        > th,
+        > td {
+          border-top: 0;
+        }
+      }
+    }
+    // Account for multiple tbody instances
+    > tbody + tbody {
+      border-top: 2px solid #ddd;
     }
   }
 }

@@ -13,6 +13,10 @@ from pmg.bills import bill_history, MIN_YEAR
 from pmg.api_client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
+from pmg.models.resources import Committee
+
+from copy import deepcopy
+from collections import OrderedDict
 
 import forms
 import utils
@@ -244,7 +248,40 @@ def committees():
 
     logger.debug("committees page called")
     committees = load_from_api('committee', return_everything=True)['results']
-    return render_template('committee_list.html', committees=committees, )
+
+    nat = {
+        'name': 'National Assembly',
+        'committees': []
+    }
+    ncp = {
+        'name': 'National Council of Provinces',
+        'committees': []
+    }
+    jnt = {
+        'name': 'Joint Committees',
+        'committees': []
+    }
+
+    adhoc_committees = OrderedDict((('nat',nat),('ncp',ncp),('jnt',jnt)))
+    reg_committees = deepcopy(adhoc_committees)
+    committees_type = None
+
+    for committee in committees:
+        if committee['ad_hoc'] is True:
+            committees_type = adhoc_committees
+        else:
+            committees_type = reg_committees
+
+        if committee['house_id'] is Committee.NATIONAL_ASSEMBLY:
+            committees_type['nat']['committees'].append(committee)
+        elif committee['house_id'] is Committee.NAT_COUNCIL_OF_PROV:
+            committees_type['ncp']['committees'].append(committee)
+        elif committee['house_id'] is Committee.JOINT_COMMITTEE:
+            committees_type['jnt']['committees'].append(committee)
+
+    return render_template('committee_list.html',
+        reg_committees=reg_committees,
+        adhoc_committees=adhoc_committees)
 
 
 @app.route('/committee-meetings/')

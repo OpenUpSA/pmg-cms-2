@@ -77,7 +77,7 @@ var typeAhead = debounce(function() {
   }
 },200);
 
-$committeeNavItem.on('click', function (e) {
+$committeeNavItem.on('click', function(e) {
   e.preventDefault();
   $(this).tab('show');
   $committees = $('.committees-list .tab-pane.active .committee');
@@ -86,3 +86,61 @@ $committeeNavItem.on('click', function (e) {
 });
 
 $searchInput.on('keyup', typeAhead);
+
+var currentDate = new Date();
+var $cdNavItem = $('.c-m-nav a, .c-m-nav-mobile a');
+var $cdNavMobileItems = $('.c-m-nav-mobile a');
+var $cdFilterBtns = $('.c-m-filter button, .c-m-filter-mobile a');
+var $cdListTables = $('.c-m-list .table');
+var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
+
+// Committee detail page
+$cdNavItem.on('click', function(e) {
+  e.preventDefault();
+  $(this).tab('show');
+});
+
+$cdNavMobileItems.on('click', function(e) {
+  $cdNavMobileItems.closest('li')
+    .removeClass('active');
+  $(e.target).closest('li')
+    .addClass('active');
+});
+
+// Hide all but first ten meetings on load
+$cdCurrentYearTable.find('tr')
+  .slice(10)
+  .hide();
+
+$cdFilterBtns.on('click', function(e) {
+  e.preventDefault();
+
+  var $target = $(e.target);
+  var filter = $target.attr('data-filter');
+  var year = $target.attr('data-year');
+  var $table = $('#m-' + year);
+  var $rows = $table.find('tr');
+
+  $cdFilterBtns.removeClass('active');
+  $target.addClass('active');
+  $cdListTables.hide();
+  $cdListTables.find('tr')
+    .show();
+
+  switch(filter) {
+    case 'recent':
+      $rows.slice(10)
+        .hide();
+      break;
+    case 'six-months':
+      $rows.each(function(i,row) {
+        var $row = $(row);
+        var date = new Date($row.attr('data-date'));
+
+        if(currentDate.getMonth() - date.getMonth() > 6) $row.hide();
+      });
+      break;
+  }
+
+  $table.fadeIn({ duration: 250, easing: 'linear' });
+});

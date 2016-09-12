@@ -210,6 +210,14 @@ def committee_detail(committee_id):
     """
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
+    YEAR_CUTOFF = 2012
+    now = datetime.now()
+    meetings_by_year = {}
+
+    def format_date(m_date):
+        # The offset in the default date string is not in standard unicode (+HHMM) format
+        # so we remove it
+        return datetime.strptime(m_date[:len(m_date) - 6],'%Y-%m-%dT%H:%M:%S')
 
     params = {
         'filter[committee_id]': committee_id,
@@ -218,10 +226,24 @@ def committee_detail(committee_id):
     recent_questions = load_from_api(
         'minister-questions-combined',
         params=params)['results']
+    all_meetings = filter(lambda m: m['type'] == 'committee-meeting' and format_date(m['date']).year >= YEAR_CUTOFF,committee['events'])
+
+    for meeting in all_meetings:
+        meeting_year = format_date(meeting['date']).year
+
+        if meeting_year not in meetings_by_year:
+            meetings_by_year[meeting_year] = []
+
+        meetings_by_year[meeting_year].append(meeting)
 
     return render_template('committee_detail.html',
+                            current_year=now.year,
+                            meetings_by_year=meetings_by_year,
                            committee=committee,
                            recent_questions=recent_questions,
+                           tabled_committee_reports = committee['tabled_committee_reports'],
+                           calls_for_comments = committee['calls_for_comments'],
+                           meetings = all_meetings,
                            admin_edit_url=admin_url('committee', committee_id))
 
 

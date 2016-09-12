@@ -16,54 +16,82 @@
         </div>
       {% endif %}
 
-      <h3><span class="fa fa-flash"></span> Committee Meetings</h3>
-      {%- set per_page = 20 -%}
-      {%- set num_pages = ((committee.events | length) / per_page) | int -%}
-      {%- if (committee.events | length) % per_page != 0 %}
-        {% set num_pages = num_pages + 1 %}
-      {% endif -%}
+      <nav class="c-m-nav" id="c-m-nav">
+        <ul class="nav nav-tabs">
+          <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
+          <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
+          <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
+          <li><a href="#qr" data-toggle="tab">Questions/replies</a></li>
+        </ul>
+      </nav>
+
+      <div class="c-m-mobile">
+        <nav class="c-m-nav-mobile" id="c-m-nav-mobile">
+          <div class="dropdown">
+            <button type="button" class="btn btn-default" data-toggle="dropdown">Sections <span class="carat"></span></button>
+            <ul class="dropdown-menu">
+              <li><a href="#cm" data-toggle="tab">Committee meetings</a></li>
+              <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
+              <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
+              <li><a href="#qr" data-toggle="tab">Questions/replies</a></li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="c-m-filter-mobile">
+          <div class="dropdown">
+            <button type="button" class="btn btn-default" data-toggle="dropdown">Filter by date</button>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="#" data-filter="recent" data-year="{{ current_year }}">Recent meetings</a>
+                <a href="#" data-filter="six-months" data-year="{{ current_year }}">Last 6 months</a>
+                <a href="#" data-year="{{ current_year }}">This year</a>
+                {% for year in range(2012,current_year) | reverse %}
+                  <a href="#" data-year="{{ year }}">{{ year }}</a>
+                {% endfor %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
       <div class="tab-content">
-        {% for i in range(num_pages) %}
-          <div class="tab-pane fade{% if loop.first %} in active{% endif %}" id="page-{{ loop.index }}">
-            <table class="table table-striped table-bordered">
-              {% if loop.last %}
-                {% set event_list = committee.events[loop.index0 * 20::] %}
+        <div class="tab-pane fade in active c-m-list" id="cm">
+          <div class="c-m-filter-wrapper">
+            <div class="btn-group c-m-filter">
+              <button type="button" class="btn btn-default active" data-filter="recent" data-year="{{ current_year }}">Recent meetings</button>
+              <button type="button" class="btn btn-default" data-filter="six-months" data-year="{{ current_year }}">Last 6 months</button>
+              <button type="button" class="btn btn-default" data-year="{{ current_year }}">This year</button>
+              {% for year in range(2012,current_year) | reverse %}
+                <button type="button" class="btn btn-default" data-year="{{ year }}">{{ year }}</button>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="c-m-list">
+            {% for year, meetings in meetings_by_year.iteritems() %}
+              {% if year == current_year %}
+              <table class="table table-striped" id="m-{{ year }}">
               {% else %}
-                {% set event_list = committee.events[loop.index0 * 20:loop.index * 20] %}
+              <table class="table table-striped" style="display:none;" id="m-{{ year }}">
               {% endif %}
-              {% for event in event_list %}
-                {% if event.type == "committee-meeting" %}
-                  <tr>
-                    <td><nobr>{{ event.date | pretty_date }}</nobr></td>
-                    {% if event.id %}
-                      <td><a href="{{ url_for('committee_meeting', event_id=event.id) }}">{{ event.title }}</a></td>
+                {% for meeting in meetings %}
+                  <tr data-date="{{ meeting.date | pretty_date }}">
+                    <td><nobr>{{ meeting.date | pretty_date }}</nobr></td>
+                    {% if meeting.id %}
+                      <td><a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a></td>
                     {% else %}
-                      <td>{{ event.title }}</td>
+                      <td>{{ meeting.title }}</td>
                     {% endif %}
                   </tr>
-                {% endif %}
-              {% endfor %}
-            </table>
+                {% endfor %}
+              </table>
+            {% endfor %}
           </div>
-        {% endfor %}
-      </div>
-      {% if num_pages > 1 %}
-        <ul class="pagination pagination-sm" role="tablist" style="margin-top: -14px">
-          <li><a href="#page-1" role="tab" data-toggle="tab">&laquo;</a></li>
-          {% for i in range(num_pages) %}
-            <li{% if loop.first %} class="active"{% endif %}><a href="#page-{{ loop.index }}" role="tab" data-toggle="tab">{{ loop.index }}</a></li>
-          {% endfor %}
-          <li><a href="#page-{{ num_pages }}" role="tab" data-toggle="tab">&raquo;</a></li>
-        </ul>
-      {% endif %}
-
-      <div class="row">
-        {% if committee.tabled_committee_reports %}
-          <div class="col-md-6">
-            <h3><span class="fa fa-briefcase"></span> Tabled Reports</h3>
-            <table class="table table-compact">
-              {% for item in committee.tabled_committee_reports[0:5] %}
+        </div>
+        <div class="tab-pane fade in c-m-t-reports" id="tr">
+          {% if tabled_committee_reports %}
+            <table class="table table-striped">
+              {% for item in tabled_committee_reports[0:5] %}
               <tr>
                 <td><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
                 </div>
@@ -71,18 +99,15 @@
               {% endfor %}
             </table>
 
-            {% if committee.tabled_committee_reports|length > 5 %}
+            {% if tabled_committee_reports|length > 5 %}
               <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
-
             {% endif %}
-          </div>
-        {% endif %}
-
-        {% if committee.calls_for_comments %}
-          <div class="col-md-6">
-            <h3><span class="fa fa-bullhorn"></span> Calls for Comment</h3>
-            <table class="table table-compact">
-              {% for item in committee.calls_for_comments[0:5] %}
+          {% endif %}
+        </div>
+        <div class="tab-pane fade in c-m-c-comment" id="cc">
+          {% if calls_for_comments %}
+            <table class="table table-striped">
+              {% for item in calls_for_comments[0:5] %}
                 <tr><td>
                   <div class="row">
                     <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
@@ -92,16 +117,14 @@
               {% endfor %}
             </table>
 
-            {% if committee.calls_for_comments|length > 5 %}
+            {% if calls_for_comments|length > 5 %}
               <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
             {% endif %}
-          </div>
-        {% endif %}
-
-        {% if recent_questions %}
-          <div class="col-md-6">
-            <h3><span class="fa fa-question-circle"></span> Questions and Replies</h3>
-            <table class="table table-compact">
+          {% endif %}
+        </div>
+        <div class="tab-pane fade in c-m-q-replies" id="qr">
+          {% if recent_questions %}
+            <table class="table table-striped">
               {% for item in recent_questions %}
                 <tr><td>
                   <div class="row">
@@ -118,12 +141,9 @@
                 </td></tr>
               {% endfor %}
             </table>
-
             <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
-
-          </div>
-        {% endif %}
-      </div>
+          {% endif %}
+        </div>
     </div> <!-- /Reports -->
 
     <div class="col-md-4">

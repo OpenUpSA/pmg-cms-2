@@ -145,6 +145,7 @@ class MyModelView(RBACMixin, ModelView):
     can_edit = True
     can_delete = True
     can_export = True
+    export_max_rows = 10000
     export_types = ['csv', 'xlsx']
     edit_template = 'admin/my_edit.html'
     create_template = 'admin/my_create.html'

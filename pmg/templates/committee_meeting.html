@@ -10,8 +10,16 @@
 
 
 {% block committee_title %}
-  {{ super() }}
-  <h1><i class="fa fa-comment"></i> {{ event.title }}</h1>
+  <h1>{{ event.title }}</h1>
+  <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
+
+  {% if event.date %}
+    <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
+  {% endif %}
+
+  {% if event.chairperson %}
+    <h5>Chairperson: {{ event.chairperson }}</h5>
+  {% endif %}
 {% endblock %}
 
 
@@ -36,35 +44,35 @@
 
   {% else %}
 
-    <div class="row">
+    <div class="row committee-meeting-content">
       <div class="col-sm-8">
 
-        {% if event.chairperson %}
-          <h3>Chairperson: {{ event.chairperson }}</h3>
-        {% endif %}
+        <ul class="nav nav-tabs">
+          <li role="presentation" class="active"><a href="#summary" data-toggle="tab">Meeting summary</a></li>
+          <li role="presentation"><a href="#minutes" data-toggle="tab">Full minutes</a></li>
+        </ul>
 
-        <h3>
-          Date of Meeting:
-          {% if event.date %}
-            {{ event.date | pretty_date("long") }}
-          {% else %}
-            (unknown)
-          {% endif %}
-        </h3>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="summary">
+            <h4 class="visible-print-block">Summary</h4>
 
-        <h2>Summary</h2>
-        {% if event.summary %}
-          {{ event.summary | safe }}
-        {% else %}
-          <p><em>No summary available for this committee meeting.</em></p>
-        {% endif %}
-        <hr>
+            {% if event.summary %}
+              {{ event.summary | safe }}
+            {% else %}
+              <p><em>A summary of this committee meeting is not yet available.</em></p>
+            {% endif %}
+          </div>
 
-        {% if event.body %}
-          <h2>Minutes</h2>
-          {{ event.body | safe }}
-        {% endif %}
-        <hr>
+          <div role="tabpanel" class="tab-pane" id="minutes">
+            <h4 class="visible-print-block">Full minutes</h4>
+
+            {% if event.body %}
+              {{ event.body | safe }}
+            {% else %}
+              <p><em>Minutes for this committee meeting are not yet available.</em></p>
+            {% endif %}
+          </div>
+        </div>
       </div>
 
       <div class="col-sm-4">

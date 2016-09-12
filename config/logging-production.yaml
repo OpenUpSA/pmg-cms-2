@@ -10,9 +10,9 @@ formatters:
     format: '%(asctime)s %(process)-6d %(name)-12s %(levelname)-8s %(message)s'
 loggers:
   pmg:
-    level: DEBUG
+    level: INFO
   requests:
-    level: DEBUG
+    level: INFO
   sqlalchemy.engine:
     level: WARN
   rebuild_db:

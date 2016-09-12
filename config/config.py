@@ -3,6 +3,8 @@ from os import environ as env
 # dev mode?
 DEBUG = env.get('FLASK_ENV', 'development') != 'production'
 
+RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
+
 WTF_CSRF_ENABLED = True
 SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
@@ -22,6 +24,7 @@ SOUNDCLOUD_USERNAME = env.get("SOUNDCLOUD_USERNAME", '')
 SOUNDCLOUD_PASSWORD = env.get("SOUNDCLOUD_PASSWORD", '')
 
 MAX_SOUNDCLOUD_BATCH = int(env.get("MAX_SOUNDCLOUD_BATCH", '1'))
+SOUNDCLOUD_PERIOD_MINUTES = env.get("SOUNDCLOUD_PERIOD_MINUTES", '5')
 
 S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET

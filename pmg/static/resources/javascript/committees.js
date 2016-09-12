@@ -35,7 +35,9 @@ var debounce = function(func, wait, immediate) {
 
 var typeAhead = debounce(function() {
   var value = $searchInput.val();
+
   clearSearchResult();
+
   if(!!value.length) {
     var $results = [];
     var resultsCount = 0;
@@ -73,7 +75,7 @@ var typeAhead = debounce(function() {
       $noResults.show();
     }
   }
-},500);
+},200);
 
 $committeeNavItem.on('click', function (e) {
   e.preventDefault();
@@ -83,15 +85,4 @@ $committeeNavItem.on('click', function (e) {
   if(showingSearchResult) clearSearchResult();
 });
 
-$clearResults.on('click', function() {
-  clearSearchResult();
-  $clearResults.hide();
-});
-
-$searchInput.on('focus', function() {
-  $searchInput.on('keyup', typeAhead);
-});
-
-$searchInput.on('blur', function() {
-  $(document).off('keypress');
-})
+$searchInput.on('keyup', typeAhead);

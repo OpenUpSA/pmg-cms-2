@@ -846,11 +846,12 @@ body.email_alerts {
       margin:3px 0;
 
       .premium {
-        color:#F5A623;
+        font-size: 13px;
+        color: $yellow;
 
-        .text {
-          text-decoration:underline;
-          font-size:13px;
+        a,
+        a:hover {
+          color: $yellow;
         }
       }
     }

@@ -863,6 +863,7 @@ body.email_alerts {
   .adhoc {
     h3 {
       margin-top:0;
+      margin-left:15px;
     }
   }
 }
@@ -1037,6 +1038,14 @@ body.email_alerts {
     }
     .no-results {
       margin-left:0;
+    }
+  }
+
+  .committees-list {
+    .adhoc {
+      h3 {
+        margin-left:0;
+      }
     }
   }
 }

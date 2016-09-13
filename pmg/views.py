@@ -212,12 +212,12 @@ def committee_detail(committee_id):
     committee = load_from_api('committee', committee_id)
     YEAR_CUTOFF = 2012
     now = datetime.now()
-    meetings_by_year = {}
+    filtered_meetings = {}
 
     def get_year_unicode(m_date):
-        # The offset in the default date string is not in standard unicode (+HHMM) format
-        # so we remove it
         return int(m_date[:4])
+    def get_month_unicode(m_date):
+        return int(m_date[5:7])
 
     params = {
         'filter[committee_id]': committee_id,
@@ -226,24 +226,25 @@ def committee_detail(committee_id):
     recent_questions = load_from_api(
         'minister-questions-combined',
         params=params)['results']
+
     all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting' and get_year_unicode(m['date']) >= YEAR_CUTOFF]
 
     for meeting in all_meetings:
         meeting_year = get_year_unicode(meeting['date'])
 
-        if meeting_year not in meetings_by_year:
-            meetings_by_year[meeting_year] = []
+        if meeting_year not in filtered_meetings:
+            filtered_meetings[meeting_year] = []
 
-        meetings_by_year[meeting_year].append(meeting)
+        filtered_meetings[meeting_year].append(meeting)
+
+    filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
+    filtered_meetings['three-months'] = [m for m in filtered_meetings['six-months'] if now.month - get_month_unicode(m['date']) <= 3]
 
     return render_template('committee_detail.html',
                             current_year=now.year,
-                            meetings_by_year=meetings_by_year,
+                            filtered_meetings=filtered_meetings,
                            committee=committee,
                            recent_questions=recent_questions,
-                           tabled_committee_reports = committee['tabled_committee_reports'],
-                           calls_for_comments = committee['calls_for_comments'],
-                           meetings = all_meetings,
                            admin_edit_url=admin_url('committee', committee_id))
 
 

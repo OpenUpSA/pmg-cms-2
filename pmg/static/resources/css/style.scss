@@ -961,6 +961,10 @@ body.email_alerts {
 .cte-meetings-nav {
   .nav-tabs {
     li {
+      a {
+        cursor:pointer;
+      }
+      
       &.active {
         font-weight:bold;
       }

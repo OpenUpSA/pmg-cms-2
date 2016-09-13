@@ -18,10 +18,10 @@
 
       <nav class="cte-meetings-nav hidden-xs">
         <ul class="nav nav-tabs">
-          <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
-          <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
-          <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
-          <li><a href="#qr" data-toggle="tab">Questions/replies</a></li>
+          <li class="active"><a data-target="#cm" data-toggle="tab">Committee meetings</a></li>
+          <li><a data-target="#cc" data-toggle="tab">Calls for comment</a></li>
+          <li><a data-target="#tr" data-toggle="tab">Tabled reports</a></li>
+          <li><a data-target="#qr" data-toggle="tab">Questions/replies</a></li>
         </ul>
       </nav>
 
@@ -29,42 +29,42 @@
         <nav class="cte-meetings-nav-mobile visible-xs hidden-sm">
           <div class="form-group">
             <select class="form-control">
-              <option data-target="#cm" data-toggle="tab">Committee meetings</option>
-              <option data-target="#cc" data-toggle="tab">Calls for comment</option>
-              <option data-target="#tr" data-toggle="tab">Tabled reports</option>
-              <option data-target="#qr" data-toggle="tab">Questions/replies</option>
+              <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
+              <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
+              <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
+              <option data-target="#qr" data-toggle="tab" value="#qr">Questions/replies</option>
             </select>
           </div>
         </nav>
         <div class="tab-pane fade in active" id="cm">
           <div class="cte-meetings-filter-outer hidden-xs">
             <div class="btn-group cte-meetings-filter-inner">
-              <button type="button" class="btn btn-default active" data-filter="recent" data-year="{{ current_year }}">Recent meetings</button>
-              <button type="button" class="btn btn-default" data-filter="six-months" data-year="{{ current_year }}">Last 6 months</button>
-              <button type="button" class="btn btn-default" data-year="{{ current_year }}">This year</button>
+              <button type="button" class="btn btn-default active" data-filter="three-months">Last 3 months</button>
+              <button type="button" class="btn btn-default" data-filter="six-months">Last 6 months</button>
+              <button type="button" class="btn btn-default" data-filter="{{ current_year }}">This year</button>
               {% for year in range(2012,current_year) | reverse %}
-                <button type="button" class="btn btn-default" data-year="{{ year }}">{{ year }}</button>
+                <button type="button" class="btn btn-default" data-filter="{{ year }}">{{ year }}</button>
               {% endfor %}
             </div>
           </div>
           <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
             <div class="form-group btn-block">
               <select class="form-control">
-                <option data-filter="recent" data-year="{{ current_year }}">Recent meetings</option>
-                <option data-filter="six-months" data-year="{{ current_year }}">Last 6 months</option>
-                <option data-year="{{ current_year }}">This year</option>
+                <option data-filter="three-months" value="three-months">Last 3 months</option>
+                <option data-filter="six-months" value="six-months">Last 6 months</option>
+                <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
                 {% for year in range(2012,current_year) | reverse %}
-                  <option data-year="{{ year }}">{{ year }}</option>
+                  <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
                 {% endfor %}
               </select>
             </div>
           </div>
           <div class="cte-meetings-list">
-            {% for year, meetings in meetings_by_year.iteritems() %}
-              {% if year == current_year %}
-              <table class="table table-striped" id="m-{{ year }}">
+            {% for filter, meetings in filtered_meetings.iteritems() %}
+              {% if filter == "three-months" %}
+              <table class="table table-striped" id="m-{{ filter }}">
               {% else %}
-              <table class="table table-striped" style="display:none;" id="m-{{ year }}">
+              <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
               {% endif %}
                 {% for meeting in meetings %}
                   <tr data-date="{{ meeting.date | pretty_date }}">
@@ -81,9 +81,9 @@
           </div>
         </div>
         <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
-          {% if tabled_committee_reports %}
+          {% if committee.tabled_committee_reports %}
             <table class="table table-striped">
-              {% for item in tabled_committee_reports[0:5] %}
+              {% for item in committee.tabled_committee_reports[0:5] %}
               <tr>
                 <td><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
                 </div>
@@ -91,15 +91,15 @@
               {% endfor %}
             </table>
 
-            {% if tabled_committee_reports|length > 5 %}
+            {% if committee.tabled_committee_reports|length > 5 %}
               <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
             {% endif %}
           {% endif %}
         </div>
         <div class="tab-pane fade in cte-meetings-call-com" id="cc">
-          {% if calls_for_comments %}
+          {% if committee.calls_for_comments %}
             <table class="table table-striped">
-              {% for item in calls_for_comments[0:5] %}
+              {% for item in committee.calls_for_comments[0:5] %}
                 <tr><td>
                   <div class="row">
                     <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
@@ -109,7 +109,7 @@
               {% endfor %}
             </table>
 
-            {% if calls_for_comments|length > 5 %}
+            {% if committee.calls_for_comments|length > 5 %}
               <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
             {% endif %}
           {% endif %}

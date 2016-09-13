@@ -18,6 +18,7 @@ var $cdListTables = $('.cte-meetings-list .table');
 var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
 var showingSearchResult = false;
 
+// Committee list page methods and handlers
 var clearSearchResult = function() {
   $searchResult.find('.left ul, .right ul')
     .empty();
@@ -96,45 +97,33 @@ $committeeNavItem.on('click', function(e) {
 
 $searchInput.on('keyup', typeAhead);
 
-// Committee detail page
+// Committee detail page methods and handlers
 var filterMeetings = function($target) {
   var filter = $target.attr('data-filter');
-  var year = $target.attr('data-year');
-  var $table = $('#m-' + year);
-  var $rows = $table.find('tr');
+  var $table = $('#m-' + filter);
 
-  $cdFilterBtns.removeClass('active');
-  $target.addClass('active');
   $cdListTables.hide();
-  $cdListTables.find('tr')
-    .show();
-
-  switch(filter) {
-    case 'recent':
-      $rows.slice(10)
-        .hide();
-      break;
-    case 'six-months':
-      $rows.each(function(i,row) {
-        var $row = $(row);
-        var date = new Date($row.attr('data-date'));
-
-        if(currentDate.getMonth() - date.getMonth() > 6) $row.hide();
-      });
-      break;
-  }
-
   $table.fadeIn({ duration: 250, easing: 'linear' });
+
+  return filter;
 }
 
 $cdNavItem.on('click', function(e) {
   e.preventDefault();
   $(this).tab('show');
+
+  $cdNavMobileSelect.val($(e.target).attr('data-target'));
 });
 
 $cdNavMobileSelect.on('change', function(e) {
   e.preventDefault();
-  $('option:selected',this).tab('show');
+
+  var $selected = $('option:selected',this);
+  $selected.tab('show');
+  $cdNavItem.closest('li')
+    .removeClass('active')
+    .has('[data-target="' + $selected.attr('data-target') + '"]')
+    .addClass('active');
 });
 
 // Hide all but first ten meetings on load
@@ -143,9 +132,19 @@ $cdCurrentYearTable.find('tr')
   .hide();
 
 $cdFilterBtns.on('click', function(e) {
-  filterMeetings($(e.target));
+  var $target = $(e.target);
+  var filter = filterMeetings($target);
+
+  $cdFilterBtns.removeClass('active');
+  $target.addClass('active');
+
+  $cdFilterMobileSelect.val(filter);
 });
 
 $cdFilterMobileSelect.on('change', function(e) {
-  filterMeetings($('option:selected',this));
+  var filter = filterMeetings($('option:selected',this));
+
+  $cdFilterBtns.removeClass('active')
+    .filter('[data-filter="' + filter + '"]')
+    .addClass('active');
 });

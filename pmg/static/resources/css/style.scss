@@ -958,7 +958,7 @@ body.email_alerts {
   max-height: 150px;
 }
 
-.c-m-nav {
+.cte-meetings-nav {
   .nav-tabs {
     li {
       &.active {
@@ -968,21 +968,17 @@ body.email_alerts {
   }
 }
 
-.c-m-mobile {
-  display:none;
-
-  .c-m-filter-mobile {
+.cte-meetings-mobile {
+  .cte-meetings-filter-mobile {
     margin-top:10px;
   }
 }
 
-.c-m-list {
-  .c-m-filter-wrapper {
-    text-align: center;
+.cte-meetings-filter-outer {
+  text-align: center;
 
-    .c-m-filter {
-      margin-bottom:15px;
-    }
+  .cte-meetings-filter-inner {
+    margin-bottom:15px;
   }
 }
 
@@ -1087,26 +1083,6 @@ body.email_alerts {
       h3 {
         margin-left:0;
       }
-    }
-  }
-}
-
-@media screen and (max-width:544px) {
-  .c-m-nav {
-    display:none;
-  }
-  .c-m-mobile {
-    display:block;
-
-    .dropdown {
-      button, .dropdown-menu {
-        width:100%;
-      }
-    }
-  }
-  .c-m-list {
-    .c-m-filter {
-      display:none;
     }
   }
 }

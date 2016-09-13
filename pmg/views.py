@@ -214,10 +214,10 @@ def committee_detail(committee_id):
     now = datetime.now()
     meetings_by_year = {}
 
-    def format_date(m_date):
+    def get_year_unicode(m_date):
         # The offset in the default date string is not in standard unicode (+HHMM) format
         # so we remove it
-        return datetime.strptime(m_date[:len(m_date) - 6],'%Y-%m-%dT%H:%M:%S')
+        return int(m_date[:4])
 
     params = {
         'filter[committee_id]': committee_id,
@@ -226,10 +226,10 @@ def committee_detail(committee_id):
     recent_questions = load_from_api(
         'minister-questions-combined',
         params=params)['results']
-    all_meetings = filter(lambda m: m['type'] == 'committee-meeting' and format_date(m['date']).year >= YEAR_CUTOFF,committee['events'])
+    all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting' and get_year_unicode(m['date']) >= YEAR_CUTOFF]
 
     for meeting in all_meetings:
-        meeting_year = format_date(meeting['date']).year
+        meeting_year = get_year_unicode(meeting['date'])
 
         if meeting_year not in meetings_by_year:
             meetings_by_year[meeting_year] = []

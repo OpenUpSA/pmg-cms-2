@@ -1,3 +1,5 @@
+var currentDate = new Date();
+// Committee list DOM
 var $search = $('#committee-search');
 var $searchInput = $('#committee-search input');
 var $searchResult = $('.committee-search-result');
@@ -7,6 +9,13 @@ var $clearResults = $('.clear-results');
 var $committees = $('.committees-list .nat .committee');
 var $committeesList = $('.committees-list');
 var $committeeNavItem = $('.committee-nav a, .committee-dd-nav a');
+// Committee details DOM
+var $cdNavItem = $('.cte-meetings-nav a');
+var $cdNavMobileSelect = $('.cte-meetings-nav-mobile select');
+var $cdFilterBtns = $('.cte-meetings-filter-inner button');
+var $cdFilterMobileSelect = $('.cte-meetings-filter-mobile select');
+var $cdListTables = $('.cte-meetings-list .table');
+var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
 var showingSearchResult = false;
 
 var clearSearchResult = function() {
@@ -87,35 +96,8 @@ $committeeNavItem.on('click', function(e) {
 
 $searchInput.on('keyup', typeAhead);
 
-var currentDate = new Date();
-var $cdNavItem = $('.c-m-nav a, .c-m-nav-mobile a');
-var $cdNavMobileItems = $('.c-m-nav-mobile a');
-var $cdFilterBtns = $('.c-m-filter button, .c-m-filter-mobile a');
-var $cdListTables = $('.c-m-list .table');
-var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
-
 // Committee detail page
-$cdNavItem.on('click', function(e) {
-  e.preventDefault();
-  $(this).tab('show');
-});
-
-$cdNavMobileItems.on('click', function(e) {
-  $cdNavMobileItems.closest('li')
-    .removeClass('active');
-  $(e.target).closest('li')
-    .addClass('active');
-});
-
-// Hide all but first ten meetings on load
-$cdCurrentYearTable.find('tr')
-  .slice(10)
-  .hide();
-
-$cdFilterBtns.on('click', function(e) {
-  e.preventDefault();
-
-  var $target = $(e.target);
+var filterMeetings = function($target) {
   var filter = $target.attr('data-filter');
   var year = $target.attr('data-year');
   var $table = $('#m-' + year);
@@ -143,4 +125,27 @@ $cdFilterBtns.on('click', function(e) {
   }
 
   $table.fadeIn({ duration: 250, easing: 'linear' });
+}
+
+$cdNavItem.on('click', function(e) {
+  e.preventDefault();
+  $(this).tab('show');
+});
+
+$cdNavMobileSelect.on('change', function(e) {
+  e.preventDefault();
+  $('option:selected',this).tab('show');
+});
+
+// Hide all but first ten meetings on load
+$cdCurrentYearTable.find('tr')
+  .slice(10)
+  .hide();
+
+$cdFilterBtns.on('click', function(e) {
+  filterMeetings($(e.target));
+});
+
+$cdFilterMobileSelect.on('change', function(e) {
+  filterMeetings($('option:selected',this));
 });

@@ -16,7 +16,7 @@
         </div>
       {% endif %}
 
-      <nav class="c-m-nav" id="c-m-nav">
+      <nav class="cte-meetings-nav hidden-xs">
         <ul class="nav nav-tabs">
           <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
           <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
@@ -25,40 +25,20 @@
         </ul>
       </nav>
 
-      <div class="c-m-mobile">
-        <nav class="c-m-nav-mobile" id="c-m-nav-mobile">
-          <div class="dropdown">
-            <button type="button" class="btn btn-default" data-toggle="dropdown">Sections <span class="carat"></span></button>
-            <ul class="dropdown-menu">
-              <li><a href="#cm" data-toggle="tab">Committee meetings</a></li>
-              <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
-              <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
-              <li><a href="#qr" data-toggle="tab">Questions/replies</a></li>
-            </ul>
+      <div class="tab-content">
+        <nav class="cte-meetings-nav-mobile visible-xs hidden-sm">
+          <div class="form-group">
+            <select class="form-control">
+              <option data-target="#cm" data-toggle="tab">Committee meetings</option>
+              <option data-target="#cc" data-toggle="tab">Calls for comment</option>
+              <option data-target="#tr" data-toggle="tab">Tabled reports</option>
+              <option data-target="#qr" data-toggle="tab">Questions/replies</option>
+            </select>
           </div>
         </nav>
-
-        <div class="c-m-filter-mobile">
-          <div class="dropdown">
-            <button type="button" class="btn btn-default" data-toggle="dropdown">Filter by date</button>
-            <ul class="dropdown-menu">
-              <li>
-                <a href="#" data-filter="recent" data-year="{{ current_year }}">Recent meetings</a>
-                <a href="#" data-filter="six-months" data-year="{{ current_year }}">Last 6 months</a>
-                <a href="#" data-year="{{ current_year }}">This year</a>
-                {% for year in range(2012,current_year) | reverse %}
-                  <a href="#" data-year="{{ year }}">{{ year }}</a>
-                {% endfor %}
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-content">
-        <div class="tab-pane fade in active c-m-list" id="cm">
-          <div class="c-m-filter-wrapper">
-            <div class="btn-group c-m-filter">
+        <div class="tab-pane fade in active" id="cm">
+          <div class="cte-meetings-filter-outer hidden-xs">
+            <div class="btn-group cte-meetings-filter-inner">
               <button type="button" class="btn btn-default active" data-filter="recent" data-year="{{ current_year }}">Recent meetings</button>
               <button type="button" class="btn btn-default" data-filter="six-months" data-year="{{ current_year }}">Last 6 months</button>
               <button type="button" class="btn btn-default" data-year="{{ current_year }}">This year</button>
@@ -67,7 +47,19 @@
               {% endfor %}
             </div>
           </div>
-          <div class="c-m-list">
+          <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
+            <div class="form-group btn-block">
+              <select class="form-control">
+                <option data-filter="recent" data-year="{{ current_year }}">Recent meetings</option>
+                <option data-filter="six-months" data-year="{{ current_year }}">Last 6 months</option>
+                <option data-year="{{ current_year }}">This year</option>
+                {% for year in range(2012,current_year) | reverse %}
+                  <option data-year="{{ year }}">{{ year }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="cte-meetings-list">
             {% for year, meetings in meetings_by_year.iteritems() %}
               {% if year == current_year %}
               <table class="table table-striped" id="m-{{ year }}">
@@ -88,7 +80,7 @@
             {% endfor %}
           </div>
         </div>
-        <div class="tab-pane fade in c-m-t-reports" id="tr">
+        <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
           {% if tabled_committee_reports %}
             <table class="table table-striped">
               {% for item in tabled_committee_reports[0:5] %}
@@ -104,7 +96,7 @@
             {% endif %}
           {% endif %}
         </div>
-        <div class="tab-pane fade in c-m-c-comment" id="cc">
+        <div class="tab-pane fade in cte-meetings-call-com" id="cc">
           {% if calls_for_comments %}
             <table class="table table-striped">
               {% for item in calls_for_comments[0:5] %}
@@ -122,7 +114,7 @@
             {% endif %}
           {% endif %}
         </div>
-        <div class="tab-pane fade in c-m-q-replies" id="qr">
+        <div class="tab-pane fade in cte-meetings-qst-rep" id="qr">
           {% if recent_questions %}
             <table class="table table-striped">
               {% for item in recent_questions %}

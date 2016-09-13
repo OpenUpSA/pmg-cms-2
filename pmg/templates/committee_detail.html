@@ -39,8 +39,7 @@
         <div class="tab-pane fade in active" id="cm">
           <div class="cte-meetings-filter-outer hidden-xs">
             <div class="btn-group cte-meetings-filter-inner">
-              <button type="button" class="btn btn-default active" data-filter="three-months">Last 3 months</button>
-              <button type="button" class="btn btn-default" data-filter="six-months">Last 6 months</button>
+              <button type="button" class="btn btn-default active" data-filter="six-months">Last 6 months</button>
               <button type="button" class="btn btn-default" data-filter="{{ current_year }}">This year</button>
               {% for year in range(2012,current_year) | reverse %}
                 <button type="button" class="btn btn-default" data-filter="{{ year }}">{{ year }}</button>
@@ -50,7 +49,6 @@
           <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
             <div class="form-group btn-block">
               <select class="form-control">
-                <option data-filter="three-months" value="three-months">Last 3 months</option>
                 <option data-filter="six-months" value="six-months">Last 6 months</option>
                 <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
                 {% for year in range(2012,current_year) | reverse %}
@@ -61,7 +59,7 @@
           </div>
           <div class="cte-meetings-list">
             {% for filter, meetings in filtered_meetings.iteritems() %}
-              {% if filter == "three-months" %}
+              {% if filter == "six-months" %}
               <table class="table table-striped" id="m-{{ filter }}">
               {% else %}
               <table class="table table-striped" style="display:none;" id="m-{{ filter }}">

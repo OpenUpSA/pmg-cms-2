@@ -238,7 +238,6 @@ def committee_detail(committee_id):
         filtered_meetings[meeting_year].append(meeting)
 
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
-    filtered_meetings['three-months'] = [m for m in filtered_meetings['six-months'] if now.month - get_month_unicode(m['date']) <= 3]
 
     return render_template('committee_detail.html',
                             current_year=now.year,

@@ -938,7 +938,7 @@ body.email_alerts {
 // committee detail page
 .committee_detail {
   .tab-content {
-    padding:15px;
+    padding:15px 0;
   }
   .table {
     &.table-striped {
@@ -964,7 +964,7 @@ body.email_alerts {
       a {
         cursor:pointer;
       }
-      
+
       &.active {
         font-weight:bold;
       }

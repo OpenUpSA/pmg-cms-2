@@ -88,8 +88,8 @@
               {% endfor %}
             </div>
           </div>
-          {% if committee.tabled_committee_reports %}
           <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
+            {% if committee.tabled_committee_reports %}
               <table class="table table-striped">
                 {% for item in committee.tabled_committee_reports[0:5] %}
                 <tr>
@@ -101,28 +101,36 @@
               {% if committee.tabled_committee_reports|length > 5 %}
                 <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
               {% endif %}
-          </div>
-          {% endif %}
-          {% if committee.calls_for_comments %}
-          <div class="tab-pane fade in cte-meetings-call-com" id="cc">
-            <table class="table table-striped">
-              {% for item in committee.calls_for_comments[0:5] %}
-                <tr><td>
-                  <div class="row">
-                    <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
-                    <div class="col-xs-8"><a href="{{ url_for('call_for_comment', call_for_comment_id=item.id) }}">{{ item.title }}</a></div>
-                  </div>
-                </td></tr>
-              {% endfor %}
-            </table>
-
-            {% if committee.calls_for_comments|length > 5 %}
-              <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+            {% else %}
+            <p>
+              There are no committee reports at this time.
+            </p>
             {% endif %}
           </div>
-          {% endif %}
-          {% if recent_questions %}
+          <div class="tab-pane fade in cte-meetings-call-com" id="cc">
+            {% if committee.calls_for_comments %}
+              <table class="table table-striped">
+                {% for item in committee.calls_for_comments[0:5] %}
+                  <tr><td>
+                    <div class="row">
+                      <div class="col-xs-4">{{ item.start_date|pretty_date }}</div>
+                      <div class="col-xs-8"><a href="{{ url_for('call_for_comment', call_for_comment_id=item.id) }}">{{ item.title }}</a></div>
+                    </div>
+                  </td></tr>
+                {% endfor %}
+              </table>
+
+              {% if committee.calls_for_comments|length > 5 %}
+                <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
+              {% endif %}
+            {% else %}
+            <p>
+              There are no calls for comments at this time.
+            </p>
+            {% endif %}
+          </div>
           <div class="tab-pane fade in cte-meetings-qst-rep" id="qr">
+          {% if recent_questions %}
             <table class="table table-striped">
               {% for item in recent_questions %}
                 <tr><td>
@@ -141,8 +149,12 @@
               {% endfor %}
             </table>
             <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
-          </div>
+          {% else %}
+          <p>
+            There are no questions at this time.
+          </p>
           {% endif %}
+          </div>
         </div>
       </div>
       {% endif %}

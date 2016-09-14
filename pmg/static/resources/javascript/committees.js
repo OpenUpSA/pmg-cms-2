@@ -148,3 +148,7 @@ $cdFilterMobileSelect.on('change', function(e) {
     .filter('[data-filter="' + filter + '"]')
     .addClass('active');
 });
+
+// Need to activate the first available filter
+$cdFilterBtns.first()
+  .trigger('click');

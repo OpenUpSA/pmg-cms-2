@@ -939,9 +939,9 @@ body.email_alerts {
 }
 
 // committee detail page
-.committee_detail {
+.cte-detail-lower {
   .tab-content {
-    padding:15px;
+    padding:15px 0;
   }
   .table {
     &.table-striped {
@@ -1017,8 +1017,8 @@ body.email_alerts {
     margin-top:15px;
     margin-bottom:0;
   }
-  .tab-content {
-    padding-bottom:5px;
+  .read-more {
+    margin-top:10px;
   }
 }
 
@@ -1103,6 +1103,20 @@ body.email_alerts {
       h3 {
         margin-left:0;
       }
+    }
+  }
+}
+
+@media screen and (min-width:545px) {
+  .text-sm-right {
+    text-align:right;
+  }
+}
+
+@media screen and (max-width:544px) {
+  .committee-header {
+    h1.premium {
+      margin-top:5px;
     }
   }
 }

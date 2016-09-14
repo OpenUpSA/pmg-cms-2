@@ -243,13 +243,16 @@ def committee_detail(committee_id):
     if filtered_meetings[latest_year]:
         latest_meeting = filtered_meetings[latest_year][0]
     else:
-        latest_meeting = None
+        latest_meeting = False
+
+    has_meetings = len(all_meetings) > 0
 
     return render_template('committee_detail.html',
                             current_year=now.year,
                             latest_meeting=latest_meeting,
                             filtered_meetings=filtered_meetings,
                            committee=committee,
+                           has_meetings=has_meetings,
                            recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))
 

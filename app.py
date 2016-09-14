@@ -3,6 +3,8 @@ from pmg.models.soundcloud_track import SoundcloudTrack
 from flask.ext.script import Server, Manager
 from flask.ext.migrate import MigrateCommand
 
+app.debug = True
+
 manager = Manager(app)
 manager.add_command('runserver', Server(port=5000, threaded=True))
 manager.add_command('db', MigrateCommand)

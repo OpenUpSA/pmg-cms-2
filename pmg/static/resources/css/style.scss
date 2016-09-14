@@ -936,6 +936,18 @@ body.email_alerts {
 }
 
 // committee detail page
+.committee_detail {
+  .tab-content {
+    padding:15px 0;
+  }
+  .table {
+    &.table-striped {
+      th, td {
+        border:none;
+      }
+    }
+  }
+}
 .member-profile-pic{
   max-width: 50px;
   max-height: 75px;
@@ -944,6 +956,34 @@ body.email_alerts {
 .member-profile-pic.chairperson{
   max-width: 100px;
   max-height: 150px;
+}
+
+.cte-meetings-nav {
+  .nav-tabs {
+    li {
+      a {
+        cursor:pointer;
+      }
+
+      &.active {
+        font-weight:bold;
+      }
+    }
+  }
+}
+
+.cte-meetings-mobile {
+  .cte-meetings-filter-mobile {
+    margin-top:10px;
+  }
+}
+
+.cte-meetings-filter-outer {
+  text-align: center;
+
+  .cte-meetings-filter-inner {
+    margin-bottom:15px;
+  }
 }
 
 // committee questions

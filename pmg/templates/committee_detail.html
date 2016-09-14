@@ -16,7 +16,6 @@
         </div>
       {% endif %}
 
-      {% if not no_meetings %}
       <div class="cte-detail-lower">
         <nav class="cte-meetings-nav hidden-xs">
           <ul class="nav nav-tabs">
@@ -39,6 +38,7 @@
             </div>
           </nav>
           <div class="tab-pane fade in active" id="cm">
+            {% if has_meetings %}
             <div class="cte-meetings-filter-outer hidden-xs">
               <div class="btn-group cte-meetings-filter-inner">
                 {% if filtered_meetings['six-months'] | length > 0 %}
@@ -87,6 +87,11 @@
                 </table>
               {% endfor %}
             </div>
+            {% else %}
+            <p>
+              There are no meetings for this committee.
+            </p>
+            {% endif %}
           </div>
           <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
             {% if committee.tabled_committee_reports %}
@@ -157,7 +162,6 @@
           </div>
         </div>
       </div>
-      {% endif %}
     </div> <!-- /Reports -->
 
     <div class="col-md-4">

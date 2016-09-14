@@ -16,86 +16,99 @@
         </div>
       {% endif %}
 
-      <nav class="cte-meetings-nav hidden-xs">
-        <ul class="nav nav-tabs">
-          <li class="active"><a data-target="#cm" data-toggle="tab">Committee meetings</a></li>
-          <li><a data-target="#cc" data-toggle="tab">Calls for comment</a></li>
-          <li><a data-target="#tr" data-toggle="tab">Tabled reports</a></li>
-          <li><a data-target="#qr" data-toggle="tab">Questions/replies</a></li>
-        </ul>
-      </nav>
-
-      <div class="tab-content">
-        <nav class="cte-meetings-nav-mobile visible-xs hidden-sm">
-          <div class="form-group">
-            <select class="form-control">
-              <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
-              <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
-              <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
-              <option data-target="#qr" data-toggle="tab" value="#qr">Questions/replies</option>
-            </select>
-          </div>
+      {% if not no_meetings %}
+      <div class="cte-detail-lower">
+        <nav class="cte-meetings-nav hidden-xs">
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-target="#cm" data-toggle="tab">Committee meetings</a></li>
+            {% if committee.calls_for_comments %}
+            <li><a data-target="#cc" data-toggle="tab">Calls for comment</a></li>
+            {% endif %}
+            {% if committee.tabled_committee_reports %}
+            <li><a data-target="#tr" data-toggle="tab">Tabled reports</a></li>
+            {% endif %}
+            {% if recent_questions %}
+            <li><a data-target="#qr" data-toggle="tab">Questions/replies</a></li>
+            {% endif %}
+          </ul>
         </nav>
-        <div class="tab-pane fade in active" id="cm">
-          <div class="cte-meetings-filter-outer hidden-xs">
-            <div class="btn-group cte-meetings-filter-inner">
-              <button type="button" class="btn btn-default active" data-filter="six-months">Last 6 months</button>
-              <button type="button" class="btn btn-default" data-filter="{{ current_year }}">This year</button>
-              {% for year in range(2012,current_year) | reverse %}
-                <button type="button" class="btn btn-default" data-filter="{{ year }}">{{ year }}</button>
-              {% endfor %}
-            </div>
-          </div>
-          <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
-            <div class="form-group btn-block">
+
+        <div class="tab-content">
+          <nav class="cte-meetings-nav-mobile visible-xs hidden-sm">
+            <div class="form-group">
               <select class="form-control">
-                <option data-filter="six-months" value="six-months">Last 6 months</option>
-                <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
-                {% for year in range(2012,current_year) | reverse %}
-                  <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
-                {% endfor %}
+                <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
+                {% if committee.calls_for_comments %}
+                <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
+                {% endif %}
+                {% if committee.tabled_committee_reports %}
+                <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
+                {% endif %}
+                {% if recent_questions %}
+                <option data-target="#qr" data-toggle="tab" value="#qr">Questions/replies</option>
+                {% endif %}
               </select>
             </div>
+          </nav>
+          <div class="tab-pane fade in active" id="cm">
+            <div class="cte-meetings-filter-outer hidden-xs">
+              <div class="btn-group cte-meetings-filter-inner">
+                <button type="button" class="btn btn-default active" data-filter="six-months">Last 6 months</button>
+                <button type="button" class="btn btn-default" data-filter="{{ current_year }}">This year</button>
+                {% for year in range(2012,current_year) | reverse %}
+                  <button type="button" class="btn btn-default" data-filter="{{ year }}">{{ year }}</button>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
+              <div class="form-group btn-block">
+                <select class="form-control">
+                  <option data-filter="six-months" value="six-months">Last 6 months</option>
+                  <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
+                  {% for year in range(2012,current_year) | reverse %}
+                    <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="cte-meetings-list">
+              {% for filter, meetings in filtered_meetings.iteritems() %}
+                {% if filter == "six-months" %}
+                <table class="table table-striped" id="m-{{ filter }}">
+                {% else %}
+                <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
+                {% endif %}
+                  {% for meeting in meetings %}
+                    <tr data-date="{{ meeting.date | pretty_date }}">
+                      <td><nobr>{{ meeting.date | pretty_date }}</nobr></td>
+                      {% if meeting.id %}
+                        <td><a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a></td>
+                      {% else %}
+                        <td>{{ meeting.title }}</td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                </table>
+              {% endfor %}
+            </div>
           </div>
-          <div class="cte-meetings-list">
-            {% for filter, meetings in filtered_meetings.iteritems() %}
-              {% if filter == "six-months" %}
-              <table class="table table-striped" id="m-{{ filter }}">
-              {% else %}
-              <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
-              {% endif %}
-                {% for meeting in meetings %}
-                  <tr data-date="{{ meeting.date | pretty_date }}">
-                    <td><nobr>{{ meeting.date | pretty_date }}</nobr></td>
-                    {% if meeting.id %}
-                      <td><a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a></td>
-                    {% else %}
-                      <td>{{ meeting.title }}</td>
-                    {% endif %}
-                  </tr>
+          {% if committee.tabled_committee_reports %}
+          <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
+              <table class="table table-striped">
+                {% for item in committee.tabled_committee_reports[0:5] %}
+                <tr>
+                  <td><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
+                </tr>
                 {% endfor %}
               </table>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="tab-pane fade in cte-meetings-tab-rep" id="tr">
-          {% if committee.tabled_committee_reports %}
-            <table class="table table-striped">
-              {% for item in committee.tabled_committee_reports[0:5] %}
-              <tr>
-                <td><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
-                </div>
-              </tr>
-              {% endfor %}
-            </table>
 
-            {% if committee.tabled_committee_reports|length > 5 %}
-              <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
-            {% endif %}
+              {% if committee.tabled_committee_reports|length > 5 %}
+                <a href="{{ url_for('tabled_committee_reports', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
+              {% endif %}
+          </div>
           {% endif %}
-        </div>
-        <div class="tab-pane fade in cte-meetings-call-com" id="cc">
           {% if committee.calls_for_comments %}
+          <div class="tab-pane fade in cte-meetings-call-com" id="cc">
             <table class="table table-striped">
               {% for item in committee.calls_for_comments[0:5] %}
                 <tr><td>
@@ -110,10 +123,10 @@
             {% if committee.calls_for_comments|length > 5 %}
               <a href="/calls-for-comments/?filter[committee]={{ committee.id }}" class="btn btn-primary">More</a>
             {% endif %}
+          </div>
           {% endif %}
-        </div>
-        <div class="tab-pane fade in cte-meetings-qst-rep" id="qr">
           {% if recent_questions %}
+          <div class="tab-pane fade in cte-meetings-qst-rep" id="qr">
             <table class="table table-striped">
               {% for item in recent_questions %}
                 <tr><td>
@@ -132,9 +145,11 @@
               {% endfor %}
             </table>
             <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}" class="btn btn-primary">More</a>
+          </div>
           {% endif %}
         </div>
       </div>
+      {% endif %}
     </div> <!-- /Reports -->
 
     <div class="col-md-4">

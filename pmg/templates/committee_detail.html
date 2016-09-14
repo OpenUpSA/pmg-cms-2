@@ -21,15 +21,9 @@
         <nav class="cte-meetings-nav hidden-xs">
           <ul class="nav nav-tabs">
             <li class="active"><a data-target="#cm" data-toggle="tab">Committee meetings</a></li>
-            {% if committee.calls_for_comments %}
             <li><a data-target="#cc" data-toggle="tab">Calls for comment</a></li>
-            {% endif %}
-            {% if committee.tabled_committee_reports %}
             <li><a data-target="#tr" data-toggle="tab">Tabled reports</a></li>
-            {% endif %}
-            {% if recent_questions %}
             <li><a data-target="#qr" data-toggle="tab">Questions/replies</a></li>
-            {% endif %}
           </ul>
         </nav>
 
@@ -38,35 +32,41 @@
             <div class="form-group">
               <select class="form-control">
                 <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
-                {% if committee.calls_for_comments %}
                 <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
-                {% endif %}
-                {% if committee.tabled_committee_reports %}
                 <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
-                {% endif %}
-                {% if recent_questions %}
                 <option data-target="#qr" data-toggle="tab" value="#qr">Questions/replies</option>
-                {% endif %}
               </select>
             </div>
           </nav>
           <div class="tab-pane fade in active" id="cm">
             <div class="cte-meetings-filter-outer hidden-xs">
               <div class="btn-group cte-meetings-filter-inner">
+                {% if filtered_meetings['six-months'] | length > 0 %}
                 <button type="button" class="btn btn-default active" data-filter="six-months">Last 6 months</button>
+                {% endif %}
+                {% if filtered_meetings[current_year] | length > 0 %}
                 <button type="button" class="btn btn-default" data-filter="{{ current_year }}">This year</button>
+                {% endif %}
                 {% for year in range(2012,current_year) | reverse %}
+                  {% if filtered_meetings[year] | length > 0 %}
                   <button type="button" class="btn btn-default" data-filter="{{ year }}">{{ year }}</button>
+                  {% endif %}
                 {% endfor %}
               </div>
             </div>
             <div class="cte-meetings-filter-mobile visible-xs hidden-sm">
               <div class="form-group btn-block">
                 <select class="form-control">
+                  {% if filtered_meetings['six-months'] | length > 0 %}
                   <option data-filter="six-months" value="six-months">Last 6 months</option>
+                  {% endif %}
+                  {% if filtered_meetings[current_year] | length > 0 %}
                   <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
+                  {% endif %}
                   {% for year in range(2012,current_year) | reverse %}
+                    {% if filtered_meetings[year] | length > 0 %}
                     <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
+                    {% endif %}
                   {% endfor %}
                 </select>
               </div>

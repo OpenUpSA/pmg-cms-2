@@ -239,9 +239,11 @@ def committee_detail(committee_id):
 
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     no_meetings = len(all_meetings) is 0
+    latest_meeting = filtered_meetings[now.year][0]
 
     return render_template('committee_detail.html',
                             current_year=now.year,
+                            latest_meeting=latest_meeting,
                             filtered_meetings=filtered_meetings,
                            committee=committee,
                            recent_questions=recent_questions,

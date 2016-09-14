@@ -837,6 +837,10 @@ body.email_alerts {
   }
 }
 
+.premium {
+  color: $yellow;
+}
+
 .committees-list, .committee-search-result {
   ul {
     list-style:none;
@@ -847,7 +851,6 @@ body.email_alerts {
 
       .premium {
         font-size: 13px;
-        color: $yellow;
 
         a,
         a:hover {
@@ -871,7 +874,7 @@ body.email_alerts {
 
 .committee-header {
   h1 {
-    margin: 0px 0px 10px;
+    margin: 0;
   }
 
   h2 {
@@ -964,7 +967,7 @@ body.email_alerts {
       a {
         cursor:pointer;
       }
-      
+
       &.active {
         font-weight:bold;
       }

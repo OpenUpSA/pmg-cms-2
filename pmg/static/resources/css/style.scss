@@ -974,18 +974,9 @@ body.email_alerts {
   }
 }
 
-.cte-meetings-mobile {
-  .cte-meetings-filter-mobile {
-    margin-top:10px;
-  }
-}
-
-.cte-meetings-filter-outer {
-  text-align: center;
-
-  .cte-meetings-filter-inner {
-    margin-bottom:15px;
-  }
+.cte-meetings-filter-mobile {
+  width:40%;
+  margin:10px auto 0;
 }
 
 // committee questions
@@ -1124,5 +1115,8 @@ body.email_alerts {
     h1.premium {
       margin-top:5px;
     }
+  }
+  .cte-meetings-filter-mobile {
+    width:100%;
   }
 }

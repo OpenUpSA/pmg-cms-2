@@ -7,7 +7,7 @@
       <h1 class="col-xs-12">{{ committee.name }}</h1>
       {% else %}
       <h1 class="col-xs-12 col-sm-8">{{ committee.name }}</h1>
-      <h1 class="premium col-xs-12 col-sm-4 text-sm-right">Premium <i class="fa fa-star"></i></h1>
+      <h1 class="premium col-xs-12 col-sm-4 text-sm-right"><i class="fa fa-star"> Premium</i></h1>
       {% endif %}
   </div>
   <h4 class="light-red">{{ committee.house.name }} Committee</h4>
@@ -16,7 +16,7 @@
 {% block committee_page %}
   {% include '_committee_meeting_summary.html' with context %}
   {% if committee.about %}
-    <h3 class="collapse-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>
+    <h3 class="collapse-link cte-about-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>
     <div class="collapse">
       {{ committee.about|safe }}
     </div>

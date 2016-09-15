@@ -5,37 +5,20 @@
       <h3>Latest meeting</h3>
       <h6 class="summary-date">{{ latest_meeting.date | pretty_date }}</h6>
       <h5 class="summary-name"><strong>{{ latest_meeting.title }}</strong></h5>
-      <ul class="nav nav-pills">
-        <li class="active"><a href="#meeting-summary" data-toggle="tab">Meeting summary</a></li>
-        <li><a href="#full-minutes" data-toggle="tab">Full minutes</a></li>
-        <!--<li class="pull-right"><a href="#related-press" data-toggle="tab">Search for related press</a></li>-->
-      </ul>
     </div>
-    <div class="tab-content panel-body">
-      <div class="tab-pane active" id="meeting-summary">
-        {% if latest_meeting.summary %}
-          {% if latest_meeting.summary | length > 500 %}
-            {{ latest_meeting.summary | truncate(500) | safe }}
-          {% else %}
-            {{ latest_meeting.summary | safe }}
-          {% endif %}
-          <div class="read-more text-sm-right">
-            <a class="btn btn-primary" href="{{ url_for('committee_meeting', event_id=latest_meeting.id) }}">Read more</a>
-          </div>
+    <div class="panel-body">
+      {% if latest_meeting.summary %}
+        {% if latest_meeting.summary | length > 500 %}
+          {{ latest_meeting.summary | truncate(500) | safe }}
         {% else %}
-          <p><em>A summary of this committee meeting is not yet available.</em></p>
+          {{ latest_meeting.summary | safe }}
         {% endif %}
-      </div>
-      <div class="tab-pane" id="full-minutes">
-        {% if latest_meeting.body %}
-          {{ latest_meeting.body | safe }}
-        {% else %}
-          <p><em>Minutes for this committee meeting are not yet available.</em></p>
-        {% endif %}
-      </div>
-      <div class="tab-pane" id="related-press">
-
-      </div>
+        <div class="read-more text-sm-right">
+          <a class="btn btn-primary" href="{{ url_for('committee_meeting', event_id=latest_meeting.id) }}">Read more</a>
+        </div>
+      {% else %}
+        <p><em>A summary of this committee meeting is not yet available.</em></p>
+      {% endif %}
     </div>
   </div>
 </div>

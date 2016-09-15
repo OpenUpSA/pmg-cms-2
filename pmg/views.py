@@ -210,7 +210,6 @@ def committee_detail(committee_id):
     """
     logger.debug("committee detail page called")
     committee = load_from_api('committee', committee_id)
-    YEAR_CUTOFF = 2012
     now = datetime.now()
     filtered_meetings = {}
 
@@ -227,7 +226,7 @@ def committee_detail(committee_id):
         'minister-questions-combined',
         params=params)['results']
 
-    all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting' and get_year_unicode(m['date']) >= YEAR_CUTOFF]
+    all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting']
 
     for meeting in all_meetings:
         meeting_year = get_year_unicode(meeting['date'])
@@ -240,9 +239,11 @@ def committee_detail(committee_id):
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
 
     has_meetings = len(all_meetings) > 0
+    earliest_year = get_year_unicode(all_meetings[-1]['date'])
 
     return render_template('committee_detail.html',
                             current_year=now.year,
+                            earliest_year=earliest_year,
                             filtered_meetings=filtered_meetings,
                            committee=committee,
                            has_meetings=has_meetings,

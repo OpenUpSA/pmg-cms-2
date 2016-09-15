@@ -44,57 +44,52 @@
 
   {% else %}
 
-    <div class="row committee-meeting-content">
-      <div class="col-sm-8">
+    <div class="committee-meeting-content">
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#summary" data-toggle="tab">Meeting summary</a></li>
+        <li role="presentation"><a href="#minutes" data-toggle="tab">Full minutes</a></li>
+      </ul>
 
-        <ul class="nav nav-tabs">
-          <li role="presentation" class="active"><a href="#summary" data-toggle="tab">Meeting summary</a></li>
-          <li role="presentation"><a href="#minutes" data-toggle="tab">Full minutes</a></li>
-        </ul>
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="summary">
+          <h4 class="visible-print-block">Summary</h4>
 
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="summary">
-            <h4 class="visible-print-block">Summary</h4>
+          {% if event.summary %}
+            {{ event.summary | safe }}
+          {% else %}
+            <p><em>A summary of this committee meeting is not yet available.</em></p>
+          {% endif %}
+        </div>
 
-            {% if event.summary %}
-              {{ event.summary | safe }}
-            {% else %}
-              <p><em>A summary of this committee meeting is not yet available.</em></p>
-            {% endif %}
-          </div>
+        <div role="tabpanel" class="tab-pane" id="minutes">
+          <h4 class="visible-print-block">Full minutes</h4>
 
-          <div role="tabpanel" class="tab-pane" id="minutes">
-            <h4 class="visible-print-block">Full minutes</h4>
-
-            {% if event.body %}
-              {{ event.body | safe }}
-            {% else %}
-              <p><em>Minutes for this committee meeting are not yet available.</em></p>
-            {% endif %}
-          </div>
+          {% if event.body %}
+            {{ event.body | safe }}
+          {% else %}
+            <p><em>Minutes for this committee meeting are not yet available.</em></p>
+          {% endif %}
         </div>
       </div>
-
-      <div class="col-sm-4">
-
-        {{ audio_attachments(SOUNDCLOUD_APP_KEY_ID, audio) }}
-
-        {{ related_attachments(related_docs) }}
-
-        {% if event.bills %}
-          {{ related_bills(event.bills) }}
-        {% endif %}
-
-        {% if event.body %}
-        {# show this only if there is an event body, otherwise it looks like it shows up twice. #}
-        <div class="text-right hidden-xs">
-          <button class="btn btn-default block-xs" data-toggle="modal" data-target="#correct-this-page-modal">Correct this page</button>
-        </div>
-        {% endif %}
-      </div>
-
     </div>
-
   {% endif %}
-
 {% endblock %}
+
+{% if not event.premium_content_excluded %}
+  {% block committee_page_sidebar %}
+    {{ audio_attachments(SOUNDCLOUD_APP_KEY_ID, audio) }}
+
+    {{ related_attachments(related_docs) }}
+
+    {% if event.bills %}
+      {{ related_bills(event.bills) }}
+    {% endif %}
+
+    {% if event.body %}
+    {# show this only if there is an event body, otherwise it looks like it shows up twice. #}
+    <div class="text-right hidden-xs">
+      <button class="btn btn-default block-xs" data-toggle="modal" data-target="#correct-this-page-modal">Correct this page</button>
+    </div>
+    {% endif %}
+  {% endblock %}
+{% endif %}

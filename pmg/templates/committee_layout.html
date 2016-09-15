@@ -14,18 +14,26 @@
 
 {% block page %}
   <div class="row">
-    <div class="col-sm-9 committee-header">
-      {% block committee_title %}
-      <h3>{{ committee.name }}</h3>
+    <div class="col-sm-8">
+      <header class="committee-header">
+        {% block committee_title %}
+        <h3 class="pull-left">{{ committee.name }}</h3>
+        {% if committee.premium %}
+        <h3 class="premium pull-right"><i class="fa fa-star"> Premium</i></h3>
+        {% endif %}
+        {% endblock %}
+      </header>
+      <div class="committee-page">
+        {% block committee_page %}
+        {% endblock %}
+      </div>
+    </div>
+    <div class="col-sm-4">
+      {% include 'user_management/_committee_alerts_signup.html' %}
+      {% block committee_page_sidebar %}
       {% endblock %}
     </div>
-    <div class="col-sm-3">
-      {% include 'user_management/_committee_alerts_signup.html' %}
-    </div>
   </div>
-
-  {% block committee_page %}
-  {% endblock %}
 
   {% include "_correct_this_page.html" %}
 

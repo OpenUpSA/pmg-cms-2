@@ -237,12 +237,19 @@ def committee_detail(committee_id):
 
         filtered_meetings[meeting_year].append(meeting)
 
+    latest_year = max([y for y in filtered_meetings])
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
+
+    if filtered_meetings[latest_year]:
+        latest_meeting = filtered_meetings[latest_year][0]
+    else:
+        latest_meeting = False
 
     has_meetings = len(all_meetings) > 0
 
     return render_template('committee_detail.html',
                             current_year=now.year,
+                            latest_meeting=latest_meeting,
                             filtered_meetings=filtered_meetings,
                            committee=committee,
                            has_meetings=has_meetings,

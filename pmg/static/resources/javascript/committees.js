@@ -16,6 +16,7 @@ var $cdFilterBtns = $('.cte-meetings-filter-inner button');
 var $cdFilterMobileSelect = $('.cte-meetings-filter-mobile select');
 var $cdListTables = $('.cte-meetings-list .table');
 var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
+var $readMore = $('.read-more a');
 var showingSearchResult = false;
 
 // Committee list page methods and handlers
@@ -152,3 +153,8 @@ $cdFilterMobileSelect.on('change', function(e) {
 // Need to activate the first available filter
 $cdFilterBtns.first()
   .trigger('click');
+
+// Google analytics for summary read more
+$readMore.on('click', function() {
+  if(ga) ga('send','event','committee','summary-read-more');
+});

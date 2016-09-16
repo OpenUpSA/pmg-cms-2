@@ -78,7 +78,11 @@
       </div>
       <div class="cte-meetings-list">
         {% for filter, meetings in filtered_meetings.iteritems() %}
+          {% if filter == "six-months" %}
           <table class="table table-striped" id="m-{{ filter }}">
+          {% else %}
+          <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
+          {% endif %}
             {% for meeting in meetings %}
               <tr data-date="{{ meeting.date | pretty_date }}">
                 <td><nobr>{{ meeting.date | pretty_date }}</nobr></td>

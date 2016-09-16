@@ -15,7 +15,6 @@ var $cdNavMobileSelect = $('.cte-meetings-nav-mobile select');
 var $cdFilterBtns = $('.cte-meetings-filter-inner button');
 var $cdFilterMobileSelect = $('.cte-meetings-filter-mobile select');
 var $cdListTables = $('.cte-meetings-list .table');
-var $cdCurrentYearTable = $('#m-' + currentDate.getFullYear());
 var $readMore = $('.read-more a');
 var showingSearchResult = false;
 
@@ -126,11 +125,6 @@ $cdNavMobileSelect.on('change', function(e) {
     .has('[data-target="' + $selected.attr('data-target') + '"]')
     .addClass('active');
 });
-
-// Hide all but first ten meetings on load
-$cdCurrentYearTable.find('tr')
-  .slice(10)
-  .hide();
 
 $cdFilterBtns.on('click', function(e) {
   var $target = $(e.target);

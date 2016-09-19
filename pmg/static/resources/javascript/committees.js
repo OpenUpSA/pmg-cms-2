@@ -1,30 +1,41 @@
 var currentDate = new Date();
 // Committee list DOM
-var $search = $('#committee-search');
-var $searchInput = $('#committee-search input');
-var $searchResult = $('.committee-search-result');
-var $resultsFound = $('.results-found');
-var $noResults = $('.no-results');
-var $clearResults = $('.clear-results');
-var $committees = $('.committees-list .nat .committee');
-var $committeesList = $('.committees-list');
-var $committeeNavItem = $('.committee-nav a, .committee-dd-nav a');
+var $cteList = $('.cte-list');
+var $cteListItems = $('.cte-list .tab-pane.active .committee');
+var $cteListSearchInput = $('.cte-list-search input');
+var $cteListSearchResults = $('.cte-list-search-results');
+var $cteListNavItem = $('.cte-list-nav a, .cte-list-mobile-nav option');
 // Committee details DOM
-var $cdNavItem = $('.cte-meetings-nav a');
-var $cdNavMobileSelect = $('.cte-meetings-nav-mobile select');
-var $cdFilterBtns = $('.cte-meetings-filter-inner button');
-var $cdFilterMobileSelect = $('.cte-meetings-filter-mobile select');
-var $cdListTables = $('.cte-meetings-list .table');
-var $readMore = $('.read-more a');
+var $cteDtlNavItem = $('.cte-dtl-meetings-nav a');
+var $cteDtlNavMobileSelect = $('.cte-dtl-meetings-nav-mobile select');
+var $cteDtlFilterSelect = $('.cte-dtl-meetings-filter select');
+var $cteDtlListTables = $('.cte-dtl-meetings-list .table');
+var $cteDtlReadMore = $('.read-more a');
+var $cteDtlMtngsList = $('.cte-dtl-meetings-list');
+var $cteDtlMtngsSearchInput = $('.cte-dtl-meetings-search input');
+var $cteDtlMtngsSearchResults = $('.cte-dtl-meetings-search-results');
 var showingSearchResult = false;
+// General elements
+var $cteTabNav = $('.cte-tab-nav');
+var $cteTabNavItem = $('.cte-tab-nav a');
+var $cteSelectTabNav = $('.cte-select-tab-nav');
 
 // Committee list page methods and handlers
-var clearSearchResult = function() {
-  $searchResult.find('.left ul, .right ul')
+var clearSearchResult = function($list,$res,twoCol) {
+  var $resultsList = $res.find('.results-list');
+
+  $res.find('.no-results')
+    .hide();
+
+  if(twoCol) {
+    $resultsList.find('.left, .right')
     .empty();
-  $noResults.hide();
-  $resultsFound.hide();
-  $committeesList.show();
+  } else {
+    $resultsList.empty();
+  }
+
+  $resultsList.hide();
+  $list.show();
 }
 
 // Underscore debounce
@@ -43,10 +54,13 @@ var debounce = function(func, wait, immediate) {
 	};
 };
 
-var typeAhead = debounce(function() {
-  var value = $searchInput.val();
+var typeAhead = debounce(function($input,$list,$res,params) {
+  var value = $input.val();
+  var $noResults = $res.find('.no-results');
+  var $resultsList = $res.find('.results-list');
+  var $items = !!params && params.$items && params.$items.length ? params.$items : $list.find('.item');
 
-  clearSearchResult();
+  clearSearchResult($list,$res,!!params && params.twoCol ? params.twoCol : false);
 
   if(!!value.length) {
     var $results = [];
@@ -54,11 +68,10 @@ var typeAhead = debounce(function() {
 
     showingSearchResult = true;
 
-    $committeesList.hide();
+    $list.hide();
     $noResults.hide();
-    $clearResults.show();
 
-    $committees.each(function() {
+    $items.each(function() {
       var $self = $(this);
 
       if($self.find('a').text().toLowerCase().includes(value.toLowerCase())) {
@@ -69,86 +82,109 @@ var typeAhead = debounce(function() {
     resultsCount = $results.length;
 
     if(!!resultsCount) {
-      $resultsFound.show();
+      $resultsList.show();
 
-      if(resultsCount >= 40) {
-        $searchResult.find('.left ul')
-          .append($results.slice(0,resultsCount / 2 - 1));
-        $searchResult.find('.right ul')
-          .append($results.slice(resultsCount,resultsCount - 1))
+      if(!!params && params.sort) {
+        console.log('sorting');
+        $results.sort(function(a,b) {
+          console.log(a,b);
+          return new Date(b.attr('data-date')) - new Date(a.attr('data-date'));
+        });
+        console.log($results);
+      }
+
+      if(!!params && params.twoCol) {
+        var $resultsListLeft = $resultsList.find('.left');
+        var $resultsListRight = $resultsList.find('.right');
+
+        if(resultsCount > 20) {
+          if(resultsCount < 40) {
+            $resultsListLeft.append($results.slice(0,19));
+            $resultsListRight.append($results.slice(20));
+          } else {
+            $resultsListLeft.append($results.slice(0,resultsCount / 2 - 1));
+            $resultsListRight.append($results.slice(resultsCount / 2));
+          }
+        } else {
+          $resultsListLeft.append($results);
+        }
       } else {
-        $searchResult.find('.left ul')
+        $resultsList
           .append($results);
       }
     } else {
-      $resultsFound.hide();
+      $resultsList.hide();
       $noResults.show();
     }
   }
 },200);
 
-$committeeNavItem.on('click', function(e) {
-  e.preventDefault();
-  $(this).tab('show');
-  $committees = $('.committees-list .tab-pane.active .committee');
-
-  if(showingSearchResult) clearSearchResult();
-});
-
-$searchInput.on('keyup', typeAhead);
-
-// Committee detail page methods and handlers
 var filterMeetings = function($target) {
   var filter = $target.attr('data-filter');
   var $table = $('#m-' + filter);
 
-  $cdListTables.hide();
+  $cteDtlListTables.hide();
   $table.fadeIn({ duration: 250, easing: 'linear' });
 
   return filter;
 }
 
-$cdNavItem.on('click', function(e) {
+/**
+ * Event handlers
+ */
+
+ // For pairing tab navs with selects
+ $cteTabNavItem.on('click', function(e) {
+   e.preventDefault();
+   $(this).tab('show');
+
+   $cteSelectTabNav.val($(e.target).attr('href'));
+ });
+
+ $cteSelectTabNav.on('change', function(e) {
+   e.preventDefault();
+
+   var $selected = $('option:selected',this);
+
+   $selected.tab('show');
+   $cteTabNav.find('li')
+     .removeClass('active')
+     .has('[href="' + $selected.attr('data-target') + '"]')
+     .closest('li')
+     .addClass('active');
+ });
+
+ // Committee list page
+$cteListNavItem.on('click', function(e) {
   e.preventDefault();
-  $(this).tab('show');
+  $cteListItems = $('.cte-list .tab-pane.active .committee');
 
-  $cdNavMobileSelect.val($(e.target).attr('data-target'));
+  if(showingSearchResult) clearSearchResult($cteList,$cteListSearchResults,true);
 });
 
-$cdNavMobileSelect.on('change', function(e) {
-  e.preventDefault();
-
-  var $selected = $('option:selected',this);
-  $selected.tab('show');
-  $cdNavItem.closest('li')
-    .removeClass('active')
-    .has('[data-target="' + $selected.attr('data-target') + '"]')
-    .addClass('active');
+$cteListSearchInput.on('keyup', function() {
+  typeAhead($cteListSearchInput, $cteList, $cteListSearchResults, { $items: $cteListItems, twoCol: true })
 });
 
-$cdFilterBtns.on('click', function(e) {
-  var $target = $(e.target);
-  var filter = filterMeetings($target);
+// Committee detail page handlers
+$cteDtlFilterSelect.on('change', function(e) {
+  filterMeetings($('option:selected',this));
+  $cteDtlMtngsSearchInput.val('');
 
-  $cdFilterBtns.removeClass('active');
-  $target.addClass('active');
-
-  $cdFilterMobileSelect.val(filter);
+  clearSearchResult($cteDtlMtngsList,$cteDtlMtngsSearchResults);
+  $cteDtlMtngsList.show();
 });
 
-$cdFilterMobileSelect.on('change', function(e) {
-  var filter = filterMeetings($('option:selected',this));
-
-  $cdFilterBtns.removeClass('active')
-    .filter('[data-filter="' + filter + '"]')
-    .addClass('active');
+$cteDtlFilterSelect.on('focus', function() {
+  this.selectedIndex = -1;
 });
-
-// Need to activate the first available filter
-$cdFilterBtns.first()
-  .trigger('click');
 
 // Google analytics for summary read more
-$readMore.on('click', function() {
+$cteDtlReadMore.on('click', function() {
   if(ga) ga('send','event','committee','summary-read-more');
+});
+
+// Committee detail meeting list filter
+$cteDtlMtngsSearchInput.on('keyup', function(e) {
+  typeAhead($cteDtlMtngsSearchInput,$cteDtlMtngsList,$cteDtlMtngsSearchResults,{ sort: true });
 });

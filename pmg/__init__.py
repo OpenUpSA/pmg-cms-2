@@ -7,6 +7,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
+from flask_marshmallow import Marshmallow
 
 import json
 
@@ -34,6 +35,7 @@ db.metadata.naming_convention = {
 migrate = Migrate(app, db, transaction_per_migration=True)
 csrf = CsrfProtect(app)
 mail = Mail(app)
+ma = Marshmallow(app)
 
 
 UPLOAD_PATH = app.config['UPLOAD_PATH']

@@ -1168,6 +1168,10 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         "U": "Unknown",
     }
 
+    @property
+    def committee_id(self):
+        return self.meeting.committee_id
+
     @classmethod
     def list(cls):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())

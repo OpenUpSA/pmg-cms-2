@@ -144,3 +144,6 @@ import admin
 
 from pmg.api import api
 app.register_blueprint(api, subdomain='api')
+
+from pmg.api_v2 import api as api_v2
+app.register_blueprint(api_v2, subdomain='api', url_prefix='/v2')

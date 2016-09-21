@@ -13,7 +13,6 @@ from sqlalchemy import desc
 from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
-from marshmallow import fields
 
 from pmg import db, app
 from pmg.search import Search
@@ -559,46 +558,3 @@ def committee_meeting_attendance_download():
     resp.headers['Content-Type'] = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     resp.headers['Content-Disposition'] = "attachment;filename=committee-attendance.xlsx"
     return resp
-
-
-from pmg import ma
-
-
-class CommitteeSchema(ma.ModelSchema):
-    class Meta:
-        model = Committee
-        fields = ('id', 'about', 'name', 'house', '_links')
-    house = fields.Nested('HouseSchema')
-    _links = ma.Hyperlinks({
-        'events': ma.AbsoluteUrlFor('api.resource_list', resource='committee-meeting'),
-    })
-
-
-class HouseSchema(ma.ModelSchema):
-    class Meta:
-        model = House
-        fields = ('id', 'name')
-
-
-@api.route('/v2/committees')
-def api_v2_committees():
-    base_query = Committee.list()
-    for f in get_filters():
-        base_query = base_query.filter_by(**f)
-
-    queryset, count, next = paginate_request_query(base_query)
-
-    fields = request.args.get('fields') or ''
-    fields = [f for f in fields.split(',') if f]
-    if not fields:
-        fields = None
-
-    results = CommitteeSchema(many=True, only=fields).dump(queryset)
-
-    out = {
-        'count': count,
-        'next': next,
-        'results': results
-    }
-
-    return send_api_response(out)

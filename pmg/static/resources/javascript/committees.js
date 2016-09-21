@@ -20,7 +20,8 @@ var $cteTabNav = $('.cte-tab-nav');
 var $cteTabNavItem = $('.cte-tab-nav a');
 var $cteSelectTabNav = $('.cte-select-tab-nav');
 // Lunr elements
-var $lunrDict = null;
+var $lunrDict = $('.lunr-dict');
+var $lunrDictItems = null;
 
 // Set up lunr index for filtering
 var index = null;
@@ -122,7 +123,7 @@ var searchIndex = debounce(function(query,$list,$res,params) {
     return;
   } else {
     results = index.search(query).map(function(result) {
-      return $lunrDict.filter(function(i,item) {
+      return $lunrDictItems.filter(function(i,item) {
         return $(item).attr('data-id') == result.ref;
       })[0];
     });
@@ -132,26 +133,33 @@ var searchIndex = debounce(function(query,$list,$res,params) {
 }, 200);
 
 var indexItems = function() {
-  $lunrDict = $('.lunr-dict .active .item:not(.exclude)').clone();
+  var isCteDtlMeetings = $lunrDict.hasClass('cte-dtl-meetings-list');
+
+  $lunrDictItems = $('.lunr-dict .item:not(.exclude), .lunr-dict .active .item:not(.exclude)').clone();
 
   index = lunr(function() {
     var self = this;
 
+    self.field('name');
+
+    // On the committee detail page, we also have the option to search meetings
+    // by date
+    if(isCteDtlMeetings) {
+      self.field('date');
+    }
+
     self.ref('id');
-
-    Array.prototype.forEach.call($($lunrDict[0])[0].children, function(child) {
-      var $child = $(child);
-
-      if(!$child.hasClass('exclude')) self.field($child.attr('class').split(' ')[0]);
-    });
   });
 
-  $lunrDict.each(function(i,item) {
+  $lunrDictItems.each(function(i,item) {
     var $item = $(item);
     var indexItem = {
       id: $item.attr('data-id')
     };
 
+    // Here we take lunr's index fields and add them as properties to each item.
+    // We expect an item to have child elements that have class names that
+    // match these fields.
     index._fields.forEach(function(field) {
       var name = field.name;
 

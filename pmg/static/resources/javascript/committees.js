@@ -65,8 +65,6 @@ var renderSearchResults = function(results,$list,$res,params) {
   var $noResults = $res.find('.no-results');
   var $resultsList = $res.find('.results-list');
 
-  //clearSearchResult($list,$res,params);
-
   showingSearchResult = true;
 
   $list.hide();
@@ -77,7 +75,7 @@ var renderSearchResults = function(results,$list,$res,params) {
 
     if(!!params && params.sort) {
       results.sort(function(a,b) {
-        return new Date($(b).find('.date').text()) - new Date($(a).find('.date').text());
+        return $(b).find('.date').text() - $(a).find('.date').text();
       });
     }
 

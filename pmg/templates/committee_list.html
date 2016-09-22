@@ -22,7 +22,7 @@
     </ul>
   </nav>
 
-  <nav class="cte-list-mobile-nav form-group visible-xs">
+  <nav class="cte-list-nav-mobile form-group visible-xs">
     <select class="form-control cte-select-tab-nav">
       <option data-toggle="tab" data-target="#nat" value="#nat">National Assembly committees</option>
       <option data-toggle="tab" data-target="#ncp" value="#ncp">National Council of Provinces committees</option>
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <div class="tab-content cte-list">
+  <div class="tab-content cte-list lunr-dict">
     {% for key,ctype in reg_committees.iteritems() %}
     {% if key == 'nat' %}
     <div class="active tab-pane row {{ key }}" id="{{ key }}">
@@ -61,12 +61,13 @@
     <div class="tab-pane row {{ key }}" id="{{ key }}">
     {% endif %}
       {% for column in ctype.committees|slice(2) %}
+      {% set column_index = loop.index %}
       <ul class="col-xs-12 col-sm-6">
         {% for committee in column %}
-          <li class="committee item">
-            <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+          <li class="committee item" data-id="{{ key }}-{{ column_index }}-{{ loop.index }}">
+            <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
             {% if committee.premium %}
-              <span class="premium"><i class="fa fa-star"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
+              <span class="premium exclude"><i class="fa fa-star"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
             {% endif %}
           </li>
         {% endfor %}
@@ -81,10 +82,10 @@
           <h3>{{ ctype.name }}</h3>
           <ul>
             {% for committee in ctype.committees %}
-              <li class="committee item">
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              <li class="committee item" data-id="{{ key }}-{{ loop.index }}">
+                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
                 {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  <span class="premium exclude"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
                 {% endif %}
               </li>
             {% endfor %}

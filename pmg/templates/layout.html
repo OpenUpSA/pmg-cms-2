@@ -40,9 +40,9 @@
   </div>
 
   {% block javascript %}
+  <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
   {% assets "js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-    <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
   {% endassets %}
 
   <script>

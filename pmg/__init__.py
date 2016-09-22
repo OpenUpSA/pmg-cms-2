@@ -102,6 +102,7 @@ assets.register('admin-css',
 assets.register('js', Bundle(
     'bower_components/jquery/dist/jquery.min.js',
     'bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
+    'resources/javascript/vendor/lunr-0.7.1.min.js',
     'chosen/chosen.jquery.js',
     'resources/javascript/committees.js',
     'resources/javascript/users.js',

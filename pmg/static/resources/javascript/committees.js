@@ -75,13 +75,16 @@ var renderSearchResults = function(results,$list,$res,params) {
 
     if(!!params && params.sort) {
       results.sort(function(a,b) {
-        return $(b).find('.date').text() - $(a).find('.date').text();
+        return new Date($(b).find('.date').text()) - new Date($(a).find('.date').text());
       });
     }
 
     if(!!params && params.twoCol) {
       var $resultsListLeft = $resultsList.find('.left');
       var $resultsListRight = $resultsList.find('.right');
+
+      $resultsListLeft.empty();
+      $resultsListRight.empty();
 
       if(resultsCount > 20) {
         if(resultsCount < 40) {
@@ -95,7 +98,8 @@ var renderSearchResults = function(results,$list,$res,params) {
         $resultsListLeft.append(results);
       }
     } else {
-      $resultsList.append(results);
+      $resultsList.empty()
+        .append(results);
     }
   } else {
     $resultsList.hide();

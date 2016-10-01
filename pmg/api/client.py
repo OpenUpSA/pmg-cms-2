@@ -43,16 +43,32 @@ class ApiException(HTTPException):
         return render_template('500.html', error=self)
 
 
+def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, fields=None, params=None):
+    """ Load data from the PMG API.
 
-
-def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, params=None):
+    :param str resource_name: resource to load (used as the start of the URL)
+    :param int resource_id: resource id (optional), appended to the resource name
+    :param int page: page number to load (default is the first page)
+    :param bool return_everything: fetch all pages? (default: False)
+    :param list fields: list of field names to ask for (V2 only).
+    :param dict params: additional query params
+    """
     params = {} if (params is None) else params
+    v2 = resource_name.startswith('v2')
 
-    query_str = resource_name + "/"
+    if fields and not v2:
+        raise ValueError("Fields parameter is only supported for API v2 urls.")
+
+    query_str = resource_name
     if resource_id:
-        query_str += str(resource_id) + "/"
+        query_str += "/" + str(resource_id)
+    if not v2:
+        query_str += '/'
+
     if page:
         params["page"] = str(page)
+    if fields:
+        params["fields"] = ','.join(fields)
 
     headers = {}
     # add auth header

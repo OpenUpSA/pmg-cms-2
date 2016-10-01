@@ -208,25 +208,24 @@ def committee_detail(committee_id):
     """
     Display all available detail for the committee.
     """
-    logger.debug("committee detail page called")
-    committee = load_from_api('committee', committee_id)
+    committee = load_from_api('v2/committees', committee_id)['result']
     now = datetime.now()
     filtered_meetings = {}
-
-    def get_year_unicode(m_date):
-        return int(m_date[:4])
-    def get_month_unicode(m_date):
-        return int(m_date[5:7])
 
     params = {
         'filter[committee_id]': committee_id,
         'per_page': 5
     }
-    recent_questions = load_from_api(
-        'minister-questions-combined',
-        params=params)['results']
+    recent_questions = load_from_api('minister-questions-combined', params=params)['results']
 
-    all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting']
+    def get_year_unicode(m_date):
+        return int(m_date[:4])
+
+    def get_month_unicode(m_date):
+        return int(m_date[5:7])
+
+    all_meetings = load_from_api('v2/committees/%s/meetings' % committee_id,
+                                 fields=['id', 'title', 'date'], return_everything=True)['results']
 
     for meeting in all_meetings:
         meeting_year = get_year_unicode(meeting['date'])
@@ -236,10 +235,10 @@ def committee_detail(committee_id):
 
         filtered_meetings[meeting_year].append(meeting)
 
-    latest_year = max([y for y in filtered_meetings])
+    latest_year = max(y for y in filtered_meetings)
+    earliest_year = min(y for y in filtered_meetings)
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     has_meetings = len(all_meetings) > 0
-    earliest_year = get_year_unicode(all_meetings[-1]['date'])
 
     if len(filtered_meetings['six-months']):
         starting_filter = 'six-months'
@@ -247,9 +246,9 @@ def committee_detail(committee_id):
         starting_filter = latest_year
 
     return render_template('committee_detail.html',
-                            current_year=now.year,
-                            earliest_year=earliest_year,
-                            filtered_meetings=filtered_meetings,
+                           current_year=now.year,
+                           earliest_year=earliest_year,
+                           filtered_meetings=filtered_meetings,
                            committee=committee,
                            has_meetings=has_meetings,
                            starting_filter=starting_filter,

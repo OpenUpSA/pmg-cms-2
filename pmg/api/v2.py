@@ -4,7 +4,7 @@ from sqlalchemy import desc
 
 from pmg import ma
 from pmg.models import Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member
-from pmg.api import get_filters, paginate_request_query, send_api_response
+from pmg.api.v1 import get_filters, paginate_request_query, send_api_response
 
 
 api = Blueprint('api2', __name__)

@@ -10,7 +10,7 @@ from flask.ext.mail import Message
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
-from pmg.api_client import load_from_api, ApiException
+from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
 from pmg.models.resources import Committee

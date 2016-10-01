@@ -11,7 +11,7 @@ from flask.ext.security import current_user, login_required
 from flask.ext.security.decorators import anonymous_user_required
 
 from pmg import app, db
-from pmg.api_client import ApiException, load_from_api
+from pmg.api.client import ApiException, load_from_api
 from pmg.models import Committee, SavedSearch
 
 API_HOST = app.config['API_HOST']

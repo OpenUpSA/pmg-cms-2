@@ -1,7 +1,8 @@
 from marshmallow import fields
 
 from pmg import ma
-from pmg.models import Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport
+from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
+                        Membership)
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -15,7 +16,7 @@ class CommitteeSchema(ma.ModelSchema):
         'meetings': ma.AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
         'calls_for_comment': ma.AbsoluteUrlFor('api2.committee_calls_for_comment', id="<id>"),
         'tabled_reports': ma.AbsoluteUrlFor('api2.committee_tabled_reports', id="<id>"),
-        # TODO: memberships, questions, etc.
+        'members': ma.AbsoluteUrlFor('api2.committee_members', id="<id>"),
     })
 
 
@@ -74,4 +75,14 @@ class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
 class MemberSchema(ma.ModelSchema):
     class Meta:
         model = Member
-        fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_link', 'current')
+        fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_url', 'current')
+    pa_url = fields.String(attribute="pa_url")
+    profile_pic_url = fields.String(attribute="full_profile_pic_url")
+
+
+class MembershipSchema(ma.ModelSchema):
+    class Meta:
+        model = Membership
+        fields = ('member', 'chairperson')
+    member = fields.Nested('MemberSchema')
+    chairperson = fields.Boolean(attribute="chairperson")

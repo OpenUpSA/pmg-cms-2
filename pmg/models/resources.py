@@ -521,13 +521,17 @@ class Member(ApiResource, db.Model):
         tmp['questions_url'] = url_for('api.member_questions', member_id=self.id, _external=True)
         tmp['attendance_url'] = url_for('api.member_attendance', member_id=self.id, _external=True)
 
-        if tmp['profile_pic_url']:
-            tmp['profile_pic_url'] = STATIC_HOST + tmp['profile_pic_url']
-
+        tmp['profile_pic_url'] = self.full_profile_pic_url
         if tmp['pa_link']:
             tmp['pa_url'] = self.pa_url
 
         return tmp
+
+    @property
+    def full_profile_pic_url(self):
+        if self.profile_pic_url:
+            return STATIC_HOST + self.profile_pic_url
+        return None
 
     @property
     def pa_url(self):
@@ -651,6 +655,12 @@ class Membership(db.Model):
     type = db.relationship(MembershipType, lazy='joined')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
     member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete="CASCADE"), nullable=False)
+
+    @property
+    def chairperson(self):
+        if self.type:
+            return self.type.name == 'chairperson'
+        return False
 
     def __unicode__(self):
         tmp = u" - ".join([unicode(self.type),

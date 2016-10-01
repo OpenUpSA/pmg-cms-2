@@ -86,6 +86,16 @@ def committee_tabled_reports(id):
     return api_list_items(query, TabledCommitteeReportSchema)
 
 
+@api.route('/committees/<int:id>/members')
+def committee_members(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    query = Membership.query.filter(Membership.committee == cte)
+    return api_list_items(query, MembershipSchema)
+
+
 @api.route('/committee-meetings/')
 @api.route('/committee-meetings/<int:id>')
 def committee_meetings(id=None):

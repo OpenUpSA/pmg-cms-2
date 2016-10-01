@@ -224,6 +224,11 @@ def committee_detail(committee_id):
         fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
+    # memberships
+    committee['memberships'] = load_from_api(
+        'v2/committees/%s/members' % committee_id,
+        return_everything=True)['results']
+
     params = {
         'filter[committee_id]': committee_id,
         'per_page': 5

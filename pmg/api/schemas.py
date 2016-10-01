@@ -1,7 +1,7 @@
 from marshmallow import fields
 
 from pmg import ma
-from pmg.models import Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment
+from pmg.models import Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -13,7 +13,8 @@ class CommitteeSchema(ma.ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.AbsoluteUrlFor('api2.committees', id="<id>"),
         'meetings': ma.AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
-        'calls_for_comment': ma.AbsoluteUrlFor('api2.committee_calls_for_comment_list', id="<id>"),
+        'calls_for_comment': ma.AbsoluteUrlFor('api2.committee_calls_for_comment', id="<id>"),
+        'tabled_reports': ma.AbsoluteUrlFor('api2.committee_tabled_reports', id="<id>"),
         # TODO: memberships, questions, etc.
     })
 
@@ -42,7 +43,17 @@ class CallForCommentSchema(ma.ModelSchema):
         model = CallForComment
         fields = ('id', 'title', 'start_date', 'end_date', 'body', 'summary', 'committee_id', '_links')
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
+        # 'self': ma.AbsoluteUrlFor('api2.call_for_comment', id="<id>"),
+        'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
+    })
+
+
+class TabledCommitteeReportSchema(ma.ModelSchema):
+    class Meta:
+        model = TabledCommitteeReport
+        fields = ('id', 'title', 'start_date', 'body', 'committee_id', '_links')
+    _links = ma.Hyperlinks({
+        # 'self': ma.AbsoluteUrlFor('api2.tabled_report', id="<id>"),
         'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
     })
 

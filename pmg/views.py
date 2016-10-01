@@ -214,14 +214,14 @@ def committee_detail(committee_id):
 
     # calls for comment
     committee['calls_for_comments'] = load_from_api(
-        'v2/committees/%s/calls-for-comment',
-        fields=['id', 'title', 'date'],
+        'v2/committees/%s/calls-for-comment' % committee_id,
+        fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     # tabled reports
     committee['tabled_committee_reports'] = load_from_api(
-        'v2/committees/%s/tabled-committee-reports',
-        fields=['id', 'title', 'date'],
+        'v2/committees/%s/tabled-reports' % committee_id,
+        fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     params = {

@@ -1,5 +1,6 @@
 from flask import request, Blueprint, abort
 from sqlalchemy import desc
+from sqlalchemy.sql.expression import nullslast
 
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response
@@ -64,13 +65,25 @@ def committee_meeting_list(id):
 
 
 @api.route('/committees/<int:id>/calls-for-comment')
-def committee_calls_for_comment_list(id):
+def committee_calls_for_comment(id):
     cte = Committee.query.get(id)
     if not cte:
         abort(404)
 
     query = CallForComment.query.filter(CallForComment.committee == cte).order_by(desc(CallForComment.start_date))
     return api_list_items(query, CallForCommentSchema)
+
+
+@api.route('/committees/<int:id>/tabled-reports')
+def committee_tabled_reports(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    query = TabledCommitteeReport.query\
+        .filter(TabledCommitteeReport.committee == cte)\
+        .order_by(nullslast(desc(TabledCommitteeReport.start_date)))
+    return api_list_items(query, TabledCommitteeReportSchema)
 
 
 @api.route('/committee-meetings/')

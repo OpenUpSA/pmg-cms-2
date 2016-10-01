@@ -819,7 +819,7 @@ body.email_alerts {
   }
 }
 
-.committee-nav {
+.cte-nav {
   ul {
     li {
       &.active {
@@ -829,49 +829,49 @@ body.email_alerts {
   }
 }
 
-.committee-dd-nav {
-  display:none;
+.premium {
+  color: $yellow;
 
-  .btn {
-    width:100%;
+  a, a:hover {
+    color: $yellow;
   }
 }
 
-.committees-list, .committee-search-result {
+.cte-list, .cte-list-search-results {
   ul {
     list-style:none;
-    padding-left:15px;
 
     li {
       margin:3px 0;
 
       .premium {
         font-size: 13px;
-        color: $yellow;
-
-        a,
-        a:hover {
-          color: $yellow;
-        }
       }
     }
   }
 }
 
-.committees-list {
+.cte-list {
   margin-top:20px;
+
+  .tab-pane {
+    margin-left:0;
+  }
 
   .adhoc {
     h3 {
       margin-top:0;
       margin-left:15px;
     }
+    ul {
+      padding-left:15px;
+    }
   }
 }
 
 .committee-header {
   h1 {
-    margin: 0px 0px 10px;
+    margin: 0;
   }
 
   h2 {
@@ -880,9 +880,13 @@ body.email_alerts {
   }
 }
 
-.committee-search {
+.cte-list-search {
   margin-top:20px;
   padding-left:15px;
+
+  ul {
+    padding-left:15px;
+  }
 
   .form-group {
     margin-bottom:0;
@@ -896,14 +900,18 @@ body.email_alerts {
   }
 }
 
-.committee-search-result {
+.no-results {
+  display:none;
+}
+
+.cte-list-search-results {
   .no-results {
-    display:none;
     margin-left:15px;
   }
-  .results-found {
+  .results-list {
     display:none;
     margin-top:20px;
+    padding-left:15px;
 
     h3 {
       margin-left:30px;
@@ -913,30 +921,21 @@ body.email_alerts {
 
 .committee_meeting {
   .committee-meeting-content {
-    .tab-pane {
-      margin-top: 20px;
+    .meeting-summary {
+      border-bottom:1px solid #000;
+      margin-bottom:30px;
+      padding-bottom:20px;
     }
-
-    .nav-tabs .active a {
-      font-weight: 600;
-      color: $black;
-    }
-
-    @media print {
-      .nav-tabs {
-        display: none;
-      }
-
-      .tab-content > .tab-pane {
-        display: block;
-        visibility: visible;
+    .full-minutes {
+      h3 {
+        margin-bottom:15px;
       }
     }
   }
 }
 
 // committee detail page
-.committee_detail {
+.cte-dtl-meetings {
   .tab-content {
     padding:15px 0;
   }
@@ -958,7 +957,7 @@ body.email_alerts {
   max-height: 150px;
 }
 
-.cte-meetings-nav {
+.cte-dtl-meetings-nav {
   .nav-tabs {
     li {
       a {
@@ -972,17 +971,30 @@ body.email_alerts {
   }
 }
 
-.cte-meetings-mobile {
-  .cte-meetings-filter-mobile {
-    margin-top:10px;
+.cte-dtl-meetings-search {
+  .form-group {
+    .fa-search {
+      position:absolute;
+      right:24px;
+      top:-15px;
+      bottom:0;
+      margin:auto 0;
+      height:20px;
+      font-size:20px;
+    }
   }
 }
 
-.cte-meetings-filter-outer {
-  text-align: center;
+.cte-dtl-meetings-search-results {
+  .table {
+    margin-bottom:0;
+  }
+}
 
-  .cte-meetings-filter-inner {
-    margin-bottom:15px;
+.cte-dtl-meetings-filter {
+  .form-group {
+    width:75%;
+    margin:0 auto 15px;
   }
 }
 
@@ -1004,6 +1016,26 @@ body.email_alerts {
       max-width: 64px;
     }
   }
+}
+
+.cte-meeting-summary {
+  h3 {
+    margin-top:0;
+  }
+  h5 {
+    margin-bottom:0;
+  }
+  ul {
+    margin-top:15px;
+    margin-bottom:0;
+  }
+  .read-more {
+    margin-top:10px;
+  }
+}
+
+.cte-about-link {
+  margin:20px 0;
 }
 
 .committee-question-reply {
@@ -1048,33 +1080,32 @@ body.email_alerts {
   }
 }
 
-@media screen and (max-width: 768px) {
-  .committee-nav {
-    display:none;
+@media screen and (max-width: 991px) {
+  .cte-dtl-meetings-filter {
+    .form-group {
+      width:100%;
+    }
   }
-  .committee-dd-nav {
-    display:block;
-  }
+}
 
-  .committees-list, .committee-search-result {
+@media screen and (max-width: 768px) {
+  .cte-list, .cte-list-search-result {
     ul {
       padding-left:0;
       margin-bottom:0;
     }
   }
 
-  .committee-search {
+  .cte-list-search {
     padding-left:0;
-
-    .clear-results {
-      padding-top:15px;
-    }
   }
 
-  .committee-search-result {
-    .results-found {
-      h3 {
-        margin-left:15px;
+  .cte-list-search-results {
+    .results-list {
+      padding-left:0;
+
+      ul {
+        margin-bottom:0;
       }
     }
     .no-results {
@@ -1082,11 +1113,28 @@ body.email_alerts {
     }
   }
 
-  .committees-list {
+  .cte-list {
     .adhoc {
       h3 {
         margin-left:0;
       }
+      ul {
+        padding-left:0;
+      }
+    }
+  }
+}
+
+@media screen and (min-width:545px) {
+  .text-sm-right {
+    text-align:right;
+  }
+}
+
+@media screen and (max-width:544px) {
+  .committee-header {
+    h1.premium {
+      margin-top:5px;
     }
   }
 }

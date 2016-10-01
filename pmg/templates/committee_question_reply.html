@@ -20,19 +20,13 @@
 
 
 {% block committee_page %}
+  <h5>{{ question_reply.start_date }}</h5>
 
-  <div class="row">
-    <div class="col-sm-9">
-      <h5>{{ question_reply.start_date }}</h5>
+  {{ question_reply.body|safe }}
+{% endblock %}
 
-      {{ question_reply.body|safe }}
-    </div>
-
-    <div class="col-sm-3">
-      {% if question_reply.files %}
-        {{ attachments_panel("Documents", question_reply.files, 'fa-file-pdf-o') }}
-      {% endif %}
-    </div>
-  </div>
-
+{% block committee_page_sidebar %}
+  {% if question_reply.files %}
+    {{ attachments_panel("Documents", question_reply.files, 'fa-file-pdf-o') }}
+  {% endif %}
 {% endblock %}

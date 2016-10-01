@@ -1,0 +1,25 @@
+{% if latest_meeting %}
+<div class="cte-meeting-summary">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Latest meeting</h3>
+      <h6 class="summary-date">{{ latest_meeting.date | pretty_date }}</h6>
+      <h5 class="summary-name"><strong>{{ latest_meeting.title }}</strong></h5>
+    </div>
+    <div class="panel-body">
+      {% if latest_meeting.summary %}
+        {% if latest_meeting.summary | length > 500 %}
+          {{ latest_meeting.summary | truncate(500) | safe }}
+        {% else %}
+          {{ latest_meeting.summary | safe }}
+        {% endif %}
+        <div class="read-more text-sm-right">
+          <a class="btn btn-primary" href="{{ url_for('committee_meeting', event_id=latest_meeting.id) }}">Read more</a>
+        </div>
+      {% else %}
+        <p><em>A summary of this committee meeting is not yet available.</em></p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}

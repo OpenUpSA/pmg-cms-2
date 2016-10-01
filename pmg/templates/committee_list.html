@@ -5,101 +5,87 @@
 {% block page %}
   <h1><i class="fa fa-icon fa-group"></i> Parliamentary Committees</h1>
 
-  <nav class="committee-nav" id="committee-nav">
-    <ul class="nav nav-tabs">
-      <li role="presentation" class="active" data-toggle="tab">
-          <a href="#nat">National Assembly <span class="hidden-md">committees</span></a>
+  <nav class="cte-list-nav hidden-xs" id="cte-nav">
+    <ul class="nav nav-tabs cte-tab-nav">
+      <li class="active">
+          <a href="#nat" data-toggle="tab">National Assembly <span class="hidden-sm">committees</span></a>
       </li>
-      <li role="presentation" data-toggle="tab">
-        <a href="#ncp">National Council of Provinces <span class="hidden-md">committees</span></a>
+      <li>
+        <a href="#ncp" data-toggle="tab">National Council of Provinces <span class="hidden-sm">committees</span></a>
       </li>
-      <li role="presentation" data-toggle="tab">
-        <a href="#jnt">Joint <span class="hidden-md">committees</span></a>
+      <li>
+        <a href="#jnt" data-toggle="tab">Joint <span class="hidden-sm">committees</span></a>
       </li>
-      <li role="presentation" data-toggle="tab">
-        <a href="#adhoc">Ad-hoc <span class="hidden-md">committees</span></a>
-      </li>
-    </ul>
-  </nav>
-
-  <nav class="committee-dd-nav dropdown">
-    <button class="btn btn-default" type="button" data-toggle="dropdown">
-      Choose a committee type
-    </button>
-    <ul class="dropdown-menu">
-      <li role="presentation" class="active">
-          <a href="#nat">National Assembly committees</a>
-      </li>
-      <li role="presentation">
-        <a href="#ncp">National Council of Provinces committees</a>
-      </li>
-      <li role="presentation">
-        <a href="#jnt">Joint committees</a>
-      </li>
-      <li role="presentation">
-        <a href="#adhoc">Ad-hoc committees</a>
+      <li>
+        <a href="#adhoc" data-toggle="tab">Ad-hoc <span class="hidden-sm">committees</span></a>
       </li>
     </ul>
   </nav>
 
-  <div class="committee-search row">
+  <nav class="cte-list-nav-mobile form-group visible-xs">
+    <select class="form-control cte-select-tab-nav">
+      <option data-toggle="tab" data-target="#nat" value="#nat">National Assembly committees</option>
+      <option data-toggle="tab" data-target="#ncp" value="#ncp">National Council of Provinces committees</option>
+      <option data-toggle="tab" data-target="#jnt" value="#jnt">Joint committees</option>
+      <option data-toggle="tab" data-target="#adhoc" value="#adhoc">Ad-hoc committees</option>
+    </select>
+  </nav>
+
+  <div class="cte-list-search row">
     <div class="col-xs-12 col-sm-6 col-md-4">
       <p>
         <strong>Committee name</strong>
       </p>
-      <div class="search-box form-group" id="committee-search">
+      <div class="search-box form-group" id="cte-list-search">
         <i class="fa fa-search"></i>
-        <input class="form-control" placeholder="Find a committee" name="cmt-search" />
+        <input class="form-control" placeholder="Find a committee" name="cte-list-search" />
       </div>
     </div>
   </div>
 
-  <div class="committee-search-result row">
-    <h3 class="no-results col-xs-12">No results found.</h3>
-    <div class="results-found">
-      <div class="col-xs-12 col-md-6 left">
-        <ul></ul>
-      </div>
-      <div class="col-xs-12 col-md-6 right">
-        <ul></ul>
-      </div>
+  <div class="cte-list-search-results">
+    <h3 class="no-results">No results found.</h3>
+    <div class="results-list row">
+      <ul class="col-xs-12 col-sm-6 left">
+      </ul>
+      <ul class="col-xs-12 col-sm-6 right">
+      </ul>
     </div>
   </div>
 
-  <div class="row tab-content committees-list">
+  <div class="tab-content cte-list lunr-dict">
     {% for key,ctype in reg_committees.iteritems() %}
     {% if key == 'nat' %}
-    <div class="col-xs-12 active tab-pane row {{ key }}" id="{{ key }}">
+    <div class="active tab-pane row {{ key }}" id="{{ key }}">
     {% else %}
-    <div class="col-xs-12 tab-pane row {{ key }}" id="{{ key }}">
+    <div class="tab-pane row {{ key }}" id="{{ key }}">
     {% endif %}
       {% for column in ctype.committees|slice(2) %}
-      <div class="col-xs-12 col-sm-6">
-        <ul>
-          {% for committee in column %}
-            <li class="committee">
-              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-              {% if committee.premium %}
-                <span class="premium"><i class="fa fa-star"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
-              {% endif %}
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
+      {% set column_index = loop.index %}
+      <ul class="col-xs-12 col-sm-6">
+        {% for committee in column %}
+          <li class="committee item" data-id="{{ key }}-{{ column_index }}-{{ loop.index }}">
+            <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+            {% if committee.premium %}
+              <span class="premium exclude"><i class="fa fa-star"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
       {% endfor %}
     </div>
     {% endfor %}
-    <div class="col-xs-12 tab-pane adhoc" id="adhoc">
+    <div class="tab-pane adhoc" id="adhoc">
       <div class="row">
         {% for key, ctype in adhoc_committees.iteritems() %}
         <div class="col-xs-12 col-md-4">
           <h3>{{ ctype.name }}</h3>
           <ul>
             {% for committee in ctype.committees %}
-              <li class="committee">
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+              <li class="committee item" data-id="{{ key }}-{{ loop.index }}">
+                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
                 {% if committee.premium %}
-                  <span class="premium"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
+                  <span class="premium exclude"><i class="fa fa-star"></i> <span class="text">Premium</span></span>
                 {% endif %}
               </li>
             {% endfor %}

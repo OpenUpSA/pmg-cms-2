@@ -294,9 +294,7 @@ def committees():
     """
     Page through all available committees.
     """
-
-    logger.debug("committees page called")
-    committees = load_from_api('committee', return_everything=True)['results']
+    committees = load_from_api('v2/committees', return_everything=True)['results']
 
     nat = {
         'name': 'National Assembly',
@@ -311,7 +309,7 @@ def committees():
         'committees': []
     }
 
-    adhoc_committees = OrderedDict((('nat',nat),('ncp',ncp),('jnt',jnt)))
+    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
 
@@ -321,14 +319,15 @@ def committees():
         else:
             committees_type = reg_committees
 
-        if committee['house_id'] is Committee.NATIONAL_ASSEMBLY:
+        if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
-        elif committee['house_id'] is Committee.NAT_COUNCIL_OF_PROV:
+        elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
             committees_type['ncp']['committees'].append(committee)
-        elif committee['house_id'] is Committee.JOINT_COMMITTEE:
+        elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
             committees_type['jnt']['committees'].append(committee)
 
-    return render_template('committee_list.html',
+    return render_template(
+        'committee_list.html',
         reg_committees=reg_committees,
         adhoc_committees=adhoc_committees)
 

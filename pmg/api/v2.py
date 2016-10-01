@@ -1,64 +1,12 @@
-from marshmallow import fields
 from flask import request, Blueprint, abort
 from sqlalchemy import desc
 
-from pmg import ma
-from pmg.models import Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member
+from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response
+from pmg.api.schemas import *  # noqa
 
 
 api = Blueprint('api2', __name__)
-
-
-class CommitteeSchema(ma.ModelSchema):
-    class Meta:
-        model = Committee
-        fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'premium',
-                  '_links')
-    house = fields.Nested('HouseSchema')
-    _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.committees', id="<id>"),
-        'meetings': ma.AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
-        # TODO: memberships, questions, etc.
-    })
-
-
-class HouseSchema(ma.ModelSchema):
-    class Meta:
-        model = House
-        fields = ('id', 'name', 'short_name')
-    short_name = fields.String(attribute='name_short')
-
-
-class CommitteeMeetingSchema(ma.ModelSchema):
-    class Meta:
-        model = CommitteeMeeting
-        fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
-                  'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links')
-    _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
-        'attendance': ma.AbsoluteUrlFor('api2.committee_meeting_attendance', id="<id>"),
-    })
-
-
-class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
-    class Meta:
-        model = CommitteeMeetingAttendance
-        fields = ('id', 'alternate_member', 'attendance', 'chairperson', 'member', '_links', 'committee_meeting_id',
-                  'committee_id')
-    member = fields.Nested('MemberSchema')
-    committee_meeting_id = fields.Number(attribute='meeting_id')
-    _links = ma.Hyperlinks({
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<meeting.committee_id>"),
-        'committee_meeting': ma.AbsoluteUrlFor('api2.committee_meetings', id="<meeting_id>"),
-    })
-
-
-class MemberSchema(ma.ModelSchema):
-    class Meta:
-        model = Member
-        fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_link', 'current')
 
 
 def get_api_fields():
@@ -113,6 +61,16 @@ def committee_meeting_list(id):
 
     query = CommitteeMeeting.query.filter(CommitteeMeeting.committee == cte).order_by(desc(CommitteeMeeting.date))
     return api_list_items(query, CommitteeMeetingSchema)
+
+
+@api.route('/committees/<int:id>/calls-for-comment')
+def committee_calls_for_comment_list(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    query = CallForComment.query.filter(CallForComment.committee == cte).order_by(desc(CallForComment.start_date))
+    return api_list_items(query, CallForCommentSchema)
 
 
 @api.route('/committee-meetings/')

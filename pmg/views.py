@@ -212,12 +212,25 @@ def committee_detail(committee_id):
     now = datetime.now()
     filtered_meetings = {}
 
+    # calls for comment
+    committee['calls_for_comments'] = load_from_api(
+        'v2/committees/%s/calls-for-comment',
+        fields=['id', 'title', 'date'],
+        return_everything=True)['results']
+
+    # tabled reports
+    committee['tabled_committee_reports'] = load_from_api(
+        'v2/committees/%s/tabled-committee-reports',
+        fields=['id', 'title', 'date'],
+        return_everything=True)['results']
+
     params = {
         'filter[committee_id]': committee_id,
         'per_page': 5
     }
     recent_questions = load_from_api('minister-questions-combined', params=params)['results']
 
+    # meetings
     def get_year_unicode(m_date):
         return int(m_date[:4])
 

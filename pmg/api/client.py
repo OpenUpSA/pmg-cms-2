@@ -105,37 +105,3 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     except requests.ConnectionError as e:
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash(u'Error connecting to backend service.', 'danger')
-
-
-def send_to_api(endpoint, data=None):
-
-    query_str = endpoint + "/"
-
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-    # add auth header
-    if session and session.get('api_key'):
-        headers['Authentication-Token'] = session.get('api_key')
-    try:
-        response = requests.post(
-            API_HOST +
-            query_str,
-            headers=headers,
-            data=data,
-            timeout=TIMEOUTS)
-        out = response.json()
-
-        if response.status_code != 200:
-            try:
-                msg = response.json().get('message')
-            except Exception:
-                msg = None
-
-            raise ApiException(
-                response.status_code,
-                msg or "An unspecified error has occurred.")
-        return out
-    except requests.ConnectionError:
-        flash('Error connecting to backend service.', 'danger')

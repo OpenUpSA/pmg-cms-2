@@ -102,6 +102,8 @@ if DEBUG:
     SESSION_COOKIE_DOMAIN = "pmg.dev"
 else:
     SERVER_NAME = 'pmg.org.za'
+    # Use the EC2-internal API endpoint, which doesn't trombone through the EC2
+    # firewall and back in again, saving us money and msecs
     API_URL = "https://api-internal.pmg.org.za/"
     FRONTEND_HOST = "https://pmg.org.za/"
     SESSION_COOKIE_DOMAIN = "pmg.org.za"

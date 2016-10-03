@@ -8,7 +8,7 @@ from flask.ext.security import current_user
 
 from pmg import app
 
-API_HOST = app.config['API_HOST']
+API_URL = app.config['API_URL']
 # timeout connecting and reading from remote host
 TIMEOUTS = (3.05, 10)
 
@@ -76,7 +76,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         headers = {'Authentication-Token': current_user.get_auth_token()}
 
     try:
-        response = requests.get(API_HOST + query_str, headers=headers, params=params, timeout=TIMEOUTS)
+        response = requests.get(API_URL + query_str, headers=headers, params=params, timeout=TIMEOUTS)
 
         if response.status_code == 404:
             abort(404)

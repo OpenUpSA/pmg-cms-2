@@ -97,11 +97,11 @@ SHARPSPRING_API_SECRET = env.get('SHARPSPRING_API_SECRET')
 
 if DEBUG:
     SERVER_NAME = 'pmg.dev:5000'
-    API_HOST = "http://api.pmg.dev:5000/"
+    API_URL = "http://api.pmg.dev:5000/"
     FRONTEND_HOST = "http://pmg.dev:5000/"
     SESSION_COOKIE_DOMAIN = "pmg.dev"
 else:
     SERVER_NAME = 'pmg.org.za'
-    API_HOST = "https://api.pmg.org.za/"
+    API_URL = "https://api-internal.pmg.org.za/"
     FRONTEND_HOST = "https://pmg.org.za/"
     SESSION_COOKIE_DOMAIN = "pmg.org.za"

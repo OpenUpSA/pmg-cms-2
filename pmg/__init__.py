@@ -145,6 +145,10 @@ import admin
 
 from pmg.api.v1 import api as api_v1
 app.register_blueprint(api_v1, subdomain='api')
+# api-internal.pmg.org.za resolves to the internal IP of the API host
+app.register_blueprint(api_v1, subdomain='api-internal')
 
 from pmg.api.v2 import api as api_v2
 app.register_blueprint(api_v2, subdomain='api', url_prefix='/v2')
+# api-internal.pmg.org.za resolves to the internal IP of the API host
+app.register_blueprint(api_v2, subdomain='api-internal', url_prefix='/v2')

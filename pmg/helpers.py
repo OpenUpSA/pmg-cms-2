@@ -131,7 +131,6 @@ def feedback_form():
 def inject_paths():
     context_vars = {
         'FRONTEND_HOST': app.config['FRONTEND_HOST'],
-        'API_HOST': app.config['API_HOST'],
         'STATIC_HOST': app.config['STATIC_HOST'],
     }
     return context_vars

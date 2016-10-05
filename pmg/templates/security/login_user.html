@@ -42,18 +42,10 @@
               <p>
                 Your password is incorrect. Please try again
                 or <a href="{{ url_for('security.forgot_password')}}">reset your password</a>
-                if you've forgotten it. You also need to reset your password if
-                you haven't reset it since 1 February 2015.
+                if you've forgotten it.
               </p>
             </div>
           {% endif %}
-
-          <p class="alert alert-info">
-            <strong>Existing accounts</strong>
-            <br>
-            If you had an account on our old website, please
-            <a href="{{ url_for('security.forgot_password') }}">reset your password</a> before logging in.
-          </p>
         </div>
       </div>
       <br>

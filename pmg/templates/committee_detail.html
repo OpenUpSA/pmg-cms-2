@@ -172,7 +172,7 @@
 
           {% for membership in committee.memberships %}
             {% set member = membership.member %}
-            {% if membership.type == 'chairperson'%}
+            {% if membership.chairperson %}
               <li class="clearfix">{{ member_badge(member, chairperson=True) }}</li>
               <hr>
             {% endif %}
@@ -186,7 +186,7 @@
         <ul class="list-unstyled list-spaced">
           {% for membership in committee.memberships[0:break] %}
             {% set member = membership.member %}
-            {% if not membership.type or membership.type != 'chairperson'%}
+            {% if not membership.chairperson %}
               <li class="clearfix">{{ member_badge(member) }}</li>
             {% endif %}
           {% endfor %}
@@ -196,7 +196,7 @@
         <ul class="list-unstyled list-spaced">
           {% for membership in committee.memberships[break::] %}
             {% set member = membership.member %}
-            {% if not membership.type or membership.type != 'chairperson'%}
+            {% if not membership.chairperson %}
               <li class="clearfix">{{ member_badge(member) }}</li>
             {% endif %}
           {% endfor %}

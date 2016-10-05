@@ -10,7 +10,7 @@ from flask.ext.mail import Message
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
-from pmg.api_client import load_from_api, ApiException
+from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
 from pmg.models.resources import Committee
@@ -208,25 +208,42 @@ def committee_detail(committee_id):
     """
     Display all available detail for the committee.
     """
-    logger.debug("committee detail page called")
-    committee = load_from_api('committee', committee_id)
+    committee = load_from_api('v2/committees', committee_id)['result']
     now = datetime.now()
     filtered_meetings = {}
 
-    def get_year_unicode(m_date):
-        return int(m_date[:4])
-    def get_month_unicode(m_date):
-        return int(m_date[5:7])
+    # calls for comment
+    committee['calls_for_comments'] = load_from_api(
+        'v2/committees/%s/calls-for-comment' % committee_id,
+        fields=['id', 'title', 'start_date'],
+        return_everything=True)['results']
+
+    # tabled reports
+    committee['tabled_committee_reports'] = load_from_api(
+        'v2/committees/%s/tabled-reports' % committee_id,
+        fields=['id', 'title', 'start_date'],
+        return_everything=True)['results']
+
+    # memberships
+    committee['memberships'] = load_from_api(
+        'v2/committees/%s/members' % committee_id,
+        return_everything=True)['results']
 
     params = {
         'filter[committee_id]': committee_id,
         'per_page': 5
     }
-    recent_questions = load_from_api(
-        'minister-questions-combined',
-        params=params)['results']
+    recent_questions = load_from_api('minister-questions-combined', params=params)['results']
 
-    all_meetings = [m for m in committee['events'] if m['type'] == 'committee-meeting']
+    # meetings
+    def get_year_unicode(m_date):
+        return int(m_date[:4])
+
+    def get_month_unicode(m_date):
+        return int(m_date[5:7])
+
+    all_meetings = load_from_api('v2/committees/%s/meetings' % committee_id,
+                                 fields=['id', 'title', 'date'], return_everything=True)['results']
 
     for meeting in all_meetings:
         meeting_year = get_year_unicode(meeting['date'])
@@ -236,10 +253,10 @@ def committee_detail(committee_id):
 
         filtered_meetings[meeting_year].append(meeting)
 
-    latest_year = max([y for y in filtered_meetings])
+    latest_year = max(y for y in filtered_meetings)
+    earliest_year = min(y for y in filtered_meetings)
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     has_meetings = len(all_meetings) > 0
-    earliest_year = get_year_unicode(all_meetings[-1]['date'])
 
     if len(filtered_meetings['six-months']):
         starting_filter = 'six-months'
@@ -247,9 +264,9 @@ def committee_detail(committee_id):
         starting_filter = latest_year
 
     return render_template('committee_detail.html',
-                            current_year=now.year,
-                            earliest_year=earliest_year,
-                            filtered_meetings=filtered_meetings,
+                           current_year=now.year,
+                           earliest_year=earliest_year,
+                           filtered_meetings=filtered_meetings,
                            committee=committee,
                            has_meetings=has_meetings,
                            starting_filter=starting_filter,
@@ -277,9 +294,7 @@ def committees():
     """
     Page through all available committees.
     """
-
-    logger.debug("committees page called")
-    committees = load_from_api('committee', return_everything=True)['results']
+    committees = load_from_api('v2/committees', return_everything=True)['results']
 
     nat = {
         'name': 'National Assembly',
@@ -294,7 +309,7 @@ def committees():
         'committees': []
     }
 
-    adhoc_committees = OrderedDict((('nat',nat),('ncp',ncp),('jnt',jnt)))
+    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
 
@@ -304,14 +319,15 @@ def committees():
         else:
             committees_type = reg_committees
 
-        if committee['house_id'] is Committee.NATIONAL_ASSEMBLY:
+        if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
-        elif committee['house_id'] is Committee.NAT_COUNCIL_OF_PROV:
+        elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
             committees_type['ncp']['committees'].append(committee)
-        elif committee['house_id'] is Committee.JOINT_COMMITTEE:
+        elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
             committees_type['jnt']['committees'].append(committee)
 
-    return render_template('committee_list.html',
+    return render_template(
+        'committee_list.html',
         reg_committees=reg_committees,
         adhoc_committees=adhoc_committees)
 

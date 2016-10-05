@@ -7,6 +7,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
+from flask_marshmallow import Marshmallow
 
 import json
 
@@ -34,6 +35,7 @@ db.metadata.naming_convention = {
 migrate = Migrate(app, db, transaction_per_migration=True)
 csrf = CsrfProtect(app)
 mail = Mail(app)
+ma = Marshmallow(app)
 
 
 UPLOAD_PATH = app.config['UPLOAD_PATH']
@@ -141,5 +143,8 @@ import views
 import user_management
 import admin
 
-from pmg.api import api
-app.register_blueprint(api, subdomain='api')
+from pmg.api.v1 import api as api_v1
+app.register_blueprint(api_v1, subdomain='api')
+
+from pmg.api.v2 import api as api_v2
+app.register_blueprint(api_v2, subdomain='api', url_prefix='/v2')

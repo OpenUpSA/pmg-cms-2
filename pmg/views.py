@@ -21,7 +21,6 @@ from collections import OrderedDict
 import forms
 import utils
 
-API_HOST = app.config['API_HOST']
 LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
 
 app.session = session

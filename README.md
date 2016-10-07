@@ -69,7 +69,7 @@ Add the following lines to your `.hosts` file:
 
 Create the pmg user with password `pmg`, and an empty database:
 
-    createuser pmg
+    createuser pmg -P
     createdb -O pmg pmg
 
 Get a copy of the production database from a colleague, or setup a blank database. If you have a database copy, run:
@@ -80,7 +80,7 @@ Start the server:
 
     python app.py runserver
 
-You should now see it running at `http://pmg.dev:5000/` and `http://api.pmg.dev:5000/`.
+You should now see it running at [http://pmg.dev:5000/](http://pmg.dev:5000/) and [http://api.pmg.dev:5000/](http://api.pmg.dev:5000/).
 
 ### Running tests
 

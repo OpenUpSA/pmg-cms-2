@@ -10,7 +10,7 @@
 
 
 {% block committee_title %}
-  {{ super() }}
+  {{ super() }}<br><br><br>
   <h1>Questions to the Minister</h1>
   <p>
     <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">← More questions to the Minister</a>

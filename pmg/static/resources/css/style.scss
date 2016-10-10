@@ -2,7 +2,7 @@ $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
 
 $black = #333;
 
-//** Global textual link color.
+// ** Global textual link color.
 $link-color:            #0178d8;
 
 // scale down heading font sizes
@@ -1137,4 +1137,31 @@ body.email_alerts {
       margin-top:5px;
     }
   }
+}
+
+@media print {
+  a[href]:after {
+    content: none;
+  }
+  .email-alert-box, .correct-this-page-footer, .footer, .top-links, .cte-list-search, .nav, .premium, img, .cte-about-link, .cte-dtl-meetings-search, .cte-dtl-meetings-filter, .space-bottom, .bill-status-container, .bill-versions, #wrapper > div > article > div.row > div.col-sm-4 > div, .form-group, #wrapper > div > article > div.row > div.col-sm-8 > div > div > div > div.media-body > div.row, #wrapper > div > article > div.row > div.col-sm-8 > header > p, .pull-left {
+    display: none;
+  }
+  .list-spaced li {
+    margin: -15px 0px;
+  }
+  #wrapper > div > article > div.row > div.col-sm-4 > p {
+      margin: 0;
+  }
+  .bill-events .bill-location.NA, .bill-events .bill-location.NA .panel-heading {
+    border-color: black;
+  }
+  #nat > ul {
+    margin-bottom: 0;
+  }
+  .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
+    padding: 6px;
+  }
+  .col-sm-8, .col-sm-4 {
+    width: 100%;
+  } 
 }

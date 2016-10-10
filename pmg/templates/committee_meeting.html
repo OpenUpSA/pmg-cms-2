@@ -80,6 +80,7 @@
     {% if event.body %}
     {# show this only if there is an event body, otherwise it looks like it shows up twice. #}
     <div class="text-right hidden-xs">
+      <a class="btn btn-default" href="javascript:window.print()"><i class="fa fa-print"></i> Print</a>
       <button class="btn btn-default block-xs" data-toggle="modal" data-target="#correct-this-page-modal">Correct this page</button>
     </div>
     {% endif %}

@@ -2,7 +2,7 @@ $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
 
 $black = #333;
 
-//** Global textual link color.
+// ** Global textual link color.
 $link-color:            #0178d8;
 
 // scale down heading font sizes
@@ -1136,5 +1136,52 @@ body.email_alerts {
     h1.premium {
       margin-top:5px;
     }
+  }
+}
+
+@media print {
+  a[href]:after {
+    content: none;
+  }
+
+  .email-alert-box,
+  .correct-this-page-footer,
+  .footer,
+  .cte-list-search,
+  nav,
+  .nav,
+  .breadcrumb,
+  .cte-about-link,
+  .cte-dtl-meetings-search,
+  .cte-dtl-meetings-filter,
+  .bill-status-container,
+  .bill-versions, #wrapper > div > article > div.row > div.col-sm-4 > div,
+  .form-group {
+    display: none;
+  }
+
+  .list-spaced li {
+    margin: -15px 0px;
+  }
+
+  .bill-events .bill-location.NA,
+  .bill-events .bill-location.NA .panel-heading {
+    border-color: black;
+  }
+  #nat > ul {
+    margin-bottom: 0;
+  }
+
+  .table tbody tr th,
+  .table tbody tr td {
+    padding: 6px;
+  }
+
+  .committee_meeting .page > .row > .col-sm-8 {
+    width: 100%;
+  }
+
+  .header-print {
+    margin-left: 15px;
   }
 }

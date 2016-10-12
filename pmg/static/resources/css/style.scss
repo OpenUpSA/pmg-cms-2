@@ -1150,18 +1150,13 @@ body.email_alerts {
   .cte-list-search,
   nav,
   .nav,
-  .premium,
   .breadcrumb,
   .cte-about-link,
   .cte-dtl-meetings-search,
   .cte-dtl-meetings-filter,
-  .space-bottom,
   .bill-status-container,
   .bill-versions, #wrapper > div > article > div.row > div.col-sm-4 > div,
-  .form-group,
-  #wrapper > div > article > div.row > div.col-sm-8 > div > div > div > div.media-body > div.row,
-  #wrapper > div > article > div.row > div.col-sm-8 > header > p,
-  .pull-left {
+  .form-group {
     display: none;
   }
 
@@ -1182,8 +1177,11 @@ body.email_alerts {
     padding: 6px;
   }
 
-  .col-sm-8,
-  .col-sm-4 {
+  .committee_meeting .page > .row > .col-sm-8 {
     width: 100%;
+  }
+
+  .header-print {
+    margin-left: 15px;
   }
 }

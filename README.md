@@ -47,9 +47,9 @@ If you want to contribute to the code, please fork the repository, make your cha
 
 ### Local setup
 
-Install the [PostgreSQL](https://www.postgresql.org/) database server. It's a useful idea to setup [passwordless authentication for local connections](https://www.postgresql.org/docs/current/static/auth-methods.html#AUTH-TRUST).
+Install the [PostgreSQL](https://www.postgresql.org/) database server. It's a useful idea to setup [passwordless authentication for local connections][https://www.postgresql.org/docs/current/static/auth-methods.html#AUTH-TRUST].
 
-You'll also need the psql and libxml development libraries. On Ubuntu, use `sudo apt-get install libpq-dev libxml2-dev libxslt1-dev python-dev`. On Mac OS X, use `brew install libxml2`.
+You'll also need the psql and libxml development libraries. On Ubuntu, use `sudo apt-get install libpq-devel libxml2-dev libxslt1-dev python-dev`. On Mac OS X, use `brew install libxml2`.
 
 You'll need python 2.7 and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/).
 
@@ -62,7 +62,7 @@ Install requirements:
 
     pip install -r requirements.txt
 
-Add the following lines to your `hosts` file:
+Add the following lines to your `.hosts` file:
 
     127.0.0.1 api.pmg.dev
     127.0.0.1 pmg.dev
@@ -71,11 +71,6 @@ Create the pmg user with password `pmg`, and an empty database:
 
     createuser pmg -P
     createdb -O pmg pmg
-
-If you're on a fresh install you might get the `createuser: could not connect to database postgres: FATAL:  role "..." does not exist` error. In that case you need to create the pmg user as the postgres user:
-
-    sudo -u postgres createuser pmg -P
-    sudo -u postgres createdb -O pmg pmg
 
 Get a copy of the production database from a colleague, or setup a blank database. If you have a database copy, run:
 

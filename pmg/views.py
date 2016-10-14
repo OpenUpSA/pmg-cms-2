@@ -287,13 +287,12 @@ def committee_question(question_id):
                            content_date=question['date'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
-
 @app.route('/committees/')
 def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True)['results']
+    committees = load_from_api('v2/committees', fields=['id','name','premium','ad_hoc','house'])['results']
 
     nat = {
         'name': 'National Assembly',
@@ -325,10 +324,21 @@ def committees():
         elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
             committees_type['jnt']['committees'].append(committee)
 
+    # Append user-followed committees if logged in
+    if current_user.is_authenticated():
+        user_following = current_user.following
+        recent_meetings = []
+
+        for committee in user_following:
+            recent_meetings.append(load_from_api('v2/committee-meetings/%s' % committee.id,
+                fields=['id','title'])['result'])
+
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
-        adhoc_committees=adhoc_committees)
+        adhoc_committees=adhoc_committees,
+        user_following=user_following,
+        recent_meetings=recent_meetings)
 
 
 @app.route('/committee-meetings/')

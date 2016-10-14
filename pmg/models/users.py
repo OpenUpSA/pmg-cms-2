@@ -103,6 +103,9 @@ class User(db.Model, UserMixin):
     # premium committee subscriptions, in addition to any that the user's organisation might have
     subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
+    # committees that the user chooses to follow
+    following = db.relationship('Committee', secondary='user_following', passive_deletes=True)
+
     # alerts for changes to committees
     committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
@@ -228,6 +231,23 @@ user_committee = db.Table(
         db.Integer(),
         db.ForeignKey('committee.id', ondelete="CASCADE")))
 
+user_following = db.Table(
+    'user_following',
+    db.Column(
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete="CASCADE")),
+    db.Column(
+        'created_at',
+        db.DateTime(timezone=True),
+        index=True,
+        unique=False,
+        nullable=False,
+        server_default=func.now()))
 
 user_committee_alerts = db.Table(
     'user_committee_alerts',

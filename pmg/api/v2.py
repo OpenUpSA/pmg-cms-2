@@ -9,7 +9,6 @@ from pmg.api.schemas import *  # noqa
 
 api = Blueprint('api2', __name__)
 
-
 def get_api_fields():
     fields = request.args.get('fields') or ''
     fields = [f for f in fields.split(',') if f]

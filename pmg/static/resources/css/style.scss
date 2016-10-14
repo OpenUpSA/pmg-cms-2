@@ -42,6 +42,10 @@ $yellow: #F5A623;
   font-family: $headings-font-family;
 }
 
+table {
+  font-size: $font-size-base;
+}
+
 // Navbar
 
 .navbar-pmg {
@@ -917,6 +921,10 @@ body.email_alerts {
       margin-left:30px;
     }
   }
+}
+
+.cte-follow-committee {
+  display:inline-block;
 }
 
 .committee_meeting {

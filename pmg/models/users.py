@@ -149,6 +149,12 @@ class User(db.Model, UserMixin):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
 
+    def follow_committee(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        self.following.append(committee)
+
     @validates('organisation')
     def validate_organisation(self, key, org):
         if org:

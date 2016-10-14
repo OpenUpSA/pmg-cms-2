@@ -91,6 +91,11 @@
       <ul class="col-xs-12 col-sm-6">
         {% for committee in column %}
           <li class="committee item" data-id="{{ key }}-{{ column_index }}-{{ loop.index }}">
+            <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ request.url }}">
+              <input type="checkbox" />
+            </form>
             <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
             {% if committee.premium %}
               <span class="premium exclude"><i class="fa fa-star"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>

@@ -71,10 +71,10 @@
       <ul class="col-xs-12 col-sm-6">
         {% for committee in user_following %}
           <li class="committee item" data-id="user-following-{{ column_index }}-{{ loop.index }}">
-            <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+            <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="next" value="{{ request.url }}">
-              <input type="checkbox" />
+              <input type="checkbox" checked />
             </form>
             <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
             {% if committee.premium %}
@@ -96,10 +96,20 @@
       <ul class="col-xs-12 col-sm-6">
         {% for committee in column %}
           <li class="committee item" data-id="{{ key }}-{{ column_index }}-{{ loop.index }}">
-            <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="next" value="{{ request.url }}">
-              <input type="checkbox" />
+            {% if current_user.is_authenticated() %}
+              {% if committee.followed %}
+              <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
+              {% else %}
+              <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+              {% endif %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ request.url }}">
+                {% if committee.followed %}
+                <input type="checkbox" checked />
+                {% else %}
+                <input type="checkbox" />
+                {% endif %}
+              {% endif %}
             </form>
             <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
             {% if committee.premium %}
@@ -119,10 +129,20 @@
           <ul>
             {% for committee in ctype.committees %}
               <li class="committee item" data-id="{{ key }}-{{ loop.index }}">
-                <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <input type="hidden" name="next" value="{{ request.url }}">
-                  <input type="checkbox" />
+                {% if current_user.is_authenticated() %}
+                  {% if committee.followed %}
+                  <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
+                  {% else %}
+                  <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+                  {% endif %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    {% if committee.followed %}
+                    <input type="checkbox" checked />
+                    {% else %}
+                    <input type="checkbox" />
+                    {% endif %}
+                  {% endif %}
                 </form>
                 <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
                 {% if committee.premium %}

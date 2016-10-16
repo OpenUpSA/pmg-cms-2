@@ -310,6 +310,16 @@ def committees():
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
+    user_following = []
+    recent_meetings = []
+
+    # Append user-followed committees if logged in
+    if current_user.is_authenticated():
+        user_following = current_user.following
+
+        for committee in user_following:
+            recent_meetings.append(load_from_api('v2/committee-meetings/%s' % committee.id,
+                fields=['id','title'])['result'])
 
     for committee in committees:
         if committee['ad_hoc'] is True:
@@ -317,21 +327,16 @@ def committees():
         else:
             committees_type = reg_committees
 
+        # Check if user is following committee
+        if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+            committee['followed'] = True
+
         if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
         elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
             committees_type['ncp']['committees'].append(committee)
         elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
             committees_type['jnt']['committees'].append(committee)
-
-    # Append user-followed committees if logged in
-    if current_user.is_authenticated():
-        user_following = current_user.following
-        recent_meetings = []
-
-        for committee in user_following:
-            recent_meetings.append(load_from_api('v2/committee-meetings/%s' % committee.id,
-                fields=['id','title'])['result'])
 
     return render_template(
         'committee_list.html',

@@ -287,13 +287,12 @@ def committee_question(question_id):
                            content_date=question['date'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
-
 @app.route('/committees/')
 def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True)['results']
+    committees = load_from_api('v2/committees', fields=['id','name','premium','ad_hoc','house'])['results']
 
     nat = {
         'name': 'National Assembly',
@@ -311,12 +310,26 @@ def committees():
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
+    user_following = []
+    recent_meetings = []
+
+    # Append user-followed committees if logged in
+    if current_user.is_authenticated():
+        user_following = current_user.following
+
+        for committee in user_following:
+            recent_meetings.append(load_from_api('v2/committee-meetings/%s' % committee.id,
+                fields=['id','title'])['result'])
 
     for committee in committees:
         if committee['ad_hoc'] is True:
             committees_type = adhoc_committees
         else:
             committees_type = reg_committees
+
+        # Check if user is following committee
+        if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+            committee['followed'] = True
 
         if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
@@ -328,7 +341,9 @@ def committees():
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
-        adhoc_committees=adhoc_committees)
+        adhoc_committees=adhoc_committees,
+        user_following=user_following,
+        recent_meetings=recent_meetings)
 
 
 @app.route('/committee-meetings/')

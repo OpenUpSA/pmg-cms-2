@@ -76,6 +76,7 @@ class MemberSchema(ma.ModelSchema):
     class Meta:
         model = Member
         fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_url', 'current')
+    party = fields.Nested('PartySchema')
     pa_url = fields.String(attribute="pa_url")
     profile_pic_url = fields.String(attribute="full_profile_pic_url")
 
@@ -86,3 +87,8 @@ class MembershipSchema(ma.ModelSchema):
         fields = ('member', 'chairperson')
     member = fields.Nested('MemberSchema')
     chairperson = fields.Boolean(attribute="chairperson")
+
+class PartySchema(ma.ModelSchema):
+    class Meta:
+        model = Membership
+        fields = ('id','name')

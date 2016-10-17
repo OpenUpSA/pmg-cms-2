@@ -2,13 +2,14 @@ from flask import request, Blueprint, abort
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 
-from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment
+from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Party
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response
 from pmg.api.schemas import *  # noqa
 
 
 api = Blueprint('api2', __name__)
 
+MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
 
 def get_api_fields():
     fields = request.args.get('fields') or ''

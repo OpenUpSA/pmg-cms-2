@@ -2,7 +2,7 @@ from marshmallow import fields
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership)
+                        Membership, Party)
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -90,5 +90,5 @@ class MembershipSchema(ma.ModelSchema):
 
 class PartySchema(ma.ModelSchema):
     class Meta:
-        model = Membership
+        model = Party
         fields = ('id','name')

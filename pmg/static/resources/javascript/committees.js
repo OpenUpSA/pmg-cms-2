@@ -5,7 +5,6 @@ var $cteListItems = $('.cte-list .tab-pane.active .committee');
 var $cteListSearchInput = $('.cte-list-search input');
 var $cteListSearchResults = $('.cte-list-search-results');
 var $cteListNavItem = $('.cte-list-nav a, .cte-list-nav-mobile option');
-var $cteListFollowCommittee = $('.cte-follow-committee');
 // Committee details DOM
 var $cteDtlNavItem = $('.cte-dtl-meetings-nav a, .cte-dtl-meetings-nav-mobile option');
 var $cteDtlNavMobileSelect = $('.cte-dtl-meetings-nav-mobile select');
@@ -212,12 +211,6 @@ $cteListNavItem.on('click', function(e) {
 $cteListSearchInput.on('keyup', function(e) {
   searchIndex($(e.target).val(), $cteList, $cteListSearchResults, { twoCol: true });
 });
-
-$cteListFollowCommittee.find('input[type=checkbox]')
-  .on('change', function() {
-    $(this).closest('form')
-      .submit();
-  });
 
 // Committee detail page handlers
 $cteDtlNavItem.on('click', indexItems);

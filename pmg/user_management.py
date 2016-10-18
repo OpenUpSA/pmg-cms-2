@@ -64,33 +64,6 @@ def user_committee_alert(committee_id):
 
     return redirect(request.values.get('next', '/'))
 
-@app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
-def user_follow_committee(committee_id):
-    if current_user.is_authenticated() and request.method == 'POST':
-        u = current_user.follow_committee(Committee.query.get(committee_id))
-
-        if u is not None:
-            db.session.add(u)
-            db.session.commit()
-            ga_event('user','follow-committee','cte-follow-committee')
-        else:
-            flash('Committee %s cannot be followed.' % committee_id)
-
-    return redirect(request.values.get('next', '/'))
-
-@app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
-def user_unfollow_committee(committee_id):
-    if current_user.is_authenticated() and request.method == 'POST':
-        u = current_user.unfollow_committee(Committee.query.get(committee_id))
-
-        if u is not None:
-            db.session.add(u)
-            db.session.commit()
-            ga_event('user','unfollow-committee','cte-follow-committee')
-        else:
-            flash('Committee %s cannot be followed.' % committee_id)
-
-    return redirect(request.values.get('next', '/'))
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])
 def committee_subscriptions():

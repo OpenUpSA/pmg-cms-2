@@ -1144,6 +1144,27 @@ body.email_alerts {
 }
 
 @media print {
+  body {
+    font-size: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 15px;
+  }
+
+  h4 {
+    font-size: 14px;
+  }
+
+  h5 {
+    font-size: 12px;
+
+  }
+
   a[href]:after {
     content: none;
   }

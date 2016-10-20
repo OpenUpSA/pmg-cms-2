@@ -1038,6 +1038,16 @@ body.email_alerts {
   margin:20px 0;
 }
 
+.audio-files {
+  list-style:none;
+  padding-left:0;
+
+  audio {
+    margin:0 auto;
+    display:block;
+  }
+}
+
 .committee-question-reply {
   table {
     width: 100%;

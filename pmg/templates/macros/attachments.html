@@ -29,16 +29,18 @@
     <div class="panel-body">
       {% if items %}
         <div id="soundcloud-container" data-soundcloud-id="{{ SOUNDCLOUD_APP_KEY_ID }}"></div>
-        <ul class="fa-ul">
+        <ul class="audio-files">
           {% for item in items %}
           <li>
-            <i class="fa fa-li fa-headphones"></i>
-            <a href="{{ item.url }}"
-               target="_blank"
-               data-soundcloud-uri="{{ item.soundcloud_uri }}"
-               class="audio">
-              {{ item.title or item.description or item.origname or item.file_path }}
-            </a>
+            <audio controls>
+              <source src="{{ item.url }}" type="audio/mpeg" />
+              <a href="{{ item.url }}"
+                 target="_blank"
+                 data-soundcloud-uri="{{ item.soundcloud_uri }}"
+                 class="audio">
+                {{ item.title or item.description or item.origname or item.file_path }}
+              </a>
+            </audio>
           </li>
           {% endfor %}
         </ul>

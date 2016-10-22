@@ -109,14 +109,18 @@ $(function() {
   var initialised = false;
   var initialise = function() {
     SC.initialize({
-      client_id: $('#soundcloud-continer').data('soundcloud-id')
+      client_id: $('#soundcloud-container').data('soundcloud-id')
     });
   };
-  $('a.audio').each(function(i, a) {
+  var $audioLinks = $('a.audio');
+
+  $audioLinks.each(function(i, a) {
     a = $(a);
     if (a.data('soundcloud-uri')) {
       var uri = a.data('soundcloud-uri');
+      console.log('registering click');
       a.on('click', function(e) {
+        console.log('clicked');
         if (!initialised) initialise();
         SC.oEmbed(uri, {
           element: document.getElementById('soundcloud-container'),
@@ -125,6 +129,18 @@ $(function() {
           auto_play: false,
         });
         return false;
+      });
+    }
+
+    // Convert first link to soundcloud embed
+    var firstUri = $audioLinks.first().data('soundcloud-uri');
+
+    if(firstUri) {
+      SC.oEmbed(firstUri, {
+        element: document.getElementById('soundcloud-container'),
+        maxheight: 166,
+        show_comments: false,
+        auto_play: false,
       });
     }
   });

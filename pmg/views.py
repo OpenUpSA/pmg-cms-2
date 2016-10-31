@@ -76,6 +76,27 @@ def classify_attachments(files):
 
     return audio, related
 
+@app.context_processor
+def inject_user_following():
+    user_following = []
+
+    if current_user.is_authenticated():
+
+        # Append user-followed committees if logged in
+        user_following = current_user.following
+
+        for committee in user_following:
+            meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
+                fields=['id','title','date'])['results']
+
+            if len(meetings):
+                setattr(committee, 'recent_meeting', meetings[0])
+            else:
+                setattr(committee, 'recent_meeting', None)
+
+        user_following.sort(key=lambda x: x.recent_meeting, reverse=True)
+
+    return dict(user_following=user_following)
 
 @app.route('/')
 def index():
@@ -124,7 +145,8 @@ def index():
         schedule=schedule,
         scheduledates=scheduledates,
         stock_pic=stock_pic,
-        featured_content=featured_content)
+        featured_content=featured_content
+    )
 
 
 @app.route('/bills/')
@@ -252,8 +274,8 @@ def committee_detail(committee_id):
 
         filtered_meetings[meeting_year].append(meeting)
 
-    latest_year = max(y for y in filtered_meetings)
-    earliest_year = min(y for y in filtered_meetings)
+    latest_year = max(y for y in filtered_meetings) if len(filtered_meetings) else None
+    earliest_year = min(y for y in filtered_meetings) if len(filtered_meetings) else None
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     has_meetings = len(all_meetings) > 0
 
@@ -310,16 +332,6 @@ def committees():
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
-    user_following = []
-    recent_meetings = []
-
-    # Append user-followed committees if logged in
-    if current_user.is_authenticated():
-        user_following = current_user.following
-
-        for committee in user_following:
-            recent_meetings.append(load_from_api('v2/committee-meetings/%s' % committee.id,
-                fields=['id','title'])['result'])
 
     for committee in committees:
         if committee['ad_hoc'] is True:
@@ -327,9 +339,12 @@ def committees():
         else:
             committees_type = reg_committees
 
-        # Check if user is following committee
-        if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
-            committee['followed'] = True
+        if current_user.is_authenticated():
+            user_following=current_user.following
+
+            # Check if user is following committee
+            if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+                committee['followed'] = True
 
         if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
             committees_type['nat']['committees'].append(committee)
@@ -341,10 +356,8 @@ def committees():
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
-        adhoc_committees=adhoc_committees,
-        user_following=user_following,
-        recent_meetings=recent_meetings)
-
+        adhoc_committees=adhoc_committees
+    )
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')

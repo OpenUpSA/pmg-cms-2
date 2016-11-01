@@ -73,9 +73,7 @@ table {
 
   .navbar-form {
     width: 100%;
-    margin-bottom: 0px;
     border: none;
-
     margin-left: 0;
     margin-right: 0;
     padding-right: 0;
@@ -1307,6 +1305,9 @@ li.committee.item.list-megamenu {
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
+    -moz-box-shadow: 0 0 3px #ccc;
+    -webkit-box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #ccc;
 }
 
 .menu > ul > li > ul:before,
@@ -1323,7 +1324,6 @@ li.committee.item.list-megamenu {
     margin: 0;
     padding-bottom: 0;
     list-style: none;
-    background: none;
     float: left;
 }
 
@@ -1378,7 +1378,7 @@ li.committee.item.list-megamenu {
     padding: 1em 0;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 767px) {
     .menu-container {
         width: 100%;
     }
@@ -1432,10 +1432,12 @@ li.committee.item.list-megamenu {
 
 .megamenu-header-follow {
   width: 30%;
+  background-color: #ddd;
 }
 
 .megamenu-header-recent {
   width: 70%;
+  background-color: #ddd;
 }
 
 .megamenu-td {
@@ -1445,4 +1447,8 @@ li.committee.item.list-megamenu {
 .megamenu-h3 {
   padding-left: 8px;
   margin-top: 10px;
+}
+
+.navbar-form .input-group .input-group-btn {
+  width: 10%;
 }

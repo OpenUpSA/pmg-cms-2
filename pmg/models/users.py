@@ -154,14 +154,12 @@ class User(db.Model, UserMixin):
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.append(committee)
-        return self
 
     def unfollow_committee(self, committee):
         from ..models.resources import Committee
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.remove(committee)
-        return self
 
     @validates('organisation')
     def validate_organisation(self, key, org):

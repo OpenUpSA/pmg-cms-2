@@ -42,10 +42,6 @@ $yellow: #F5A623;
   font-family: $headings-font-family;
 }
 
-table {
-  font-size: $font-size-base;
-}
-
 // Navbar
 
 .navbar-pmg {
@@ -920,10 +916,6 @@ body.email_alerts {
   }
 }
 
-.cte-follow-committee {
-  display:inline-block;
-}
-
 .committee_meeting {
   .committee-meeting-content {
     .meeting-summary {
@@ -1145,6 +1137,27 @@ body.email_alerts {
 }
 
 @media print {
+  body {
+    font-size: 11px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 15px;
+  }
+
+  h4 {
+    font-size: 14px;
+  }
+
+  h5 {
+    font-size: 12px;
+
+  }
+
   a[href]:after {
     content: none;
   }
@@ -1302,11 +1315,10 @@ li.committee.item.list-megamenu {
     z-index: 99;
     left: 0;
     margin: 0;
+    margin-top: -3px;
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    -moz-box-shadow: 0 0 3px #ccc;
-    -webkit-box-shadow: 0 0 3px #ccc;
     box-shadow: 0 0 3px #ccc;
 }
 
@@ -1451,4 +1463,12 @@ li.committee.item.list-megamenu {
 
 .navbar-form .input-group .input-group-btn {
   width: 10%;
+}
+
+.cte-follow-committee {
+  display:inline-block;
+}
+
+.committee-megamenu-table tr {
+  font-size: 14px;
 }

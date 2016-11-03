@@ -273,9 +273,9 @@ def committee_detail(committee_id):
             filtered_meetings[meeting_year] = []
 
         filtered_meetings[meeting_year].append(meeting)
-
-    latest_year = max(y for y in filtered_meetings) if len(filtered_meetings) else None
-    earliest_year = min(y for y in filtered_meetings) if len(filtered_meetings) else None
+        
+    latest_year = max(y for y in filtered_meetings) if filtered_meetings else None
+    earliest_year = min(y for y in filtered_meetings) if filtered_meetings else None
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     has_meetings = len(all_meetings) > 0
 
@@ -340,7 +340,7 @@ def committees():
             committees_type = reg_committees
 
         if current_user.is_authenticated():
-            user_following=current_user.following
+            user_following = current_user.following
 
             # Check if user is following committee
             if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:

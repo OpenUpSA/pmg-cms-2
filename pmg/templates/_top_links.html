@@ -1,42 +1,42 @@
 <div class="menu-container hidden-xs">
-    <div class="menu">
-	    <ul>
-				<li><a href="/committees/">Committees</a>
-					{% if current_user.is_authenticated() %}
-					  <ul class="hidden-xs">
-					    <li class="megamenu-header-follow"><h3 class="megamenu-h3">Committees you follow</h3>
-					      <ul>
-					      </ul>
-					    </li>
-					    <li class="megamenu-header-recent"><h3 class="megamenu-h3">Recent meetings</h3>
-		    	      <ul>
-		    	      </ul>
-					    </li>
-					    <table class="table-striped">
-					    		{% for committee in user_following[:10] %}
-					    		<tr>
-						    		<td class="megamenu-td" style="width:30%"><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium" style=""><i class="fa fa-key"></i> Premium</span>{% endif %}</td>
-						    		{% if committee.recent_meeting %}
-						    		<td class="megamenu-td" style="width:70%"><div><a href="{{ url_for('committee_meeting', event_id=committee.recent_meeting.id) }}">{{ committee.recent_meeting.title }}</a></div><div><small>{{ committee.recent_meeting.date | pretty_date }}</small></div></td>
-						    		{% else %}
-						    		<td class="megamenu-td" style="width:70%">No meetings for this committee</td>
-						    		{% endif %}
-						    	</tr>
-						    	{% endfor %}
-						    	<tr>
-						    		<td class="megamenu-td"><h4><a class="btn btn-primary" href="/committees"><i class="fa fa-fw fa-list" aria-hidden="true"></i> Manage subscriptions</a></td>
-						    		<td></td>
-						    	</tr>
-					    </table>
-					  </ul>
-				  {% endif %}
-				</li>
-				<li><a href="/members">MPs</a></li>
-				<li><a href="/bills">Bills</a></li>
-				<li><a href="/question_replies">Questions and Replies</a></li>
-				<li><a href="/calls-for-comments">Calls for Comments</a></li>
-			</ul>
-    </div>
+  <div class="menu">
+    <ul>
+			<li><a href="/committees/">Committees</a>
+				{% if current_user.is_authenticated() %}
+				  <ul class="hidden-xs">
+				    <li class="megamenu-header-follow"><h3 class="megamenu-h3">Committees you follow</h3>
+				      <ul>
+				      </ul>
+				    </li>
+				    <li class="megamenu-header-recent"><h3 class="megamenu-h3">Latest meeting</h3>
+	    	      <ul>
+	    	      </ul>
+				    </li>
+				    <table class="table-striped committee-megamenu-table">
+				    		{% for committee in user_following[:10] %}
+				    		<tr>
+					    		<td class="megamenu-td" style="width:30%"><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium" style=""><i class="fa fa-key"></i> Premium</span>{% endif %}</td>
+					    		{% if committee.recent_meeting %}
+					    		<td class="megamenu-td" style="width:70%"><div><a href="{{ url_for('committee_meeting', event_id=committee.recent_meeting.id) }}">{{ committee.recent_meeting.title }}</a></div><div><small>{{ committee.recent_meeting.date | pretty_date }}</small></div></td>
+					    		{% else %}
+					    		<td class="megamenu-td" style="width:70%">No meetings for this committee</td>
+					    		{% endif %}
+					    	</tr>
+					    	{% endfor %}
+					    	<tr>
+					    		<td class="megamenu-td"><h4><a class="btn btn-primary" href="/committees"><i class="fa fa-fw fa-list" aria-hidden="true"></i> Manage subscriptions</a></td>
+					    		<td></td>
+					    	</tr>
+				    </table>
+				  </ul>
+			  {% endif %}
+			</li>
+			<li><a href="/members">MPs</a></li>
+			<li><a href="/bills">Bills</a></li>
+			<li><a href="/question_replies">Questions and Replies</a></li>
+			<li><a href="/calls-for-comments">Calls for Comments</a></li>
+		</ul>
+  </div>
 </div>
 
 <li class="hidden-sm hidden-md hidden-lg"><a href="/committees/">Committees</a></li>

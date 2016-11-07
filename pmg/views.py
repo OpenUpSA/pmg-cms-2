@@ -89,7 +89,7 @@ def inject_user_following():
             meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
                 fields=['id','title','date'])['results']
 
-            if len(meetings):
+            if meetings:
                 setattr(committee, 'recent_meeting', meetings[0])
             else:
                 setattr(committee, 'recent_meeting', None)

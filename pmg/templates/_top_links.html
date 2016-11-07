@@ -12,14 +12,14 @@
 	    	      <ul>
 	    	      </ul>
 				    </li>
-				    <table class="table-striped committee-megamenu-table">
+				    <table class="committee-megamenu-table table-striped">
 				    		{% for committee in user_following[:10] %}
 				    		<tr>
-					    		<td class="megamenu-td" style="width:30%"><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium" style=""><i class="fa fa-key"></i> Premium</span>{% endif %}</td>
+					    		<td class="megamenu-td megamenu-cte"><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium" style=""><i class="fa fa-key"></i> Premium</span>{% endif %}</td>
 					    		{% if committee.recent_meeting %}
-					    		<td class="megamenu-td" style="width:70%"><div><a href="{{ url_for('committee_meeting', event_id=committee.recent_meeting.id) }}">{{ committee.recent_meeting.title }}</a></div><div><small>{{ committee.recent_meeting.date | pretty_date }}</small></div></td>
+					    		<td class="megamenu-td megamenu-meeting"><div><a href="{{ url_for('committee_meeting', event_id=committee.recent_meeting.id) }}">{{ committee.recent_meeting.title }}</a></div><div><small>{{ committee.recent_meeting.date | pretty_date }}</small></div></td>
 					    		{% else %}
-					    		<td class="megamenu-td" style="width:70%">No meetings for this committee</td>
+					    		<td class="megamenu-td megamenu-meeting">No meetings for this committee</td>
 					    		{% endif %}
 					    	</tr>
 					    	{% endfor %}

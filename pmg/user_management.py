@@ -62,13 +62,13 @@ def user_committee_alert(committee_id):
         ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
 
-    return redirect(request.values.get('next', '/'))
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
 def user_follow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
         u = current_user.follow_committee(Committee.query.get(committee_id))
-
+        
         if u is not None:
             db.session.add(u)
             db.session.commit()
@@ -76,7 +76,7 @@ def user_follow_committee(committee_id):
         else:
             flash('Committee %s cannot be followed.' % committee_id)
 
-    return redirect(request.values.get('next', '/'))
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
 def user_unfollow_committee(committee_id):
@@ -90,7 +90,7 @@ def user_unfollow_committee(committee_id):
         else:
             flash('Committee %s cannot be followed.' % committee_id)
 
-    return redirect(request.values.get('next', '/'))
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])
 def committee_subscriptions():

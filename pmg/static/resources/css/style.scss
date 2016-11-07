@@ -1204,7 +1204,7 @@ body.email_alerts {
   }
 }
 
-input[type=checkbox]:not(old) {
+.cte-follow-list input[type=checkbox]:not(old) {
   width: 28px;
   height: 24px;
   margin: 0;
@@ -1212,28 +1212,28 @@ input[type=checkbox]:not(old) {
   opacity: 0;
 }
 
-input[type=checkbox]:not(old) + label {
+.cte-follow-list input[type=checkbox]:not(old) + label {
   padding-left: 28px;
   background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
   line-height: 24px;
   font-weight: normal;
 }
 
-input[type=checkbox]:not(old):checked + label{
+.cte-follow-list input[type=checkbox]:not(old):checked + label{
   background: url('/static/resources/images/checked.svg') no-repeat 0 0;
 }
 
-form {
+.cte-follow-list form {
   margin-bottom: 0;
 }
 
-label {
+.cte-follow-list label {
   margin-bottom: 0;
   margin-top: -20px;
   display: block;
 }
 
-li.committee.item {
+.cte-follow-list li.committee.item {
   padding-bottom: 10px;
   margin: 0;    
 }
@@ -1471,4 +1471,12 @@ li.committee.item.list-megamenu {
 
 .committee-megamenu-table tr {
   font-size: 14px;
+}
+
+.megamenu-cte {
+  width: 30%;
+}
+
+.megamenu-meeting {
+  width: 70%;
 }

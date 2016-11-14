@@ -78,25 +78,26 @@ def classify_attachments(files):
 
 @app.context_processor
 def inject_user_following():
-    user_following = []
-    recent_meetings = []
+    default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]
 
     if current_user.is_authenticated():
         # Append user-followed committees if logged in
         user_following = current_user.following
         recent_meetings = []
+        cte_meetings = []
 
         for committee in user_following:
-            meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
-                fields=['id','title','date'])['results']
+            cte_meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
+                fields=['id','title','date','committee_id'])['results']
 
-            recent_meetings.extend(meetings)
+            recent_meetings.extend(cte_meetings)
 
-        sorted(meetings,key=lambda meeting: meeting['date'])
-        user_following.sort(key=lambda x: x.name, reverse=True)
-        default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date'])['results'][:10]
+        sorted(recent_meetings,key=lambda meeting: meeting['date'])
+        user_following.sort(key=lambda x: x.name)
 
-    return dict(user_following=user_following, recent_meetings=recent_meetings[:10],default_meetings=default_meetings)
+        return dict(user_following=user_following, recent_meetings=recent_meetings[:10],default_meetings=default_meetings)
+    else:
+        return dict(default_meetings=default_meetings)
 
 
 

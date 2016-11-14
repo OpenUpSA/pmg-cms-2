@@ -25,6 +25,9 @@ var $cteSelectTabNav = $('.cte-select-tab-nav');
 // Lunr elements
 var $lunrDict = $('.lunr-dict');
 var $lunrDictItems = null;
+// megaMenu
+var $megaMenuFollowing = $('.top-links .committee-megamenu-table');
+var $megaMenuFollowingMobile = $('.top-links-mobile .committee-megamenu-table');
 
 // Set up lunr index for filtering
 var index = null;
@@ -220,7 +223,7 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
     var id = $targetItem.attr('data-id');
     var $listItem = $('.cte-items [data-id=' + id + ']');
     var $listItemForm = $listItem.find('form');
-    var $followedItem = $('.cte-list-user-following [data-id=' + id + ']');
+    var $followedItem = $('[data-id=' + id + '][data-follow-list="true"]');
     var data = $listItemForm.serialize();
 
     $.post($targetItem.find('form').attr('action'), data, function(res) {
@@ -233,7 +236,27 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
       } else {
         $listItem.attr('data-following','true');
         $listItemForm.attr('action','/user/unfollow/committee/' + id);
-        $cteListUserFollowing.append($listItem.clone());
+        $cteListUserFollowing.append($listItem.clone().attr('data-follow-list','true'));
+
+        var $premium = $listItem.find('.premium').length ? '<span class="premium"><i class="fa fa-key"></i> Premium</span>' : '';
+        var $megaMenuItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + $listItem.find('.name').html() + '</a>' + $premium + '</li>');
+        var $megaMenuItems = $megaMenuFollowing.find('li').append($megaMenuItem);
+
+        $megaMenuItems.sort(function(a,b) {
+          if($(a).find('a').html() < $(b).find('a').html()) {
+            return -1;
+          } else {
+            return 1;
+          }
+
+          return 0;
+        });
+
+        var $items = $megaMenuItems.detach();
+
+        $megaMenuFollowing.append($items);
+        $megaMenuFollowingMobile.empty()
+          .append($items);
       }
 
       if($cteListUserFollowing.find('li').length) {

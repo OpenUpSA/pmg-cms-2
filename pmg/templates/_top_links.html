@@ -1,53 +1,65 @@
-<div class="menu-container hidden-xs">
-  <div class="menu">
-    <ul>
-			<li><a class="committees-menulink" href="/committees/">Committees</a>
-				{% if current_user.is_authenticated() %}
-				  <ul class="hidden-xs">
-				    <li class="megamenu-header-follow"><h3 class="megamenu-h3">Committees you follow</h3>
-				      <ul>
-				      </ul>
-				    </li>
-				    <li class="megamenu-header-recent"><h3 class="megamenu-h3">Latest meeting</h3>
-	    	      <ul>
-	    	      </ul>
-				    </li>
-				    <table class="committee-megamenu-table">
-				    		{% for committee in user_following[:10] %}
-				    		<tr>
-					    		<td class="megamenu-td megamenu-cte"><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium" style=""><i class="fa fa-key"></i> Premium</span>{% endif %}</td>
-					    	</tr>
-					    	{% endfor %}
-					    	<tr>
-					    		<td class="megamenu-td"><h4><a class="btn btn-primary" href="/committees"><i class="fa fa-fw fa-list" aria-hidden="true"></i> Manage the committees you follow</a></td>
-					    		<td></td>
-					    	</tr>
-				    </table>
-            <table class="cte-recent-meetings-table">
-              {% if current_user.is_authenticated() %}
+<div class="menu">
+  <ul>
+		<li>
+      <a class="committees-menulink" href="/committees/">Committees</a>
+			{% if current_user.is_authenticated() %}
+			  <ul class="hidden-xs megamenu">
+          <div class="row">
+            <div class="col-xs-6">
+              <h3 class="megamenu-h3">Committees you follow</h3>
+              <ul class="committee-megamenu-table">
+  			    		{% for committee in user_following[:10] %}
+  			    		<li data-id="{{ committee.id }}" data-follow-list="true">
+                  <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"><i class="fa fa-key"></i> Premium</span>{% endif %}
+  				    	</li>
+  				    	{% endfor %}
+  				    </ul>
+            </div>
+            {% if current_user.is_authenticated() %}
+            <div class="col-xs-6">
+              <h3 class="megamenu-h3">Latest meeting</h3>
+              <ul class="cte-recent-meetings-table">
                 {% for meeting in recent_meetings %}
-                <tr><td class="megamenu-td megamenu-meeting"><div><a href="">{{ meeting.title }}</a></div><div><small>{{ meeting.date | pretty_date }}</small></div></td></tr>
+                <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
+                  <p>
+                    <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a>
+                  </p>
+                  <p>
+                    <small>{{ meeting.date | pretty_date }}</small>
+                  </p>
+                </li>
                 {% endfor %}
-              {% endif %}
-            </table>
-            <table class="cte-default-meetings-table">
-              {% for meeting in default_meetings %}
-              <tr><td class="megamenu-td megamenu-meeting"><div><a href="">{{ meeting.title }}</a></div><div><small>{{ meeting.date | pretty_date }}</small></div></td></tr>
-              {% endfor %}
-            </table>
-				  </ul>
-			  {% endif %}
-			</li>
-			<li><a href="/members">MPs</a></li>
-			<li><a href="/bills">Bills</a></li>
-			<li><a href="/question_replies">Questions and Replies</a></li>
-			<li><a href="/calls-for-comments">Calls for Comments</a></li>
-		</ul>
-  </div>
+              </ul>
+            </div>
+            {% endif %}
+            {% if not current_user.is_authenticated() or recent_meetings | length == 0 %}
+              <div class="col-xs-6">
+            {% else %}
+              <div class="col-xs-6 hidden">
+            {% endif %}
+                <ul class="cte-default-meetings-table">
+                {% for meeting in default_meetings %}
+                <li>
+                  <p>
+                    <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a>
+                  </p>
+                  <p>
+                    <small>{{ meeting.date | pretty_date }}</small>
+                  </p>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          <h4>
+            <a class="btn btn-primary" href="/committees"><i class="fa fa-fw fa-list" aria-hidden="true"></i> Manage the committees you follow</a>
+          </h4>
+			  </ul>
+		  {% endif %}
+		</li>
+		<li><a href="/members">MPs</a></li>
+		<li><a href="/bills">Bills</a></li>
+		<li><a href="/question_replies">Questions and Replies</a></li>
+		<li><a href="/calls-for-comments">Calls for Comments</a></li>
+	</ul>
 </div>
-
-<li class="hidden-sm hidden-md hidden-lg"><a href="/committees/">Committees</a></li>
-<li class="hidden-sm hidden-md hidden-lg"><a href="/members">MPs</a></li>
-<li class="hidden-sm hidden-md hidden-lg"><a href="/bills">Bills</a></li>
-<li class="hidden-sm hidden-md hidden-lg"><a href="/question_replies">Questions and Replies</a></li>
-<li class="hidden-sm hidden-md hidden-lg"><a href="/calls-for-comments">Calls for Comments</a></li>

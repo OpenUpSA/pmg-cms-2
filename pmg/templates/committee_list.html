@@ -70,14 +70,16 @@
     <div class="active tab-pane row cte-list-user-following" id="user-following">
       <ul class="col-xs-12">
         {% for committee in user_following %}
-          <li class="committee item" data-id="{{ committee.id }}" data-following="true">
+          <li class="committee item" data-id="{{ committee.id }}" data-following="true" data-follow-list="true">
             <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <input type="hidden" name="next" value="{{ request.url }}">
-              <input type="checkbox" checked /><label><a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-              {% if committee.premium %}
+              <input type="checkbox" checked />
+              <label>
+                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+                {% if committee.premium %}
                 <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
-              {% endif %}
+                {% endif %}
               </label>
             </form>
           </li>

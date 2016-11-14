@@ -82,24 +82,21 @@ def inject_user_following():
     recent_meetings = []
 
     if current_user.is_authenticated():
-
         # Append user-followed committees if logged in
         user_following = current_user.following
+        recent_meetings = []
 
         for committee in user_following:
             meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
                 fields=['id','title','date'])['results']
 
-            if meetings:
-                setattr(committee, 'recent_meeting', meetings[0])
-            else:
-                setattr(committee, 'recent_meeting', None)
+            recent_meetings.extend(meetings)
 
-        user_following.sort(key=lambda x: x.recent_meeting, reverse=True)
+        sorted(meetings,key=lambda meeting: meeting['date'])
+        user_following.sort(key=lambda x: x.name, reverse=True)
+        default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date'])['results'][:10]
 
-        recent_meetings= load_from_api('v2/committee-meetings/', fields=['id','title','date'])['results'][:10]
-
-    return dict(user_following=user_following, recent_meetings=recent_meetings)
+    return dict(user_following=user_following, recent_meetings=recent_meetings[:10],default_meetings=default_meetings)
 
 
 
@@ -278,7 +275,7 @@ def committee_detail(committee_id):
             filtered_meetings[meeting_year] = []
 
         filtered_meetings[meeting_year].append(meeting)
-        
+
     latest_year = max(y for y in filtered_meetings) if filtered_meetings else None
     earliest_year = min(y for y in filtered_meetings) if filtered_meetings else None
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
@@ -351,12 +348,13 @@ def committees():
             if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
                 committee['followed'] = True
 
-        if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
-            committees_type['nat']['committees'].append(committee)
-        elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
-            committees_type['ncp']['committees'].append(committee)
-        elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
-            committees_type['jnt']['committees'].append(committee)
+        if committee['house']:
+            if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
+                committees_type['nat']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
+                committees_type['ncp']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
+                committees_type['jnt']['committees'].append(committee)
 
     return render_template(
         'committee_list.html',

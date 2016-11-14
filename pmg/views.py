@@ -79,6 +79,7 @@ def classify_attachments(files):
 @app.context_processor
 def inject_user_following():
     user_following = []
+    recent_meetings = []
 
     if current_user.is_authenticated():
 
@@ -96,7 +97,11 @@ def inject_user_following():
 
         user_following.sort(key=lambda x: x.recent_meeting, reverse=True)
 
-    return dict(user_following=user_following)
+        recent_meetings= load_from_api('v2/committee-meetings/', fields=['id','title','date'])['results'][:10]
+
+    return dict(user_following=user_following, recent_meetings=recent_meetings)
+
+
 
 @app.route('/')
 def index():

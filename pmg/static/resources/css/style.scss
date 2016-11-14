@@ -1302,14 +1302,10 @@ li.committee.item.list-megamenu {
     display: block;
 }
 
-.menu > ul > li:hover {
-    background: #f0f0f0;
-}
-
 .menu > ul > li > ul {
     display: none;
-    width: 100%;
-    background: #f0f0f0;
+    width: 90%;
+    background: #fff;
     padding: 0;
     position: absolute;
     z-index: 99;
@@ -1319,7 +1315,7 @@ li.committee.item.list-megamenu {
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    box-shadow: 0 0 3px #ccc;
+    box-shadow: 0 0 3px #666;
 }
 
 .menu > ul > li > ul:before,
@@ -1444,12 +1440,14 @@ li.committee.item.list-megamenu {
 
 .megamenu-header-follow {
   width: 30%;
-  background-color: #ddd;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
 }
 
 .megamenu-header-recent {
   width: 70%;
-  background-color: #ddd;
+  background-color: #fff;
+  border-bottom: 1px solid #ccc;
 }
 
 .megamenu-td {
@@ -1479,4 +1477,9 @@ li.committee.item.list-megamenu {
 
 .megamenu-meeting {
   width: 70%;
+}
+
+.committees-menulink:hover {
+  z-index: 1000;
+  background-color: #fff;
 }

@@ -17,6 +17,8 @@
     "assets/fonts/bootstrap/glyphicons-halflings-regular.woff",
     "assets/fonts/bootstrap/glyphicons-halflings-regular.woff2",
     "assets/javascripts/bootstrap.js"
+    "/static/resources/javascript/megamenu.js"
+
   ],
   "keywords": [
     "twbs",

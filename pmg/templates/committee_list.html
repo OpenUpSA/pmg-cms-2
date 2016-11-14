@@ -102,37 +102,29 @@
         {% for committee in column %}
           {% if committee.followed %}
           <li class="committee item" data-id="{{ committee.id }}" data-following="true">
+            <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
           {% else %}
           <li class="committee item" data-id="{{ committee.id }}">
+            <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
           {% endif %}
-            {% if current_user.is_authenticated() %}
-              {% if committee.followed %}
-              <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
-              {% else %}
-              <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
-              {% endif %}
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <input type="hidden" name="next" value="{{ request.url }}">
-                {% if committee.followed %}
-                <input type="checkbox" checked />
-                  <label>
-                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-                    {% if committee.premium %}
-                      <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
+                    {% if current_user.is_authenticated() %}
+                    {% if committee.followed %}
+                    <input type="checkbox" checked />
+                    {% else %}
+                    <input type="checkbox" />
                     {% endif %}
-                  </label>
-                {% else %}
-                <input type="checkbox" />
-                  <label>
-                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-                    {% if committee.premium %}
-                      <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
                     {% endif %}
-                  </label>
+                    <label>
+                      <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+                      {% if committee.premium %}
+                        <span class="premium exclude"><i class="fa fa-key"></i> <span class="text">Premium</span></span>
+                      {% endif %}
+                    </label>
+                {% if current_user.is_authenticated() %}
+                </form>
                 {% endif %}
-              {% endif %}
-
-            </form>
           </li>
         {% endfor %}
       </ul>
@@ -151,7 +143,6 @@
               {% else %}
               <li class="committee item" data-id="{{ committee.id }}">
               {% endif %}
-                {% if current_user.is_authenticated() %}
                   {% if committee.followed %}
                   <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
                   {% else %}
@@ -159,12 +150,14 @@
                   {% endif %}
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="next" value="{{ request.url }}">
+                    {% if current_user.is_authenticated() %}
                     {% if committee.followed %}
-                    <input type="checkbox" checked /><label><a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a></label>
+                    <input type="checkbox" checked />
                     {% else %}
-                    <input type="checkbox" /><label><a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a></label>
+                    <input type="checkbox" />
                     {% endif %}
-                  {% endif %}
+                    {% endif %}
+                    <label><a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a></label>
                 </form>
                 {% if committee.premium %}
                   <span class="premium exclude"><i class="fa fa-key"></i> <span class="text">Premium</span></span>

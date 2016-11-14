@@ -69,9 +69,7 @@ $yellow: #F5A623;
 
   .navbar-form {
     width: 100%;
-    margin-bottom: 0px;
     border: none;
-
     margin-left: 0;
     margin-right: 0;
     padding-right: 0;
@@ -107,7 +105,6 @@ nav.top-links {
   background-color: $grey-light;
 
   ul {
-    padding: 10px 0px;
     margin-bottom: 0px;
     line-height: 1.5;
   }
@@ -1205,4 +1202,281 @@ body.email_alerts {
   .header-print {
     margin-left: 15px;
   }
+}
+
+.cte-follow-list input[type=checkbox]:not(old) {
+  width: 28px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+}
+
+.cte-follow-list input[type=checkbox]:not(old) + label {
+  padding-left: 28px;
+  background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
+  line-height: 24px;
+  font-weight: normal;
+}
+
+.cte-follow-list input[type=checkbox]:not(old):checked + label{
+  background: url('/static/resources/images/checked.svg') no-repeat 0 0;
+}
+
+.cte-follow-list form {
+  margin-bottom: 0;
+}
+
+.cte-follow-list label {
+  margin-bottom: 0;
+  margin-top: -20px;
+  display: block;
+}
+
+.cte-follow-list li.committee.item {
+  padding-bottom: 10px;
+  margin: 0;
+}
+
+li.committee.item.list-megamenu {
+  padding-bottom: 0;
+}
+
+.menu-container {
+      margin: 0 auto;
+    background: #efefef;
+}
+
+.menu-mobile {
+    display: none;
+    padding: 20px;
+}
+
+.menu-mobile:after {
+    font-size: 2.5rem;
+    padding: 0;
+    float: right;
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(-25%);
+    -ms-transform: translateY(-25%);
+    transform: translateY(-25%);
+}
+
+.menu-dropdown-icon:before {
+    display: none;
+    cursor: pointer;
+    float: right;
+    background: #fff;
+    color: #333;
+}
+
+.menu > ul {
+    margin: 0 auto;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    position: relative;
+    /* IF .menu position=relative -> ul = container width, ELSE ul = 100% width */
+    box-sizing: border-box;
+}
+
+.menu > ul:before,
+.menu > ul:after {
+    content: "";
+    display: table;
+}
+
+.menu > ul:after {
+    clear: both;
+}
+
+.menu > ul > li {
+    float: left;
+    background: #efefef;
+    padding: 0;
+    margin: 0;
+}
+
+.menu > ul > li a {
+    display: block;
+}
+
+.menu > ul > li:hover {
+    background: #f0f0f0;
+}
+
+.menu > ul > li > ul {
+    display: none;
+    width: 100%;
+    background: #f0f0f0;
+    padding: 0;
+    position: absolute;
+    z-index: 99;
+    left: 0;
+    margin: 0;
+    margin-top: -3px;
+    list-style: none;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 3px #ccc;
+}
+
+.menu > ul > li > ul:before,
+.menu > ul > li > ul:after {
+    content: "";
+    display: table;
+}
+
+.menu > ul > li > ul:after {
+    clear: both;
+}
+
+.menu > ul > li > ul > li {
+    margin: 0;
+    padding-bottom: 0;
+    list-style: none;
+    float: left;
+}
+
+.menu > ul > li > ul > li a {
+    padding: .2em 0;
+    width: 95%;
+    display: block;
+    border-bottom: 1px solid #ccc;
+}
+
+.menu > ul > li > ul > li > ul {
+    display: block;
+    padding: 0;
+    margin: 10px 0 0;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.menu > ul > li > ul > li > ul:before,
+.menu > ul > li > ul > li > ul:after {
+    content: "";
+    display: table;
+}
+
+.menu > ul > li > ul > li > ul:after {
+    clear: both;
+}
+
+.menu > ul > li > ul > li > ul > li {
+    float: left;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.menu > ul > li > ul > li > ul > li a {
+    border: 0;
+}
+
+.menu > ul > li > ul.normal-sub {
+    width: 300px;
+    left: auto;
+    padding: 2px 20px;
+}
+
+.menu > ul > li > ul.normal-sub > li {
+    width: 100%;
+}
+
+.menu > ul > li > ul.normal-sub > li a {
+    border: 0;
+    padding: 1em 0;
+}
+
+@media only screen and (max-width: 767px) {
+    .menu-container {
+        width: 100%;
+    }
+    .menu-mobile {
+        display: block;
+    }
+    .menu-dropdown-icon:before {
+        display: block;
+    }
+    .menu > ul {
+        display: none;
+    }
+    .menu > ul > li {
+        width: 100%;
+        float: none;
+        display: block;
+    }
+    .menu > ul > li a {
+        padding: 1.5em;
+        width: 100%;
+        display: block;
+    }
+    .menu > ul > li > ul {
+        position: relative;
+    }
+    .menu > ul > li > ul.normal-sub {
+        width: 100%;
+    }
+    .menu > ul > li > ul > li {
+        float: none;
+        width: 100%;
+        margin-top: 20px;
+    }
+    .menu > ul > li > ul > li:first-child {
+        margin: 0;
+    }
+    .menu > ul > li > ul > li > ul {
+        position: relative;
+    }
+    .menu > ul > li > ul > li > ul > li {
+        float: none;
+    }
+    .menu .show-on-mobile {
+        display: block;
+    }
+}
+
+.menu > ul > li > a {
+  padding: 10px;
+}
+
+.megamenu-header-follow {
+  width: 30%;
+  background-color: #ddd;
+}
+
+.megamenu-header-recent {
+  width: 70%;
+  background-color: #ddd;
+}
+
+.megamenu-td {
+  padding: 8px;
+}
+
+.megamenu-h3 {
+  padding-left: 8px;
+  margin-top: 10px;
+}
+
+.navbar-form .input-group .input-group-btn {
+  width: 10%;
+}
+
+.cte-follow-committee {
+  display:inline-block;
+}
+
+.committee-megamenu-table tr {
+  font-size: 14px;
+}
+
+.megamenu-cte {
+  width: 30%;
+}
+
+.megamenu-meeting {
+  width: 70%;
 }

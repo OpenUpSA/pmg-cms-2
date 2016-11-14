@@ -5,6 +5,9 @@ var $cteListItems = $('.cte-list .tab-pane.active .committee');
 var $cteListSearchInput = $('.cte-list-search input');
 var $cteListSearchResults = $('.cte-list-search-results');
 var $cteListNavItem = $('.cte-list-nav a, .cte-list-nav-mobile option');
+var $cteListUserFollowing = $('.cte-list-user-following ul');
+var $cteListFollowCommittee = $('.cte-follow-committee');
+var $noCteFollowedMsg = $('.no-committees-followed');
 // Committee details DOM
 var $cteDtlNavItem = $('.cte-dtl-meetings-nav a, .cte-dtl-meetings-nav-mobile option');
 var $cteDtlNavMobileSelect = $('.cte-dtl-meetings-nav-mobile select');
@@ -211,6 +214,35 @@ $cteListNavItem.on('click', function(e) {
 $cteListSearchInput.on('keyup', function(e) {
   searchIndex($(e.target).val(), $cteList, $cteListSearchResults, { twoCol: true });
 });
+
+$cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) {
+    var $targetItem = $(e.target).closest('li');
+    var id = $targetItem.attr('data-id');
+    var $listItem = $('.cte-items [data-id=' + id + ']');
+    var $listItemForm = $listItem.find('form');
+    var $followedItem = $('.cte-list-user-following [data-id=' + id + ']');
+    var data = $listItemForm.serialize();
+
+    $.post($targetItem.find('form').attr('action'), data, function(res) {
+      if(!!$targetItem.attr('data-following')) {
+        $followedItem.remove();
+        $listItem.removeAttr('data-following');
+        $listItemForm.attr('action','/user/follow/committee/' + id)
+          .find('input[type=checkbox]')
+          .prop('checked',false);
+      } else {
+        $listItem.attr('data-following','true');
+        $listItemForm.attr('action','/user/unfollow/committee/' + id);
+        $cteListUserFollowing.append($listItem.clone());
+      }
+
+      if($cteListUserFollowing.find('li').length) {
+        $noCteFollowedMsg.hide();
+      } else {
+        $noCteFollowedMsg.show();
+      }
+    });
+  });
 
 // Committee detail page handlers
 $cteDtlNavItem.on('click', indexItems);

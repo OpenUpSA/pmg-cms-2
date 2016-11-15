@@ -19,7 +19,7 @@ $(document).ready(function () {
 
     $(".menu > ul > li").hover(function (e) {
         if ($(window).width() > 943) {
-            $(this).children("ul").stop(true, false).fadeToggle(150);
+            $(this).children("ul").stop(true, false).fadeToggle();
             e.preventDefault();
         }
     });
@@ -27,7 +27,7 @@ $(document).ready(function () {
 
     $(".menu > ul > li").click(function () {
         if ($(window).width() <= 943) {
-            $(this).children("ul").fadeToggle(150);
+            $(this).children("ul").fadeToggle();
         }
     });
     //If width is less or equal to 943px dropdowns are displayed on click (thanks Aman Jain from stackoverflow)
@@ -37,5 +37,14 @@ $(document).ready(function () {
         e.preventDefault();
     });
     //when clicked on mobile-menu, normal menu is shown as a list, classic rwd menu story (thanks mwl from stackoverflow)
+
+
+    $(".megamenu").mouseenter(function() {
+      $(".committees-menulink").addClass("committees-menulink-hover");
+    });
+
+    $(".megamenu").mouseleave(function() {
+      $(".committees-menulink").removeClass("committees-menulink-hover");
+    });
 
 });

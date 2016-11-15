@@ -258,20 +258,8 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
           }
         });
 
-      /*  $megaMenuItems.sort(function(a,b) {
-          if($(a).find('a').html() < $(b).find('a').html()) {
-            return -1;
-          } else {
-            return 1;
-          }
-
-          return 0;
-        });
-
-        var $items = $megaMenuItems.detach();
-
         $megaMenuFollowingMobile.empty()
-          .append($items);*/
+          .append($megaMenuItems.clone());
       }
 
       if($cteListUserFollowing.find('li').length) {

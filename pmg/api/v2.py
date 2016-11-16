@@ -1,4 +1,5 @@
 from flask import request, Blueprint, abort
+from flask.ext.security import current_user
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 
@@ -102,7 +103,6 @@ def committee_meetings(id=None):
         return api_get_item(id, CommitteeMeeting, CommitteeMeetingSchema)
     else:
         return api_list_items(CommitteeMeeting.list(), CommitteeMeetingSchema)
-
 
 @api.route('/committee-meetings/<int:id>/attendance')
 def committee_meeting_attendance(id):

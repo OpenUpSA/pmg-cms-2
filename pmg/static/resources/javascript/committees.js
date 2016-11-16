@@ -26,8 +26,16 @@ var $cteSelectTabNav = $('.cte-select-tab-nav');
 var $lunrDict = $('.lunr-dict');
 var $lunrDictItems = null;
 // megaMenu
-var $megaMenuFollowing = $('.top-links .committee-megamenu-table');
-var $megaMenuFollowingMobile = $('.top-links-mobile .committee-megamenu-table');
+var $mmCommittees = $('.top-links .mm-committees');
+var $mmCommitteesMobile = $('.top-links-mobile .mm-committees');
+var $mmCommitteesList = $('.top-links .mm-committees-list');
+var $mmCommitteesMobileList = $('.top-links-mobile .mm-committees-list');
+var $mmRecentMtngs = $('.mm-recent-meetings');
+var $mmRecentMtngsList = $('.mm-recent-meetings-list');
+var $mmDefaultCtes = $('.mm-default-committees');
+var $mmDefaultCtesList = $('.mm-default-committees-list');
+var $mmDefaultMtngs = $('.mm-default-meetings');
+var $mmDefaultMtngsList = $('.mm-default-meetings-list');
 
 // Set up lunr index for filtering
 var index = null;
@@ -233,6 +241,12 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
         $listItemForm.attr('action','/user/follow/committee/' + id)
           .find('input[type=checkbox]')
           .prop('checked',false);
+
+        if(!$mmCommitteesList.find('li').length) {
+          $mmDefaultCtes.removeClass('hidden');
+          $mmCommittees.addClass('hidden');
+          $mmCommitteesMobile.addClass('hidden');
+        }
       } else {
         $listItem.attr('data-following','true');
         $listItemForm.attr('action','/user/unfollow/committee/' + id);
@@ -241,26 +255,54 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
         // Attach to megamenu
         var name = $listItem.find('.name').html();
         var $premium = $listItem.find('.premium').length ? '<span class="premium"><i class="fa fa-key"></i> Premium</span>' : '';
-        var $megaMenuItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + name + '</a>' + $premium + '</li>');
-        var $megaMenuItems = $megaMenuFollowing.find('li');
+        var $mmItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + name + '</a>' + $premium + '</li>');
+        var $mmItems = $mmCommitteesList.find('li');
 
-        $megaMenuItems.each(function(i) {
-          var thisName = $(this).find('a').html();
-          var nextName = $($megaMenuItems[i + 1]).find('a').html();
-          console.log(name,thisName,nextName,name < thisName,name < nextName);
-          if(name <= thisName) {
-            console.log('true');
-            $megaMenuItem.insertBefore($megaMenuItems[i]);
-            return false;
-          } else if((thisName < name && nextName >= name) || i == $megaMenuItems.length - 1) {
-            $megaMenuItem.insertAfter($megaMenuItems[i]);
-            return false;
-          }
-        });
+        if(!!$mmItems.length) {
+          $mmItems.each(function(i) {
+            var thisName = $(this).find('a').html();
+            var nextName = $($mmItems[i + 1]).find('a').html();
 
-        $megaMenuFollowingMobile.empty()
-          .append($megaMenuItems.clone());
+            if(name <= thisName) {
+              $mmItem.insertBefore($mmItems[i]);
+              return false;
+            } else if((thisName < name && nextName >= name) || i == $mmItems.length - 1) {
+              $mmItem.insertAfter($mmItems[i]);
+              return false;
+            }
+          });
+        } else {
+          $mmCommitteesList.append($mmItem);
+        }
+
+        $mmCommitteesMobileList.empty()
+          .append($mmItems.clone());
+
+        $mmDefaultCtes.addClass('hidden');
+        $mmCommittees.removeClass('hidden');
+        $mmCommitteesMobile.removeClass('hidden');
       }
+
+      $.get('/user/followed/committee/meetings/', function(result) {
+        var meetings = result.data;
+        var months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Dec'];
+
+        if(!!meetings.length) {
+          $mmRecentMtngsList.empty();
+          $mmRecentMtngs.removeClass('hidden');
+          $mmDefaultMtngs.addClass('hidden');
+
+          meetings.forEach(function(meeting) {
+            var date = new Date(meeting.date);
+            var dateString = date.getDay() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+
+            $mmRecentMtngsList.append('<li><p><a href="/committee-meeting/' + meeting.id + '">' + meeting.title  + '</a></p><p><small>' + dateString  + '</small></p></li>')
+          });
+        } else {
+          $mmRecentMtngs.addClass('hidden');
+          $mmDefaultMtngs.removeClass('hidden');
+        }
+      }, 'json');
 
       if($cteListUserFollowing.find('li').length) {
         $noCteFollowedMsg.hide();

@@ -227,6 +227,7 @@ $cteListSearchInput.on('keyup', function(e) {
 });
 
 $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) {
+    $(e.target).prop('disabled',true);
     var $targetItem = $(e.target).closest('li');
     var id = $targetItem.attr('data-id');
     var $listItem = $('.cte-items [data-id=' + id + ']');

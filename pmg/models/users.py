@@ -2,10 +2,10 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
 
-from sqlalchemy import sql, event, func
+from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
-from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore, current_user
 
 from pmg import app, db
 import serializers
@@ -149,19 +149,25 @@ class User(db.Model, UserMixin):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
 
+    def get_followed_committee_meetings(self):
+        from ..models.resources import CommitteeMeeting
+        from ..api.schemas import CommitteeMeetingSchema
+        following = CommitteeMeeting.committee_id.in_([f.id for f in current_user.following])
+        meetings = CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date)).limit(10)
+
+        return CommitteeMeetingSchema(many=True, only=['id', 'title', 'date']).dump(meetings).data
+
     def follow_committee(self, committee):
         from ..models.resources import Committee
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.append(committee)
-        return self
 
     def unfollow_committee(self, committee):
         from ..models.resources import Committee
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.remove(committee)
-        return self
 
     @validates('organisation')
     def validate_organisation(self, key, org):

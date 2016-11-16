@@ -83,22 +83,13 @@ def inject_user_following():
 
     if current_user.is_authenticated():
         # Append user-followed committees if logged in
-        user_following = current_user.following
-        recent_meetings = []
-        cte_meetings = []
-
-        for committee in user_following:
-            cte_meetings = load_from_api('v2/committees/%s/meetings' % committee.id,
-                fields=['id','title','date','committee_id'])['results']
-
-            recent_meetings.extend(cte_meetings)
-
-        sorted(recent_meetings,key=lambda meeting: meeting['date'])
+        recent_meetings = current_user.get_followed_committee_meetings()
+        user_following = current_user.following[:20]
         user_following.sort(key=lambda x: x.name)
-
-        return dict(user_following=user_following[:20], recent_meetings=recent_meetings[:10],default_meetings=default_meetings,default_committees=default_committees)
+        
+        return dict(user_following=user_following, recent_meetings=recent_meetings[:10], default_meetings=default_meetings, default_committees=default_committees)
     else:
-        return dict(default_meetings=default_meetings,default_committees=default_committees)
+        return dict(default_meetings=default_meetings, default_committees=default_committees)
 
 
 

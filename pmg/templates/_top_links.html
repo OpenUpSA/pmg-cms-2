@@ -2,7 +2,6 @@
   <ul>
 		<li>
       <a class="committees-menulink" href="/committees/">Committees</a>
-			{% if current_user.is_authenticated() %}
 			  <ul class="hidden-xs megamenu">
           <div class="row">
             {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
@@ -16,7 +15,7 @@
   			    		<li data-id="{{ committee.id }}" data-follow-list="true">
                   <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"><i class="fa fa-key"></i> Premium</span>{% endif %}
   				    	</li>
-  				    	{% endfor %}
+              {% endfor %}
   				    </ul>
             </div>
             {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
@@ -29,10 +28,7 @@
                 {% for meeting in recent_meetings %}
                 <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
                   <p>
-                    <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a>
-                  </p>
-                  <p>
-                    <small>{{ meeting.date | pretty_date }}</small>
+                    <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a><small>{{ meeting.date | pretty_date }}</small>
                   </p>
                 </li>
                 {% endfor %}
@@ -76,12 +72,10 @@
               {% endfor %}
               </ul>
             </div>
-          </div>
           <h4>
             <a class="btn btn-primary" href="/committees"><i class="fa fa-fw fa-list" aria-hidden="true"></i> Manage the committees you follow</a>
           </h4>
 			  </ul>
-		  {% endif %}
 		</li>
 		<li><a href="/members">MPs</a></li>
 		<li><a href="/bills">Bills</a></li>

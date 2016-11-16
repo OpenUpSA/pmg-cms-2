@@ -1312,10 +1312,12 @@ li.committee.item.list-megamenu {
     left: 0;
     margin: 0;
     margin-top: -3px;
+    margin-left: -10px;
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
     box-shadow: 0 0 3px #666;
+    border-radius: 4px;
 }
 
 .menu > ul > li > ul:before,
@@ -1442,12 +1444,15 @@ li.committee.item.list-megamenu {
   width: 30%;
   background-color: #fff;
   border-bottom: 1px solid #ccc;
+  border-top-left-radius: 4px;
 }
 
 .megamenu-header-recent {
   width: 70%;
   background-color: #fff;
   border-bottom: 1px solid #ccc;
+  border-top-right-radius: 4px;
+
 }
 
 .megamenu-td {
@@ -1471,6 +1476,10 @@ li.committee.item.list-megamenu {
   font-size: 14px;
 }
 
+.committee-megamenu-table, cte-recent-meetings-table {
+  padding-left: 20px;
+}
+
 .megamenu-cte {
   width: 30%;
 }
@@ -1479,7 +1488,25 @@ li.committee.item.list-megamenu {
   width: 70%;
 }
 
+@media (max-width: 1199px) {
+  .menu > ul > li > ul {
+    width: 100%;
+  }
+}
+
+.committees-menulink {
+  position: relative;
+  z-index: 105;
+}
+
 .committees-menulink:hover {
-  z-index: 1000;
   background-color: #fff;
+}
+
+.committees-menulink-hover {
+  background-color: #fff;
+}
+
+.megamenu-cts-col {
+  border-right: 1px solid #ccc;
 }

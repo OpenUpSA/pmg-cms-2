@@ -149,13 +149,19 @@ class User(db.Model, UserMixin):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
 
+    def follows(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        return committee in self.following
+
     def get_followed_committee_meetings(self):
         from ..models.resources import CommitteeMeeting
         from ..api.schemas import CommitteeMeetingSchema
-        following = CommitteeMeeting.committee_id.in_([f.id for f in current_user.following])
+        following = CommitteeMeeting.committee_id.in_([f.id for f in self.following])
         meetings = CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date)).limit(10)
 
-        return CommitteeMeetingSchema(many=True, only=['id', 'title', 'date']).dump(meetings).data
+        return CommitteeMeetingSchema(many=True, only=['id', 'title', 'date']).dump(meetings)
 
     def follow_committee(self, committee):
         from ..models.resources import Committee

@@ -1,29 +1,39 @@
 {% if current_user.is_authenticated() %}
-  {% if current_user.gets_alerts_for(committee.id) %}
-    <div class="email-alert-box subscribed">
-      <p>You're subscribed to our free email alerts for this committee.</p>
-      <a class="btn btn-default" href="{{ url_for('email_alerts') }}">Manage your alerts</a>
-    </div>
-
-  {% else %}
-
-    <form action="{{ url_for('user_committee_alert', committee_id=committee.id) }}" method="POST">
+  <div class="cte-signup-box email-alert-box">
+    {% if current_user.follows(committee.id) %}
+    <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
+    {% else %}
+    <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+    {% endif %}
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="next" value="{{ request.url }}">
-      <div class="email-alert-box">
-        <p>
-        <button class="btn btn-success" type="submit">Create an alert</button>
-        </p>
-
-        Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information for this committee.
-      </div>
+      {% if current_user.follows(committee.id) %}
+      <input type="checkbox" checked />
+      {% else %}
+      <input type="checkbox" />
+      {% endif %}
+      <label>Follow this committee.</label>
     </form>
-  {% endif %}
+    {% if current_user.gets_alerts_for(committee.id) %}
+    <form class="cte-get-alerts" action="{{ url_for('user_remove_committee_alert', committee_id=committee.id) }}" method="POST">
+    {% else %}
+    <form class="cte-get-alerts" action="{{ url_for('user_add_committee_alert', committee_id=committee.id) }}" method="POST">
+    {% endif %}
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="next" value="{{ request.url }}">
+      {% if current_user.gets_alerts_for(committee.id) %}
+      <input type="checkbox" checked />
+      {% else %}
+      <input type="checkbox" />
+      {% endif %}
+      <label>Get <a href="{{ url_for('email_alerts') }}">email alerts</a> for this committee.</label>
+    </form>
+  </div>
 {% else %}
   <div class="email-alert-box">
     <p>
-    <a class="btn btn-success" href="{{ url_for('security.register', next=request.path, utm_source='cte-alert-box') }}">Sign up for alerts</a>
+      <a class="btn btn-success" href="{{ url_for('security.register', next=request.path, utm_source='cte-alert-box') }}">Sign up to follow this committee.</a>
     </p>
-    Get <a href="{{ url_for('email_alerts') }}">free email alerts</a> when we add new information for this committee.
+    Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
   </div>
 {% endif %}

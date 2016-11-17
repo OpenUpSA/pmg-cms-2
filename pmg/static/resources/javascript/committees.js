@@ -1,6 +1,8 @@
 var currentDate = new Date();
 // Committee list DOM
 var $cteList = $('.cte-list');
+var $cteGetAlerts = $('.cte-get-alerts');
+var $cteSignupBox = $('.cte-signup-box');
 var $cteListItems = $('.cte-list .tab-pane.active .committee');
 var $cteListSearchInput = $('.cte-list-search input');
 var $cteListSearchResults = $('.cte-list-search-results');
@@ -226,8 +228,118 @@ $cteListSearchInput.on('keyup', function(e) {
   searchIndex($(e.target).val(), $cteList, $cteListSearchResults, { twoCol: true });
 });
 
+$cteSignupBox.on('change','.cte-get-alerts input[type=checkbox]', function(e) {
+  $cteGetAlerts.submit();
+});
+
+function mmFollowCommittee(name,id,isPremium) {
+  // Attach to megamenu
+  var $premium = isPremium ? '<span class="premium"><i class="fa fa-key"></i> Premium</span>' : '';
+  var $mmItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + name + '</a>' + $premium + '</li>');
+  var $mmItems = $mmCommitteesList.find('li');
+
+  if(!!$mmItems.length) {
+    $mmItems.each(function(i) {
+      var thisName = $(this).find('a').html();
+      var nextName = $($mmItems[i + 1]).find('a').html();
+
+      if(name <= thisName) {
+        $mmItem.insertBefore($mmItems[i]);
+        return false;
+      } else if((thisName < name && nextName >= name) || i == $mmItems.length - 1) {
+        $mmItem.insertAfter($mmItems[i]);
+        return false;
+      }
+    });
+  } else {
+    $mmCommitteesList.append($mmItem);
+  }
+
+  $mmCommitteesMobileList.empty()
+    .append($mmItems.clone());
+
+  $mmDefaultCtes.addClass('hidden');
+  $mmCommittees.removeClass('hidden');
+  $mmCommitteesMobile.removeClass('hidden');
+}
+
+function mmUnfollowCommittee() {
+  if(!$mmCommitteesList.find('li').length) {
+    $mmDefaultCtes.removeClass('hidden');
+    $mmCommittees.addClass('hidden');
+    $mmCommitteesMobile.addClass('hidden');
+  }
+}
+
+function mmUpdateRecentMeetings() {
+  $.get('/user/followed/committee/meetings/', function(result) {
+    var meetings = result.data;
+    var months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Dec'];
+
+    if(!!meetings.length) {
+      $mmRecentMtngsList.empty();
+      $mmRecentMtngs.removeClass('hidden');
+      $mmDefaultMtngs.addClass('hidden');
+
+      meetings.forEach(function(meeting) {
+        var date = new Date(meeting.date);
+        var dateString = date.getDay() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+
+        $mmRecentMtngsList.append('<li><p><a href="/committee-meeting/' + meeting.id + '">' + meeting.title  + '</a></p><p><small>' + dateString  + '</small></p></li>')
+      });
+    } else {
+      $mmRecentMtngs.addClass('hidden');
+      $mmDefaultMtngs.removeClass('hidden');
+    }
+  }, 'json');
+}
+
+$cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function(e) {
+  var $form = $(e.target).closest('form');
+  var data = $form.serialize;
+  var url = $form.attr('action').split('/');
+  var isFollowing = url[1] == 'unfollow';
+
+  $.post(url.join('/'), data, function() {
+    console.log('response received');
+    if(isFollowing) {
+      console.log('is following');
+      mmUnfollowCommittee();
+
+      $form.attr('action','/user/follow/committee/' + id)
+        .find('input[type=checkbox]')
+        .prop('checked', false);
+
+      $cteGetAlerts.find('input[type=checkbox]')
+        .prop('checked', false);
+    } else {
+      console.log('is not following');
+      var name = $('.committee-name').html();
+      var id = url[url.length - 1];
+      var isPremium = $('.premium').length;
+      console.log(name,id,isPremium);
+      mmFollowCommittee(name,id,isPremium);
+
+      $form.attr('action','/user/unfollow/committee/' + id)
+        .find('input[type=checkbox]')
+        .prop('checked', true);
+
+        $cteGetAlerts.find('input[type=checkbox]')
+          .prop('checked', true);
+    }
+  })
+  .fail(function(xhr,status,err) {
+    console.log(status);
+    console.error(err);
+  })
+  .then(function() {
+    mmUpdateRecentMeetings();
+  });
+});
+
 $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) {
     $(e.target).prop('disabled',true);
+
     var $targetItem = $(e.target).closest('li');
     var id = $targetItem.attr('data-id');
     var $listItem = $('.cte-items [data-id=' + id + ']');
@@ -243,11 +355,7 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
           .find('input[type=checkbox]')
           .prop('checked',false);
 
-        if(!$mmCommitteesList.find('li').length) {
-          $mmDefaultCtes.removeClass('hidden');
-          $mmCommittees.addClass('hidden');
-          $mmCommitteesMobile.addClass('hidden');
-        }
+        mmUnfollowCommittee();
       } else {
         $listItem.attr('data-following','true');
         $listItemForm.attr('action','/user/unfollow/committee/' + id);
@@ -255,63 +363,20 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
 
         // Attach to megamenu
         var name = $listItem.find('.name').html();
-        var $premium = $listItem.find('.premium').length ? '<span class="premium"><i class="fa fa-key"></i> Premium</span>' : '';
-        var $mmItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + name + '</a>' + $premium + '</li>');
-        var $mmItems = $mmCommitteesList.find('li');
+        var isPremium = $listItem.find('.premium').length;
 
-        if(!!$mmItems.length) {
-          $mmItems.each(function(i) {
-            var thisName = $(this).find('a').html();
-            var nextName = $($mmItems[i + 1]).find('a').html();
-
-            if(name <= thisName) {
-              $mmItem.insertBefore($mmItems[i]);
-              return false;
-            } else if((thisName < name && nextName >= name) || i == $mmItems.length - 1) {
-              $mmItem.insertAfter($mmItems[i]);
-              return false;
-            }
-          });
-        } else {
-          $mmCommitteesList.append($mmItem);
-        }
-
-        $mmCommitteesMobileList.empty()
-          .append($mmItems.clone());
-
-        $mmDefaultCtes.addClass('hidden');
-        $mmCommittees.removeClass('hidden');
-        $mmCommitteesMobile.removeClass('hidden');
+        mmFollowCommittee(name,id,isPremium);
       }
-
-      $.get('/user/followed/committee/meetings/', function(result) {
-        var meetings = result.data;
-        var months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Dec'];
-
-        if(!!meetings.length) {
-          $mmRecentMtngsList.empty();
-          $mmRecentMtngs.removeClass('hidden');
-          $mmDefaultMtngs.addClass('hidden');
-
-          meetings.forEach(function(meeting) {
-            var date = new Date(meeting.date);
-            var dateString = date.getDay() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
-
-            $mmRecentMtngsList.append('<li><p><a href="/committee-meeting/' + meeting.id + '">' + meeting.title  + '</a></p><p><small>' + dateString  + '</small></p></li>')
-          });
-        } else {
-          $mmRecentMtngs.addClass('hidden');
-          $mmDefaultMtngs.removeClass('hidden');
-        }
-      }, 'json');
 
       if($cteListUserFollowing.find('li').length) {
         $noCteFollowedMsg.hide();
       } else {
         $noCteFollowedMsg.show();
       }
-    });
+    }).then(function() {
+      mmUpdateRecentMeetings();
   });
+});
 
 // Committee detail page handlers
 $cteDtlNavItem.on('click', indexItems);

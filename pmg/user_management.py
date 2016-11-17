@@ -55,38 +55,54 @@ def email_alerts():
         saved_searches=saved_searches)
 
 
-@app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])
-def user_committee_alert(committee_id):
+@app.route('/user/committee/alerts/add/<int:committee_id>', methods=['POST'])
+def user_add_committee_alert(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
         current_user.committee_alerts.append(Committee.query.get(committee_id))
         db.session.commit()
         ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
 
-    return redirect(request.headers.get('referer', '/'))
+    return ''
+
+@app.route('/user/committee/alerts/remove/<int:committee_id>', methods=['POST'])
+def user_remove_committee_alert(committee_id):
+    if current_user.is_authenticated() and request.method == 'POST':
+        current_user.committee_alerts.remove(Committee.query.get(committee_id))
+        db.session.commit()
+        ga_event('user', 'remove-alert', 'cte-alert-box')
+        flash("We'll send you email alerts for updates on this committee.", 'success')
+
+    return ''
 
 @app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
 def user_follow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
-        current_user.follow_committee(Committee.query.get(committee_id))
+        committee = Committee.query.get(committee_id)
+        current_user.follow_committee(committee)
+        current_user.committee_alerts.append(committee)
         db.session.commit()
         ga_event('user', 'follow-committee', 'cte-follow-committee')
 
-    return redirect(request.headers.get('referer', '/'))
+    return ''
 
 @app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
 def user_unfollow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
-        current_user.unfollow_committee(Committee.query.get(committee_id))
+        committee = Committee.query.get(committee_id)
+        current_user.unfollow_committee(committee)
+
+        if committee in current_user.committee_alerts:
+            current_user.committee_alerts.remove(committee)
         db.session.commit()
         ga_event('user', 'unfollow-committee', 'cte-follow-committee')
 
-    return redirect(request.headers.get('referer', '/'))
+    return ''
 
 @app.route('/user/followed/committee/meetings/')
 def user_followed_committee_meetings():
     if current_user.is_authenticated():
-        return jsonify(data=current_user.get_followed_committee_meetings())
+        return jsonify(data=current_user.get_followed_committee_meetings().data)
     else:
         abort(404)
 

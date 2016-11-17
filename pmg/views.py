@@ -83,15 +83,13 @@ def inject_user_following():
 
     if current_user.is_authenticated():
         # Append user-followed committees if logged in
-        recent_meetings = current_user.get_followed_committee_meetings()
+        recent_meetings = current_user.get_followed_committee_meetings().data
         user_following = current_user.following[:20]
         user_following.sort(key=lambda x: x.name)
-        
+
         return dict(user_following=user_following, recent_meetings=recent_meetings[:10], default_meetings=default_meetings, default_committees=default_committees)
     else:
         return dict(default_meetings=default_meetings, default_committees=default_committees)
-
-
 
 @app.route('/')
 def index():

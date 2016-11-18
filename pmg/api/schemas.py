@@ -31,7 +31,8 @@ class CommitteeMeetingSchema(ma.ModelSchema):
     class Meta:
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
-                  'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links')
+                  'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee')
+    committee = fields.Nested('CommitteeSchema')
     _links = ma.Hyperlinks({
         'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
         'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),

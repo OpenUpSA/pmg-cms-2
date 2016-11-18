@@ -161,7 +161,7 @@ class User(db.Model, UserMixin):
         following = CommitteeMeeting.committee_id.in_([f.id for f in self.following])
         meetings = CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date)).limit(10)
 
-        return CommitteeMeetingSchema(many=True, only=['id', 'title', 'date']).dump(meetings)
+        return CommitteeMeetingSchema(many=True).dump(meetings)
 
     def follow_committee(self, committee):
         from ..models.resources import Committee

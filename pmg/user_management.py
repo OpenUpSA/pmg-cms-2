@@ -63,7 +63,7 @@ def user_add_committee_alert(committee_id):
         ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
 
-    return ''
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/committee/alerts/remove/<int:committee_id>', methods=['POST'])
 def user_remove_committee_alert(committee_id):
@@ -73,7 +73,7 @@ def user_remove_committee_alert(committee_id):
         ga_event('user', 'remove-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
 
-    return ''
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
 def user_follow_committee(committee_id):
@@ -84,7 +84,7 @@ def user_follow_committee(committee_id):
         db.session.commit()
         ga_event('user', 'follow-committee', 'cte-follow-committee')
 
-    return ''
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
 def user_unfollow_committee(committee_id):
@@ -97,7 +97,7 @@ def user_unfollow_committee(committee_id):
         db.session.commit()
         ga_event('user', 'unfollow-committee', 'cte-follow-committee')
 
-    return ''
+    return redirect(request.headers.get('referer', '/'))
 
 @app.route('/user/followed/committee/meetings/')
 def user_followed_committee_meetings():

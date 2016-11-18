@@ -2,7 +2,7 @@
   <ul>
 		<li>
       <a class="committees-menulink menu-item" href="/committees/">Committees and Meetings</a>
-			  <ul class="hidden-xs megamenu">
+			  <ul class="hidden-xs megamenu" style="display: none">
         {% if (current_user.is_authenticated() and user_following | length == 0) %}
         <div class="col-xs-12">
           <a class="btn btn-success megamenu-cta" href="/committees"><i class="fa fa-fw fa-list-alt" aria-hidden="true"></i> Customise this menu by changing the committees you follow</a>
@@ -10,7 +10,7 @@
         {% endif %}
         {% if not current_user.is_authenticated() %}
           <div class="col-xs-12">
-            <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path) }}"><i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Sign in to start following committees and customise this menu</a>
+            <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path) }}"><i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Sign in to follow committees and customise this menu</a>
           </div>
         {% endif %}
           <div class="row">
@@ -33,7 +33,7 @@
             {% else %}
             <div class="col-xs-7 mm-recent-meetings">
             {% endif %}
-              <h3 class="megamenu-h3">Latest meetings of your commitees <a style="display: inline" class="btn btn-sm btn-default" href="/committees-meetings"><i class="fa fa-list-alt" aria-hidden="true"></i> Meetings across parliament</a></h3>
+              <h3 class="megamenu-h3">Latest meetings of your commitees <a style="display: inline" class="btn btn-sm btn-default" href="/committee-meetings"><i class="fa fa-list-alt" aria-hidden="true"></i> Meetings across parliament</a></h3>
               <ul class="mm-recent-meetings-list">
                 {% for meeting in recent_meetings %}
                 <li data-id="{{ meeting.committee_id }}" data-follow-list="true">

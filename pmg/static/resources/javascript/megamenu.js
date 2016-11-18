@@ -17,21 +17,6 @@ $(document).ready(function () {
     //Normal menu is hidden if width is below 959px, and jquery adds mobile menu
     //Done this way so it can be used with wordpress without any trouble
 
-    $(".menu > ul > li").hover(function (e) {
-        if ($(window).width() > 943) {
-            $(this).children("ul").stop(true, false).fadeToggle();
-            e.preventDefault();
-        }
-    });
-    //If width is more than 943px dropdowns are displayed on hover
-
-    $(".menu > ul > li").click(function () {
-        if ($(window).width() <= 943) {
-            $(this).children("ul").fadeToggle();
-        }
-    });
-    //If width is less or equal to 943px dropdowns are displayed on click (thanks Aman Jain from stackoverflow)
-
     $(".menu-mobile").click(function (e) {
         $(".menu > ul").toggleClass('show-on-mobile');
         e.preventDefault();
@@ -41,10 +26,20 @@ $(document).ready(function () {
 
     $(".megamenu").mouseenter(function() {
       $(".committees-menulink").addClass("committees-menulink-hover");
+      $(".megamenu").show();
     });
 
     $(".megamenu").mouseleave(function() {
       $(".committees-menulink").removeClass("committees-menulink-hover");
+      $(".megamenu").hide();
+    });
+
+    $(".committees-menulink").mouseenter(function() {
+      $(".megamenu").show();
+    });
+
+    $(".committees-menulink").mouseleave(function() {
+      $(".megamenu").hide();
     });
 
 });

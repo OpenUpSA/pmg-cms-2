@@ -102,7 +102,7 @@ def user_unfollow_committee(committee_id):
 @app.route('/user/megamenu/')
 def user_megamenu():
     if current_user.is_authenticated():
-        return render_template('_megamenu.html', user_following=current_user.following, recent_meetings=current_user.get_followed_committee_meetings().data)
+        return render_template('_megamenu.html', user_following=sorted(current_user.following,key=lambda cte: cte.name), recent_meetings=current_user.get_followed_committee_meetings().data)
     else:
         abort(404)
 

@@ -28,6 +28,7 @@ var $cteSelectTabNav = $('.cte-select-tab-nav');
 var $lunrDict = $('.lunr-dict');
 var $lunrDictItems = null;
 // megaMenu
+var $megamenu = $('.megamenu');
 var $mmCommittees = $('.top-links .mm-committees');
 var $mmCommitteesMobile = $('.top-links-mobile .mm-committees');
 var $mmCommitteesList = $('.top-links .mm-committees-list');
@@ -257,51 +258,10 @@ function insertIntoDOMList($list,$item,$container,name,nameTag) {
   }
 }
 
-function mmFollowCommittee(name,id,isPremium) {
-  // Attach to megamenu
-  var $premium = isPremium ? '<span class="premium"><i class="fa fa-key"></i> Premium</span>' : '';
-  var $mmItem = $('<li data-id="' + id + '" data-follow-list="true"><a href="/committee/' + id + '">' + name + '</a>' + $premium + '</li>');
-  var $mmItems = $mmCommitteesList.find('li');
-
-  insertIntoDOMList($mmItems,$mmItem,$mmCommitteesList,name,'a');
-
-  $mmCommitteesMobileList.empty()
-    .append($mmItems.clone());
-
-  $mmDefaultCtes.addClass('hidden');
-  $mmCommittees.removeClass('hidden');
-  $mmCommitteesMobile.removeClass('hidden');
-}
-
-function mmUnfollowCommittee() {
-  if(!$mmCommitteesList.find('li').length) {
-    $mmDefaultCtes.removeClass('hidden');
-    $mmCommittees.addClass('hidden');
-    $mmCommitteesMobile.addClass('hidden');
-  }
-}
-
-function mmUpdateRecentMeetings() {
-  $.get('/user/followed/committee/meetings/', function(result) {
-    var meetings = result.data;
-    var months = ['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Dec'];
-
-    if(!!meetings.length) {
-      $mmRecentMtngsList.empty();
-      $mmRecentMtngs.removeClass('hidden');
-      $mmDefaultMtngs.addClass('hidden');
-
-      meetings.forEach(function(meeting) {
-        var date = new Date(meeting.date);
-        var dateString = date.getDay() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
-
-        $mmRecentMtngsList.append('<li><p><a href="/committee-meeting/' + meeting.id + '">' + meeting.title  + '</a></p><p><small>' + dateString  + '</small></p></li>')
-      });
-    } else {
-      $mmRecentMtngs.addClass('hidden');
-      $mmDefaultMtngs.removeClass('hidden');
-    }
-  }, 'json');
+function mmUpdate() {
+  $.get('/user/megamenu/', function(result) {
+    $megamenu.empty().html(result);
+  }, 'html');
 }
 
 $cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function(e) {
@@ -320,8 +280,6 @@ $cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function
     if(isFollowing) {
       $('.mm-committees-list [data-id=' + id + '][data-follow-list="true"]').remove();
 
-      mmUnfollowCommittee();
-
       $form.attr('action','/user/follow/committee/' + id)
         .find('input[type=checkbox]')
         .prop('checked', false);
@@ -332,8 +290,6 @@ $cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function
       var name = $('.committee-name').html();
       var isPremium = $('.premium').length;
 
-      mmFollowCommittee(name,id,isPremium);
-
       $form.attr('action','/user/unfollow/committee/' + id)
         .find('input[type=checkbox]')
         .prop('checked', true);
@@ -343,7 +299,7 @@ $cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function
     }
   })
   .then(function() {
-    mmUpdateRecentMeetings();
+    mmUpdate();
   });
 });
 
@@ -368,8 +324,6 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
         $listItemForm.attr('action','/user/follow/committee/' + id)
           .find('input[type=checkbox]')
           .prop('checked',false);
-
-        mmUnfollowCommittee();
       } else {
         // Attach to megamenu
         var name = $listItem.find('.name').html();
@@ -379,8 +333,6 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
         $listItemForm.attr('action','/user/unfollow/committee/' + id);
 
         insertIntoDOMList($cteListUserFollowingItems,$listItem.clone().attr('data-follow-list','true'),$cteListUserFollowing,name,'a');
-
-        mmFollowCommittee(name,id,isPremium);
       }
 
       if($cteListUserFollowing.find('li').length) {
@@ -389,7 +341,7 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
         $noCteFollowedMsg.show();
       }
     }).then(function() {
-      mmUpdateRecentMeetings();
+      mmUpdate();
   });
 });
 

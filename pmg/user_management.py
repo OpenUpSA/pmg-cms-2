@@ -99,10 +99,10 @@ def user_unfollow_committee(committee_id):
 
     return redirect(request.headers.get('referer', '/'))
 
-@app.route('/user/followed/committee/meetings/')
-def user_followed_committee_meetings():
+@app.route('/user/megamenu/')
+def user_megamenu():
     if current_user.is_authenticated():
-        return jsonify(data=current_user.get_followed_committee_meetings().data)
+        return render_template('_megamenu.html', user_following=current_user.following, recent_meetings=current_user.get_followed_committee_meetings().data)
     else:
         abort(404)
 

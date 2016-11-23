@@ -3,58 +3,45 @@
   <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path) }}"><i class="fa fa-fw fa-user-plus" aria-hidden="true"></i> Sign in to follow committees and customise this menu</a>
 </div>
 {% endif %}
-<div class="row">
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
-  <div class="col-xs-5 mm-committees hidden">
-  {% else %}
-  <div class="col-xs-5 mm-committees">
-  {% endif %}
-    <h3 class="megamenu-h3">Committees you follow <a style="display: inline" class="btn btn-sm btn-default" href="/committees"><i class="fa fa-wrench" aria-hidden="true"></i> Manage</a></h3>
-    <ul class="mm-committees-list">
-      {% for committee in user_following %}
-      <li data-id="{{ committee.id }}" data-follow-list="true">
-        <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
-      </li>
-    {% endfor %}
-    </ul>
-  </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
-  <div class="col-xs-7 mm-recent-meetings hidden">
-  {% else %}
-  <div class="col-xs-7 mm-recent-meetings">
-  {% endif %}
-    <h3 class="megamenu-h3">Latest meetings of your commitees</h3>
-    <ul class="mm-recent-meetings-list">
-      {% for meeting in recent_meetings %}
-      <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id) }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
-      </li>
+  <div class="row">
+    {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
+    <div class="col-xs-5 mm-committees hidden">
+    {% else %}
+    <div class="col-xs-5 mm-committees">
+    {% endif %}
+      <h3 class="megamenu-h3">Committees you follow</h3>
+      <ul class="mm-committees-list">
+        {% for committee in user_following %}
+        <li data-id="{{ committee.id }}" data-follow-list="true">
+          <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
+        </li>
       {% endfor %}
-      <a class="btn btn-default" href="/committee-meetings"><i class="fa fa-list-alt" aria-hidden="true"></i> Meetings across parliament</a>
-    </ul>
-  </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
-  <div class="col-xs-5 mm-default-committees">
-  {% else %}
-  <div class="col-xs-5 mm-default-committees hidden">
-  {% endif %}
-    <h3 class="megamenu-h3">Popular committees</h3>
-    <ul class="mm-default-committees-list">
-    {% for committee in default_committees %}
-    <li>
-      <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
-    </li>
-    {% endfor %}
-    </ul>
-  </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and recent_meetings | length == 0) %}
-  <div class="col-xs-7 mm-default-meetings">
-  {% else %}
-  <div class="col-xs-7 mm-default-meetings hidden">
-  {% endif %}
-    <h3 class="megamenu-h3">Recent meetings</h3>
-    <ul class="mm-default-meetings-list">
-    {% for meeting in default_meetings %}
+      <a class="btn btn-default" href="/committees"><i class="fa fa-wrench" aria-hidden="true"></i> Manage the committees you follow</a>
+      </ul>
+    </div>
+    {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
+    <div class="col-xs-7 mm-recent-meetings hidden">
+    {% else %}
+    <div class="col-xs-7 mm-recent-meetings">
+    {% endif %}
+      <h3 class="megamenu-h3">Latest meetings of your commitees</h3>
+      <ul class="mm-recent-meetings-list">
+        {% for meeting in recent_meetings %}
+        <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
+          <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id) }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
+        </li>
+        {% endfor %}
+        <a class="btn btn-default" href="/committee-meetings"><i class="fa fa-list-alt" aria-hidden="true"></i> Meetings across parliament</a>
+      </ul>
+    </div>
+    {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}
+    <div class="col-xs-5 mm-default-committees">
+    {% else %}
+    <div class="col-xs-5 mm-default-committees hidden">
+    {% endif %}
+      <h3 class="megamenu-h3">Popular committees</h3>
+      <ul class="mm-default-committees-list">
+      {% for committee in default_committees %}
       <li>
         <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a> | <small>{{ meeting.date | pretty_date }}</small>
       </li>

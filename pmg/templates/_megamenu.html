@@ -14,13 +14,14 @@
     {% else %}
     <div class="col-xs-5 mm-committees">
     {% endif %}
-      <h3 class="megamenu-h3">Committees you follow <a style="display: inline" class="btn btn-sm btn-default" href="/committees"><i class="fa fa-wrench" aria-hidden="true"></i> Manage</a></h3>
+      <h3 class="megamenu-h3">Committees you follow</h3>
       <ul class="mm-committees-list">
         {% for committee in user_following %}
         <li data-id="{{ committee.id }}" data-follow-list="true">
           <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
         </li>
       {% endfor %}
+      <a class="btn btn-default" href="/committees"><i class="fa fa-wrench" aria-hidden="true"></i> Manage the committees you follow</a>
       </ul>
     </div>
     {% if not current_user.is_authenticated() or (current_user.is_authenticated() and user_following | length == 0) %}

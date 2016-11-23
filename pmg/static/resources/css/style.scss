@@ -1525,8 +1525,7 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
 }
 
 .mm-committees-list, .mm-default-committees-list {
-  padding-right: 15px;
-  border-right: 1px solid #ccc;
+  padding-right: 0;
 }
 
 .mm-default-committees, .mm-committees {
@@ -1535,6 +1534,7 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
 
 .mm-default-meetings, .mm-recent-meetings {
   padding-left: 0;
+  border-left: 1px solid #ccc;
 }
 
 .mobile-menu-li {

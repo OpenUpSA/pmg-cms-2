@@ -79,17 +79,19 @@ def classify_attachments(files):
 @app.context_processor
 def inject_user_following():
     default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]
-    default_committees = load_from_api('v2/committees', return_everything=True, fields=['id','name','date'])['results'][:20]
+    default_committees = load_from_api('v2/committees', return_everything=True, fields=['id','name','date'])['results'][:10]
+
+    megamenu = dict(default_meetings=default_meetings, default_committees=default_committees, show_default=True)
 
     if current_user.is_authenticated():
         # Append user-followed committees if logged in
-        recent_meetings = current_user.get_followed_committee_meetings().data
-        user_following = current_user.following[:20]
-        user_following.sort(key=lambda x: x.name)
+        megamenu['user_following'] = sorted(current_user.following[:20],key=lambda cte: cte.name)
+        megamenu['recent_meetings'] = current_user.get_followed_committee_meetings().data[:10]
 
-        return dict(user_following=user_following, recent_meetings=recent_meetings[:10], default_meetings=default_meetings, default_committees=default_committees)
-    else:
-        return dict(default_meetings=default_meetings, default_committees=default_committees)
+        if megamenu['user_following']:
+            megamenu['show_default'] = False
+
+    return megamenu
 
 @app.route('/')
 def index():

@@ -79,8 +79,13 @@ def user_remove_committee_alert(committee_id):
 def user_follow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
         committee = Committee.query.get(committee_id)
-        current_user.follow_committee(committee)
-        current_user.committee_alerts.append(committee)
+
+        if committee not in current_user.following:
+            current_user.follow_committee(committee)
+
+        if committee not in current_user.committee_alerts:
+            current_user.committee_alerts.append(committee)
+
         db.session.commit()
         ga_event('user', 'follow-committee', 'cte-follow-committee')
 
@@ -90,10 +95,13 @@ def user_follow_committee(committee_id):
 def user_unfollow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
         committee = Committee.query.get(committee_id)
-        current_user.unfollow_committee(committee)
+
+        if committee in current_user.following:
+            current_user.unfollow_committee(committee)
 
         if committee in current_user.committee_alerts:
             current_user.committee_alerts.remove(committee)
+
         db.session.commit()
         ga_event('user', 'unfollow-committee', 'cte-follow-committee')
 
@@ -102,7 +110,14 @@ def user_unfollow_committee(committee_id):
 @app.route('/user/megamenu/')
 def user_megamenu():
     if current_user.is_authenticated():
-        return render_template('_megamenu.html', user_following=sorted(current_user.following,key=lambda cte: cte.name), recent_meetings=current_user.get_followed_committee_meetings().data)
+        user_following = sorted(current_user.following,key=lambda cte: cte.name)
+        recent_meetings = current_user.get_followed_committee_meetings().data
+        show_default = True
+
+        if user_following:
+            show_default = False
+
+        return render_template('_megamenu.html', user_following=user_following, recent_meetings=recent_meetings, show_default=show_default)
     else:
         abort(404)
 

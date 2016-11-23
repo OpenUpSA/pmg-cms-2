@@ -29,16 +29,6 @@ var $lunrDict = $('.lunr-dict');
 var $lunrDictItems = null;
 // megaMenu
 var $megamenu = $('.megamenu');
-var $mmCommittees = $('.top-links .mm-committees');
-var $mmCommitteesMobile = $('.top-links-mobile .mm-committees');
-var $mmCommitteesList = $('.top-links .mm-committees-list');
-var $mmCommitteesMobileList = $('.top-links-mobile .mm-committees-list');
-var $mmRecentMtngs = $('.mm-recent-meetings');
-var $mmRecentMtngsList = $('.mm-recent-meetings-list');
-var $mmDefaultCtes = $('.mm-default-committees');
-var $mmDefaultCtesList = $('.mm-default-committees-list');
-var $mmDefaultMtngs = $('.mm-default-meetings');
-var $mmDefaultMtngsList = $('.mm-default-meetings-list');
 
 // Set up lunr index for filtering
 var index = null;
@@ -269,38 +259,32 @@ $cteSignupBox.on('change','.cte-follow-committee input[type=checkbox]', function
   var $form = $target.closest('form');
   var data = $form.serialize();
   var url = $form.attr('action').split('/');
+  var actionUrl = url.join('/');
   var id = url[url.length - 1];
   var isFollowing = url[2] == 'unfollow';
 
-  $target.prop('disabled',true);
+  if(isFollowing) {
+    $('.mm-committees-list [data-id=' + id + '][data-follow-list="true"]').remove();
 
-  $.post(url.join('/'), data, function() {
-    $target.prop('disabled',false);
+    $form.attr('action','/user/follow/committee/' + id)
+      .find('input[type=checkbox]')
+      .prop('checked', false);
 
-    if(isFollowing) {
-      $('.mm-committees-list [data-id=' + id + '][data-follow-list="true"]').remove();
+    $cteGetAlerts.find('input[type=checkbox]')
+      .prop('checked', false);
+  } else {
+    var name = $('.committee-name').html();
+    var isPremium = $('.premium').length;
 
-      $form.attr('action','/user/follow/committee/' + id)
-        .find('input[type=checkbox]')
-        .prop('checked', false);
+    $form.attr('action','/user/unfollow/committee/' + id)
+      .find('input[type=checkbox]')
+      .prop('checked', true);
 
       $cteGetAlerts.find('input[type=checkbox]')
-        .prop('checked', false);
-    } else {
-      var name = $('.committee-name').html();
-      var isPremium = $('.premium').length;
-
-      $form.attr('action','/user/unfollow/committee/' + id)
-        .find('input[type=checkbox]')
         .prop('checked', true);
+  }
 
-        $cteGetAlerts.find('input[type=checkbox]')
-          .prop('checked', true);
-    }
-  })
-  .then(function() {
-    mmUpdate();
-  });
+  $.post(actionUrl, data, mmUpdate);
 });
 
 $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) {
@@ -312,37 +296,32 @@ $cteList.on('change', '.cte-follow-committee input[type=checkbox]', function(e) 
     var $listItemForm = $listItem.find('form');
     var $followedItem = $('[data-id=' + id + '][data-follow-list="true"]');
     var data = $listItemForm.serialize();
+    var actionUrl = $targetItem.find('form').attr('action');
 
-    $target.prop('disabled',true);
+    if(!!$targetItem.attr('data-following')) {
+      $followedItem.remove();
+      $listItem.removeAttr('data-following');
+      $listItemForm.attr('action','/user/follow/committee/' + id)
+        .find('input[type=checkbox]')
+        .prop('checked',false);
+    } else {
+      // Attach to megamenu
+      var name = $listItem.find('.name').html();
+      var isPremium = $listItem.find('.premium').length;
 
-    $.post($targetItem.find('form').attr('action'), data, function(res) {
-      $listItem.find('input[type=checkbox]').prop('disabled',false);
+      $listItem.attr('data-following','true');
+      $listItemForm.attr('action','/user/unfollow/committee/' + id);
 
-      if(!!$targetItem.attr('data-following')) {
-        $followedItem.remove();
-        $listItem.removeAttr('data-following');
-        $listItemForm.attr('action','/user/follow/committee/' + id)
-          .find('input[type=checkbox]')
-          .prop('checked',false);
-      } else {
-        // Attach to megamenu
-        var name = $listItem.find('.name').html();
-        var isPremium = $listItem.find('.premium').length;
+      insertIntoDOMList($cteListUserFollowingItems,$listItem.clone().attr('data-follow-list','true'),$cteListUserFollowing,name,'a');
+    }
 
-        $listItem.attr('data-following','true');
-        $listItemForm.attr('action','/user/unfollow/committee/' + id);
+    if($cteListUserFollowing.find('li').length) {
+      $noCteFollowedMsg.hide();
+    } else {
+      $noCteFollowedMsg.show();
+    }
 
-        insertIntoDOMList($cteListUserFollowingItems,$listItem.clone().attr('data-follow-list','true'),$cteListUserFollowing,name,'a');
-      }
-
-      if($cteListUserFollowing.find('li').length) {
-        $noCteFollowedMsg.hide();
-      } else {
-        $noCteFollowedMsg.show();
-      }
-    }).then(function() {
-      mmUpdate();
-  });
+    $.post(actionUrl, data, mmUpdate);
 });
 
 // Committee detail page handlers

@@ -71,7 +71,7 @@ def user_remove_committee_alert(committee_id):
         current_user.committee_alerts.remove(Committee.query.get(committee_id))
         db.session.commit()
         ga_event('user', 'remove-alert', 'cte-alert-box')
-        flash("We'll send you email alerts for updates on this committee.", 'success')
+        flash("We won't send you email alerts for this committee.", 'warning')
 
     return redirect(request.headers.get('referer', '/'))
 

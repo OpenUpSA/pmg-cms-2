@@ -219,14 +219,8 @@ $cteListSearchInput.on('keyup', function(e) {
   searchIndex($(e.target).val(), $cteList, $cteListSearchResults, { twoCol: true });
 });
 
-$cteSignupBox.on('change','.cte-get-alerts input[type=checkbox]', function(e) {
-  var $target = $(e.target);
-
-  $target.prop('disabled',true);
-
-  $cteGetAlerts.submit(function() {
-    $target.prop('disabled',false);
-  });
+$cteSignupBox.on('change','.cte-get-alerts input[type=checkbox]', function() {
+    $cteGetAlerts.submit();
 });
 
 function insertIntoDOMList($list,$item,$container,name,nameTag) {

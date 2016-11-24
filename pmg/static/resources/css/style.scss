@@ -1203,7 +1203,7 @@ body.email_alerts {
   }
 }
 
-.cte-follow-list input[type=checkbox]:not(old), .cte-signup-box input[type=checkbox]:not(old) {
+.cte-follow-list input[type=checkbox]:not(old) {
   width: 24px;
   height: 24px;
   margin: 0;
@@ -1211,36 +1211,36 @@ body.email_alerts {
   opacity: 0;
 }
 
-.cte-follow-list input[type=checkbox]:not(old) + label, .cte-signup-box input[type=checkbox]:not(old) + label {
+.cte-follow-list input[type=checkbox]:not(old) + label {
   padding-left: 28px;
   background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
   line-height: 24px;
   font-weight: normal;
 }
 
-.cte-follow-list input[type=checkbox]:not(old):checked + label, .cte-signup-box input[type=checkbox]:not(old):checked + label {
+.cte-follow-list input[type=checkbox]:not(old):checked + label {
   background: url('/static/resources/images/checked.svg') no-repeat 0 0;
 }
 
-.cte-follow-list form, .cte-signup-box form {
+.cte-follow-list form {
   margin-bottom: 0;
 }
 
-.cte-follow-list label, .cte-signup-box label {
+.cte-follow-list label {
   margin-bottom: 0;
   margin-top: -20px;
   display: block;
 }
 
-.cte-follow-list li.committee.item, .cte-signup-box .cte-signup-label {
+.cte-follow-list li.committee.item {
   margin-bottom: 10px;
 }
 
-li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
+li.committee.item.list-megamenu {
   padding-bottom: 0;
 }
 
-.cte-follow-committee input, .cte-follow-list input {
+.cte-follow-list input {
   position: relative;
   vertical-align: middle;
   bottom: -3px;
@@ -1540,4 +1540,9 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
 .mobile-menu-li {
   position: relative;
   display: block;
+}
+
+.email-box-checkbox {
+  margin-top: 0 !important;
+  vertical-align: middle;
 }

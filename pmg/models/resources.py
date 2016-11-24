@@ -602,6 +602,8 @@ class Committee(ApiResource, db.Model):
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
 
+    POPULAR_COMMITTEES = [38,19,24,98,63,28,65,62,37,111]
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)

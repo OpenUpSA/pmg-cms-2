@@ -79,7 +79,7 @@ def classify_attachments(files):
 @app.context_processor
 def inject_user_following():
     default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]
-    default_committees = load_from_api('v2/committees', return_everything=True, fields=['id','name','date'])['results'][:10]
+    default_committees = Committee.query.filter(Committee.id.in_(Committee.POPULAR_COMMITTEES)).all()
 
     megamenu = dict(default_meetings=default_meetings, default_committees=default_committees, show_default=True)
 

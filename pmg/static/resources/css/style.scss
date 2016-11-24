@@ -1203,7 +1203,7 @@ body.email_alerts {
   }
 }
 
-.cte-follow-list input[type=checkbox]:not(old), .cte-signup-box input[type=checkbox]:not(old) {
+.cte-follow-list input[type=checkbox]:not(old) {
   width: 24px;
   height: 24px;
   margin: 0;
@@ -1211,36 +1211,36 @@ body.email_alerts {
   opacity: 0;
 }
 
-.cte-follow-list input[type=checkbox]:not(old) + label, .cte-signup-box input[type=checkbox]:not(old) + label {
+.cte-follow-list input[type=checkbox]:not(old) + label {
   padding-left: 28px;
   background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
   line-height: 24px;
   font-weight: normal;
 }
 
-.cte-follow-list input[type=checkbox]:not(old):checked + label, .cte-signup-box input[type=checkbox]:not(old):checked + label {
+.cte-follow-list input[type=checkbox]:not(old):checked + label {
   background: url('/static/resources/images/checked.svg') no-repeat 0 0;
 }
 
-.cte-follow-list form, .cte-signup-box form {
+.cte-follow-list form {
   margin-bottom: 0;
 }
 
-.cte-follow-list label, .cte-signup-box label {
+.cte-follow-list label {
   margin-bottom: 0;
   margin-top: -20px;
   display: block;
 }
 
-.cte-follow-list li.committee.item, .cte-signup-box .cte-signup-label {
+.cte-follow-list li.committee.item {
   margin-bottom: 10px;
 }
 
-li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
+li.committee.item.list-megamenu {
   padding-bottom: 0;
 }
 
-.cte-follow-committee input, .cte-follow-list input {
+.cte-follow-list input {
   position: relative;
   vertical-align: middle;
   bottom: -3px;
@@ -1314,12 +1314,12 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
     z-index: 99;
     left: 0;
     margin: 0;
-    margin-top: -3px;
-    margin-left: -6px;
+    margin-top: -1px;
+    margin-left: -5px;
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    box-shadow: 0 0 3px #666;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
 }
 
 .menu > ul > li > ul:before,
@@ -1492,14 +1492,15 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
   position: relative;
   z-index: 105;
   margin-left: -5px;
-}
+  border: 1px solid transparent;
+  border-width: 0px 1px;
 
-.committees-menulink:hover {
-  background-color: #fff;
-}
-
-.committees-menulink-hover {
-  background-color: #fff;
+  &:hover,
+  &.committees-menulink-hover {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-width: 0px 1px;
+  }
 }
 
 .megamenu-cts-col {
@@ -1540,4 +1541,9 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
 .mobile-menu-li {
   position: relative;
   display: block;
+}
+
+.email-box-checkbox {
+  margin-top: 0 !important;
+  vertical-align: middle;
 }

@@ -1314,12 +1314,12 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
     z-index: 99;
     left: 0;
     margin: 0;
-    margin-top: -3px;
-    margin-left: -6px;
+    margin-top: -1px;
+    margin-left: -5px;
     list-style: none;
     box-sizing: border-box;
     border: 1px solid #ccc;
-    box-shadow: 0 0 3px #666;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
 }
 
 .menu > ul > li > ul:before,
@@ -1492,14 +1492,15 @@ li.committee.item.list-megamenu, .cte-signup-box .cte-signup-label {
   position: relative;
   z-index: 105;
   margin-left: -5px;
-}
+  border: 1px solid transparent;
+  border-width: 0px 1px;
 
-.committees-menulink:hover {
-  background-color: #fff;
-}
-
-.committees-menulink-hover {
-  background-color: #fff;
+  &:hover,
+  &.committees-menulink-hover {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-width: 0px 1px;
+  }
 }
 
 .megamenu-cts-col {

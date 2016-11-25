@@ -1203,7 +1203,7 @@ body.email_alerts {
   }
 }
 
-.cte-follow-list input[type=checkbox]:not(old) {
+.cte-follow-committee input[type=checkbox]:not(old) {
   width: 24px;
   height: 24px;
   margin: 0;
@@ -1211,14 +1211,14 @@ body.email_alerts {
   opacity: 0;
 }
 
-.cte-follow-list input[type=checkbox]:not(old) + label {
+.cte-follow-committee input[type=checkbox]:not(old) + label {
   padding-left: 28px;
   background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
   line-height: 24px;
   font-weight: normal;
 }
 
-.cte-follow-list input[type=checkbox]:not(old):checked + label {
+.cte-follow-committee input[type=checkbox]:not(old):checked + label {
   background: url('/static/resources/images/checked.svg') no-repeat 0 0;
 }
 
@@ -1522,7 +1522,7 @@ li.committee.item.list-megamenu {
 }
 
 .btn-megamenu-inline {
-  display: inline !important; 
+  display: inline !important;
 }
 
 .mm-committees-list, .mm-default-committees-list {

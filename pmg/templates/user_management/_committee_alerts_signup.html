@@ -1,5 +1,5 @@
 {% if current_user.is_authenticated() %}
-  <div class="cte-signup-box email-alert-box">
+  <div class="cte-signup-box email-alert-box text-center">
     {% if current_user.follows(committee.id) %}
     <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
     {% else %}
@@ -13,20 +13,6 @@
       <input class="email-box-checkbox" type="checkbox" />
       {% endif %}
       <label>Follow this committee.</label>
-    </form>
-    {% if current_user.gets_alerts_for(committee.id) %}
-    <form class="cte-get-alerts" action="{{ url_for('user_remove_committee_alert', committee_id=committee.id) }}" method="POST">
-    {% else %}
-    <form class="cte-get-alerts" action="{{ url_for('user_add_committee_alert', committee_id=committee.id) }}" method="POST">
-    {% endif %}
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="next" value="{{ request.url }}">
-      {% if current_user.gets_alerts_for(committee.id) %}
-      <input class="email-box-checkbox" type="checkbox" checked />
-      {% else %}
-      <input class="email-box-checkbox" type="checkbox" />
-      {% endif %}
-      <label>Get <a href="{{ url_for('email_alerts') }}">email alerts</a> for this committee.</label>
     </form>
   </div>
 {% else %}

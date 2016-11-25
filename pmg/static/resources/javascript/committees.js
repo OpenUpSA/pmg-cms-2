@@ -219,10 +219,6 @@ $cteListSearchInput.on('keyup', function(e) {
   searchIndex($(e.target).val(), $cteList, $cteListSearchResults, { twoCol: true });
 });
 
-$cteSignupBox.on('change','.cte-get-alerts input[type=checkbox]', function() {
-    $cteGetAlerts.submit();
-});
-
 function insertIntoDOMList($list,$item,$container,name,nameTag) {
   if(!!$list.length) {
     $list.each(function(i) {

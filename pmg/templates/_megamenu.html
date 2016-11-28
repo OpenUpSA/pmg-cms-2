@@ -45,7 +45,7 @@
     {% if not current_user.is_authenticated() %}
     <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path) }}">Sign in to follow committees and customise this menu</a>
     {% else %}
-    <a class="btn btn-success megamenu-cta" href="/committees">Start following committees to customise this menu</a>
+    <a class="btn btn-success megamenu-cta" href="/committees">Start following committees <span class="hidden-md">to customise this menu</span></a></a>
     {% endif %}
   </div>
   {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
@@ -61,5 +61,6 @@
       </li>
     {% endfor %}
     </ul>
+    <a class="btn btn-default megamenu-cta" href="/committee-meetings">Meetings across parliament</a>
   </div>
 </div>

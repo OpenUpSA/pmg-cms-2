@@ -8,11 +8,12 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="next" value="{{ request.url }}">
       {% if current_user.follows(committee.id) %}
-      <input class="email-box-checkbox" type="checkbox" checked />
+      <input class="checkbox" type="checkbox" checked />
+      <label>Unfollow this committee.</label>
       {% else %}
-      <input class="email-box-checkbox" type="checkbox" />
-      {% endif %}
+      <input class="checkbox" type="checkbox" />
       <label>Follow this committee.</label>
+      {% endif %}
     </form>
   </div>
 {% else %}

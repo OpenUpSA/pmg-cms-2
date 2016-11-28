@@ -2,10 +2,10 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
 
-from sqlalchemy import sql, event, func
+from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
-from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore, current_user
 
 from pmg import app, db
 import serializers
@@ -103,6 +103,9 @@ class User(db.Model, UserMixin):
     # premium committee subscriptions, in addition to any that the user's organisation might have
     subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
+    # committees that the user chooses to follow
+    following = db.relationship('Committee', secondary='user_following', passive_deletes=True)
+
     # alerts for changes to committees
     committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
@@ -145,6 +148,32 @@ class User(db.Model, UserMixin):
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
+
+    def follows(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        return committee in self.following
+
+    def get_followed_committee_meetings(self):
+        from ..models.resources import CommitteeMeeting
+        from ..api.schemas import CommitteeMeetingSchema
+        following = CommitteeMeeting.committee_id.in_([f.id for f in self.following])
+        meetings = CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date)).limit(10)
+
+        return CommitteeMeetingSchema(many=True).dump(meetings)
+
+    def follow_committee(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        self.following.append(committee)
+
+    def unfollow_committee(self, committee):
+        from ..models.resources import Committee
+        if not isinstance(committee, Committee):
+            committee = Committee.query.get(committee)
+        self.following.remove(committee)
 
     @validates('organisation')
     def validate_organisation(self, key, org):
@@ -228,6 +257,23 @@ user_committee = db.Table(
         db.Integer(),
         db.ForeignKey('committee.id', ondelete="CASCADE")))
 
+user_following = db.Table(
+    'user_following',
+    db.Column(
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete="CASCADE")),
+    db.Column(
+        'created_at',
+        db.DateTime(timezone=True),
+        index=True,
+        unique=False,
+        nullable=False,
+        server_default=func.now()))
 
 user_committee_alerts = db.Table(
     'user_committee_alerts',

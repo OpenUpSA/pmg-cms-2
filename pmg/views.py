@@ -76,6 +76,22 @@ def classify_attachments(files):
 
     return audio, related
 
+@app.context_processor
+def inject_user_following():
+    default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]
+    default_committees = Committee.query.filter(Committee.id.in_(Committee.POPULAR_COMMITTEES)).all()
+
+    megamenu = dict(default_meetings=default_meetings, default_committees=default_committees, show_default=True)
+
+    if current_user.is_authenticated():
+        # Append user-followed committees if logged in
+        megamenu['user_following'] = sorted(current_user.following[:20],key=lambda cte: cte.name)
+        megamenu['recent_meetings'] = current_user.get_followed_committee_meetings().data[:10]
+
+        if megamenu['user_following']:
+            megamenu['show_default'] = False
+
+    return megamenu
 
 @app.route('/')
 def index():
@@ -124,7 +140,8 @@ def index():
         schedule=schedule,
         scheduledates=scheduledates,
         stock_pic=stock_pic,
-        featured_content=featured_content)
+        featured_content=featured_content
+    )
 
 
 @app.route('/bills/')
@@ -252,8 +269,8 @@ def committee_detail(committee_id):
 
         filtered_meetings[meeting_year].append(meeting)
 
-    latest_year = max(y for y in filtered_meetings)
-    earliest_year = min(y for y in filtered_meetings)
+    latest_year = max(y for y in filtered_meetings) if filtered_meetings else None
+    earliest_year = min(y for y in filtered_meetings) if filtered_meetings else None
     filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
     has_meetings = len(all_meetings) > 0
 
@@ -287,13 +304,12 @@ def committee_question(question_id):
                            content_date=question['date'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
-
 @app.route('/committees/')
 def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True)['results']
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id','name','premium','ad_hoc','house'])['results']
 
     nat = {
         'name': 'National Assembly',
@@ -318,18 +334,26 @@ def committees():
         else:
             committees_type = reg_committees
 
-        if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
-            committees_type['nat']['committees'].append(committee)
-        elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
-            committees_type['ncp']['committees'].append(committee)
-        elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
-            committees_type['jnt']['committees'].append(committee)
+        if current_user.is_authenticated():
+            user_following = current_user.following
+
+            # Check if user is following committee
+            if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+                committee['followed'] = True
+
+        if committee['house']:
+            if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
+                committees_type['nat']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
+                committees_type['ncp']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
+                committees_type['jnt']['committees'].append(committee)
 
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
-        adhoc_committees=adhoc_committees)
-
+        adhoc_committees=adhoc_committees
+    )
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')

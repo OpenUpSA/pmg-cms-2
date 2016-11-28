@@ -7,7 +7,8 @@ from flask.ext.security import current_user, login_required
 
 from pmg import app, db
 from pmg.api.client import load_from_api
-from pmg.models import Committee, SavedSearch
+from pmg.models import Committee, CommitteeMeeting, SavedSearch
+import pmg.models.serializers as serializers
 
 logger = logging.getLogger(__name__)
 
@@ -54,16 +55,71 @@ def email_alerts():
         saved_searches=saved_searches)
 
 
-@app.route('/user/alerts/committees/<int:committee_id>', methods=['POST'])
-def user_committee_alert(committee_id):
+@app.route('/user/committee/alerts/add/<int:committee_id>', methods=['POST'])
+def user_add_committee_alert(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
         current_user.committee_alerts.append(Committee.query.get(committee_id))
         db.session.commit()
         ga_event('user', 'add-alert', 'cte-alert-box')
         flash("We'll send you email alerts for updates on this committee.", 'success')
 
-    return redirect(request.values.get('next', '/'))
+    return redirect(request.headers.get('referer', '/'))
 
+@app.route('/user/committee/alerts/remove/<int:committee_id>', methods=['POST'])
+def user_remove_committee_alert(committee_id):
+    if current_user.is_authenticated() and request.method == 'POST':
+        current_user.committee_alerts.remove(Committee.query.get(committee_id))
+        db.session.commit()
+        ga_event('user', 'remove-alert', 'cte-alert-box')
+        flash("We won't send you email alerts for this committee.", 'warning')
+
+    return redirect(request.headers.get('referer', '/'))
+
+@app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
+def user_follow_committee(committee_id):
+    if current_user.is_authenticated() and request.method == 'POST':
+        committee = Committee.query.get(committee_id)
+
+        if committee not in current_user.following:
+            current_user.follow_committee(committee)
+
+        if committee not in current_user.committee_alerts:
+            current_user.committee_alerts.append(committee)
+
+        db.session.commit()
+        ga_event('user', 'follow-committee', 'cte-follow-committee')
+
+    return redirect(request.headers.get('referer', '/'))
+
+@app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
+def user_unfollow_committee(committee_id):
+    if current_user.is_authenticated() and request.method == 'POST':
+        committee = Committee.query.get(committee_id)
+
+        if committee in current_user.following:
+            current_user.unfollow_committee(committee)
+
+        if committee in current_user.committee_alerts:
+            current_user.committee_alerts.remove(committee)
+
+        db.session.commit()
+        ga_event('user', 'unfollow-committee', 'cte-follow-committee')
+
+    return redirect(request.headers.get('referer', '/'))
+
+@app.route('/user/megamenu/')
+def user_megamenu():
+    if current_user.is_authenticated():
+        user_following = sorted(current_user.following,key=lambda cte: cte.name)
+        recent_meetings = current_user.get_followed_committee_meetings().data
+        show_default = True
+
+        if user_following:
+            show_default = False
+
+        return render_template('_megamenu.html', user_following=user_following, recent_meetings=recent_meetings, show_default=show_default)
+    else:
+        abort(404)
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])
 def committee_subscriptions():

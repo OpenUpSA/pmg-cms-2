@@ -4,10 +4,10 @@
 {% block committee_title %}
   <div class="row">
       {% if not committee.premium %}
-      <h1 class="col-xs-12">{{ committee.name }}</h1>
+      <h1 class="col-xs-12 committee-name">{{ committee.name }}</h1>
       {% else %}
-      <h1 class="col-xs-12 col-sm-8">{{ committee.name }}</h1>
-      <h1 class="premium col-xs-12 col-sm-4 text-sm-right"><a href="{{ url_for('committee_subscriptions') }}"><i class="fa fa-star"></i> Premium</a></h1>
+      <h1 class="col-xs-12 col-sm-8 committee-name">{{ committee.name }}</h1>
+      <div class="premium col-xs-12 col-sm-4 text-sm-right"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></div>
       {% endif %}
   </div>
   <h4 class="light-red">{{ committee.house.name }} Committee</h4>

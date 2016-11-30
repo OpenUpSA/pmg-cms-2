@@ -76,6 +76,16 @@ def classify_attachments(files):
 
     return audio, related
 
+
+@app.context_processor
+def inject_via():
+    # inject the 'via' query param into the page (easier than parsing the querystring in JS)
+    # so that we can track it with GA
+    if request.args.get('via'):
+        return {'via_tag': request.args.get('via').strip()}
+    return {'via_tag': None}
+
+
 @app.context_processor
 def inject_user_following():
     default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]

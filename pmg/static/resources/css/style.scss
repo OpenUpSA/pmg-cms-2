@@ -1256,65 +1256,40 @@ li.committee.item.list-megamenu {
     box-sizing: border-box;
 }
 
-.menu > ul > li {
-    padding: 0;
-    margin: 0;
-}
+.menu {
+  & > ul > li {
+      padding: 0;
+      margin: 0;
+  }
 
-.menu-item {
-    display: block;
-}
+  .menu-item {
+      display: block;
+  }
 
-.menu > ul > li > ul {
-    width: 90%;
-    background: #fff;
-    padding: 0;
-    position: absolute;
-    z-index: 99;
-    left: 0;
-    margin: 0;
-    margin-top: -1px;
-    margin-left: -5px;
-    list-style: none;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
-}
+  .megamenu {
+      width: 90%;
+      background: #fff;
+      padding: 0;
+      position: absolute;
+      z-index: 99;
+      left: 0;
+      margin: 0;
+      margin-top: -1px;
+      margin-left: -5px;
+      list-style: none;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);
+  }
 
-.menu > ul > li > ul:before,
-.menu > ul > li > ul:after {
-    content: "";
-    display: table;
-}
+  & > ul > li > a {
+    padding: 10px;
+  }
 
-.menu > ul > li > ul:after {
-    clear: both;
-}
-
-.menu > ul > li > ul > li {
-    margin: 0;
-    padding-bottom: 0;
-    list-style: none;
-    float: left;
-}
-
-.menu > ul > li > ul > li a {
-    padding: .2em 0;
-    width: 95%;
-    display: block;
-    border-bottom: 1px solid #ccc;
-}
-
-.menu > ul > li > ul > li > ul {
-    display: block;
-    padding: 0;
-    margin: 10px 0 0;
-    list-style: none;
-    box-sizing: border-box;
-}
-
-.menu > ul > li > a {
-  padding: 10px;
+  h3 {
+    padding-left: 15px;
+    margin-top: 10px;
+  }
 }
 
 .megamenu-header-follow {
@@ -1330,15 +1305,6 @@ li.committee.item.list-megamenu {
   border-bottom: 1px solid #ccc;
   border-top-right-radius: 4px;
 
-}
-
-.megamenu-td {
-  padding: 8px;
-}
-
-.megamenu-h3 {
-  padding-left: 15px;
-  margin-top: 10px;
 }
 
 .navbar-form .input-group .input-group-btn {

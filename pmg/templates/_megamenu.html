@@ -4,7 +4,7 @@
   {% else %}
   <div class="col-xs-5 mm-committees">
   {% endif %}
-    <h3 class="megamenu-h3">Committees you follow</h3>
+    <h3>Committees you follow</h3>
     <ul class="mm-committees-list">
       {% for committee in user_following %}
       <li data-id="{{ committee.id }}" data-follow-list="true">
@@ -19,7 +19,7 @@
   {% else %}
   <div class="col-xs-7 mm-recent-meetings">
   {% endif %}
-    <h3 class="megamenu-h3">Latest meetings of your commitees</h3>
+    <h3>Latest meetings of your commitees</h3>
     <ul class="mm-recent-meetings-list">
       {% for meeting in recent_meetings %}
       <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
@@ -34,7 +34,7 @@
   {% else %}
   <div class="col-xs-5 mm-default-committees hidden">
   {% endif %}
-    <h3 class="megamenu-h3">Popular committees</h3>
+    <h3>Popular committees</h3>
     <ul class="mm-default-committees-list">
     {% for committee in default_committees %}
     <li>
@@ -53,7 +53,7 @@
   {% else %}
   <div class="col-xs-7 mm-default-meetings hidden">
   {% endif %}
-    <h3 class="megamenu-h3">Recent meetings</h3>
+    <h3>Recent meetings</h3>
     <ul class="mm-default-meetings-list">
     {% for meeting in default_meetings %}
       <li>

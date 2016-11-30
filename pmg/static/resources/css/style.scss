@@ -1246,11 +1246,6 @@ li.committee.item.list-megamenu {
   bottom: -3px;
 }
 
-.menu-container {
-  margin: 0 auto;
-  background: #efefef;
-}
-
 .menu-mobile {
     display: none;
     padding: 20px;
@@ -1391,9 +1386,6 @@ li.committee.item.list-megamenu {
 }
 
 @media only screen and (max-width: 767px) {
-    .menu-container {
-        width: 100%;
-    }
     .menu-mobile {
         display: block;
     }

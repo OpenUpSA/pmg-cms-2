@@ -97,8 +97,7 @@
         <form class="navbar-form search-form" role="search" action="/search">
           <div class="input-group">
             {% if request.endpoint == 'index' %}
-            <input name="utm_source" type="hidden" value="homepage">
-            <input name="utm_medium" type="hidden" value="s-top">
+            <input name="via" type="hidden" value="homepage-s-top">
             {% endif %}
             <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
             <span class="input-group-btn">

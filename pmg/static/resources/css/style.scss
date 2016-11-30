@@ -1262,14 +1262,6 @@ li.committee.item.list-megamenu {
     transform: translateY(-25%);
 }
 
-.menu-dropdown-icon:before {
-    display: none;
-    cursor: pointer;
-    float: right;
-    background: #fff;
-    color: #333;
-}
-
 .menu > ul {
     margin: 0 auto 0 -5px;
     width: 100%;
@@ -1383,51 +1375,6 @@ li.committee.item.list-megamenu {
 .menu > ul > li > ul.normal-sub > li a {
     border: 0;
     padding: 1em 0;
-}
-
-@media only screen and (max-width: 767px) {
-    .menu-mobile {
-        display: block;
-    }
-    .menu-dropdown-icon:before {
-        display: block;
-    }
-    .menu > ul {
-        display: none;
-    }
-    .menu > ul > li {
-        width: 100%;
-        float: none;
-        display: block;
-    }
-    .menu > ul > li a {
-        padding: 1.5em;
-        width: 100%;
-        display: block;
-    }
-    .menu > ul > li > ul {
-        position: relative;
-    }
-    .menu > ul > li > ul.normal-sub {
-        width: 100%;
-    }
-    .menu > ul > li > ul > li {
-        float: none;
-        width: 100%;
-        margin-top: 20px;
-    }
-    .menu > ul > li > ul > li:first-child {
-        margin: 0;
-    }
-    .menu > ul > li > ul > li > ul {
-        position: relative;
-    }
-    .menu > ul > li > ul > li > ul > li {
-        float: none;
-    }
-    .menu .show-on-mobile {
-        display: block;
-    }
 }
 
 .menu > ul > li > a {

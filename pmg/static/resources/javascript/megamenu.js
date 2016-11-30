@@ -3,24 +3,6 @@ $(document).ready(function () {
 
     "use strict";
 
-
-    $('.menu > ul > li > ul:not(:has(ul))').addClass('normal-sub');
-    //Checks if drodown menu's li elements have anothere level (ul), if not the dropdown is shown as regular dropdown, not a mega menu (thanks Luka Kladaric)
-
-    $(".menu > ul").before("<a href=\"#\" class=\"menu-mobile\">Navigation</a>");
-
-    //Adds menu-mobile class (for mobile toggle menu) before the normal menu
-    //Mobile menu is hidden if width is more then 959px, but normal menu is displayed
-    //Normal menu is hidden if width is below 959px, and jquery adds mobile menu
-    //Done this way so it can be used with wordpress without any trouble
-
-    $(".menu-mobile").click(function (e) {
-        $(".menu > ul").toggleClass('show-on-mobile');
-        e.preventDefault();
-    });
-    //when clicked on mobile-menu, normal menu is shown as a list, classic rwd menu story (thanks mwl from stackoverflow)
-
-
     $(".megamenu").mouseenter(function() {
       $(".committees-menulink").addClass("committees-menulink-hover");
       $(".megamenu").show();

@@ -1246,22 +1246,6 @@ li.committee.item.list-megamenu {
   bottom: -3px;
 }
 
-.menu-mobile {
-    display: none;
-    padding: 20px;
-}
-
-.menu-mobile:after {
-    font-size: 2.5rem;
-    padding: 0;
-    float: right;
-    position: relative;
-    top: 50%;
-    -webkit-transform: translateY(-25%);
-    -ms-transform: translateY(-25%);
-    transform: translateY(-25%);
-}
-
 .menu > ul {
     margin: 0 auto 0 -5px;
     width: 100%;
@@ -1272,19 +1256,7 @@ li.committee.item.list-megamenu {
     box-sizing: border-box;
 }
 
-.menu > ul:before,
-.menu > ul:after {
-    content: "";
-    display: table;
-}
-
-.menu > ul:after {
-    clear: both;
-}
-
 .menu > ul > li {
-    float: left;
-    background: #efefef;
     padding: 0;
     margin: 0;
 }
@@ -1339,42 +1311,6 @@ li.committee.item.list-megamenu {
     margin: 10px 0 0;
     list-style: none;
     box-sizing: border-box;
-}
-
-.menu > ul > li > ul > li > ul:before,
-.menu > ul > li > ul > li > ul:after {
-    content: "";
-    display: table;
-}
-
-.menu > ul > li > ul > li > ul:after {
-    clear: both;
-}
-
-.menu > ul > li > ul > li > ul > li {
-    float: left;
-    width: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-.menu > ul > li > ul > li > ul > li a {
-    border: 0;
-}
-
-.menu > ul > li > ul.normal-sub {
-    width: 300px;
-    left: auto;
-    padding: 2px 20px;
-}
-
-.menu > ul > li > ul.normal-sub > li {
-    width: 100%;
-}
-
-.menu > ul > li > ul.normal-sub > li a {
-    border: 0;
-    padding: 1em 0;
 }
 
 .menu > ul > li > a {

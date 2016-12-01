@@ -73,6 +73,11 @@
   ga('set', 'dimension3', '{{ committee.id }} - {{ committee.name }}');
   {% endif %}
 
+  {# track the 'via' parameter? #}
+  {% if via_tag %}
+  ga('set', 'dimension4', '{{ via_tag }}');
+  {% endif %}
+
 
   ga('send', 'pageview');
 

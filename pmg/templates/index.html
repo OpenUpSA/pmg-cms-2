@@ -48,7 +48,7 @@
             {% for item in featured_content.content %}
             <div class="col-xs-12 col-sm-6 col-md-3">
               {% if item.type == 'committee-meeting' %}
-              <a href="{{ url_for('committee_meeting', event_id=item.id, utm_source='homepage', utm_medium='featured-card') }}">
+              <a href="{{ url_for('committee_meeting', event_id=item.id, via='homepage-feature-card') }}">
                 <div class="card feature-card committee-meeting">
                   <h4>{{ item.committee.name }}</h4>
                   <h5>{{ item.title|truncate(100) }}</h5>
@@ -56,7 +56,7 @@
                 </div>
               </a>
               {% elif item.type == 'page' %}
-              <a href="{{ url_for('page', pagename=item.slug, utm_source='homepage', utm_medium='featured-card') }}">
+              <a href="{{ url_for('page', pagename=item.slug, via='homepage-feature-card') }}">
                 <div class="card feature-card page">
                   <h4>{{ item.title|truncate(100) }}</h4>
                   <h5>{{ item.first_para|truncate(100) }}</h5>
@@ -83,8 +83,7 @@
           <form class="search-form" role="search" action="/search" name="middle">
             <div class="input-group">
               <input type="text" class="form-control" name="q" placeholder="Search the PMG website">
-              <input name="utm_source" type="hidden" value="homepage">
-              <input name="utm_medium" type="hidden" value="s-middle">
+              <input name="via" type="hidden" value="homepage-s-middle">
               <span class="input-group-btn">
                 <button type="submit" class="btn btn-success"> Search PMG</button>
               </span>
@@ -106,7 +105,7 @@
                 {% for committee_meeting in committee_meetings %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
 
-                    <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id, utm_source='homepage', utm_medium='meeting-card') }}">
+                    <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id, via='homepage-card') }}">
                       <div class="card">
                         <h4>{{ committee_meeting.committee.name }}</h4>
                         <h5>{{ committee_meeting.title|truncate(100) }}</h5>
@@ -134,7 +133,7 @@
               <div class="row">
                 {% for bill in bills %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
-                    <a href="{{ url_for('bill', bill_id=bill.id, utm_source='homepage', utm_medium='bill-card') }}">
+                    <a href="{{ url_for('bill', bill_id=bill.id, via='homepage-card') }}">
                       <div class="card">
                         <h4>{{ bill.title }}</h4>
                         <h5>{{ bill.introduced_by }}</h5>
@@ -161,7 +160,7 @@
               <div class="row">
                 {% for question in questions %}
                   <div class="col-xs-12 col-sm-6 col-md-4">
-                    <a href="{{ url_for('committee_question', question_id=question.id, utm_source='homepage', utm_medium='question-card') }}">
+                    <a href="{{ url_for('committee_question', question_id=question.id, via='homepage-card') }}">
                       <div class="card">
                       {% if question.code %}
                         <h4>Asked to {{ question.question_to_name }}</h4>

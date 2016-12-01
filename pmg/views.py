@@ -76,22 +76,33 @@ def classify_attachments(files):
 
     return audio, related
 
+
+@app.context_processor
+def inject_via():
+    # inject the 'via' query param into the page (easier than parsing the querystring in JS)
+    # so that we can track it with GA
+    if request.args.get('via'):
+        return {'via_tag': request.args.get('via').strip()}
+    return {'via_tag': None}
+
+
 @app.context_processor
 def inject_user_following():
-    default_meetings = load_from_api('v2/committee-meetings/', fields=['id','title','date','committee_id'])['results'][:10]
+    default_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'title', 'date', 'committee_id'])['results'][:10]
     default_committees = Committee.query.filter(Committee.id.in_(Committee.POPULAR_COMMITTEES)).all()
 
     megamenu = dict(default_meetings=default_meetings, default_committees=default_committees, show_default=True)
 
     if current_user.is_authenticated():
         # Append user-followed committees if logged in
-        megamenu['user_following'] = sorted(current_user.following[:20],key=lambda cte: cte.name)
+        megamenu['user_following'] = sorted(current_user.following[:20], key=lambda cte: cte.name)
         megamenu['recent_meetings'] = current_user.get_followed_committee_meetings().data[:10]
 
         if megamenu['user_following']:
             megamenu['show_default'] = False
 
     return megamenu
+
 
 @app.route('/')
 def index():
@@ -304,12 +315,13 @@ def committee_question(question_id):
                            content_date=question['date'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
+
 @app.route('/committees/')
 def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True, fields=['id','name','premium','ad_hoc','house'])['results']
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'house'])['results']
 
     nat = {
         'name': 'National Assembly',
@@ -354,6 +366,7 @@ def committees():
         reg_committees=reg_committees,
         adhoc_committees=adhoc_committees
     )
+
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')

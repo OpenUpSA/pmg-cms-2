@@ -8,11 +8,11 @@
     <ul class="mm-committees-list">
       {% for committee in user_following %}
       <li data-id="{{ committee.id }}" data-follow-list="true">
-        <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
+        <a href="{{ url_for('committee_detail', committee_id=committee.id, via='cte-menu') }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
       </li>
     {% endfor %}
     </ul>
-    <a class="btn btn-default megamenu-cta" href="/committees">Manage which committees you follow</a>
+    <a class="btn btn-default megamenu-cta" href="/committees?via=cte-menu">Manage which committees you follow</a>
   </div>
   {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
   <div class="col-xs-7 mm-recent-meetings hidden">
@@ -23,11 +23,11 @@
     <ul class="mm-recent-meetings-list">
       {% for meeting in recent_meetings %}
       <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id) }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
+        <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id, via='cte-menu') }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
       </li>
       {% endfor %}
     </ul>
-    <a class="btn btn-default megamenu-cta" href="/committee-meetings">Meetings across parliament</a>
+    <a class="btn btn-default megamenu-cta" href="/committee-meetings?via=cte-menu">Meetings across parliament</a>
   </div>
   {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
   <div class="col-xs-5 mm-default-committees">
@@ -38,14 +38,14 @@
     <ul class="mm-default-committees-list">
     {% for committee in default_committees %}
     <li>
-      <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a>
+      <a href="{{ url_for('committee_detail', committee_id=committee.id, via='cte-menu') }}">{{ committee.name }}</a>
     </li>
     {% endfor %}
     </ul>
     {% if not current_user.is_authenticated() %}
-    <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path) }}">Sign in to follow committees and customise this menu</a>
+    <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path, via='cte-menu') }}">Sign in to follow committees and customise this menu</a>
     {% else %}
-    <a class="btn btn-success megamenu-cta" href="/committees">Start following committees <span class="hidden-md">to customise this menu</span></a></a>
+    <a class="btn btn-success megamenu-cta" href="/committees?via=cte-menu">Start following committees <span class="hidden-md">to customise this menu</span></a></a>
     {% endif %}
   </div>
   {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
@@ -57,10 +57,10 @@
     <ul class="mm-default-meetings-list">
     {% for meeting in default_meetings %}
       <li>
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}">{{ meeting.title }}</a> | <small>{{ meeting.date | pretty_date }}</small>
+        <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a> | <small>{{ meeting.date | pretty_date }}</small>
       </li>
     {% endfor %}
     </ul>
-    <a class="btn btn-default megamenu-cta" href="/committee-meetings">Meetings across parliament</a>
+    <a class="btn btn-default megamenu-cta" href="/committee-meetings?via=cte-menu">Meetings across parliament</a>
   </div>
 </div>

@@ -7,13 +7,14 @@ from bs4 import BeautifulSoup
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
 from flask.ext.mail import Message
+from sqlalchemy import desc
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
 from pmg.models import Redirect, Page, SavedSearch
-from pmg.models.resources import Committee
+from pmg.models.resources import Committee, CommitteeMeeting
 
 from copy import deepcopy
 from collections import OrderedDict
@@ -84,24 +85,6 @@ def inject_via():
     if request.args.get('via'):
         return {'via_tag': request.args.get('via').strip()}
     return {'via_tag': None}
-
-
-@app.context_processor
-def inject_user_following():
-    default_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'title', 'date', 'committee_id'])['results'][:10]
-    default_committees = Committee.query.filter(Committee.id.in_(Committee.POPULAR_COMMITTEES)).all()
-
-    megamenu = dict(default_meetings=default_meetings, default_committees=default_committees, show_default=True)
-
-    if current_user.is_authenticated():
-        # Append user-followed committees if logged in
-        megamenu['user_following'] = sorted(current_user.following[:20], key=lambda cte: cte.name)
-        megamenu['recent_meetings'] = current_user.get_followed_committee_meetings().data[:10]
-
-        if megamenu['user_following']:
-            megamenu['show_default'] = False
-
-    return megamenu
 
 
 @app.route('/')

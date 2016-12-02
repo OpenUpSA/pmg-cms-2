@@ -1,65 +1,43 @@
 <div class="row">
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
-  <div class="col-xs-5 mm-committees hidden">
-  {% else %}
   <div class="col-xs-5 mm-committees">
-  {% endif %}
+    {% if user_follows_committees %}
     <h3>Committees you follow</h3>
+    {% else %}
+    <h3>Popular committees</h3>
+    {% endif %}
+
     <ul class="mm-committees-list">
       {% for committee in user_following %}
       <li data-id="{{ committee.id }}" data-follow-list="true">
         <a href="{{ url_for('committee_detail', committee_id=committee.id, via='cte-menu') }}">{{ committee.name }}</a>{% if committee.premium %} <span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
       </li>
-    {% endfor %}
+      {% endfor %}
     </ul>
+
+    {% if user_follows_committees %}
     <a class="btn btn-default megamenu-cta" href="/committees?via=cte-menu">Manage which committees you follow</a>
+    {% else %}
+      {% if current_user.is_authenticated() %}
+      <a class="btn btn-success megamenu-cta" href="/committees?via=cte-menu">Start following committees <span class="hidden-md">to customise this menu</span></a></a>
+      {% else %}
+      <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path, via='cte-menu') }}">Sign in to follow committees and customise this menu</a>
+      {% endif %}
+    {% endif %}
   </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
-  <div class="col-xs-7 mm-recent-meetings hidden">
-  {% else %}
+
   <div class="col-xs-7 mm-recent-meetings">
-  {% endif %}
+    {% if user_follows_committees %}
     <h3>Latest meetings of your commitees</h3>
+    {% else %}
+    <h3>Recent meetings of popular commitees</h3>
+    {% endif %}
+
     <ul class="mm-recent-meetings-list">
       {% for meeting in recent_meetings %}
       <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
         <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id, via='cte-menu') }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
       </li>
       {% endfor %}
-    </ul>
-    <a class="btn btn-default megamenu-cta" href="/committee-meetings?via=cte-menu">Meetings across parliament</a>
-  </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
-  <div class="col-xs-5 mm-default-committees">
-  {% else %}
-  <div class="col-xs-5 mm-default-committees hidden">
-  {% endif %}
-    <h3>Popular committees</h3>
-    <ul class="mm-default-committees-list">
-    {% for committee in default_committees %}
-    <li>
-      <a href="{{ url_for('committee_detail', committee_id=committee.id, via='cte-menu') }}">{{ committee.name }}</a>
-    </li>
-    {% endfor %}
-    </ul>
-    {% if not current_user.is_authenticated() %}
-    <a class="btn btn-success megamenu-cta" href="{{ url_for('security.login', next=request.path, via='cte-menu') }}">Sign in to follow committees and customise this menu</a>
-    {% else %}
-    <a class="btn btn-success megamenu-cta" href="/committees?via=cte-menu">Start following committees <span class="hidden-md">to customise this menu</span></a></a>
-    {% endif %}
-  </div>
-  {% if not current_user.is_authenticated() or (current_user.is_authenticated() and show_default) %}
-  <div class="col-xs-7 mm-default-meetings">
-  {% else %}
-  <div class="col-xs-7 mm-default-meetings hidden">
-  {% endif %}
-    <h3>Recent meetings</h3>
-    <ul class="mm-default-meetings-list">
-    {% for meeting in default_meetings %}
-      <li>
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a> | <small>{{ meeting.date | pretty_date }}</small>
-      </li>
-    {% endfor %}
     </ul>
     <a class="btn btn-default megamenu-cta" href="/committee-meetings?via=cte-menu">Meetings across parliament</a>
   </div>

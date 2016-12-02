@@ -5,7 +5,7 @@ from logging import getLogger
 from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
-from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore, current_user
+from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
 
 from pmg import app, db
 import serializers
@@ -157,11 +157,8 @@ class User(db.Model, UserMixin):
 
     def get_followed_committee_meetings(self):
         from ..models.resources import CommitteeMeeting
-        from ..api.schemas import CommitteeMeetingSchema
         following = CommitteeMeeting.committee_id.in_([f.id for f in self.following])
-        meetings = CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date)).limit(10)
-
-        return CommitteeMeetingSchema(many=True).dump(meetings)
+        return CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date))
 
     def follow_committee(self, committee):
         from ..models.resources import Committee

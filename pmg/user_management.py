@@ -4,11 +4,11 @@ from collections import defaultdict
 
 from flask import render_template, request, redirect, abort, flash, jsonify
 from flask.ext.security import current_user, login_required
+from sqlalchemy import desc
 
 from pmg import app, db
 from pmg.api.client import load_from_api
 from pmg.models import Committee, CommitteeMeeting, SavedSearch
-import pmg.models.serializers as serializers
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +65,7 @@ def user_add_committee_alert(committee_id):
 
     return redirect(request.headers.get('referer', '/'))
 
+
 @app.route('/user/committee/alerts/remove/<int:committee_id>', methods=['POST'])
 def user_remove_committee_alert(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
@@ -74,6 +75,7 @@ def user_remove_committee_alert(committee_id):
         flash("We won't send you email alerts for this committee.", 'warning')
 
     return redirect(request.headers.get('referer', '/'))
+
 
 @app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
 def user_follow_committee(committee_id):
@@ -91,6 +93,7 @@ def user_follow_committee(committee_id):
 
     return redirect(request.headers.get('referer', '/'))
 
+
 @app.route('/user/unfollow/committee/<int:committee_id>', methods=['POST'])
 def user_unfollow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
@@ -107,19 +110,14 @@ def user_unfollow_committee(committee_id):
 
     return redirect(request.headers.get('referer', '/'))
 
+
 @app.route('/user/megamenu/')
 def user_megamenu():
     if current_user.is_authenticated():
-        user_following = sorted(current_user.following,key=lambda cte: cte.name)
-        recent_meetings = current_user.get_followed_committee_meetings().data
-        show_default = True
-
-        if user_following:
-            show_default = False
-
-        return render_template('_megamenu.html', user_following=user_following, recent_meetings=recent_meetings, show_default=show_default)
+        return render_template('_megamenu.html', **get_megamenu())
     else:
         abort(404)
+
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])
 def committee_subscriptions():
@@ -155,3 +153,35 @@ def remove_search(id):
     db.session.commit()
 
     return ''
+
+
+@app.context_processor
+def inject_user_following():
+    return get_megamenu()
+
+
+def get_megamenu():
+    user_following = None
+    recent_meetings = None
+    user_follows_committees = False
+
+    if current_user.is_authenticated():
+        user_following = sorted(current_user.following, key=lambda cte: cte.name)[:20]
+        if user_following:
+            user_follows_committees = True
+            recent_meetings = current_user.get_followed_committee_meetings().limit(10)
+
+    if not user_following:
+        user_following = Committee.query.filter(Committee.id.in_(Committee.POPULAR_COMMITTEES)).all()
+
+    if not recent_meetings:
+        recent_meetings = CommitteeMeeting.query\
+            .filter(CommitteeMeeting.committee_id.in_(Committee.POPULAR_COMMITTEES))\
+            .order_by(desc(CommitteeMeeting.date))\
+            .limit(10)
+
+    return {
+        'user_follows_committees': user_follows_committees,
+        'user_following': user_following,
+        'recent_meetings': recent_meetings,
+    }

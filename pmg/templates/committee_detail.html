@@ -27,7 +27,7 @@
         <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
         <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
         <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
-        <li><a href="#qr" data-toggle="tab">Questions/replies</a></li>
+        <li><a href="#qr" data-toggle="tab">Questions and replies</a></li>
       </ul>
     </nav>
     <div class="tab-content">
@@ -37,7 +37,7 @@
             <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
             <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
             <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
-            <option data-target="#qr" data-toggle="tab" value="#qr">Questions/replies</option>
+            <option data-target="#qr" data-toggle="tab" value="#qr">Questions and replies</option>
           </select>
         </div>
       </nav>
@@ -144,13 +144,16 @@
             <td class="name">
               {# handle QuestionReply and CommitteeQuestion objects differently #}
               {% if item.date %}
-              <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.asked_by_name }}</a>
+              <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.code }} by {{ item.asked_by_name }}</a>
               {% else %}
               <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
               {% endif %}
           </td></tr>
         {% endfor %}
       </table>
+      <p>
+        <a href="{{ url_for('question_replies') }}?filter%5Bcommittee%5D={{ committee.id }}" class="btn btn-default">All questions to the Minister</a>
+      </p>
       {% else %}
       <p>
         There are no questions at this time.

@@ -10,9 +10,12 @@ SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH"
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI', 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
-SQLALCHEMY_ECHO = DEBUG
+SQLALCHEMY_ECHO = False
 
 RESULTS_PER_PAGE = 50
+# The V2 API can support much higher volumes because callers
+# can choose the fields they want
+RESULTS_PER_PAGE_V2 = 500
 
 ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
 SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models

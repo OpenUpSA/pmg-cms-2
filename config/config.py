@@ -10,7 +10,7 @@ SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH"
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
 SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI', 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
-SQLALCHEMY_ECHO = DEBUG
+SQLALCHEMY_ECHO = False
 
 RESULTS_PER_PAGE = 50
 

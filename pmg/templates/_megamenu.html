@@ -35,7 +35,13 @@
     <ul class="mm-recent-meetings-list">
       {% for meeting in recent_meetings %}
       <li data-id="{{ meeting.committee_id }}" data-follow-list="true">
-        <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a><small> | <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id, via='cte-menu') }}">{{ meeting.committee.name }}</a> | {{ meeting.date | pretty_date }}</small>
+        <a href="{{ url_for('committee_meeting', event_id=meeting.id, via='cte-menu') }}">{{ meeting.title }}</a>
+        <small>
+          {{ meeting.committee.name }}
+          {% if meeting.committee.premium %}<span class="premium"> <i class="fa fa-key"></i></span>{% endif %}
+          •
+          {{ meeting.date | pretty_date }}
+        </small>
       </li>
       {% endfor %}
     </ul>

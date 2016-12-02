@@ -256,11 +256,7 @@ def committee_detail(committee_id):
         'v2/committees/%s/members' % committee_id,
         return_everything=True)['results']
 
-    params = {
-        'filter[committee_id]': committee_id,
-        'per_page': 5
-    }
-    recent_questions = load_from_api('minister-questions-combined', params=params)['results']
+    recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
     def get_year_unicode(m_date):

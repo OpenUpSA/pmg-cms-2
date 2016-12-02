@@ -110,7 +110,7 @@ def api_resource(resource_id, base_query):
 
 
 def paginate_request_query(base_query):
-    per_page = app.config['RESULTS_PER_PAGE']
+    per_page = app.config['RESULTS_PER_PAGE_V2'] if request.endpoint.startswith('api2') else app.config['RESULTS_PER_PAGE']
     try:
         per_page = max(min(per_page, int(request.args.get('per_page', per_page))), 1)
     except ValueError:

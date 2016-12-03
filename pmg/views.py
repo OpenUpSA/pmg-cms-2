@@ -326,10 +326,8 @@ def committees():
             committees_type = reg_committees
 
         if current_user.is_authenticated():
-            user_following = current_user.following
-
             # Check if user is following committee
-            if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+            if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in current_user.following]:
                 committee['followed'] = True
 
         if committee['house']:

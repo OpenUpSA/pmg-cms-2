@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
@@ -219,7 +219,6 @@ def committee_detail(committee_id):
     Display all available detail for the committee.
     """
     committee = load_from_api('v2/committees', committee_id)['result']
-    now = datetime.now()
     filtered_meetings = {}
 
     # calls for comment
@@ -242,29 +241,22 @@ def committee_detail(committee_id):
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
-    def get_year_unicode(m_date):
-        return int(m_date[:4])
-
-    def get_month_unicode(m_date):
-        return int(m_date[5:7])
-
     all_meetings = load_from_api('v2/committees/%s/meetings' % committee_id,
                                  fields=['id', 'title', 'date'], return_everything=True)['results']
 
     for meeting in all_meetings:
-        meeting_year = get_year_unicode(meeting['date'])
-
-        if meeting_year not in filtered_meetings:
-            filtered_meetings[meeting_year] = []
-
-        filtered_meetings[meeting_year].append(meeting)
+        d = meeting['parsed_date'] = datetime.strptime(meeting['date'][:10], "%Y-%m-%d")
+        if d.year not in filtered_meetings:
+            filtered_meetings[d.year] = []
+        filtered_meetings[d.year].append(meeting)
 
     latest_year = max(y for y in filtered_meetings) if filtered_meetings else None
     earliest_year = min(y for y in filtered_meetings) if filtered_meetings else None
-    filtered_meetings['six-months'] = [m for m in all_meetings if (now.month - get_month_unicode(m['date']) <= 6) and (get_year_unicode(m['date']) == now.year)]
-    has_meetings = len(all_meetings) > 0
+    now = datetime.now()
+    six_months = timedelta(days=30 * 6)  # 6 months
+    filtered_meetings['six-months'] = [m for m in all_meetings if (now - m['parsed_date']) <= six_months]
 
-    if len(filtered_meetings['six-months']):
+    if filtered_meetings['six-months']:
         starting_filter = 'six-months'
     else:
         starting_filter = latest_year
@@ -274,7 +266,7 @@ def committee_detail(committee_id):
                            earliest_year=earliest_year,
                            filtered_meetings=filtered_meetings,
                            committee=committee,
-                           has_meetings=has_meetings,
+                           has_meetings=len(all_meetings) > 0,
                            starting_filter=starting_filter,
                            recent_questions=recent_questions,
                            admin_edit_url=admin_url('committee', committee_id))

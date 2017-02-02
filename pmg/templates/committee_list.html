@@ -158,8 +158,12 @@
                     {% else %}
                     <input type="checkbox" />
                     {% endif %}
+                    <label>
                     {% endif %}
-                    <label><a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a></label>
+                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+                    {% if current_user.is_authenticated() %}
+                    </label>
+                    {% endif %}
                 </form>
                 {% if committee.premium %}
                   <span class="premium exclude"><i class="fa fa-key"></i> <span class="text">Premium</span></span>

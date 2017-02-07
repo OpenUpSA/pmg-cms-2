@@ -2,6 +2,7 @@ from os import environ as env
 
 # dev mode?
 DEBUG = env.get('FLASK_ENV', 'development') != 'production'
+TEST = env.get('FLASK_ENV') == 'test'
 
 RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
 
@@ -9,8 +10,13 @@ WTF_CSRF_ENABLED = True
 SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
-SQLALCHEMY_DATABASE_URI = env.get('SQLALCHEMY_DATABASE_URI', 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
+SQLALCHEMY_DATABASE_URI = env.get(
+    'SQLALCHEMY_DATABASE_URI',
+    'postgresql+psycopg2://pmg:pmg@localhost/pmg_test?client_encoding=utf8' if TEST else 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
 SQLALCHEMY_ECHO = False
+# This is required only be pmg.models.resources.delete_file_from_s3 and can de turned off if
+# that is changed to use sqlalchemy events
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 RESULTS_PER_PAGE = 50
 # The V2 API can support much higher volumes because callers

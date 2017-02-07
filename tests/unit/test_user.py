@@ -1,18 +1,11 @@
-import unittest
 from nose.tools import *  # noqa
 import datetime
 
-from pmg.models import db, User
+from pmg.models import User
+from tests import PMGTestCase
 
 
-class TestUser(unittest.TestCase):
-    def setUp(self):
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
+class TestUser(PMGTestCase):
     def test_expiry(self):
         u = User()
         u.expiry = datetime.date(2010, 1, 1)

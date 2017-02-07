@@ -22,7 +22,7 @@ with open('config/logging-%s.yaml' % env) as f:
     logging.config.dictConfig(yaml.load(f))
 
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app, session_options={"autoflush": False})
 # Define naming constraints so that Alembic just works
 # See http://docs.sqlalchemy.org/en/rel_0_9/core/constraints.html#constraint-naming-conventions
 db.metadata.naming_convention = {

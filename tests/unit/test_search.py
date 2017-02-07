@@ -1,22 +1,15 @@
-import unittest
 from mock import patch
 from nose.tools import *  # noqa
 import arrow
 
+from tests import PMGTestCase
 from pmg import app
 from pmg.models import db, CommitteeMeeting
 from pmg.search import Search
 from pyelasticsearch import ElasticSearch
 
 
-class TestSearch(unittest.TestCase):
-    def setUp(self):
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
+class TestSearch(PMGTestCase):
     @patch.object(ElasticSearch, 'bulk_index')
     @patch.multiple(Search, reindex_changes=True)
     def test_new_object_reindexed(self, bulk_index):

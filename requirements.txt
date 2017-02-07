@@ -23,6 +23,7 @@ Flask-Script==2.0.5
 Flask-Security==1.7.4
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.11
+fixture==1.5.9
 funcsigs==0.4
 futures==3.0.3
 gevent==1.0.2

@@ -270,6 +270,7 @@ class File(db.Model):
         return u'%s' % self.file_path
 
 
+# TODO: change to use normal sqlalchemy events, then set SQLALCHEMY_TRACK_MODIFICATIONS to False in the config
 @models_committed.connect_via(app)
 def delete_file_from_s3(sender, changes):
     for obj, change in changes:

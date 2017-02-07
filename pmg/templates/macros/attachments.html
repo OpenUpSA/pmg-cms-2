@@ -20,7 +20,6 @@
   </div>
 {%- endmacro %}
 
-
 {% macro audio_attachments(SOUNDCLOUD_APP_KEY_ID, items) -%}
   <div class="panel panel-default">
     <div class="panel-heading">
@@ -69,3 +68,60 @@
     </div>
   </div>
 {%- endmacro %}
+
+{% macro attendance() -%}
+<div class="panel panel-default attendance">
+  <div class="panel-heading">
+    <h4 class="panel-title">Attendance</h4>
+  </div>
+  <div>
+    <ul class="list-unstyled list-spaced">
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/nomalungelo-gina/"><img class="member-profile-pic" src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/Gina_Nomalungelo.jpg" alt="Profile picture: Gina, Ms N"></a>
+        <h4><a href="http://www.pa.org.za/person/nomalungelo-gina/">Gina, Ms N</a></h4>
+        <span class="label label-success">Chairperson</span>
+        <span class="label label-default">ANC</span>
+        <span class="label label-default">Present</span>
+      </li>
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/cynthia-nocollege-majeke/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/images/committee-members/resize/majeke_ms_cn-majeke_cynthia_nokholege.jpg" alt="Profile picture: Majeke, Ms CN"></a>
+        <h4><a href="http://www.pa.org.za/person/cynthia-nocollege-majeke/">Majeke, Ms CN</a></h4>
+        <span class="label label-default">UDM</span>
+        <span class="label label-default">Present</span>
+      </li>
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/nthibane-rebecca-mokoto/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/images/committee-members/resize/mokoto_ms_n_-mokoto_nthibane_rebecca_0012.jpg" alt="Profile picture: Mokoto, Ms N"></a>
+        <h4><a href="http://www.pa.org.za/person/nthibane-rebecca-mokoto/">Mokoto, Ms N</a></h4>
+        <span class="label label-default">ANC</span>
+        <span class="label label-default">Arrived late</span>
+      </li>   
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/timothy-zanoxolo-matsebane-khoza/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/images/committee-members/resize/khoza_mr_t_-khoza_timothy_zanoxolo_matsebane.jpg" alt="Profile picture: Khoza, Mr T"></a>
+        <h4><a href="http://www.pa.org.za/person/timothy-zanoxolo-matsebane-khoza/">Khoza, Mr T</a></h4>
+        <span class="label label-default">ANC</span>
+        <span class="label label-default">Present</span>
+      </li>
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/ngwanamakwetle-reneiloe-mashabela/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/Mashabela_Ngwanamakwetle_Reneiloe.jpg" alt="Profile picture: Mashabela, Ms N"></a>
+        <h4><a href="http://www.pa.org.za/person/ngwanamakwetle-reneiloe-mashabela/">Mashabela, Ms N</a></h4>
+        <span class="label label-default">EFF</span>
+        <span class="label label-default">Departed early</span>
+      </li>
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/mandlenkosi-sicelo-mabika/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/images/committee-members/resize/mabika_mr_m_-mabika_mandlenkosi_7.jpg" alt="Profile picture: Mabika, Mr M"></a>
+        <h4><a href="http://www.pa.org.za/person/mandlenkosi-sicelo-mabika/">Mabika, Mr M</a></h4>
+        <span class="label label-default">NFP</span>
+        <span class="label label-default">Present</span>
+      </li>
+      <li class="clearfix">
+        <a href="http://www.pa.org.za/person/lulama-maxwell-ntshayisa/"><img class="member-profile-pic " src="http://pmg-assets.s3-website-eu-west-1.amazonaws.com/images/committee-members/resize/ntshayisa_mr_l-nthayisa_lulama_maxwell_0005.jpg" alt="Profile picture: Ntshayisa, Mr LM"></a>
+        <h4><a href="http://www.pa.org.za/person/lulama-maxwell-ntshayisa/">Ntshayisa, Mr LM</a></h4>
+        <span class="label label-default">AIC</span>
+        <span class="label label-default">Present</span>
+      </li>
+      <div class="number-absent">7 committee members were absent</div>
+    </ul>
+  </div>
+</div>
+{%- endmacro %}
+

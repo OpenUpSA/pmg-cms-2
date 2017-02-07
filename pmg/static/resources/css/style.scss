@@ -953,6 +953,17 @@ body.email_alerts {
   max-height: 150px;
 }
 
+.attendance {
+  li {
+    margin: 0px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  .number-absent {
+    margin: 10px;
+  }
+}
+
 .cte-dtl-meetings-nav {
   .nav-tabs {
     li {

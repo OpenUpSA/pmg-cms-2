@@ -1,5 +1,5 @@
 {% extends "committee_layout.html" %}
-{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
+{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills, attendance %}
 
 {% block title %}{{ event.title }} | PMG{% endblock %}
 
@@ -76,6 +76,8 @@
     {% if event.bills %}
       {{ related_bills(event.bills) }}
     {% endif %}
+
+    {{ attendance() }}
 
     {% if event.body %}
     {# show this only if there is an event body, otherwise it looks like it shows up twice. #}

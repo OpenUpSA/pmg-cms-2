@@ -30,6 +30,7 @@ api = Blueprint('api', __name__)
 # faulty passed records for alternate members
 MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
 
+
 def load_user():
     login_mechanisms = {
         'token': lambda: _check_token(),
@@ -259,27 +260,6 @@ def search():
             q + "&page=0" + "&per_page=" + str(per_page)
 
     return send_api_response(result)
-
-
-@api.route('/featured/')
-def featured():
-    info = {}
-
-    feature = db.session.query(Featured).order_by(desc(Featured.start_date)).first()
-    if feature:
-        info['feature'] = serializers.to_dict(feature)
-
-    committee_meetings = CommitteeMeeting.query\
-        .filter(CommitteeMeeting.featured == True)\
-        .order_by(desc(CommitteeMeeting.date))\
-        .all()  # noqa
-    pages = Page.query\
-        .filter(Page.featured == True)\
-        .order_by(desc(Page.updated_at))\
-        .all()  # noqa
-    info['committee_meetings'] = [serializers.to_dict(c) for c in committee_meetings]
-    info['pages'] = [serializers.to_dict(c) for c in pages]
-    return send_api_response(info)
 
 
 @api.route('/bill/<int:bill_id>/')

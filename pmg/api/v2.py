@@ -1,5 +1,4 @@
 from flask import request, Blueprint, abort
-from flask.ext.security import current_user
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 
@@ -9,6 +8,7 @@ from pmg.api.schemas import *  # noqa
 
 
 api = Blueprint('api2', __name__)
+
 
 def get_api_fields():
     fields = request.args.get('fields') or ''
@@ -104,6 +104,7 @@ def committee_meetings(id=None):
     else:
         return api_list_items(CommitteeMeeting.list(), CommitteeMeetingSchema)
 
+
 @api.route('/committee-meetings/<int:id>/attendance')
 def committee_meeting_attendance(id):
     item = CommitteeMeeting.query.filter(CommitteeMeeting.id == id).first()
@@ -112,3 +113,12 @@ def committee_meeting_attendance(id):
 
     query = CommitteeMeetingAttendance.query.filter(CommitteeMeetingAttendance.meeting == item)
     return api_list_items(query, CommitteeMeetingAttendanceSchema)
+
+
+@api.route('/minister-questions/')
+@api.route('/minister-questions/<int:id>')
+def minister_questions(id=None):
+    if id:
+        return api_get_item(id, CommitteeQuestion, CommitteeQuestionSchema)
+    else:
+        return api_list_items(CommitteeQuestion.list(), CommitteeQuestionSchema)

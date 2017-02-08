@@ -162,14 +162,9 @@
                   <div class="col-xs-12 col-sm-6 col-md-4">
                     <a href="{{ url_for('committee_question', question_id=question.id, via='homepage-card') }}">
                       <div class="card">
-                      {% if question.code %}
                         <h4>Asked to {{ question.question_to_name }}</h4>
                         <h5>{{ question.question|truncate(100) }}</h5>
                         <h6>{{ question.date|pretty_date|nbsp|safe }}</h6>
-                      {% else %}
-                        <h4>Asked to Minister of {{ question.title }}</h4>
-                        <h6>{{ question.start_date|pretty_date|nbsp|safe }}</h6>
-                      {% endif %}
                       </div>
                     </a>
                   </div>

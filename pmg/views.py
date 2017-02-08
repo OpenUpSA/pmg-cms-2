@@ -3,18 +3,18 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
+from sqlalchemy import desc
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
 from flask.ext.mail import Message
-from sqlalchemy import desc
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch
-from pmg.models.resources import Committee, CommitteeMeeting
+from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting
+from pmg.models.resources import Committee
 
 from copy import deepcopy
 from collections import OrderedDict
@@ -78,6 +78,45 @@ def classify_attachments(files):
     return audio, related
 
 
+def get_featured_content():
+    info = {}
+
+    info['feature'] = Featured.query.order_by(desc(Featured.start_date)).first()
+    info['committee_meetings'] = CommitteeMeeting.query\
+        .filter(CommitteeMeeting.featured == True)\
+        .order_by(desc(CommitteeMeeting.date))\
+        .limit(12)\
+        .all()  # noqa
+
+    info['pages'] = Page.query\
+        .filter(Page.featured == True)\
+        .order_by(desc(Page.updated_at))\
+        .limit(12)\
+        .all()  # noqa
+
+    for page in info['pages']:
+        page.type = 'page'
+
+        # use the first sentence as an excerpt for the page
+        soup = BeautifulSoup(page.body, "html.parser")
+        for idx, p in enumerate(soup.findAll('p')):
+            if idx == 0 and (p.findAll('strong')
+                             or p.findAll('h1')
+                             or p.findAll('h2')):
+                # Skip first para if it contains strong - probably a heading
+                continue
+            p_texts = p.findAll(text=True)
+            if p_texts:
+                page.first_para = p_texts[0]
+                break
+
+    # choose most recent 12 pages and meetings
+    info['content'] = info['committee_meetings'] + info['pages']
+    info['content'] = sorted(info['content'], key=lambda x: getattr(x, 'date', getattr(x, 'updated_at')), reverse=True)[:12]
+
+    return info
+
+
 @app.context_processor
 def inject_via():
     # inject the 'via' query param into the page (easier than parsing the querystring in JS)
@@ -89,52 +128,18 @@ def inject_via():
 
 @app.route('/')
 def index():
-    logger.info("Loading index page")
-    committee_meetings = load_from_api('committee-meeting')['results'][:11]
+    committee_meetings = load_from_api('v2/committee-meetings', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
-    questions = load_from_api('minister-questions-combined')['results'][:11]
-    schedule = load_from_api('schedule')["results"]
-    scheduledates = []
-    curdate = False
-    for item in schedule:
-        if item["meeting_date"] != curdate:
-            curdate = item["meeting_date"]
-            scheduledates.append(curdate)
-    stock_pic = "sa-parliament.jpg"
-
-    featured_content = load_from_api('featured')
-    pages = featured_content.get('pages', [])[:12]
-    for page in pages:
-        page['type'] = 'page'
-
-        # use the first sentence as an excerpt for the page
-        soup = BeautifulSoup(page['body'], "html.parser")
-        for idx, p in enumerate(soup.findAll('p')):
-            if idx == 0 and (p.findAll('strong')
-                             or p.findAll('h1')
-                             or p.findAll('h2')):
-                # Skip first para if it contains strong - probably a heading
-                continue
-            p_texts = p.findAll(text=True)
-            if p_texts:
-                page['first_para'] = p_texts[0]
-                break
-
-    # choose most recent 12 pages and meetings
-    featured_sample = featured_content['committee_meetings'][:12] + pages
-    featured_sample.sort(key=lambda x: x.get('date') or x.get('updated_at'), reverse=True)
-    featured_content['content'] = featured_sample[:12]
+    questions = load_from_api('v2/minister-questions', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
 
     return render_template(
         'index.html',
         committee_meetings=committee_meetings,
         bills=bills[:11],
         questions=questions,
-        schedule=schedule,
-        scheduledates=scheduledates,
-        stock_pic=stock_pic,
-        featured_content=featured_content
+        stock_pic="sa-parliament.jpg",
+        featured_content=get_featured_content(),
     )
 
 

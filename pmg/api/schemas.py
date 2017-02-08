@@ -2,7 +2,7 @@ from marshmallow import fields
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party)
+                        Membership, Party, CommitteeQuestion, File, Minister)
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -89,7 +89,41 @@ class MembershipSchema(ma.ModelSchema):
     member = fields.Nested('MemberSchema')
     chairperson = fields.Boolean(attribute="chairperson")
 
+
 class PartySchema(ma.ModelSchema):
     class Meta:
         model = Party
-        fields = ('id','name')
+        fields = ('id', 'name')
+
+
+class FileSchema(ma.ModelSchema):
+    class Meta:
+        model = File
+        fields = ('id', 'title', 'description', 'origname', 'file_mime', 'file_bytes', 'url', 'file_path')
+
+
+class MinisterSchema(ma.ModelSchema):
+    class Meta:
+        model = Minister
+        fields = ('id', 'name')
+        # TODO: add _links and link to questions to this minister
+
+
+class CommitteeQuestionSchema(ma.ModelSchema):
+    class Meta:
+        model = CommitteeQuestion
+        fields = ('id', 'date', 'intro', 'year', 'code',
+                  'answer', 'answer_type', 'asked_by_member_id', 'asked_by_name', 'asked_by_member',
+                  'question', 'question_number', 'question_to_name',
+                  'committee_id', 'committee',
+                  'created_at', 'updated_at',
+                  'written_number', 'oral_number', 'president_number', 'deputy_president_number',
+                  'house', 'house_id', 'minister', 'minister_id',
+                  'translated', 'source_file', 'url', '_links',)
+    committee = fields.Nested('CommitteeSchema')
+    asked_by_member = fields.Nested('MemberSchema')
+    minister = fields.Nested('MinisterSchema')
+    source_file = fields.Nested('FileSchema')
+    _links = ma.Hyperlinks({
+        'self': ma.AbsoluteUrlFor('api2.minister_questions', id="<id>"),
+    })

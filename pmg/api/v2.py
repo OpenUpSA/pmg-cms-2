@@ -122,3 +122,12 @@ def minister_questions(id=None):
         return api_get_item(id, CommitteeQuestion, CommitteeQuestionSchema)
     else:
         return api_list_items(CommitteeQuestion.list(), CommitteeQuestionSchema)
+
+
+@api.route('/members/')
+@api.route('/members/<int:id>')
+def members(id=None):
+    if id:
+        return api_get_item(id, Member, MemberSchema)
+    else:
+        return api_list_items(Member.list(), MemberSchema)

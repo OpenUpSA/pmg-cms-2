@@ -90,9 +90,10 @@ def inject_via():
 @app.route('/')
 def index():
     committee_meetings = load_from_api('v2/committee-meetings', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
+    # TODO: optimise
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
-    questions = load_from_api('minister-questions-combined')['results'][:11]
+    questions = load_from_api('v2/minister-questions', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
     schedule = load_from_api('schedule')["results"]
     scheduledates = []
     curdate = False

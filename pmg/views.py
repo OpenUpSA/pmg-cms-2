@@ -594,16 +594,15 @@ def gazette(gazette_id):
 
 
 @app.route('/members/')
-def members(page=0):
+def members():
+    """ All MPs.
     """
-    Page through all available members.
-    """
-    members = load_from_api('member', return_everything=True, page=page)['results']
+    members = load_from_api('v2/members', return_everything=True)['results']
 
     # partition by house
     members_by_house = {}
     for member in members:
-        if member.get('house'):
+        if member.get('house') and member['current']:
             members_by_house.setdefault(member['house']['name'], []).append(member)
     colsize = 12 / len(members_by_house)
 

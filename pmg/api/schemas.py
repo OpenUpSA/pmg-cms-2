@@ -76,8 +76,9 @@ class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
 class MemberSchema(ma.ModelSchema):
     class Meta:
         model = Member
-        fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_url', 'current')
+        fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_url', 'current', 'house')
     party = fields.Nested('PartySchema')
+    house = fields.Nested('HouseSchema')
     pa_url = fields.String(attribute="pa_url")
     profile_pic_url = fields.String(attribute="full_profile_pic_url")
 

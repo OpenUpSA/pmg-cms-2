@@ -1,7 +1,7 @@
 {% macro attachments_panel(title, items, icon) -%}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h4 class="panel-title">{{ title }}
+      <h4 class="panel-title">{{ title }}</h4>
     </div>
     <div class="panel-body">
       {% if items %}
@@ -20,10 +20,11 @@
   </div>
 {%- endmacro %}
 
+
 {% macro audio_attachments(SOUNDCLOUD_APP_KEY_ID, items) -%}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h4 class="panel-title">Audio
+      <h4 class="panel-title">Audio</h4>
     </div>
     <div class="panel-body">
       {% if items %}
@@ -54,7 +55,7 @@
 {% macro related_bills(bills) -%}
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h4 class="panel-title">Bills
+      <h4 class="panel-title">Bills</h4>
     </div>
     <div class="panel-body">
       <ul class="fa-ul">

@@ -9,11 +9,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 SOUNDCLOUD_ARTWORK_PATH = 'pmg/static/resources/images/logo-artwork.png'
-UNFINISHED_STATES = [
-    'storing',
-    'stored',
-    'processing',
-]
 
 
 class SoundcloudTrack(db.Model):
@@ -164,7 +159,7 @@ class SoundcloudTrack(db.Model):
     @classmethod
     def sync_upload_state(cls, client):
         tracks = db.session.query(cls) \
-                           .filter(cls.state.in_(UNFINISHED_STATES)) \
+                           .filter(cls.state == 'processing') \
                            .order_by(cls.created_at).all()
         for track in tracks:
             track.sync_state(client)

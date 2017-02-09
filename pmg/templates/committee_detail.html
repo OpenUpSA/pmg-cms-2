@@ -165,66 +165,54 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">Members</h4>
-    </div>
-    <div class="panel-body">      
-    {% if committee.memberships %}
-      {% set break = 0.5 * committee.memberships | length %}
-      {% set break = break | int %}
-      <div class="row">
-        <div class="col-sm-12">
-          <ul class="list-unstyled list-spaced">
+  <h3><span class="fa fa-group"></span> Members</h3>
+  {% if committee.memberships %}
+    {% set break = 0.5 * committee.memberships | length %}
+    {% set break = break | int %}
+    <div class="row">
+      <div class="col-sm-12">
+        <ul class="list-unstyled list-spaced">
 
-            {% for membership in committee.memberships %}
-              {% set member = membership.member %}
-              {% if membership.chairperson %}
-                <li class="clearfix">{{ member_badge(member, chairperson=True) }}</li>
-                <hr>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
+          {% for membership in committee.memberships %}
+            {% set member = membership.member %}
+            {% if membership.chairperson %}
+              <li class="clearfix">{{ member_badge(member, chairperson=True) }}</li>
+              <hr>
+            {% endif %}
+          {% endfor %}
+        </ul>
       </div>
-
-      <div class="row">
-        <div class="col-sm-6">
-          <ul class="list-unstyled list-spaced">
-            {% for membership in committee.memberships[0:break] %}
-              {% set member = membership.member %}
-              {% if not membership.chairperson %}
-                <li class="clearfix">{{ member_badge(member) }}</li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="col-sm-6">
-          <ul class="list-unstyled list-spaced">
-            {% for membership in committee.memberships[break::] %}
-              {% set member = membership.member %}
-              {% if not membership.chairperson %}
-                <li class="clearfix">{{ member_badge(member) }}</li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
-      {% else %}
-        <p class="lead">We don't have membership info for this committee.</p>
-      {% endif %}
     </div>
-  </div>
+
+    <div class="row">
+      <div class="col-sm-6">
+        <ul class="list-unstyled list-spaced">
+          {% for membership in committee.memberships[0:break] %}
+            {% set member = membership.member %}
+            {% if not membership.chairperson %}
+              <li class="clearfix">{{ member_badge(member) }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="col-sm-6">
+        <ul class="list-unstyled list-spaced">
+          {% for membership in committee.memberships[break::] %}
+            {% set member = membership.member %}
+            {% if not membership.chairperson %}
+              <li class="clearfix">{{ member_badge(member) }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <p class="lead">We don't have membership info for this committee.</p>
+  {% endif %}
 
   {% if committee.contact_details %}
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">Contact</h4>
-      </div>
-      <div class="panel-body">      
-        {{ committee.contact_details|safe }}
-      </div>
-    </div>
+    <h3><span class="fa fa-envelope"></span> Contact</h3>
+    {{ committee.contact_details|safe }}
   {% endif %}
   <!-- /Members -->
 {% endblock %}

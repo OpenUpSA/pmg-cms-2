@@ -956,11 +956,21 @@ body.email_alerts {
 .attendance {
   li {
     margin: 0px;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    padding: 10px 15px;
+    border-top: 1px solid #ddd;
+    
+    img {
+      margin-right: 10px;
+    }
   }
   .number-absent {
     margin: 10px;
+  }
+  .list-unstyled {
+    margin-bottom: 0;
+  }
+  .panel-heading {
+    border-bottom: none;
   }
 }
 

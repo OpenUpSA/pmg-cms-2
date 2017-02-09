@@ -371,7 +371,6 @@ def committee_meetings(page=0):
         committees=committees,
         filters=filters)
 
-
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
@@ -388,17 +387,25 @@ def committee_meeting(event_id):
 
     audio, related_docs = classify_attachments(event.get('files', []))
 
+    attendance = load_from_api(
+        'v2/committee-meetings/%s/attendance' % event_id,
+        return_everything=True)['results']
+    attendance = [a for a in attendance if a['attendance'] != 'A']
+    sorter = lambda x: x['member']['name']
+    attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
+                 sorted([a for a in attendance if not a['chairperson']], key=sorter)
+
     return render_template(
         'committee_meeting.html',
         event=event,
         committee=event['committee'],
         audio=audio,
         related_docs=related_docs,
+        attendance=attendance,
         premium_committees=premium_committees,
         content_date=event['date'],
         admin_edit_url=admin_url('committee-meeting', event_id),
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID'])
-
 
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')

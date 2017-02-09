@@ -77,6 +77,32 @@
       {{ related_bills(event.bills) }}
     {% endif %}
 
+    <div class="panel panel-default attendance">
+      <div class="panel-heading">
+        <h4 class="panel-title">Present</h4>
+      </div>
+      <div>
+        <ul class="list-unstyled list-spaced mp-list">
+          {% if attendance %}
+            {% for item in attendance %}
+              <li class="clearfix">
+                <a href="{{ item.member.pa_url }}"><img class="member-profile-pic" src="{{ item.member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="Profile picture: {{ item.member.name }}"></a>
+                <a href="{{ item.member.pa_url }}">{{ item.member.name }}</a>
+                {% if item.chairperson == true %}
+                  <span class="label label-success">Chairperson</span>
+                {% endif %}
+                <div class="text-muted">{{ item.member.party.name }}</div>
+              </li>
+            {% endfor %}
+          {% else %}
+            <li class="clearfix">
+              <span>We don't have attendance info for this committee</span>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
     {% if event.body %}
     {# show this only if there is an event body, otherwise it looks like it shows up twice. #}
     <div class="text-right hidden-xs">

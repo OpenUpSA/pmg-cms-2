@@ -210,6 +210,12 @@ class SoundcloudTrack(db.Model):
                     if get_result.response.status_code != 404:
                         raise Exception("Can't tell if track %s that we attempted " +\
                                         "to delete is still there." % self.uri)
+            elif delete_result.response.status_code == 404:
+                logging.info("Track %s was already missing from SoundCloud when " +\
+                             "to retry %r" % (self.uri, self))
+            elif delete_result.response.status_code != 200:
+                raise Exception("Unexpected result when deleting %s from " +\
+                                "SoundCloud" % self)
         # If we get here we expect that we've successfully deleted
         # the failed track from SoundCloud.
         # Indicate that we've started uploading

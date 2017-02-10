@@ -108,6 +108,7 @@ class SoundcloudTrack(db.Model):
             )
 
     def sync_state(self, client):
+        logging.info("Checking state of %s", self.uri)
         track = client.get(self.uri)
         if track.state != self.state:
             self.state = track.state

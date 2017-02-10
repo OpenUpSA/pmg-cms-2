@@ -207,8 +207,8 @@ class SoundcloudTrack(db.Model):
                     # not sure it was deleted so don't continue the retry, just
                     # let the next retry try to delete again and continue if
                     # it's finished deleting by then.
-                    logging.info("Tried to delete but track %s but apparently " +\
-                                 "it's still there" % self.uri)
+                    logging.info(("Tried to delete but track %s but apparently " +\
+                                  "it's still there") % self.uri)
                     return
                 except HTTPError as get_result:
                     if get_result.response.status_code != 404:

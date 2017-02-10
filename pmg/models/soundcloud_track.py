@@ -69,30 +69,29 @@ class SoundcloudTrack(db.Model):
         soundcloud_track = cls(file=file)
         db.session.add(soundcloud_track)
         db.session.commit()
-        cls._upload(client, soundcloud_track, file)
+        soundcloud_track._upload(client)
 
-    @staticmethod
-    def _upload(client, soundcloud_track, file):
-        with file.open() as file_handle:
-            logging.info("Uploading to SoundCloud: %s" % file)
+    def _upload(self, client):
+        with self.file.open() as file_handle:
+            logging.info("Uploading to SoundCloud: %s" % self.file)
             track = client.post('/tracks', track={
-                'title': file.title,
-                'description': SoundcloudTrack._html_description(file),
+                'title': self.file.title,
+                'description': SoundcloudTrack._html_description(self.file),
                 'sharing': 'public',
                 'asset_data': file_handle,
                 'license': 'cc-by',
                 'artwork_data': open(SOUNDCLOUD_ARTWORK_PATH, 'rb'),
-                'genre': file.event_files[0].event.type,
-                'tag_list': file.event_files[0].event.type,
+                'genre': self.file.event_files[0].event.type,
+                'tag_list': self.file.event_files[0].event.type,
                 'downloadable': 'true',
                 'streamable': 'true',
                 'feedable': 'true',
             })
-            logging.info("Done uploading to SoundCloud: %s" % file)
+            logging.info("Done uploading to SoundCloud: %s" % self.file)
             file_handle.close()
 
-            soundcloud_track.uri = track.uri
-            soundcloud_track.state = track.state
+            self.uri = track.uri
+            self.state = track.state
             db.session.commit()
 
 
@@ -133,7 +132,7 @@ class SoundcloudTrack(db.Model):
                         client_secret=app.config['SOUNDCLOUD_APP_KEY_SECRET'],
                         username=app.config['SOUNDCLOUD_USERNAME'],
                         password=app.config['SOUNDCLOUD_PASSWORD'])
-        cls.upload_files(client)
+        #cls.upload_files(client)
         cls.sync_upload_state(client)
         cls.handle_failed(client)
 
@@ -188,34 +187,35 @@ class SoundcloudTrack(db.Model):
                 # Sometimes tracks apparently go from failed to finished. Yeah.
                 soundcloud_track.sync_state(client)
                 if soundcloud_track.state == 'failed':
-                    logging.info("Retrying failed soundcloud track %r" % soundcloud_track)
-                    retry = SoundcloudTrackRetry(soundcloud_track=soundcloud_track)
-                    db.session.add(retry)
-                    db.session.commit()
-                    try:
-                        client.delete(soundcloud_track.uri)
-                    except HTTPError as delete_result:
-                        # Handle brokenness at SoundCloud where deleting a track
-                        # results with an HTTP 500 response yet the track
-                        # is gone (HTTP 404) when you try to GET it.
-                        if delete_result.response.status_code == 500:
-                            try:
-                                client.get(soundcloud_track.uri)
-                                # If the delete gves a 500 and the GET doesn't
-                                # give a 404, something bad happened.
-                                raise Exception("Tried to delete but track %s " +\
-                                                "still there" % soundcloud_track.uri)
-                            except HTTPError as get_result:
-                                if get_result.response.status_code != 404:
-                                    raise Exception("Can't tell if track %s " +\
-                                                    "that we attempted to delete "+\
-                                                    "is still there." % soundcloud_track.uri)
-                    # If we get here we expect that we've successfully deleted
-                    # the failed track from SoundCloud.
-                    # Indicate that we've started uploading
-                    soundcloud_track.state = None
-                    db.session.commit()
-                    cls._upload(client, soundcloud_track, soundcloud_track.file)
+                    soundcloud_track.retry_upload(client)
+
+    def retry_upload(self, client):
+        logging.info("Retrying failed soundcloud track %r" % self)
+        retry = SoundcloudTrackRetry(soundcloud_track=self)
+        db.session.add(retry)
+        db.session.commit()
+        try:
+            client.delete(self.uri)
+        except HTTPError as delete_result:
+            # Handle brokenness at SoundCloud where deleting a track
+            # results with an HTTP 500 response yet the track
+            # is gone (HTTP 404) when you try to GET it.
+            if delete_result.response.status_code == 500:
+                try:
+                    client.get(self.uri)
+                    # If the delete gves a 500 and the GET doesn't
+                    # give a 404, something bad happened.
+                    raise Exception("Tried to delete but track %s still there" % self.uri)
+                except HTTPError as get_result:
+                    if get_result.response.status_code != 404:
+                        raise Exception("Can't tell if track %s that we attempted " +\
+                                        "to delete is still there." % self.uri)
+        # If we get here we expect that we've successfully deleted
+        # the failed track from SoundCloud.
+        # Indicate that we've started uploading
+        self.state = None
+        db.session.commit()
+        self._upload(client)
 
 
 class SoundcloudTrackRetry(db.Model):

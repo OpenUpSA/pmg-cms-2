@@ -239,9 +239,12 @@ def committee_detail(committee_id):
         return_everything=True)['results']
 
     # memberships
-    committee['memberships'] = load_from_api(
+    membership = load_from_api(
         'v2/committees/%s/members' % committee_id,
         return_everything=True)['results']
+    sorter = lambda x: x['member']['name']
+    membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
+                 sorted([m for m in membership if not m['chairperson']], key=sorter)
 
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
@@ -271,6 +274,7 @@ def committee_detail(committee_id):
                            earliest_year=earliest_year,
                            filtered_meetings=filtered_meetings,
                            committee=committee,
+                           membership=membership,
                            has_meetings=len(all_meetings) > 0,
                            starting_filter=starting_filter,
                            recent_questions=recent_questions,

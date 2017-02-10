@@ -1,5 +1,4 @@
 {% extends "committee_layout.html" %}
-{% from 'macros/members.html' import member_badge %}
 
 {% block committee_title %}
   <div class="row">
@@ -165,54 +164,38 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
-  <h3><span class="fa fa-group"></span> Members</h3>
-  {% if committee.memberships %}
-    {% set break = 0.5 * committee.memberships | length %}
-    {% set break = break | int %}
-    <div class="row">
-      <div class="col-sm-12">
-        <ul class="list-unstyled list-spaced">
-
-          {% for membership in committee.memberships %}
-            {% set member = membership.member %}
-            {% if membership.chairperson %}
-              <li class="clearfix">{{ member_badge(member, chairperson=True) }}</li>
-              <hr>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-sm-6">
-        <ul class="list-unstyled list-spaced">
-          {% for membership in committee.memberships[0:break] %}
-            {% set member = membership.member %}
-            {% if not membership.chairperson %}
-              <li class="clearfix">{{ member_badge(member) }}</li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="col-sm-6">
-        <ul class="list-unstyled list-spaced">
-          {% for membership in committee.memberships[break::] %}
-            {% set member = membership.member %}
-            {% if not membership.chairperson %}
-              <li class="clearfix">{{ member_badge(member) }}</li>
-            {% endif %}
-          {% endfor %}
-        </ul>
-      </div>
-    </div>
-  {% else %}
-    <p class="lead">We don't have membership info for this committee.</p>
-  {% endif %}
-
-  {% if committee.contact_details %}
-    <h3><span class="fa fa-envelope"></span> Contact</h3>
-    {{ committee.contact_details|safe }}
-  {% endif %}
   <!-- /Members -->
+  <div class="panel panel-default membership">
+    <div class="panel-heading">
+      <h4 class="panel-title">Membership</h4>
+    </div>
+    <div class="panel-body">
+      {% if membership %}
+        {% for item in membership %}
+          <div class="cte-member-box {% if item.chairperson == true %}cte-chairperson-box{% endif %}">
+            <ul class="media-list">
+              <li class="media">
+                <div class="media-left">
+                  <a href="{{ item.member.pa_url }}">
+                    <img class="member-profile-pic media-object" src="{{ item.member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="Profile picture: {{ item.member.name }}">
+                  </a>
+                </div>
+                <div class="media-body">
+                  <a href="{{ item.member.pa_url }}">{{ item.member.name }}</a>
+                  <div class="text-muted">{{ item.member.party.name }}</div>
+                  {% if item.chairperson == true %}
+                    <span class="label label-success">Chairperson</span>
+                  {% endif %}
+                </div>
+              </li>
+            </ul>
+          </div>
+        {% endfor %}
+      {% else %}
+      <div>
+        <span>We don't have membership info for this committee</span>
+      </div>
+    </div>
+        {% endif %}
+  </div>
 {% endblock %}

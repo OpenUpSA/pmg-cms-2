@@ -977,6 +977,46 @@ body.email_alerts {
   }
 }
 
+.membership {
+  border-left: 0px solid #ddd;
+
+  li {
+    margin: 0px;
+    padding: 10px 5px 0 15px;
+    
+    img {
+      margin-right: 10px;
+    }
+  }
+  .number-absent {
+    margin: 10px;
+  }
+  .list-unstyled {
+    margin-bottom: 0;
+  }
+
+  .cte-member-box {
+    width: 50%;
+    float: left;
+    position: relative;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    min-height: 96px;
+  }
+
+  .cte-chairperson-box {
+    width: 100%;
+  }
+
+  .panel-heading {
+    border-left: 1px solid #ddd;
+  }
+
+  .panel-body {
+    padding: 0;
+  }
+}
+
 .cte-dtl-meetings-nav {
   .nav-tabs {
     li {

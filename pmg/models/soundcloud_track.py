@@ -185,7 +185,10 @@ class SoundcloudTrack(db.Model):
             if retries <= app.config['MAX_SOUNDCLOUD_RETRIES']:
                 soundcloud_track = db.session.query(cls).get(track_id)
                 # Sometimes tracks apparently go from failed to finished. Yeah.
-                soundcloud_track.sync_state(client)
+                try:
+                    soundcloud_track.sync_state(client)
+                except HTTPError:
+                    logging.info("HTTP Error checking state of failed SoundCloud upload")
                 if soundcloud_track.state == 'failed':
                     soundcloud_track.retry_upload(client)
 
@@ -212,14 +215,14 @@ class SoundcloudTrack(db.Model):
                     return
                 except HTTPError as get_result:
                     if get_result.response.status_code != 404:
-                        raise Exception("Can't tell if track %s that we attempted " +\
-                                        "to delete is still there." % self.uri)
+                        raise Exception(("Can't tell if track %s that we attempted " +\
+                                         "to delete is still there.") % self.uri)
             elif delete_result.response.status_code == 404:
-                logging.info("Track %s was already missing from SoundCloud when " +\
-                             "to retry %r" % (self.uri, self))
+                logging.info(("Track %s was already missing from SoundCloud when " +\
+                              "to retry %r") % (self.uri, self))
             elif delete_result.response.status_code != 200:
-                raise Exception("Unexpected result when deleting %s from " +\
-                                "SoundCloud" % self)
+                raise Exception(("Unexpected result when deleting %s from " +\
+                                 "SoundCloud") % self)
         # If we get here we expect that we've successfully deleted
         # the failed track from SoundCloud.
         # Indicate that we've started uploading

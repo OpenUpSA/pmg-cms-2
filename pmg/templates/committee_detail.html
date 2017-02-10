@@ -139,7 +139,7 @@
       <table class="table table-striped">
         {% for item in recent_questions %}
           <tr class="item">
-            <td class="date"><nobr>{{ (item.start_date or item.date)|pretty_date }}</nobr>
+            <td class="date"><nobr>{{ (item.start_date or item.date)|pretty_date }}</nobr></td>
             <td class="name">
               {# handle QuestionReply and CommitteeQuestion objects differently #}
               {% if item.date %}
@@ -147,7 +147,8 @@
               {% else %}
               <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
               {% endif %}
-          </td></tr>
+            </td>
+          </tr>
         {% endfor %}
       </table>
       <p>

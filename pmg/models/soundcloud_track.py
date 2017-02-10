@@ -203,9 +203,13 @@ class SoundcloudTrack(db.Model):
             if delete_result.response.status_code == 500:
                 try:
                     client.get(self.uri)
-                    # If the delete gves a 500 and the GET doesn't
-                    # give a 404, something bad happened.
-                    raise Exception("Tried to delete but track %s still there" % self.uri)
+                    # If the delete gves a 500 and the GET is successful, we're
+                    # not sure it was deleted so don't continue the retry, just
+                    # let the next retry try to delete again and continue if
+                    # it's finished deleting by then.
+                    logging.info("Tried to delete but track %s but apparently " +\
+                                 "it's still there" % self.uri)
+                    return
                 except HTTPError as get_result:
                     if get_result.response.status_code != 404:
                         raise Exception("Can't tell if track %s that we attempted " +\

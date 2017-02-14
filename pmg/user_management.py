@@ -114,10 +114,16 @@ def user_unfollow_committee(committee_id):
 @app.route('/user/megamenu/')
 def user_megamenu():
     if current_user.is_authenticated():
-        return render_template('_megamenu.html', **get_megamenu())
+        return render_template('_megamenu.html', **get_followed_committees())
     else:
         abort(404)
 
+@app.route('/user/following/')
+def user_following():
+    if current_user.is_authenticated():
+        return render_template('_cte_list_user_following.html', **get_followed_committees())
+    else:
+        abort(404)
 
 @app.route('/committee-subscriptions/', methods=['GET', 'POST'])
 def committee_subscriptions():
@@ -157,10 +163,10 @@ def remove_search(id):
 
 @app.context_processor
 def inject_user_following():
-    return get_megamenu()
+    return get_followed_committees()
 
 
-def get_megamenu():
+def get_followed_committees():
     user_following = None
     recent_meetings = None
     user_follows_committees = False

@@ -1267,6 +1267,10 @@ body.email_alerts {
   }
 }
 
+.followed-committees, .recent-meetings {
+  padding-left:0;
+}
+
 .cte-follow-committee input[type=checkbox]:not(old) {
   width: 24px;
   height: 24px;

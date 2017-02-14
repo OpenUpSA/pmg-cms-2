@@ -67,30 +67,9 @@
 
   <div class="cte-follow-list tab-content cte-list lunr-dict">
     {% if current_user.is_authenticated() %}
-    <div class="active tab-pane row cte-list-user-following" id="user-following">
-      {% if user_follows_committees %}
-      <ul class="col-xs-12">
-        {% for committee in user_following %}
-          <li class="committee item" data-id="{{ committee.id }}" data-following="true" data-follow-list="true">
-            <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="next" value="{{ request.url }}">
-              <input type="checkbox" checked />
-              <label>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-                {% if committee.premium %}
-                <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
-                {% endif %}
-              </label>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
-      <h3 class="no-committees-followed" style="display:none;">You are not following any committees.</h3>
-      {% else %}
-      <h3 class="no-committees-followed">You are not following any committees.</h3>
-      {% endif %}
-    </div>
+      <div class="active tab-pane row cte-list-user-following" id="user-following">
+      {% include '_cte_list_user_following.html' %}
+      </div>
     {% endif %}
     {% for key,ctype in reg_committees.iteritems() %}
     {% if key == 'nat' and not current_user.is_authenticated() %}

@@ -276,7 +276,9 @@ class UserView(MyModelView):
         DateBetweenFilter(User.expiry, 'Expiry date'),
     ]
 
-    def on_model_change(self, form, model):
+    def on_model_change(self, form, model, is_created):
+        # ensure that organisation is set automatically
+        model.email = model.email
         if model.organisation:
             model.expiry = model.organisation.expiry
 

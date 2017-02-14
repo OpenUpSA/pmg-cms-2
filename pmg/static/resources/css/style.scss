@@ -961,7 +961,7 @@ body.email_alerts {
     margin: 0px;
     padding: 10px 15px;
     border-top: 1px solid #ddd;
-    
+
     img {
       margin-right: 10px;
     }
@@ -983,7 +983,7 @@ body.email_alerts {
   li {
     margin: 0px;
     padding: 10px 5px 0 15px;
-    
+
     img {
       margin-right: 10px;
     }
@@ -1398,20 +1398,20 @@ ul.menu {
   display:inline-block;
 }
 
-.committees-menulink {
-  position: relative;
-  z-index: 105;
-  margin-left: -5px;
-  border: 1px solid transparent;
-  border-width: 0px 1px;
+// .committees-menulink {
+//   position: relative;
+//   z-index: 105;
+//   margin-left: -5px;
+//   border: 1px solid transparent;
+//   border-width: 0px 1px;
 
-  &:hover,
-  &.committees-menulink-hover {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-width: 0px 1px;
-  }
-}
+//   &:hover,
+//   &.committees-menulink-hover {
+//     background-color: #fff;
+//     border: 1px solid #ccc;
+//     border-width: 0px 1px;
+//   }
+// }
 
 .mobile-menu-li {
   position: relative;

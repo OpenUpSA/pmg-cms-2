@@ -7,18 +7,10 @@
 
   <nav class="cte-list-nav hidden-xs" id="cte-nav">
     <ul class="nav nav-tabs cte-tab-nav">
-      {% if current_user.is_authenticated() %}
       <li class="active">
-          <a href="#user-following" data-toggle="tab"><span class="hidden-sm">Committees you follow</span><span class="visible-sm">Following</span></a>
+        <a href="#nat" data-toggle="tab">National Assembly <span class="hidden-sm">committees</span></a>
       </li>
-      <li>
-          <a href="#nat" data-toggle="tab">National Assembly <span class="hidden-sm">committees</span></a>
-      </li>
-      {% else %}
-      <li class="active">
-          <a href="#nat" data-toggle="tab">National Assembly <span class="hidden-sm">committees</span></a>
-      </li>
-      {% endif %}
+
       <li>
         <a href="#ncp" data-toggle="tab">National Council of Provinces <span class="hidden-sm">committees</span></a>
       </li>
@@ -28,32 +20,48 @@
       <li>
         <a href="#adhoc" data-toggle="tab">Ad-hoc <span class="hidden-sm">committees</span></a>
       </li>
+      {% if current_user.is_authenticated() %}
+      <li class="following">
+        <a href="#user-following" data-toggle="tab"><span class="hidden-sm">Committees you follow</span><span class="visible-sm">Following</span></a>
+      </li>
+      {% endif %}
     </ul>
   </nav>
 
   <nav class="cte-list-nav-mobile form-group visible-xs">
     <select class="form-control cte-select-tab-nav">
-      {% if current_user.is_authenticated() %}
-      <option data-toggle="tab" data-target="#user-following" value="#user-following">Committees you follow</option>
-      {% endif %}
       <option data-toggle="tab" data-target="#nat" value="#nat">National Assembly committees</option>
       <option data-toggle="tab" data-target="#ncp" value="#ncp">National Council of Provinces committees</option>
       <option data-toggle="tab" data-target="#jnt" value="#jnt">Joint committees</option>
       <option data-toggle="tab" data-target="#adhoc" value="#adhoc">Ad-hoc committees</option>
+      {% if current_user.is_authenticated() %}
+      <option data-toggle="tab" data-target="#user-following" value="#user-following">Committees you follow</option>
+      {% endif %}
     </select>
   </nav>
 
   <div class="cte-list-search row">
     <div class="col-xs-12 col-sm-6 col-md-4">
-      <p>
-        <strong>Committee name</strong>
-      </p>
       <div class="search-box form-group" id="cte-list-search">
         <i class="fa fa-search"></i>
         <input class="form-control" placeholder="Find a committee" name="cte-list-search" />
       </div>
     </div>
+    <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-4 legend">
+      <ul>
+        {% if current_user.is_authenticated() %}
+        <li>
+          <span class="follow"><i class="fa fa-check-circle"></i> Follow committees to receive email alerts</span>
+        </li>
+        {% endif %}
+        <li>
+          <span class="premium"><i class="fa fa-key"></i><a href="{{ url_for('committee_subscriptions') }}"> Premium subscriptions</a></span>
+        </li>
+      </ul>
+    </div>
   </div>
+
+  <hr>
 
   <div class="cte-list-search-results">
     <h3 class="no-results">No results found.</h3>
@@ -66,38 +74,12 @@
   </div>
 
   <div class="cte-follow-list tab-content cte-list lunr-dict">
-    {% if current_user.is_authenticated() %}
-    <div class="active tab-pane row cte-list-user-following" id="user-following">
-      {% if user_follows_committees %}
-      <ul class="col-xs-12">
-        {% for committee in user_following %}
-          <li class="committee item" data-id="{{ committee.id }}" data-following="true" data-follow-list="true">
-            <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="next" value="{{ request.url }}">
-              <input type="checkbox" checked />
-              <label>
-                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-                {% if committee.premium %}
-                <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
-                {% endif %}
-              </label>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
-      <h3 class="no-committees-followed" style="display:none;">You are not following any committees.</h3>
+    {% for key, ctype in reg_committees.iteritems() %}
+      {% if key == 'nat' %}
+      <div class="active tab-pane row {{ key }} cte-items" id="{{ key }}">
       {% else %}
-      <h3 class="no-committees-followed">You are not following any committees.</h3>
+      <div class="tab-pane row {{ key }} cte-items" id="{{ key }}">
       {% endif %}
-    </div>
-    {% endif %}
-    {% for key,ctype in reg_committees.iteritems() %}
-    {% if key == 'nat' and not current_user.is_authenticated() %}
-    <div class="active tab-pane row {{ key }} cte-items" id="{{ key }}">
-    {% else %}
-    <div class="tab-pane row {{ key }} cte-items" id="{{ key }}">
-    {% endif %}
       {% for column in ctype.committees|slice(2) %}
       {% set column_index = loop.index %}
       <ul class="col-xs-12 col-sm-6">
@@ -121,7 +103,7 @@
               {% endif %}
               <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
               {% if committee.premium %}
-                <span class="premium exclude"><i class="fa fa-key"></i> <span class="text">Premium</span></span>
+                <span class="premium exclude"><i class="fa fa-key"></i></span>
               {% endif %}
             {% if current_user.is_authenticated() %}
               </label>
@@ -166,7 +148,7 @@
                     {% endif %}
                 </form>
                 {% if committee.premium %}
-                  <span class="premium exclude"><i class="fa fa-key"></i> <span class="text">Premium</span></span>
+                  <span class="premium exclude"><i class="fa fa-key"></i></span>
                 {% endif %}
               </li>
             {% endfor %}
@@ -175,6 +157,32 @@
         {% endfor %}
       </div>
     </div>
+    {% if current_user.is_authenticated() %}
+    <div class="tab-pane row cte-list-user-following" id="user-following">
+      {% if user_follows_committees %}
+      <ul class="col-xs-12">
+        {% for committee in user_following %}
+          <li class="committee item" data-id="{{ committee.id }}" data-following="true" data-follow-list="true">
+            <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ request.url }}">
+              <input type="checkbox" checked />
+              <label>
+                <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+                {% if committee.premium %}
+                <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
+                {% endif %}
+              </label>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+      <h3 class="no-committees-followed" style="display:none;">You are not following any committees.</h3>
+      {% else %}
+      <h3 class="no-committees-followed">You are not following any committees.</h3>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 
 {% endblock page %}

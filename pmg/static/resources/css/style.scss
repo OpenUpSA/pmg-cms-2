@@ -818,21 +818,24 @@ body.email_alerts {
   }
 }
 
-.cte-nav {
+#cte-nav {
   ul {
     li {
-      &.active {
-        font-weight:bold;
+      &.following {
+        float: right;
+        a {
+            color: $grey-dark;
+        }
       }
     }
   }
 }
 
 .premium {
-  color: $yellow;
+  color: $orange;
 
   a, a:hover {
-    color: $yellow;
+    color: $orange;
   }
 }
 
@@ -842,6 +845,7 @@ body.email_alerts {
 
     li {
       margin:3px 0;
+      line-height: 24px;
 
       .premium {
         font-size: 13px;
@@ -886,7 +890,6 @@ body.email_alerts {
   ul {
     padding-left:15px;
   }
-
   .form-group {
     margin-bottom:0;
     padding-bottom:0;
@@ -894,8 +897,36 @@ body.email_alerts {
   .fa-search {
     position:absolute;
     right:25px;
-    top:37px;
+    top:8px;
     font-size:18px;
+  }
+
+  .legend {
+    ul {
+      @media screen and (min-width: 768px) {
+        float: right;
+      }
+      @media screen and (max-width: 768px) {
+        margin-top: 15px;
+        padding-left: 0;
+      }
+      li {
+        list-style: none;
+      }
+    }
+
+    font-size: 12px;
+    .premium {
+      color: $orange;
+
+      a, a:hover {
+        color: $orange;
+      }
+    }
+
+    .follow {
+      color: $green-dark;
+    }
   }
 }
 
@@ -1208,7 +1239,7 @@ body.email_alerts {
 
 .cte-follow-committee input[type=checkbox]:not(old) {
   width: 24px;
-  height: 24px;
+  height: 21px;
   margin: 0;
   padding: 0;
   opacity: 0;
@@ -1217,7 +1248,6 @@ body.email_alerts {
 .cte-follow-committee input[type=checkbox]:not(old) + label {
   padding-left: 28px;
   background: url('/static/resources/images/unchecked.svg') no-repeat 0 0;
-  line-height: 24px;
   font-weight: normal;
 }
 
@@ -1233,10 +1263,6 @@ body.email_alerts {
   margin-bottom: 0;
   margin-top: -20px;
   display: block;
-}
-
-.cte-follow-list li.committee.item {
-  margin-bottom: 10px;
 }
 
 li.committee.item.list-megamenu {

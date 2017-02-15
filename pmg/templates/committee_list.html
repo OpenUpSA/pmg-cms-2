@@ -170,7 +170,7 @@
               <label>
                 <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
                 {% if committee.premium %}
-                <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></span>
+                <span class="premium exclude"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}"></a></span>
                 {% endif %}
               </label>
             </form>

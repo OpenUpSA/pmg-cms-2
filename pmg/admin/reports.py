@@ -130,6 +130,27 @@ from
   left outer join party p on p.id = mem.party_id
 order by q.date desc
 """),
+        Report(5,
+               name="Committee meeting attendance",
+               description="Meeting attendance by Member",
+               sql='''
+select
+  to_char(e.date, 'YYYY-MM-DD') as "date",
+  to_char(e.date, 'YYYY') as "year",
+  to_char(e.date, 'MM') as "month",
+  c.name as "committee",
+  a.meeting_id as "committee-meeting-id",
+  m.name as "member",
+  a.attendance as "attendance"
+from
+  event e
+  inner join committee c on e.committee_id = c.id
+  inner join committee_meeting_attendance a on a.meeting_id = e.id
+  inner join member m on m.id = a.member_id
+order by
+  e.date desc,
+  c.name,
+  m.name'''),
     )
 
     @expose('/')

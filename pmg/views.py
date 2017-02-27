@@ -13,7 +13,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting
+from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -399,7 +399,7 @@ def committee_meeting(event_id):
     attendance = load_from_api(
         'v2/committee-meetings/%s/attendance' % event_id,
         return_everything=True)['results']
-    attendance = [a for a in attendance if a['attendance'] != 'A']
+    attendance = [a for a in attendance if a['attendance'] in CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT]
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
                  sorted([a for a in attendance if not a['chairperson']], key=sorter)

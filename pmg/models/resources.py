@@ -1194,6 +1194,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         "P": "Present",
         "U": "Unknown",
     }
+    ATTENDANCE_CODES_PRESENT = ['DE', 'L', 'LDE', 'P']
 
     @property
     def committee_id(self):

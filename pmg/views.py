@@ -62,7 +62,7 @@ def hello_crawler():
         Best
         Code4SA (The pmg.org.za developers)
         """)
-        logger.info("Saying hi to crawler")
+        logger.info("Saying hi to crawler. headers: %r" % request.headers)
         return resp, "418 Hi, email us at info@code4sa.org"
 
 

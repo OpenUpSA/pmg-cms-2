@@ -50,7 +50,7 @@ def server_error(error):
 
 @app.before_request
 def hello_crawler():
-    if request.access_route[0] == '196.36.161.121':
+    if request.access_route[0] == '41.193.166.142':
         resp = make_response("""
         Hi!
 

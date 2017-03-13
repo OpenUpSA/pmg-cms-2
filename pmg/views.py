@@ -49,7 +49,12 @@ def server_error(error):
 
 
 @app.before_request
-def hello_crawler():
+def shortcircuit_wget():
+    """
+    Respond immediately with a message that would typically be shown in Wget
+    crawling output because crawling the site is expensive to us and we'd prefer
+    they get in touch first.
+    """
     if "Wget" in request.headers.get('user-agent', ''):
         resp = make_response("""
         Hi!

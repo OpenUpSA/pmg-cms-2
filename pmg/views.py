@@ -8,6 +8,7 @@ from sqlalchemy import desc
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
 from flask.ext.mail import Message
+from flask import make_response
 
 from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
@@ -45,6 +46,24 @@ def page_not_found(error):
 @app.errorhandler(500)
 def server_error(error):
     return render_template('500.html', error=error), 500
+
+
+@app.before_request
+def hello_crawler():
+    if "Wget" in request.headers.get('user-agent', ''):
+        resp = make_response("""
+        Hi!
+
+        It looks like you're crawling us. We'd love to get in touch and see if
+        there's a better way we can share this content with you.
+
+        Send us a mail at info@code4sa.org
+
+        Best
+        Code4SA (The pmg.org.za developers)
+        """)
+        logger.info("Saying hi to crawler.")
+        return resp, "418 Hi, email us at info@code4sa.org"
 
 
 @app.before_request

@@ -25,11 +25,6 @@ logger = logging.getLogger(__name__)
 
 api = Blueprint('api', __name__)
 
-# This is a temporary fix to only show attendance for members
-# of the three major parties until we determine how to present
-# faulty passed records for alternate members
-MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
-
 
 def load_user():
     login_mechanisms = {
@@ -161,6 +156,30 @@ def send_api_response(data, status_code=200):
     response.headers['Content-Type'] = "application/json"
     response.status_code = status_code
     return response
+
+
+# This is a temporary fix to only show attendance for members
+# of the three major parties until we determine how to present
+# faulty passed records for alternate members
+MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
+
+
+def get_attendance_members():
+    return Member.query\
+        .options(joinedload('house'),
+                 lazyload('memberships'))\
+        .join(Member.party)\
+        .filter(Party.name.in_(MAJOR_PARTIES))\
+        .all()
+
+
+def build_attendance_member_dict(member):
+    return {
+        'id': member.id,
+        'name': member.name,
+        'party_id': member.party.id if member.party else None,
+        'party_name': member.party.name if member.party else None,
+        'pa_url': member.pa_url}
 
 
 # -------------------------------------------------------------------
@@ -458,14 +477,7 @@ def committee_meeting_attendance_summary():
     # faulty passed records for alternate members
 
     rows = CommitteeMeetingAttendance.summary()
-    members = Member.query\
-        .options(joinedload('house'),
-                 lazyload('memberships'))\
-        .join(Member.party)\
-        .filter(Party.name.in_(MAJOR_PARTIES))\
-        .all()
-
-    members = {m.id: m for m in members}
+    members = {m.id: m for m in get_attendance_members()}
 
     data = []
     for year, year_rows in groupby(rows, lambda r: int(r.year)):
@@ -474,11 +486,7 @@ def committee_meeting_attendance_summary():
         for member_id, member_rows in groupby(year_rows, lambda r: r.member_id):
             m = members.get(member_id, None)
             if m:
-                member = {'id': member_id}
-                member['name'] = m.name
-                member['party_id'] = m.party.id if m.party else None
-                member['party_name'] = m.party.name if m.party else None
-                member['pa_url'] = m.pa_url
+                member = build_attendance_member_dict(m)
 
                 summaries.append({
                     'member': member,
@@ -489,6 +497,38 @@ def committee_meeting_attendance_summary():
             'start_date': '%d-01-01' % year,
             'end_date': '%d-12-31' % year,
             'attendance_summary': summaries,
+        })
+
+    return send_api_response({'results': data})
+
+
+@api.route('/committee-meeting-attendance/meetings-by-member/')
+def committee_meeting_attendance_meetings_by_member():
+    """
+    Attendance per meeting, by member.
+    """
+    rows = CommitteeMeetingAttendance.meetings_by_member()
+    members = {m.id: m for m in get_attendance_members()}
+
+    data = []
+    for year, year_rows in groupby(rows, lambda r: int(r.year)):
+        meetings_by_member = []
+
+        for member_id, member_rows in groupby(year_rows, lambda r: r.member_id):
+            m = members.get(member_id, None)
+            if m:
+                member = build_attendance_member_dict(m)
+                meetings = [{'attendance': row.attendance, 'date': row.meeting_date} for row in member_rows]
+
+                meetings_by_member.append({
+                    'member': member,
+                    'meetings': meetings
+                })
+
+        data.append({
+            'start_date': '%d-01-01' % year,
+            'end_date': '%d-12-31' % year,
+            'meetings_by_member': meetings_by_member
         })
 
     return send_api_response({'results': data})

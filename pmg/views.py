@@ -507,7 +507,7 @@ def calls_for_comments(page=0):
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
     call_for_comment_list = load_from_api(
-        'call-for-comment',
+        'v2/calls-for-comments',
         page=page,
         params=params)
     count = call_for_comment_list["count"]

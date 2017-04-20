@@ -1058,6 +1058,10 @@ class CallForComment(ApiResource, db.Model):
     summary = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
+    @property
+    def closed(self):
+        return self.end_date and self.end_date < datetime.date.today()
+
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.start_date))

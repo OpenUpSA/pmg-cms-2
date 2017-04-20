@@ -745,6 +745,7 @@ mark {
   padding: 20px;
   border-radius: 5px;
   background-color: $grey-light;
+  text-align: center;
 
   button {
     white-space: normal;
@@ -1447,4 +1448,10 @@ ul.menu {
 .email-box-checkbox {
   margin-top: 0 !important;
   vertical-align: middle;
+}
+
+.expires {
+  background-color: $grey-light;
+  padding: 10px;
+  border-radius: 5px;
 }

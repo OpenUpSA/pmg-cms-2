@@ -19,7 +19,7 @@
 {% else %}
   <div class="email-alert-box">
     <p>
-      <a class="btn btn-success" href="{{ url_for('security.register', next=request.path, via='cte-alert-box') }}">Sign up to follow this committee</a>
+      <a class="btn btn-success btn-block" href="{{ url_for('security.register', next=request.path, via='cte-alert-box') }}">Follow this committee</a>
     </p>
     Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
   </div>

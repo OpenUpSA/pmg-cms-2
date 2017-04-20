@@ -1231,11 +1231,12 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             cls.member_id,
             cls.attendance,
             year,
+            cls.meeting_id,
             meeting_date
         )\
             .select_from(cls)\
             .join(CommitteeMeeting)\
-            .group_by(cls.member_id, cls.attendance, meeting_date, year)\
+            .group_by(cls.member_id, cls.attendance, cls.meeting_id, meeting_date, year)\
             .order_by(year.desc(), cls.member_id)\
             .all()
 

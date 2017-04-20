@@ -518,7 +518,7 @@ def committee_meeting_attendance_meetings_by_member():
             m = members.get(member_id, None)
             if m:
                 member = build_attendance_member_dict(m)
-                meetings = [{'attendance': row.attendance, 'date': row.meeting_date} for row in member_rows]
+                meetings = [{'meeting_id': row.meeting_id, 'attendance': row.attendance, 'date': row.meeting_date} for row in member_rows]
 
                 meetings_by_member.append({
                     'member': member,

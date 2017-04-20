@@ -1,17 +1,5 @@
 {% extends "committee_layout.html" %}
 
-{% block committee_title %}
-  <div class="row">
-      {% if not committee.premium %}
-      <h1 class="col-xs-12 committee-name">{{ committee.name }}</h1>
-      {% else %}
-      <h1 class="col-xs-12 col-sm-8 committee-name">{{ committee.name }}</h1>
-      <div class="premium col-xs-12 col-sm-4 text-sm-right"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></div>
-      {% endif %}
-  </div>
-  <h4 class="light-red">{{ committee.house.name }} Committee</h4>
-{% endblock %}
-
 {% block committee_page %}
   {% if committee.about %}
     <h3 class="collapse-link cte-about-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>

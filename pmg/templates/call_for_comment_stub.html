@@ -16,6 +16,7 @@
   {% set title = result.title %}
   {% set date = result.start_date %}
   {% set enddate = result.end_date %}
+  {% set closed = result.closed %}
   {% set id = result.id %}
   {% if result.committee %}
     {% set committee_name = result.committee.name %}
@@ -23,7 +24,7 @@
   {% endif %}
 {% endif %}
 <div class="call-for-comment-stub">
-  <div class="date">{{ date|pretty_date }} - {{ enddate|pretty_date }}</div>
+  <div class="date">{{ date|pretty_date }} - {% if enddate %}{{ enddate|pretty_date }} <i class="fa fa-fw {% if closed %}call-closed fa-calendar-times-o{% else %}call-open fa-calendar-check-o{% endif %}" aria-hidden="true"></i>{% else %}Closing date unknown{% endif %}</div>
   <h4><a href="/call-for-comment/{{ id }}">{{ title|safe }}</a></h4>
   <h5>
     <span class="type">Call for Comment {% if committee_name %}-{% endif %}</span>

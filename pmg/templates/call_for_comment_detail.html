@@ -20,7 +20,7 @@
       <h1><i class="fa fa-comments"></i> {{ call_for_comment.title }}</h1>
 
       {% if call_for_comment.end_date %}
-        <h3 class="expires">Comment expires on <strong>{{ call_for_comment.end_date }}</strong></h3>
+        <h3 class="deadline">Submissions must be received by no later than <strong>{{ call_for_comment.end_date|pretty_date("long") }}</strong></h3>
       {% endif %}
       {% if call_for_comment.committee %}
         <h2><a href="/committee/{{call_for_comment.committee.id}}">{{ call_for_comment.committee.name }}</a></h2>

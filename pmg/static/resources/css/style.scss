@@ -1450,8 +1450,23 @@ ul.menu {
   vertical-align: middle;
 }
 
-.expires {
+.deadline {
   background-color: $grey-light;
   padding: 10px;
   border-radius: 5px;
+}
+
+.call-closed {
+  color: $grey-dark;
+}
+
+.call-open {
+  color: $green-darkest;
+}
+
+.free-pre-2016 {
+  background-color: $green-dark;
+  padding: 10px;
+  color: #fff;
+  font-size: 16px;
 }

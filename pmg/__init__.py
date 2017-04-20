@@ -83,7 +83,7 @@ from webassets.filter.pyscss import PyScss
 
 assets.register('css',
     Bundle(
-      'font-awesome-4.2.0/css/font-awesome.min.css',
+      'font-awesome-4.7.0/css/font-awesome.min.css',
       'chosen/chosen.min.css',
       Bundle(
         'resources/css/style.scss',
@@ -94,7 +94,7 @@ assets.register('css',
 
 assets.register('admin-css',
     Bundle(
-      'font-awesome-4.2.0/css/font-awesome.min.css',
+      'font-awesome-4.7.0/css/font-awesome.min.css',
       Bundle(
         'resources/css/admin.scss',
         filters=PyScss(load_paths=assets.load_path),

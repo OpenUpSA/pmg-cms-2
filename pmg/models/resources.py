@@ -1222,6 +1222,26 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         return rows
 
+    @classmethod
+    def meetings_by_member(cls):
+        year = func.date_part('year', CommitteeMeeting.date).label('year')
+        meeting_date = func.date(CommitteeMeeting.date).label('meeting_date')
+
+        rows = db.session.query(
+            cls.member_id,
+            cls.attendance,
+            year,
+            cls.meeting_id,
+            meeting_date
+        )\
+            .select_from(cls)\
+            .join(CommitteeMeeting)\
+            .group_by(cls.member_id, cls.attendance, cls.meeting_id, meeting_date, year)\
+            .order_by(year.desc(), cls.member_id)\
+            .all()
+
+        return rows
+
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         # Don't show URL while it's not served on the API.

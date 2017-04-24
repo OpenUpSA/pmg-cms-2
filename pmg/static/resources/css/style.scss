@@ -109,11 +109,13 @@ nav.top-links {
     line-height: 1.5;
   }
 
-  .social-buttons {
-    margin-top: 6px;
-    padding: 5px 10px;
-    margin-left: 9px;
-    margin-right: -5px;
+  .social-links {
+    padding: 10px;
+    font-size: 12px;
+    color: $grey-dark;
+    a {
+      display: inline;
+    }
   }
 }
 

@@ -44,7 +44,7 @@
                 <option data-filter="six-months" value="six-months">Last 6 months</option>
                 {% endif %}
                 {% if filtered_meetings[current_year] | length > 0 %}
-                <option data-filter="{{ current_year }}" value="{{ current_year }}">This year</option>
+                <option data-filter="{{ current_year }}" value="{{ current_year }}">{{ current_year }}</option>
                 {% endif %}
                 {% for year in range(earliest_year,current_year) | reverse %}
                   {% if filtered_meetings[year] | length > 0 %}

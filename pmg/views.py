@@ -432,6 +432,7 @@ def committee_meeting(event_id):
         'committee_meeting.html',
         event=event,
         committee=event['committee'],
+        testcase="yessir",
         audio=audio,
         related_docs=related_docs,
         attendance=attendance,

@@ -9,14 +9,20 @@
   <li><a href="/bills">Bills</a></li>
   <li><a href="/question_replies">Questions and Replies</a></li>
   <li><a href="/calls-for-comments">Calls for Comments</a></li>
-  <li class="pull-right hidden-xs hidden-sm">
-    <a class="btn btn-sm btn-default social-buttons" title="Join PMG on Facebook" href="http://www.facebook.com/pmgsouthafrica">
-      <i class="fa fa-facebook"></i> Facebook
-    </a>
+  <li class="social-links pull-right hidden-xs hidden-sm">
+    Share this page
+    <div class="btn-group" role="group">
+      <a href="https://www.facebook.com/sharer/sharer.php?u=https://pmg.org.za{{ request.path }}" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-facebook"></i></a>
+      <a href="https://twitter.com/home?status=https://pmg.org.za{{ request.path }}" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-twitter"></i></button>
+      <a href="https://plus.google.com/share?url=https://pmg.org.za{{ request.path }}" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i></a>
+      <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://pmg.org.za{{ request.path }}&title={{ request.path }}&summary={{ request.path }}" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-linkedin" aria-hidden="true"></i></a>
+    </div>
   </li>
-  <li class="pull-right hidden-xs hidden-sm">
-    <a class="btn btn-sm btn-default social-buttons" title="Follow @PMG_SA on Twitter" href="https://twitter.com/intent/follow?original_referer={{ request.url|urlencode }}&amp;region=follow_link&amp;screen_name=PMG_SA&amp;tw_p=followbutton">
-      <i class="fa fa-twitter"></i> Follow
-    </a>
+  <li class="social-links pull-right hidden-xs hidden-sm">
+    Follow PMG
+    <div class="btn-group" role="group">
+      <button href="https://www.facebook.com/pmgsouthafrica" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-facebook"></i></button>
+      <button href="https://twitter.com/intent/follow?original_referer={{ request.url|urlencode }}&amp;region=follow_link&amp;screen_name=PMG_SA&amp;tw_p=followbutton" type="button" class="btn btn-xs btn-default"><i class="fa fa-fw fa-twitter"></i></button>
+    </div>
   </li>
 </ul>

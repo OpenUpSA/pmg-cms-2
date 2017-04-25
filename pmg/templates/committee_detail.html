@@ -150,6 +150,25 @@
       </div>
     </div>
   </div> <!-- /Reports -->
+
+  <div class="cte-dtl-meetings-filter down">
+    <div class="form-group btn-block">
+      <select class="form-control">
+        {% if filtered_meetings['six-months'] | length > 0 %}
+        <option data-filter="six-months" value="six-months">Last 6 months</option>
+        {% endif %}
+        {% if filtered_meetings[current_year] | length > 0 %}
+        <option data-filter="{{ current_year }}" value="{{ current_year }}">{{ current_year }}</option>
+        {% endif %}
+        {% for year in range(earliest_year,current_year) | reverse %}
+          {% if filtered_meetings[year] | length > 0 %}
+          <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
 {% endblock %}
 
 {% block committee_page_sidebar %}

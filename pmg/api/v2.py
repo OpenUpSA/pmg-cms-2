@@ -131,3 +131,12 @@ def members(id=None):
         return api_get_item(id, Member, MemberSchema)
     else:
         return api_list_items(Member.list(), MemberSchema)
+
+
+@api.route('/calls-for-comments/')
+@api.route('/calls-for-comments/<int:id>')
+def calls_for_comments(id=None):
+    if id:
+        return api_get_item(id, CallForComment, CallForCommentSchema)
+    else:
+        return api_list_items(CallForComment.list(), CallForCommentSchema)

@@ -43,9 +43,10 @@ class CommitteeMeetingSchema(ma.ModelSchema):
 class CallForCommentSchema(ma.ModelSchema):
     class Meta:
         model = CallForComment
-        fields = ('id', 'title', 'start_date', 'end_date', 'body', 'summary', 'committee_id', '_links')
+        fields = ('id', 'title', 'start_date', 'end_date', 'body', 'summary', 'committee_id', '_links', 'closed', 'committee')
+    committee = fields.Nested('CommitteeSchema')
     _links = ma.Hyperlinks({
-        # 'self': ma.AbsoluteUrlFor('api2.call_for_comment', id="<id>"),
+        'self': ma.AbsoluteUrlFor('api2.calls_for_comments', id="<id>"),
         'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
     })
 

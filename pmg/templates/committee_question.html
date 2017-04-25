@@ -11,10 +11,9 @@
 
 {% block committee_title %}
   {{ super() }}
-  <h1>Questions to the Minister</h1>
-  <p>
-    <a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">← More questions to the Minister</a>
-  </p>
+  <div class="deadline">
+	  <strong>Question to the Minister of {{ committee.name }}</strong> (<a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">more questions</a>)
+  </div>
 {% endblock %}
 
 

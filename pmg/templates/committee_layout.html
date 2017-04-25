@@ -11,16 +11,20 @@
 </ol>
 {% endblock %}
 
-
 {% block page %}
   <div class="row">
     <div class="col-sm-8">
       <header class="committee-header">
         {% block committee_title %}
-        <h3>{{ committee.name }}</h3>
-        {% if committee.premium %}
-        <h3 class="premium pull-right"><i class="fa fa-star"></i> Premium</h3>
-        {% endif %}
+          <div class="row">
+              {% if not committee.premium %}
+              <h1 class="col-xs-12 committee-name">{{ committee.name }}</h1>
+              {% else %}
+              <h1 class="col-xs-12 col-sm-8 committee-name">{{ committee.name }}</h1>
+              <div class="premium col-xs-12 col-sm-4 text-sm-right"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></div>
+              {% endif %}
+          </div>
+          <h4 class="light-red">{{ committee.house.name }} Committee</h4>
         {% endblock %}
       </header>
       <div class="committee-page">

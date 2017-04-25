@@ -22,7 +22,6 @@
   {% endif %}
 {% endblock %}
 
-
 {% block committee_page %}
   {% if event.premium_content_excluded %}
     <p class="lead">
@@ -76,6 +75,9 @@
     {% if event.bills %}
       {{ related_bills(event.bills) }}
     {% endif %}
+
+    {% include '_social_sharing.html' %}
+
 
     <div class="panel panel-default attendance">
       <div class="panel-heading">

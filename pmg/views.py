@@ -235,10 +235,12 @@ def bill(bill_id):
     }
     history = bill_history(bill)
     return render_template('bills/detail.html',
-                           bill=bill,
-                           history=history,
-                           stages=stages,
-                           admin_edit_url=admin_url('bill', bill_id))
+        bill=bill,
+        history=history,
+        stages=stages,
+        social_summary=bill['code'] + ". Introduced by " + bill['introduced_by'] + ", it is currently " + bill['status']['description'],
+        admin_edit_url=admin_url('bill', bill_id))
+
 
 
 @app.route('/committee/<int:committee_id>')
@@ -317,6 +319,7 @@ def committee_question(question_id):
                            question=question,
                            hide_replies=False,
                            content_date=question['date'],
+                           social_summary="A question to the " + question['question_to_name'] + ", asked on " + question['date'] + " by " + question['asked_by_name'],
                            admin_edit_url=admin_url('committee-question', question_id))
 
 
@@ -432,14 +435,14 @@ def committee_meeting(event_id):
         'committee_meeting.html',
         event=event,
         committee=event['committee'],
-        testcase="yessir",
         audio=audio,
         related_docs=related_docs,
         attendance=attendance,
         premium_committees=premium_committees,
         content_date=event['date'],
         admin_edit_url=admin_url('committee-meeting', event_id),
-        SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID'])
+        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + event['date'] + ", lead by " + event['chairperson'],
+        SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
 
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')
@@ -544,6 +547,7 @@ def call_for_comment(call_for_comment_id):
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,
         content_date=call_for_comment['start_date'],
+        social_summary="A call for comments by the " + call_for_comment['committee']['name'] + " committee. Submissions must be received by no later than " + call_for_comment['end_date'],
         admin_edit_url=admin_url('call-for-comment', call_for_comment_id))
 
 

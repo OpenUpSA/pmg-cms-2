@@ -238,9 +238,7 @@ def bill(bill_id):
         bill=bill,
         history=history,
         stages=stages,
-        social_summary=bill['code'] + ". Introduced by " + bill['introduced_by'] + ", it is currently " + bill['status']['description'],
         admin_edit_url=admin_url('bill', bill_id))
-
 
 
 @app.route('/committee/<int:committee_id>')

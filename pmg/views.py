@@ -538,8 +538,8 @@ def call_for_comment(call_for_comment_id):
     """
     logger.debug("call-for-comment page called")
     call_for_comment = load_from_api(
-        'call-for-comment',
-        call_for_comment_id)
+        'v2/calls-for-comments',
+        call_for_comment_id)['result']
     logger.debug(call_for_comment)
     return render_template(
         'call_for_comment_detail.html',

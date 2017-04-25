@@ -23,9 +23,10 @@
       {% endif %}
       
       {% if call_for_comment.end_date %}
-        <h3 class="deadline">Submissions must be received by no later than {{ call_for_comment.closed }} <strong>{{ call_for_comment.end_date|pretty_date("long") }}</strong></h3>
-        {% if closed %}
-          <h3 class="deadline">Submissions are now closed <small>(since {{ closed }})</small></h3>
+        {% if call_for_comment.closed %}
+          <h3 class="deadline">Submissions are now closed <small>(since {{ call_for_comment.end_date|pretty_date("long") }})</small></h3>
+          {% else %}
+          <h3 class="deadline">Submissions must be received by no later than <strong>{{ call_for_comment.end_date|pretty_date("long") }}</strong></h3>
         {% endif %}
       {% endif %}
       {% if call_for_comment.committee %}

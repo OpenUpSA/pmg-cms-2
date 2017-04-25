@@ -24,12 +24,21 @@
   {% endif %}
 {% endif %}
 <div class="call-for-comment-stub">
-  <div class="date">{{ date|pretty_date }} - {% if enddate %}{{ enddate|pretty_date }} <i class="fa fa-fw {% if closed %}call-closed fa-calendar-times-o{% else %}call-open fa-calendar-check-o{% endif %}" aria-hidden="true"></i>{% else %}Closing date unknown{% endif %}</div>
+  <div class="date">{{ date|pretty_date }} - {% if enddate %}{{ enddate|pretty_date }}{% else %}Closing date unknown{% endif %}</div>
   <h4><a href="/call-for-comment/{{ id }}">{{ title|safe }}</a></h4>
   <h5>
     <span class="type">Call for Comment {% if committee_name %}-{% endif %}</span>
     {{ committee_name }}
   </h5>
+  {% if enddate %}
+  <h5>
+    {% if closed %}
+    <span class="call-closed">Closed</span>
+    {% else %}
+    <span class="call-open">Open</span> until {{ enddate|pretty_date("long") }}
+    {% endif %}
+  </h5>
+  {% endif %}
 
   {% if result.highlight %}
   <p>

@@ -1456,12 +1456,10 @@ ul.menu {
   border-radius: 5px;
 }
 
-.call-closed {
-  color: $grey-dark;
-}
-
 .call-open {
-  color: $green-darkest;
+  background-color: $green-dark;
+  color: #fff;
+  padding: 3px;
 }
 
 .free-pre-2016 {

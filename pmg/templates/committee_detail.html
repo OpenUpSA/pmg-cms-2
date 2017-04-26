@@ -172,6 +172,16 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">Attendance</h4>
+    </div>
+    <div class="panel-body">
+      <div>{{ attendance_year }}</div>
+      <div>This committee has had a total of {{ total_meetings }} meetings.</div>
+      <div>On average, {{ average_present }} out of {{ average_members }} were present</div>
+    </div>
+  </div>
   <!-- /Members -->
   <div class="panel panel-default membership">
     <div class="panel-heading">

@@ -8,18 +8,24 @@
   <li><a href="{{ url_for('committee_meetings') }}">Committee Meetings</a></li>
 {% endblock %}
 
-
 {% block committee_title %}
   <h1>{{ event.title }}</h1>
-  <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
+  <div class="row">
+    <div class="col-sm-7">
+      <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
 
-  {% if event.date %}
-    <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
-  {% endif %}
+      {% if event.date %}
+        <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
+      {% endif %}
 
-  {% if event.chairperson %}
-    <h5>Chairperson: {{ event.chairperson }}</h5>
-  {% endif %}
+      {% if event.chairperson %}
+        <h5>Chairperson: {{ event.chairperson }}</h5>
+      {% endif %}
+    </div>
+    <div class="col-sm-5">
+      {% include '_social_sharing.html' %}
+    </div>
+  </div>
 {% endblock %}
 
 {% block committee_page %}
@@ -76,9 +82,6 @@
       {{ related_bills(event.bills) }}
     {% endif %}
 
-    {% include '_social_sharing.html' %}
-
-
     <div class="panel panel-default attendance">
       <div class="panel-heading">
         <h4 class="panel-title">Present</h4>
@@ -114,3 +117,4 @@
     {% endif %}
   {% endblock %}
 {% endif %}
+

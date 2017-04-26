@@ -14,6 +14,7 @@ var $noCteFollowedMsg = $('.no-committees-followed');
 var $cteDtlNavItem = $('.cte-dtl-meetings-nav a, .cte-dtl-meetings-nav-mobile option');
 var $cteDtlNavMobileSelect = $('.cte-dtl-meetings-nav-mobile select');
 var $cteDtlFilterSelect = $('.cte-dtl-meetings-filter select');
+var $cteDtlFilterSelectDown = $('.cte-dtl-meetings-filter.down select');
 var $cteDtlListTables = $('.cte-dtl-meetings-list .table');
 var $cteDtlReadMore = $('.read-more a');
 var $cteDtlMtngsList = $('.cte-dtl-meetings-list');
@@ -328,6 +329,12 @@ $cteDtlFilterSelect.on('change', function(e) {
 
   clearSearchResult($cteDtlMtngsList,$cteDtlMtngsSearchResults);
   $cteDtlMtngsList.show();
+
+  $($cteDtlFilterSelect).val($(this).val())
+});
+
+$cteDtlFilterSelectDown.on('change', function(e) {
+  $('html, body').scrollTop($(".cte-dtl-meetings").offset().top);
 });
 
 $cteDtlFilterSelect.on('focus', function() {

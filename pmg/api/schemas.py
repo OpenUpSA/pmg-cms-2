@@ -2,7 +2,7 @@ from marshmallow import fields
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party, CommitteeQuestion, File, Minister)
+                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType)
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -32,11 +32,13 @@ class CommitteeMeetingSchema(ma.ModelSchema):
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
                   'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee',
-                  'premium_content_excluded')
+                  'premium_content_excluded', 'chairperson')
     committee = fields.Nested('CommitteeSchema')
     premium_content_excluded = fields.Method('get_premium_content_excluded')
     body = fields.Method('get_body')
     summary = fields.Method('get_summary')
+    files = fields.Nested('FileSchema', attribute='api_files', many=True)
+    bills = fields.Nested('BillSchema', many=True)
     _links = ma.Hyperlinks({
         'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
         'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
@@ -122,7 +124,8 @@ class PartySchema(ma.ModelSchema):
 class FileSchema(ma.ModelSchema):
     class Meta:
         model = File
-        fields = ('id', 'title', 'description', 'origname', 'file_mime', 'file_bytes', 'url', 'file_path')
+        fields = ('id', 'title', 'description', 'origname', 'file_mime', 'file_bytes', 'url', 'file_path',
+                  'soundcloud_uri')
 
 
 class MinisterSchema(ma.ModelSchema):
@@ -150,3 +153,23 @@ class CommitteeQuestionSchema(ma.ModelSchema):
     _links = ma.Hyperlinks({
         'self': ma.AbsoluteUrlFor('api2.minister_questions', id="<id>"),
     })
+
+
+class BillSchema(ma.ModelSchema):
+    class Meta:
+        model = Bill
+        fields = ('id', 'type', 'status', 'code', 'title', 'number', 'year',
+                  'introduced_by', 'place_of_introduction', 'date_of_introduction',
+                  'date_of_assent', 'effective_date', 'act_name',
+                  'created_at', 'updated_at')
+    type = fields.Nested('BillTypeSchema')
+
+    _links = ma.Hyperlinks({
+        'self': ma.AbsoluteUrlFor('api2.bills', id="<id>"),
+    })
+
+
+class BillTypeSchema(ma.ModelSchema):
+    class Meta:
+        model = BillType
+        fields = ('id', 'prefix', 'description', 'name')

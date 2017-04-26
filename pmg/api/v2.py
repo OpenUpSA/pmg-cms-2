@@ -2,8 +2,8 @@ from flask import request, Blueprint, abort
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import nullslast
 
-from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment
-from pmg.api.v1 import get_filters, paginate_request_query, send_api_response
+from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
+from pmg.api.v1 import get_filters, paginate_request_query, send_api_response, load_user
 from pmg.api.schemas import *  # noqa
 
 
@@ -98,6 +98,7 @@ def committee_members(id):
 
 @api.route('/committee-meetings/')
 @api.route('/committee-meetings/<int:id>')
+@load_user()
 def committee_meetings(id=None):
     if id:
         return api_get_item(id, CommitteeMeeting, CommitteeMeetingSchema)
@@ -140,3 +141,12 @@ def calls_for_comments(id=None):
         return api_get_item(id, CallForComment, CallForCommentSchema)
     else:
         return api_list_items(CallForComment.list(), CallForCommentSchema)
+
+
+@api.route('/bills/')
+@api.route('/bills/<int:id>')
+def bills(id=None):
+    if id:
+        return api_get_item(id, Bill, BillSchema)
+    else:
+        return api_list_items(Bill.list(), BillSchema)

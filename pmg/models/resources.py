@@ -211,6 +211,11 @@ class File(db.Model):
         return tmp
 
     @property
+    def soundcloud_uri(self):
+        if self.soundcloud_track and self.soundcloud_track.state == "finished":
+            return self.soundcloud_track.uri
+
+    @property
     def url(self):
         """ The friendly URL a user can use to download this file. """
         return url_for('docs', path=self.file_path)
@@ -412,6 +417,13 @@ class CommitteeMeeting(Event):
     def alert_template(self):
         from pmg.models.emails import EmailTemplate
         return EmailTemplate.query.filter(EmailTemplate.name == "Minute alert").first()
+
+    def api_files(self):
+        """ Hide summary field for non-premium subscribers
+        """
+        if self.check_permission():
+            return [f.file for f in self.files]
+        return []
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)

@@ -16,6 +16,8 @@
   {% endif %}
 </h1>
 
+{% include '_social_sharing.html' %}
+
 <p class="lead">{% if bill.type %}{{ bill.type.description }}{% endif %}</p>
 
 {% if bill.versions %}

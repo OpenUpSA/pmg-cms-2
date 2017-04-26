@@ -21,6 +21,7 @@
       {% if call_for_comment.start_date %}
         Call for comments opened {{ call_for_comment.start_date|pretty_date("long") }}
       {% endif %}
+      {% include '_social_sharing.html' %}
       
       {% if call_for_comment.end_date %}
         {% if call_for_comment.closed %}

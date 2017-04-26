@@ -149,20 +149,19 @@ $(function() {
 $(function() {
   $(".page-share.facebook").on("click", function(e) {
     e.preventDefault();
-    window.open("https://www.facebook.com/sharer/sharer.php?u=https://pmg.org.za{{ request.path }}",
+    window.open("https://www.facebook.com/sharer/sharer.php?u="+window.location.href,
       "share", "width=600, height=400, scrollbars=no");
-})
+  });
 
-$(function() {
   $(".page-share.twitter").on("click", function(e) {
     e.preventDefault();
-    window.open("https://twitter.com/intent/tweet?&url=https://pmg.org.za{{ request.path }}",
-      "share", "width=364, height=250, scrollbars=no");
-})
+    window.open("https://twitter.com/intent/tweet?&url="+window.location.href,
+      "share", "width=600, height=400, scrollbars=no");
+  });
 
-$(function() {
   $(".page-share.linkedin").on("click", function(e) {
     e.preventDefault();
-    window.open("https://www.linkedin.com/shareArticle?mini=true&url=https://pmg.org.za{{ request.path }}",
-      "share", "width=364, height=250, scrollbars=no");
-})
+    window.open("https://www.linkedin.com/shareArticle?mini=true&source=PMG&url="+window.location.href,
+      "share", "width=600, height=400, scrollbars=no");
+  });
+});

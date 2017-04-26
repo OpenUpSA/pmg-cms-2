@@ -1459,6 +1459,13 @@ ul.menu {
   border-radius: 5px;
 }
 
+.question-highlight {
+  background-color: $grey-light;
+  padding: 10px;
+  border-radius: 5px;
+  margin: -5px;
+}
+
 .call-open {
   background-color: $green-dark;
   color: #fff;
@@ -1473,10 +1480,10 @@ ul.menu {
 }
 
 .page-sharing {
-  margin-top: 10px;
-  margin-bottom: 10px;
   font-size: 14px;
+  display: block;
   @media (min-width: $screen-sm-min) {
     float: right;
+    display: inline;
   }
 }

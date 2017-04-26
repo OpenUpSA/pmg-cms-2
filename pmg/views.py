@@ -236,7 +236,7 @@ def bill(bill_id):
     }
     history = bill_history(bill)
 
-    if bill['status']:
+    if 'status' in bill:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
     else:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')

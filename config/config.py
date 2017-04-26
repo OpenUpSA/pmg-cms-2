@@ -1,4 +1,6 @@
 from os import environ as env
+import datetime
+import pytz
 
 # dev mode?
 DEBUG = env.get('FLASK_ENV', 'development') != 'production'
@@ -22,6 +24,9 @@ RESULTS_PER_PAGE = 50
 # The V2 API can support much higher volumes because callers
 # can choose the fields they want
 RESULTS_PER_PAGE_V2 = 500
+
+# Premium content before this date is free
+PREMIUM_FREE_BEFORE = datetime.datetime(2016, 1, 1, tzinfo=pytz.utc)
 
 ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
 SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models

@@ -416,6 +416,7 @@ def committee_meetings(page=0):
         committees=committees,
         filters=filters)
 
+
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
@@ -423,7 +424,7 @@ def committee_meeting(event_id):
     Display committee meeting details, including report and any other related content.
     """
 
-    event = load_from_api('committee-meeting', event_id)
+    event = load_from_api('v2/committee-meetings', event_id)['result']
 
     if event.get('premium_content_excluded'):
         premium_committees = load_from_api('committee/premium', return_everything=True)['results']
@@ -456,6 +457,7 @@ def committee_meeting(event_id):
         social_summary=social_summary,
         admin_edit_url=admin_url('committee-meeting', event_id),
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
+
 
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')

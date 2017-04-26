@@ -31,13 +31,34 @@ class CommitteeMeetingSchema(ma.ModelSchema):
     class Meta:
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
-                  'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee')
+                  'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee',
+                  'premium_content_excluded')
     committee = fields.Nested('CommitteeSchema')
+    premium_content_excluded = fields.Method('get_premium_content_excluded')
+    body = fields.Method('get_body')
+    summary = fields.Method('get_summary')
     _links = ma.Hyperlinks({
         'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
         'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
         'attendance': ma.AbsoluteUrlFor('api2.committee_meeting_attendance', id="<id>"),
     })
+
+    def get_premium_content_excluded(self, obj):
+        return not obj.check_permission()
+
+    def get_body(self, obj):
+        """ Hide body field for non-premium subscribers
+        """
+        if obj.check_permission():
+            return obj.body
+        return None
+
+    def get_summary(self, obj):
+        """ Hide summary field for non-premium subscribers
+        """
+        if obj.check_permission():
+            return obj.summary
+        return None
 
 
 class CallForCommentSchema(ma.ModelSchema):

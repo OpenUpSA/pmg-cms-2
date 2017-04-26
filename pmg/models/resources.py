@@ -17,7 +17,6 @@ from flask_security import current_user
 
 from werkzeug import secure_filename
 from za_parliament_scrapers.questions import QuestionAnswerScraper
-import pytz
 
 from pmg import app, db
 from pmg.utils import levenshtein
@@ -390,8 +389,6 @@ class CommitteeMeeting(Event):
 
     attendance = db.relationship('CommitteeMeetingAttendance', backref='meeting', cascade="all, delete, delete-orphan")
 
-    PREMIUM_FREE_BEFORE = datetime.datetime(2016, 1, 1, tzinfo=pytz.utc)
-
     def check_permission(self):
         """ Does the current user have permission to view this committee meeting?
 
@@ -399,7 +396,7 @@ class CommitteeMeeting(Event):
         """
         if self.committee and self.committee.premium:
             # free before this date
-            if self.date < self.PREMIUM_FREE_BEFORE:
+            if self.date < app.config['PREMIUM_FREE_BEFORE']:
                 return True
 
             # must be authenticated

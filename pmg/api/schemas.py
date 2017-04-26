@@ -32,7 +32,8 @@ class CommitteeMeetingSchema(ma.ModelSchema):
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
                   'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee',
-                  'premium_content_excluded', 'chairperson')
+                  'chairperson',
+                  'premium_content_excluded', 'premium_but_free')
     committee = fields.Nested('CommitteeSchema')
     premium_content_excluded = fields.Method('get_premium_content_excluded')
     body = fields.Method('get_body')

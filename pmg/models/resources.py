@@ -400,8 +400,7 @@ class CommitteeMeeting(Event):
         Premium committee meetings from 2016 and later require a subscription.
         """
         if self.committee and self.committee.premium:
-            # free before this date
-            if self.date < app.config['PREMIUM_FREE_BEFORE']:
+            if self.premium_but_free():
                 return True
 
             # must be authenticated
@@ -412,6 +411,11 @@ class CommitteeMeeting(Event):
             return current_user.subscribed_to_committee(self.committee)
 
         return True
+
+    def premium_but_free(self):
+        # free before this date
+        return self.committee and self.committee.premium and \
+            self.date < app.config['PREMIUM_FREE_BEFORE']
 
     @property
     def alert_template(self):

@@ -22,6 +22,7 @@ from collections import OrderedDict
 
 import forms
 import utils
+from helpers import _jinja2_filter_datetime as pretty_date
 
 LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
 
@@ -234,10 +235,16 @@ def bill(bill_id):
         'introduced': 1,
     }
     history = bill_history(bill)
+
+    if 'status' in bill:
+        social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
+    else:
+        social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')
     return render_template('bills/detail.html',
         bill=bill,
         history=history,
         stages=stages,
+        social_summary=social_summary,
         admin_edit_url=admin_url('bill', bill_id))
 
 
@@ -293,6 +300,8 @@ def committee_detail(committee_id):
     else:
         starting_filter = latest_year
 
+    social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
+
     return render_template('committee_detail.html',
                            current_year=now.year,
                            earliest_year=earliest_year,
@@ -302,6 +311,7 @@ def committee_detail(committee_id):
                            has_meetings=len(all_meetings) > 0,
                            starting_filter=starting_filter,
                            recent_questions=recent_questions,
+                           social_summary=social_summary,
                            admin_edit_url=admin_url('committee', committee_id))
 
 
@@ -311,13 +321,14 @@ def committee_question(question_id):
     """
     question = load_from_api('committee-question', question_id)
     committee = question['committee']
+    social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',
                            committee=committee,
                            question=question,
                            hide_replies=False,
                            content_date=question['date'],
-                           social_summary="A question to the " + question['question_to_name'] + ", asked on " + question['date'] + " by " + question['asked_by_name'],
+                           social_summary=social_summary,
                            admin_edit_url=admin_url('committee-question', question_id))
 
 
@@ -428,6 +439,10 @@ def committee_meeting(event_id):
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
                  sorted([a for a in attendance if not a['chairperson']], key=sorter)
+    if event['chairperson']:
+        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
+    else:
+        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
 
     return render_template(
         'committee_meeting.html',
@@ -438,8 +453,8 @@ def committee_meeting(event_id):
         attendance=attendance,
         premium_committees=premium_committees,
         content_date=event['date'],
+        social_summary=social_summary,
         admin_edit_url=admin_url('committee-meeting', event_id),
-        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + event['date'] + ", lead by " + event['chairperson'],
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
 
 @app.route('/tabled-committee-reports/')
@@ -542,9 +557,9 @@ def call_for_comment(call_for_comment_id):
         call_for_comment_id)['result']
     logger.debug(call_for_comment)
     if call_for_comment['end_date']:
-        social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions must be received by no later than ' + call_for_comment['end_date']
+        social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions must be received by no later than ' + pretty_date(call_for_comment['end_date'], 'long')
         if call_for_comment['closed']:
-            social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions closed ' + call_for_comment['end_date']
+            social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions closed ' + pretty_date(call_for_comment['end_date'], 'long')
     else:
         social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee.'
     return render_template(

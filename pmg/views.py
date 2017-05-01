@@ -299,6 +299,8 @@ def committee_detail(committee_id):
         .order_by(subquery.c.year)\
         .all()
 
+    # rounded_summary = (int(attendance_summary[0]), attendance_summary[1], attendance_summary[2], attendance_summary[3])
+
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings

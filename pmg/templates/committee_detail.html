@@ -177,11 +177,37 @@
       <h4 class="panel-title">Attendance</h4>
     </div>
     <div class="panel-body">
+      <span>This committee has had a total of 34 meetings. On average, 7 out of 12 were present.</span>
+      <div class="row">
+        <div class="col-xs-2">
+          2017
+        </div>
+        <div class="col-xs-10">
+          <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" style="width: 64%">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">Attendance</h4>
+    </div>
+    <div class="panel-body">
     {% for summary in attendance_summary | reverse %}
-      <h5>{{ summary.year }}</h5>
       <span>This committee has had a total of {{ summary.n_meetings }} meetings. On average, {{ summary.avg_members * summary.avg_attendance }} out of {{ summary.avg_members }} were present.</span>
-      <div class="progress">
-        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
+      <div class="row">
+        <div class="col-xs-2">
+          {{ summary.year }}
+        </div>
+        <div class="col-xs-10">
+          <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
+            </div>
+          </div>
         </div>
       </div>
     {% endfor %}

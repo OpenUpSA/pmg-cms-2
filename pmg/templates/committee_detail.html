@@ -177,9 +177,14 @@
       <h4 class="panel-title">Attendance</h4>
     </div>
     <div class="panel-body">
-      <div>{{ attendance_year }}</div>
-      <div>This committee has had a total of {{ total_meetings }} meetings.</div>
-      <div>On average, {{ average_present }} out of {{ average_members }} were present</div>
+    {% for summary in attendance_summary | reverse %}
+      <h5>{{ summary.year }}</h5>
+      <span>This committee has had a total of {{ summary.n_meetings }} meetings. On average, {{ summary.avg_members * summary.avg_attendance }} out of {{ summary.avg_members }} were present.</span>
+      <div class="progress">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
+        </div>
+      </div>
+    {% endfor %}
     </div>
   </div>
   <!-- /Members -->

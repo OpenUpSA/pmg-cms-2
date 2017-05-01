@@ -299,12 +299,6 @@ def committee_detail(committee_id):
         .order_by(subquery.c.year)\
         .all()
 
-    total_meetings = attendance_summary[0].n_meetings
-    average_attendance = attendance_summary[0].avg_attendance
-    average_members = int(round(attendance_summary[0].avg_members))
-    average_present = int(round(attendance_summary[0].avg_attendance * attendance_summary[0].avg_members))
-    attendance_year = int(attendance_summary[0].year)
-
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
@@ -340,11 +334,7 @@ def committee_detail(committee_id):
                            starting_filter=starting_filter,
                            recent_questions=recent_questions,
                            social_summary=social_summary,
-                           total_meetings=total_meetings,
-                           average_members=average_members,
-                           average_attendance=average_attendance,
-                           average_present=average_present,
-                           attendance_year=attendance_year,
+                           attendance_summary=attendance_summary,
                            admin_edit_url=admin_url('committee', committee_id))
 
 

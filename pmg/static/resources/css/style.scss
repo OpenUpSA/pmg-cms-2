@@ -989,12 +989,20 @@ body.email_alerts {
 }
 
 .attendance-rate {
-  .progress {
-    height: 8px;
-    box-shadow: none;
-    border-radius: 2px;
-    margin: 5px 0 15px 0;
+  .yearly-rate:first-child {
+    .year, .rate {
+      font-size: 18px;
+    }
+    .rate-text {
+      padding-right: 8px;
+    } 
   }
+    .progress {
+      height: 8px;
+      box-shadow: none;
+      border-radius: 2px;
+      margin: 5px 0 15px 0;
+    }
 }
 
 .attendance {

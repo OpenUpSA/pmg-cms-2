@@ -966,6 +966,9 @@ body.email_alerts {
       }
     }
   }
+  .cte-meeting-share {
+    margin-top: 5px;
+  }
 }
 
 // committee detail page
@@ -1498,6 +1501,10 @@ ul.menu {
   background-color: $green-dark;
   padding: 10px;
   font-size: 16px;
+  color: #fff;
+  a {
+    color: #fff;
+  }
 }
 
 .premium-but-free {
@@ -1505,10 +1512,6 @@ ul.menu {
   padding: 5px;
   color: #fff;
   margin: 5px 0;
-  color: #fff;
-  a {
-    color: #fff;
-  }
 }
 
 .page-sharing {

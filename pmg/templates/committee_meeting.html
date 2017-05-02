@@ -11,7 +11,7 @@
 {% block committee_title %}
   <h1>{{ event.title }}</h1>
   <div class="row">
-    <div class="col-sm-7">
+    <div class="col-sm-8">
       {% if event.premium_but_free %}
         <div class="premium-but-free"><i class="fa fa-fw fa-unlock-alt" aria-hidden="true"></i> This previously premium content has been made freely available</div>
       {% endif %}
@@ -24,8 +24,10 @@
         <h5>Chairperson: {{ event.chairperson }}</h5>
       {% endif %}
     </div>
-    <div class="col-sm-5">
-      {% include '_social_sharing.html' %}
+    <div class="col-sm-4">
+      <div class="cte-meeting-share">
+        {% include '_social_sharing.html' %}
+      </div>
     </div>
   </div>
 {% endblock %}

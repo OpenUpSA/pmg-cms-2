@@ -11,6 +11,9 @@
 
 {% block committee_title %}
   <h1>{{ event.title }}</h1>
+  {% if event.premium_but_free %}
+    <div class="premium-but-free"><i class="fa fa-fw fa-unlock-alt" aria-hidden="true"></i> This previously premium content has been made freely available</div>
+  {% endif %}
   <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
 
   {% if event.date %}

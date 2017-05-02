@@ -1465,6 +1465,16 @@ ul.menu {
 .free-pre-2016 {
   background-color: $green-dark;
   padding: 10px;
-  color: #fff;
   font-size: 16px;
+  color: #fff;
+  a {
+    color: #fff;
+  }
+}
+
+.premium-but-free {
+  background-color: $green-dark;
+  padding: 5px;
+  color: #fff;
+  margin: 5px 0;
 }

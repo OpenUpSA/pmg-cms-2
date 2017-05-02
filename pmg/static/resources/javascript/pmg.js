@@ -147,23 +147,24 @@ $(function() {
 });
 
 $(function() {
+  url = window.location.href
   $(".page-share.facebook").on("click", function(e) {
     e.preventDefault();
-    window.open("https://www.facebook.com/sharer/sharer.php?u="+window.location.href,
+    window.open("https://www.facebook.com/sharer/sharer.php?u="+url,
       "share", "width=600, height=400, scrollbars=no");
       ga('send', 'social', 'facebook', 'share', url);
   });
 
   $(".page-share.twitter").on("click", function(e) {
     e.preventDefault();
-    window.open("https://twitter.com/intent/tweet?&url="+window.location.href,
+    window.open("https://twitter.com/intent/tweet?&url="+url,
       "share", "width=600, height=400, scrollbars=no");
       ga('send', 'social', 'twitter', 'share', url);
   });
 
   $(".page-share.linkedin").on("click", function(e) {
     e.preventDefault();
-    window.open("https://www.linkedin.com/shareArticle?mini=true&source=PMG&url="+window.location.href,
+    window.open("https://www.linkedin.com/shareArticle?mini=true&source=PMG&url="+url,
       "share", "width=600, height=400, scrollbars=no");
       ga('send', 'social', 'linkedin', 'share', url);
   });

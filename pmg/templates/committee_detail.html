@@ -172,6 +172,26 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
+  <div class="panel panel-default attendance-rate">
+    <div class="panel-heading">
+      <h4 class="panel-title">Attendance</h4>
+    </div>
+    <div class="panel-body">
+    {% for summary in attendance_summary | reverse %}
+      <div class="yearly-rate">
+        <strong class="year">{{ summary.year|round|int }}</strong> <small>{{ summary.n_meetings }} meetings</small>
+        <span class="pull-right">
+          <small class="rate-text">{% if loop.index <= 1 %}Attendance rate {% endif %}</small><strong class="rate">{{ (summary.avg_attendance * 100)|round|int }}%</strong>
+        </span>
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    <a class="pull-right" href="http://www.pa.org.za/mp-attendance/">Explore detailed MP attendance <i class="fa fa-external-link" aria-hidden="true"></i></a>
+    </div>
+  </div>
   <!-- /Members -->
   <div class="panel panel-default membership">
     <div class="panel-heading">

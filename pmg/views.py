@@ -3,7 +3,8 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
-from sqlalchemy import desc
+from sqlalchemy import desc, Float
+from sqlalchemy.sql.expression import case, func, cast
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -14,7 +15,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
+from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, db
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -277,6 +278,27 @@ def committee_detail(committee_id):
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)
 
+    # attendance
+    subquery = db.session.query(
+        func.date_part('year', CommitteeMeeting.date).label('year'),
+        func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
+        func.count(CommitteeMeetingAttendance.id).label('n_members')
+        )\
+        .group_by('year', CommitteeMeeting.id)\
+        .filter(CommitteeMeeting.committee_id == committee_id)\
+        .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+        .subquery('attendance')
+
+    attendance_summary = db.session.query(
+        subquery.c.year,
+        func.count(1).label('n_meetings'),
+        func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
+        cast(func.avg(subquery.c.n_members), Float).label('avg_members')
+        )\
+        .group_by(subquery.c.year)\
+        .order_by(subquery.c.year)\
+        .all()
+
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
@@ -312,6 +334,7 @@ def committee_detail(committee_id):
                            starting_filter=starting_filter,
                            recent_questions=recent_questions,
                            social_summary=social_summary,
+                           attendance_summary=attendance_summary,
                            admin_edit_url=admin_url('committee', committee_id))
 
 
@@ -416,6 +439,7 @@ def committee_meetings(page=0):
         committees=committees,
         filters=filters)
 
+
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
 def committee_meeting(event_id):
@@ -423,7 +447,7 @@ def committee_meeting(event_id):
     Display committee meeting details, including report and any other related content.
     """
 
-    event = load_from_api('committee-meeting', event_id)
+    event = load_from_api('v2/committee-meetings', event_id)['result']
 
     if event.get('premium_content_excluded'):
         premium_committees = load_from_api('committee/premium', return_everything=True)['results']
@@ -456,6 +480,7 @@ def committee_meeting(event_id):
         social_summary=social_summary,
         admin_edit_url=admin_url('committee-meeting', event_id),
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
+
 
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')

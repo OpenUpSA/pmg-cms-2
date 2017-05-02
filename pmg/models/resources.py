@@ -17,7 +17,6 @@ from flask_security import current_user
 
 from werkzeug import secure_filename
 from za_parliament_scrapers.questions import QuestionAnswerScraper
-import pytz
 
 from pmg import app, db
 from pmg.utils import levenshtein
@@ -212,6 +211,11 @@ class File(db.Model):
         return tmp
 
     @property
+    def soundcloud_uri(self):
+        if self.soundcloud_track and self.soundcloud_track.state == "finished":
+            return self.soundcloud_track.uri
+
+    @property
     def url(self):
         """ The friendly URL a user can use to download this file. """
         return url_for('docs', path=self.file_path)
@@ -390,16 +394,13 @@ class CommitteeMeeting(Event):
 
     attendance = db.relationship('CommitteeMeetingAttendance', backref='meeting', cascade="all, delete, delete-orphan")
 
-    PREMIUM_FREE_BEFORE = datetime.datetime(2016, 1, 1, tzinfo=pytz.utc)
-
     def check_permission(self):
         """ Does the current user have permission to view this committee meeting?
 
         Premium committee meetings from 2016 and later require a subscription.
         """
         if self.committee and self.committee.premium:
-            # free before this date
-            if self.date < self.PREMIUM_FREE_BEFORE:
+            if self.premium_but_free():
                 return True
 
             # must be authenticated
@@ -411,10 +412,22 @@ class CommitteeMeeting(Event):
 
         return True
 
+    def premium_but_free(self):
+        # free before this date
+        return self.committee and self.committee.premium and \
+            self.date < app.config['PREMIUM_FREE_BEFORE']
+
     @property
     def alert_template(self):
         from pmg.models.emails import EmailTemplate
         return EmailTemplate.query.filter(EmailTemplate.name == "Minute alert").first()
+
+    def api_files(self):
+        """ Hide summary field for non-premium subscribers
+        """
+        if self.check_permission():
+            return [f.file for f in self.files]
+        return []
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)

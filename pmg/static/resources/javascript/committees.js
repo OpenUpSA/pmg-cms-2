@@ -121,9 +121,8 @@ function renderSearchResults(results,$list,$res,params) {
   }
 }
 
-function filterCommitteeMeetings() {
-  var val = $cteDtlFilterSelect.val();
-  var filter = $cteDtlFilterSelect.find('option:selected').attr('data-filter');
+function filterCommitteeMeetings(q) {
+  var filter = $cteDtlFilterSelect.find('option[value="' + q + '"]').attr('data-filter');
   var $table = $('#m-' + filter);
 
   $cteDtlListTables.hide();
@@ -134,7 +133,7 @@ function filterCommitteeMeetings() {
   clearSearchResult($cteDtlMtngsList,$cteDtlMtngsSearchResults);
   $cteDtlMtngsList.show();
 
-  $cteDtlFilterSelect.val(val);
+  $cteDtlFilterSelect.val(q);
 }
 
 function searchCommitteeMeetings(q) {
@@ -167,7 +166,7 @@ function unpackUrl() {
     searchCommitteeMeetings(q);
   } else if (filter) {
     $cteDtlFilterSelect.val(filter);
-    filterCommitteeMeetings();
+    filterCommitteeMeetings(filter);
   }
 }
 
@@ -369,7 +368,7 @@ $cteListSearchResults.on('change', '.cte-follow-committee input[type=checkbox]',
 $cteDtlNavItem.on('click', indexItems);
 
 $cteDtlFilterSelect.on('change', function(e) {
-  filterCommitteeMeetings();
+  filterCommitteeMeetings($(this).val());
   updateUrl();
 });
 

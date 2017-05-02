@@ -172,42 +172,21 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">Attendance</h4>
-    </div>
-    <div class="panel-body">
-      <span>This committee has had a total of 34 meetings. On average, 7 out of 12 were present.</span>
-      <div class="row">
-        <div class="col-xs-2">
-          2017
-        </div>
-        <div class="col-xs-10">
-          <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" style="width: 64%">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel panel-default">
+  <div class="panel panel-default attendance-rate">
     <div class="panel-heading">
       <h4 class="panel-title">Attendance</h4>
     </div>
     <div class="panel-body">
     {% for summary in attendance_summary | reverse %}
-      <span>This committee has had a total of {{ summary.n_meetings }} meetings. On average, {{ summary.avg_members * summary.avg_attendance }} out of {{ summary.avg_members }} were present.</span>
-      <div class="row">
-        <div class="col-xs-2">
-          {{ summary.year }}
-        </div>
-        <div class="col-xs-10">
-          <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
-            </div>
-          </div>
+      <span>
+        <strong>{{ summary.year|round|int }}</strong> <small>{{ summary.n_meetings }} meetings</small>
+      </span>
+      <span class="pull-right">
+        <small>average present:</small>
+        <span class="label label-success">{{ (summary.avg_members * summary.avg_attendance)|round|int }} / {{ summary.avg_members|round|int }}</span>
+      </span>
+      <div class="progress" data-toggle="tooltip" data-placement="bottom" title="{{ (summary.avg_attendance * 100)|round|int }}% attendance rate">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ summary.avg_attendance * 100 }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ summary.avg_attendance * 100 }}%">
         </div>
       </div>
     {% endfor %}

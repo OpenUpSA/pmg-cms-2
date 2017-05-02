@@ -988,6 +988,15 @@ body.email_alerts {
   max-height: 150px;
 }
 
+.attendance-rate {
+  .progress {
+    height: 8px;
+    box-shadow: none;
+    border-radius: 2px;
+    margin: 5px 0 15px 0;
+  }
+}
+
 .attendance {
   li {
     margin: 0px;

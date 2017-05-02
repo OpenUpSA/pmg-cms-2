@@ -1003,6 +1003,11 @@ body.email_alerts {
       border-radius: 2px;
       margin: 5px 0 15px 0;
     }
+  .yearly-rate:last-child {
+    .progress {
+      margin: 5px 0 0 0;
+    }
+  }
 }
 
 .attendance {

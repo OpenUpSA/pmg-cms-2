@@ -179,7 +179,7 @@
     <div class="panel-body">
     {% for summary in attendance_summary | reverse %}
       <div class="yearly-rate">
-        <strong class="year">{{ summary.year|round|int }}</strong><small>{{ summary.n_meetings }} meetings</small>
+        <strong class="year">{{ summary.year|round|int }}</strong> <small>{{ summary.n_meetings }} meetings</small>
         <span class="pull-right">
           <small class="rate-text">{% if loop.index <= 1 %}Attendance rate {% endif %}</small><strong class="rate">{{ (summary.avg_attendance * 100)|round|int }}%</strong>
         </span>

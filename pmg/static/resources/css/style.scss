@@ -110,10 +110,9 @@ nav.top-links {
   }
 
   .social-buttons {
-    margin-top: 6px;
-    padding: 5px 10px;
-    margin-left: 9px;
-    margin-right: -5px;
+    padding: 5px 0;
+    color: $grey-darkest;
+    line-height: 30px;
   }
 }
 
@@ -124,6 +123,10 @@ nav.top-links {
 
   .fa-facebook {
     color: #3b5998;
+  }
+
+  .fa-linkedin {
+    color: #0077b5;
   }
 }
 
@@ -1478,6 +1481,13 @@ ul.menu {
   border-radius: 5px;
 }
 
+.question-highlight {
+  background-color: $grey-light;
+  padding: 10px;
+  border-radius: 5px;
+  margin: -5px;
+}
+
 .call-open {
   background-color: $green-dark;
   color: #fff;
@@ -1488,10 +1498,6 @@ ul.menu {
   background-color: $green-dark;
   padding: 10px;
   font-size: 16px;
-  color: #fff;
-  a {
-    color: #fff;
-  }
 }
 
 .premium-but-free {
@@ -1499,4 +1505,17 @@ ul.menu {
   padding: 5px;
   color: #fff;
   margin: 5px 0;
+  color: #fff;
+  a {
+    color: #fff;
+  }
+}
+
+.page-sharing {
+  font-size: 14px;
+  display: block;
+  @media (min-width: $screen-sm-min) {
+    float: right;
+    display: inline;
+  }
 }

@@ -8,23 +8,27 @@
   <li><a href="{{ url_for('committee_meetings') }}">Committee Meetings</a></li>
 {% endblock %}
 
-
 {% block committee_title %}
   <h1>{{ event.title }}</h1>
-  {% if event.premium_but_free %}
-    <div class="premium-but-free"><i class="fa fa-fw fa-unlock-alt" aria-hidden="true"></i> This previously premium content has been made freely available</div>
-  {% endif %}
-  <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
+  <div class="row">
+    <div class="col-sm-7">
+      {% if event.premium_but_free %}
+        <div class="premium-but-free"><i class="fa fa-fw fa-unlock-alt" aria-hidden="true"></i> This previously premium content has been made freely available</div>
+      {% endif %}
+      <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
+      {% if event.date %}
+        <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
+      {% endif %}
 
-  {% if event.date %}
-    <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
-  {% endif %}
-
-  {% if event.chairperson %}
-    <h5>Chairperson: {{ event.chairperson }}</h5>
-  {% endif %}
+      {% if event.chairperson %}
+        <h5>Chairperson: {{ event.chairperson }}</h5>
+      {% endif %}
+    </div>
+    <div class="col-sm-5">
+      {% include '_social_sharing.html' %}
+    </div>
+  </div>
 {% endblock %}
-
 
 {% block committee_page %}
   {% if event.premium_content_excluded %}
@@ -49,7 +53,7 @@
 
     <div class="committee-meeting-content">
       <div class="meeting-summary">
-        <h3>Meeting Summary</h4>
+        <h3>Meeting Summary</h3>
 
         {% if event.summary %}
           {{ event.summary | safe }}
@@ -58,7 +62,7 @@
         {% endif %}
       </div>
       <div class="full-minutes">
-        <h3>Meeting report</h4>
+        <h3>Meeting report</h3>
 
         {% if event.body %}
           {{ event.body | safe }}
@@ -115,3 +119,4 @@
     {% endif %}
   {% endblock %}
 {% endif %}
+

@@ -988,6 +988,28 @@ body.email_alerts {
   max-height: 150px;
 }
 
+.attendance-rate {
+  .yearly-rate:first-child {
+    .year, .rate {
+      font-size: 18px;
+    }
+    .rate-text {
+      padding-right: 8px;
+    } 
+  }
+    .progress {
+      height: 8px;
+      box-shadow: none;
+      border-radius: 2px;
+      margin: 5px 0 15px 0;
+    }
+  .yearly-rate:last-child {
+    .progress {
+      margin: 5px 0 0 0;
+    }
+  }
+}
+
 .attendance {
   li {
     margin: 0px;

@@ -171,7 +171,8 @@ $(function() {
 
   $(".page-share.email").on("click", function(e) {
     e.preventDefault();
-    window.location = 'mailto:?subject=' + encodeURIComponent(document.title) + '&body=I saw this on pmg.org.za and thought it might interest you: ' + url;
+    var emailTitle = encodeURIComponent(document.title).replace(/&/g, '%26');
+    window.location = 'mailto:?subject=' + emailTitle + '&body=I saw this on pmg.org.za and thought it might interest you: ' + url;
     ga('send', 'social', 'email', 'share', url);
   });
 });

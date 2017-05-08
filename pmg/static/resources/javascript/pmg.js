@@ -168,4 +168,10 @@ $(function() {
       "share", "width=600, height=400, scrollbars=no");
       ga('send', 'social', 'linkedin', 'share', url);
   });
+
+  $(".page-share.email").on("click", function(e) {
+    e.preventDefault();
+    window.location = 'mailto:?subject=' + document.title + '&body=I saw this on pmg.org.za and thought it might interest you: ' + url;
+    ga('send', 'social', 'email', 'share', url);
+  });
 });

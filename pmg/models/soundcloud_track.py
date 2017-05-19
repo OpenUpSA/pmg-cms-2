@@ -132,7 +132,8 @@ class SoundcloudTrack(db.Model):
         client = Client(client_id=app.config['SOUNDCLOUD_APP_KEY_ID'],
                         client_secret=app.config['SOUNDCLOUD_APP_KEY_SECRET'],
                         username=app.config['SOUNDCLOUD_USERNAME'],
-                        password=app.config['SOUNDCLOUD_PASSWORD'])
+                        password=app.config['SOUNDCLOUD_PASSWORD'],
+                        use_ssl=False)
         cls.upload_files(client)
         cls.sync_upload_state(client)
         cls.handle_failed(client)

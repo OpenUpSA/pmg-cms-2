@@ -32,12 +32,20 @@
         <ul class="audio-files">
           {% for item in items %}
           <li>
+            {% if item.soundcloud_uri %}
+            {# we drive the soundcloud player off traditional links because it makes a good fallback if things go wrong #}
             <a href="{{ item.url }}"
                target="_blank"
                data-soundcloud-uri="{{ item.soundcloud_uri }}"
                class="audio">
               {{ item.title or item.description or item.origname or item.file_path }}
             </a>
+            {% else %}
+            {# if the audio isn't available on soundcloud yet #}
+            <a href="{{ item.url }}" target="_blank">
+              {{ item.title or item.description or item.origname or item.file_path }}
+            </a>
+            {% endif %}
           </li>
           {% endfor %}
         </ul>

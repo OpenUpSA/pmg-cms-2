@@ -581,12 +581,20 @@ def call_for_comment(call_for_comment_id):
         'v2/calls-for-comments',
         call_for_comment_id)['result']
     logger.debug(call_for_comment)
-    if call_for_comment['end_date']:
-        social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions must be received by no later than ' + pretty_date(call_for_comment['end_date'], 'long')
-        if call_for_comment['closed']:
-            social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee. Submissions closed ' + pretty_date(call_for_comment['end_date'], 'long')
+
+    if call_for_comment['committee']['name']:
+        cfc_committee = 'A call for comments by the ' + call_for_comment['committee']['name']
     else:
-        social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee.'
+        cfc_committee = ''
+    if call_for_comment['end_date']:
+        cfc_deadline = 'Submissions must be received by no later than ' + pretty_date(call_for_comment['end_date'], 'long')
+        if call_for_comment['closed']:
+        cfc_deadline = 'Submissions closed ' + pretty_date(call_for_comment['end_date'], 'long')
+    else:
+        cfc_deadline = ''
+
+    social_summary = cfc_committee
+
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,

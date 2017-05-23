@@ -618,6 +618,7 @@ class Committee(ApiResource, db.Model):
     contact_details = db.Column(db.Text())
     ad_hoc = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
     premium = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')

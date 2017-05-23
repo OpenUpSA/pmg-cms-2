@@ -122,11 +122,7 @@
           <h3>{{ ctype.name }}</h3>
           <ul>
             {% for committee in ctype.committees %}
-              {% if committee.followed %}
-              <li class="committee item" data-id="{{ committee.id }}" data-following="true">
-              {% else %}
-              <li class="committee item" data-id="{{ committee.id }}">
-              {% endif %}
+              <li class="committee item {% if not committee.active %}in{% endif %}active" data-id="{{ committee.id }}" {% if committee.followed %} data-following="true" {% endif %}>
                   {% if committee.followed %}
                   <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
                   {% else %}
@@ -142,7 +138,7 @@
                     {% endif %}
                     <label>
                     {% endif %}
-                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if not committee.active %} <span class="text-muted">(inactive)</span>{% endif %}
                     {% if current_user.is_authenticated() %}
                     </label>
                     {% endif %}

@@ -374,12 +374,9 @@ def committees():
         'name': 'Joint Committees',
         'committees': []
     }
-    inactive = {
-        'name': 'inactive',
-        'committees': []
-    }
 
-    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt), ('inactive', inactive)))
+    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
+    
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
 
@@ -396,16 +393,16 @@ def committees():
             if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
                 committee['followed'] = True
 
-        if committee['active'] is False:
-            committees_type['inactive']['committees'].append(committee)
-        else:
-            if committee['house']:
-                if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
-                    committees_type['nat']['committees'].append(committee)
-                elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
-                    committees_type['ncp']['committees'].append(committee)
-                elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
-                    committees_type['jnt']['committees'].append(committee)
+        if committee['house']:
+            if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
+                committees_type['nat']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
+                committees_type['ncp']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
+                committees_type['jnt']['committees'].append(committee)
+
+    for typ in adhoc_committees.itervalues():
+        typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
     return render_template(
         'committee_list.html',
@@ -588,15 +585,7 @@ def call_for_comment(call_for_comment_id):
         'v2/calls-for-comments',
         call_for_comment_id)['result']
     logger.debug(call_for_comment)
-    if call_for_comment['end_date']:
-        social_summary='A call for comments by the '
-        if call_for_comment['closed']:
-            social_summary='A call for comments by the '
-                if[call_for_comment]:
-                    + call_for_comment['committee']['name']
-                + ' committee. Submissions closed ' + pretty_date(call_for_comment['end_date'], 'long')
-    else:
-        social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee.'
+    social_summary='A call for comments by the ' + call_for_comment['committee']['name'] + ' committee.'
     return render_template(
         'call_for_comment_detail.html',
         call_for_comment=call_for_comment,

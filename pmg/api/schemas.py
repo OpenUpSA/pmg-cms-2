@@ -8,7 +8,7 @@ from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAtte
 class CommitteeSchema(ma.ModelSchema):
     class Meta:
         model = Committee
-        fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'premium',
+        fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'active', 'premium',
                   '_links')
     house = fields.Nested('HouseSchema')
     _links = ma.Hyperlinks({

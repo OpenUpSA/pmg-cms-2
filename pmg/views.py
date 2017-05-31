@@ -64,13 +64,13 @@ def shortcircuit_wget():
         It looks like you're crawling us. We'd love to get in touch and see if
         there's a better way we can share this content with you.
 
-        Send us a mail at info@code4sa.org
+        Send us a mail at info@openup.org.za
 
         Best
-        Code4SA (The pmg.org.za developers)
+        OpenUp (The pmg.org.za developers)
         """)
         logger.info("Saying hi to crawler.")
-        return resp, "418 Hi, email us at info@code4sa.org"
+        return resp, "418 Hi, email us at info@openup.org.za"
 
 
 @app.before_request

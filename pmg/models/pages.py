@@ -73,6 +73,7 @@ class Page(db.Model):
     title = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False, unique=True, index=True)
     body = db.Column(db.Text)
+    featured_date = db.Column(db.Date())
     created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
 

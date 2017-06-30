@@ -21,8 +21,6 @@ loggers:
     level: INFO
   gunicorn:
     level: INFO
-  urllib3:
-    level: DEBUG
 root:
   handlers: [console]
   level: INFO

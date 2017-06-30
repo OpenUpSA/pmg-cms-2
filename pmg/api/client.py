@@ -99,7 +99,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
             next_response_json = out
             i = 0
             while next_response_json.get('next') and i < 1000:
-                next_response = http.request('GET', next_response_json.get('next'), headers=headers, fields=params)
+                next_response = http.request('GET', next_response_json.get('next'), headers=headers)
                 next_response_json = response_json(next_response)
                 out['results'] += next_response_json['results']
                 i += 1
@@ -110,6 +110,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     except requests.ConnectionError as e:
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash(u'Error connecting to backend service.', 'danger')
+
 
 def response_json(resp):
     return json.loads(resp.data.decode('utf-8'))

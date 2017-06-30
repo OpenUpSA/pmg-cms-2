@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Committee Meeting Attendance Overview | PMG{% endblock %}
+
+{% block content %}
+<section class="committee-attendance">
+  <script>
+    var attendance_overview = {{ attendance_overview_json | safe }};
+  </script>
+</section>
+
+
+{% endblock %}

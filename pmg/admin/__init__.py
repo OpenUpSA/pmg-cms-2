@@ -1096,6 +1096,11 @@ class PageView(ViewWithFiles, MyModelView):
         super(PageView, self).on_form_prefill(form, id)
         form.path.data = '/page/%s' % form.slug.data
 
+    def on_model_change(self, form, model, is_created):
+        # make sure the new date is timezone aware
+        if model.date:
+            model.date = model.date.replace(tzinfo=SAST)
+
 
 # initialise admin instance
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')

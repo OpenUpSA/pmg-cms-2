@@ -3,6 +3,17 @@ from marshmallow import fields
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
                         Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType)
+from pmg.utils import externalise_url
+
+
+class AbsoluteUrlFor(ma.UrlFor):
+    """ Customized absolute-ized URL builder to take into account
+    the actual requesting host. This ensures requests to api-internal
+    use that host in the response.
+    """
+    def _serialize(self, value, key, obj):
+        url = super(AbsoluteUrlFor, self)._serialize(value, key, obj)
+        return externalise_url(url)
 
 
 class CommitteeSchema(ma.ModelSchema):
@@ -12,11 +23,11 @@ class CommitteeSchema(ma.ModelSchema):
                   '_links')
     house = fields.Nested('HouseSchema')
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.committees', id="<id>"),
-        'meetings': ma.AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
-        'calls_for_comment': ma.AbsoluteUrlFor('api2.committee_calls_for_comment', id="<id>"),
-        'tabled_reports': ma.AbsoluteUrlFor('api2.committee_tabled_reports', id="<id>"),
-        'members': ma.AbsoluteUrlFor('api2.committee_members', id="<id>"),
+        'self': AbsoluteUrlFor('api2.committees', id="<id>"),
+        'meetings': AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
+        'calls_for_comment': AbsoluteUrlFor('api2.committee_calls_for_comment', id="<id>"),
+        'tabled_reports': AbsoluteUrlFor('api2.committee_tabled_reports', id="<id>"),
+        'members': AbsoluteUrlFor('api2.committee_members', id="<id>"),
     })
 
 
@@ -41,9 +52,9 @@ class CommitteeMeetingSchema(ma.ModelSchema):
     files = fields.Nested('FileSchema', attribute='api_files', many=True)
     bills = fields.Nested('BillSchema', many=True)
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
-        'attendance': ma.AbsoluteUrlFor('api2.committee_meeting_attendance', id="<id>"),
+        'self': AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
+        'committee': AbsoluteUrlFor('api2.committees', id="<committee_id>"),
+        'attendance': AbsoluteUrlFor('api2.committee_meeting_attendance', id="<id>"),
     })
 
     def get_premium_content_excluded(self, obj):
@@ -70,8 +81,8 @@ class CallForCommentSchema(ma.ModelSchema):
         fields = ('id', 'title', 'start_date', 'end_date', 'body', 'summary', 'committee_id', '_links', 'closed', 'committee')
     committee = fields.Nested('CommitteeSchema')
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.calls_for_comments', id="<id>"),
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
+        'self': AbsoluteUrlFor('api2.calls_for_comments', id="<id>"),
+        'committee': AbsoluteUrlFor('api2.committees', id="<committee_id>"),
     })
 
 
@@ -80,8 +91,8 @@ class TabledCommitteeReportSchema(ma.ModelSchema):
         model = TabledCommitteeReport
         fields = ('id', 'title', 'start_date', 'body', 'committee_id', '_links')
     _links = ma.Hyperlinks({
-        # 'self': ma.AbsoluteUrlFor('api2.tabled_report', id="<id>"),
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<committee_id>"),
+        # 'self': AbsoluteUrlFor('api2.tabled_report', id="<id>"),
+        'committee': AbsoluteUrlFor('api2.committees', id="<committee_id>"),
     })
 
 
@@ -93,8 +104,8 @@ class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
     member = fields.Nested('MemberSchema')
     committee_meeting_id = fields.Number(attribute='meeting_id')
     _links = ma.Hyperlinks({
-        'committee': ma.AbsoluteUrlFor('api2.committees', id="<meeting.committee_id>"),
-        'committee_meeting': ma.AbsoluteUrlFor('api2.committee_meetings', id="<meeting_id>"),
+        'committee': AbsoluteUrlFor('api2.committees', id="<meeting.committee_id>"),
+        'committee_meeting': AbsoluteUrlFor('api2.committee_meetings', id="<meeting_id>"),
     })
 
 
@@ -152,7 +163,7 @@ class CommitteeQuestionSchema(ma.ModelSchema):
     minister = fields.Nested('MinisterSchema')
     source_file = fields.Nested('FileSchema')
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.minister_questions', id="<id>"),
+        'self': AbsoluteUrlFor('api2.minister_questions', id="<id>"),
     })
 
 
@@ -166,7 +177,7 @@ class BillSchema(ma.ModelSchema):
     type = fields.Nested('BillTypeSchema')
 
     _links = ma.Hyperlinks({
-        'self': ma.AbsoluteUrlFor('api2.bills', id="<id>"),
+        'self': AbsoluteUrlFor('api2.bills', id="<id>"),
     })
 
 

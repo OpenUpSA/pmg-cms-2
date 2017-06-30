@@ -56,3 +56,11 @@ def track_pageview(path=None, ignore_bots=True):
                  userAgent=user_agent)
 
     return True
+
+
+def externalise_url(url):
+    """ Externalise a URL based on the request scheme and host.
+    """
+    if url.startswith('http'):
+        url = url.split('/', 3)[3]
+    return '%s://%s/%s' % (request.scheme, request.host, url)

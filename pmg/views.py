@@ -138,7 +138,7 @@ def get_featured_content():
 
     # choose most recent 12 pages and meetings
     info['content'] = info['committee_meetings'] + info['pages']
-    info['content'] = sorted(info['content'], key=lambda x: getattr(x, 'date', getattr(x, 'updated_at')), reverse=True)[:12]
+    info['content'] = sorted(info['content'], key=lambda x: getattr(x, 'updated_at'), reverse=True)[:12]
 
     return info
 

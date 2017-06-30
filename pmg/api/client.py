@@ -1,5 +1,4 @@
 import logging
-import requests
 import urllib
 import json
 
@@ -107,9 +106,10 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
                 out.pop('next')
 
         return out
-    except requests.ConnectionError as e:
+    except urllib3.exceptions.HTTPError as e:
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash(u'Error connecting to backend service.', 'danger')
+        raise e
 
 
 def response_json(resp):

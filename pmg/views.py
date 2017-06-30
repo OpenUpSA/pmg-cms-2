@@ -154,10 +154,10 @@ def inject_via():
 
 @app.route('/')
 def index():
-    committee_meetings = load_from_api('v2/committee-meetings', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
+    committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
-    questions = load_from_api('v2/minister-questions', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
+    questions = load_from_api('v2/minister-questions/', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
 
     return render_template(
         'index.html',

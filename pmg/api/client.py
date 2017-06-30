@@ -1,22 +1,26 @@
 import logging
-import requests
 import urllib
+import json
 
 from flask import flash, session, abort, redirect, url_for, request, render_template
 from werkzeug.exceptions import HTTPException
 from flask.ext.security import current_user
+import urllib3
 
 from pmg import app
 
 API_URL = app.config['API_URL']
 # timeout connecting and reading from remote host
-TIMEOUTS = (3.05, 10)
+TIMEOUTS = urllib3.Timeout(connect=3.05, read=10)
 
 logger = logging.getLogger(__name__)
 
 # Disable urllib3 warnings
 # https://urllib3.readthedocs.org/en/latest/security.html#insecurerequestwarning
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
+# thread-safe connection pool
+http = urllib3.PoolManager(timeout=TIMEOUTS)
 
 
 class ApiException(HTTPException):
@@ -76,32 +80,37 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         headers = {'Authentication-Token': current_user.get_auth_token()}
 
     try:
-        response = requests.get(API_URL + query_str, headers=headers, params=params, timeout=TIMEOUTS)
+        response = http.request('GET', API_URL + query_str, headers=headers, fields=params)
 
-        if response.status_code == 404:
+        if response.status == 404:
             abort(404)
 
-        if response.status_code != 200 and response.status_code not in [401, 403]:
+        if response.status != 200 and response.status not in [401, 403]:
             try:
-                msg = response.json().get('message')
+                msg = response_json(response).get('message')
             except Exception:
                 msg = None
 
-            raise ApiException(response.status_code, msg or "An unspecified error has occurred.")
+            raise ApiException(response.status, msg or "An unspecified error has occurred.")
 
-        out = response.json()
+        out = response_json(response)
         if return_everything:
             next_response_json = out
             i = 0
             while next_response_json.get('next') and i < 1000:
-                next_response = requests.get(next_response_json.get('next'), headers=headers, params=params, timeout=TIMEOUTS)
-                next_response_json = next_response.json()
+                next_response = http.request('GET', next_response_json.get('next'), headers=headers)
+                next_response_json = response_json(next_response)
                 out['results'] += next_response_json['results']
                 i += 1
             if out.get('next'):
                 out.pop('next')
 
         return out
-    except requests.ConnectionError as e:
+    except urllib3.exceptions.HTTPError as e:
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash(u'Error connecting to backend service.', 'danger')
+        raise e
+
+
+def response_json(resp):
+    return json.loads(resp.data.decode('utf-8'))

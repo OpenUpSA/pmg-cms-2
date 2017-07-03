@@ -340,42 +340,13 @@ def committee_detail(committee_id):
                            admin_edit_url=admin_url('committee', committee_id))
 
 
-@app.route('/attendance_overview')
+@app.route('/attendance-overview')
 def attendance_overview():
     """
     Display overview of attendance for meetings.
     """
 
-    # attendance
-    subquery = db.session.query(
-        Committee.name.label('committee_name'),
-        Committee.id.label('committee_id'),
-        func.date_part('year', CommitteeMeeting.date).label('year'),
-        func.count(case([(CommitteeMeetingAttendance.attendance.in_(
-            CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
-        ), 1)])).label('n_present'),
-        func.count(CommitteeMeetingAttendance.id).label('n_members')
-    )\
-                         .group_by('year', CommitteeMeeting.id, Committee.name, Committee.id)\
-                         .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-                         .filter(Committee.ad_hoc == False)\
-                         .subquery('attendance')
-
-    attendance_overview = db.session.query(
-        subquery.c.committee_name,
-        subquery.c.committee_id,
-        subquery.c.year,
-        func.count(1).label('n_meetings'),
-        func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
-        cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-    )\
-                                   .group_by(subquery.c.year, subquery.c.committee_name, subquery.c.committee_id)\
-                                   .order_by(subquery.c.year)\
-                                   .all()
-
-    return render_template('attendance_overview.html',
-                           attendance_overview_json=json.dumps(attendance_overview),
-    )
+    return render_template('attendance_overview.html')
 
 
 @app.route('/committee-question/<int:question_id>/')

@@ -360,7 +360,7 @@ def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house'])['results']
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house', 'last_active_year'])['results']
 
     nat = {
         'name': 'National Assembly',

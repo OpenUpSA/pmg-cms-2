@@ -20,7 +20,7 @@ class CommitteeSchema(ma.ModelSchema):
     class Meta:
         model = Committee
         fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'active', 'premium',
-                  '_links')
+                  'last_active_year', '_links')
     house = fields.Nested('HouseSchema')
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.committees', id="<id>"),

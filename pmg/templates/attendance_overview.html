@@ -11,8 +11,8 @@
         <th>Rank</th>
         <th>Committee</th>
         <th>Number of meetings</th>
-        <th>Attendance</th>
-        <th>Attendance</th>
+        <th>Change in attendance from 2016</th>
+        <th data-defaultsort="desc">Attendance</th>
       </thead>
       {% for overview in attendance_overview %}
       <tr>
@@ -20,8 +20,8 @@
         <td>{{ overview[0] }}</td>
         <td>{{ overview[1] }}</td>
         <td style="position: relative;">
-          <div style="width: 1px; background-color: black; height: 10px; position: absolute; left: 50%; float:right;"></div>
-          <div style="background-color: green; height: 10px;width: {{ overview[2]|abs * 4|int }}%"></div>
+          <div style="width: 1px; background-color: black; height: 10px; position: absolute; left: 50%;"></div>
+          <div style="margin-{% if overview[2] < 0 %}right{% else %}left{% endif %}: 50%; float:{% if overview[2] < 0 %}right{% else %}left{% endif %}; background-color: {% if overview[2] < 0 %}#d9534f{% else %}#0ECBA1{% endif %}; height: 10px;width: {{ overview[2]|abs * 4|int }}%"></div>
         </td>
         <td>
           <div class="progress">

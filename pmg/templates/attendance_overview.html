@@ -1,28 +1,38 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}Committee Meeting Attendance Overview | PMG{% endblock %}
 
-{% block content %}
+{% block page %}
 <section class="committee-attendance">
-  <script>
-    var attendance_overview = {{ attendance_overview_json | safe }};
-  </script>
-
   <div class="container">
-  	{% for overview in attendance_overview %}
-    <div class="row">
-      <div class="col-sm-3">
-        {{ overview[0] }} | {{ overview[2] }}
-      </div>
-      <div class="col-sm-9">
-        <div class="progress">
-          <div class="progress-bar" role="progressbar" aria-valuenow="{{ overview[4] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overview[4] }}%;">
-            {{ overview[4] }}%
+    <h1>2017 attendance stats</h1>
+    <table class="table table-hover">
+      <tr>
+        <th>Rank</th>
+        <th>Committee</th>
+        <th>Number of meetings</th>
+        <th>Attendance</th>
+        <th>Attendance</th>
+      </tr>
+      {% for overview in attendance_overview %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ overview[0] }}</td>
+        <td>{{ overview[1] }}</td>
+        <td>
+          <div style="background-color: green; height: 10px;width: {{ overview[2]|abs * 4|int }}%"></div>
+        </td>
+        <td>
+          <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ overview[3] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overview[3] }}%;">
+              {{ overview[3] }}%
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  	{% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table> 
+    
   </div>
 
 </section>

@@ -13,36 +13,36 @@
       <th class="th-attendance" data-defaultsort="desc">Attendance</th>
       <th class="th-attendance-change">Since 2016</th>
     </thead>
-    {% for overview in attendance_overview %}
+    {% for item in attendance %}
     <tr>
       <td class="rank hidden-xs hidden-sm">{{ loop.index }}</td>
-      <td class="cte-name">{{ overview[0] }}</td>
-      <td class="number-meetings hidden-xs">{{ overview[1] }}</td>
+      <td class="cte-name">{{ item.committee }}</td>
+      <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
       <td class="attendance">
         <div class="progress">
-          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ overview[3] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overview[3] }}%;">
-            {{ overview[3] }}%
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ item.avg_attendance }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.avg_attendance }}%;">
+            {{ item.avg_attendance }}%
           </div>
         </div>
       </td>
-      <td class="attendance-change" data-value="{{ overview[2] }}">
+      <td class="attendance-change" data-value="{{ item.change }}">
         <div class="value hidden-sm hidden-xs" style="
-          {% if overview[2] < 0 %}right: calc(50% + {{ overview[2]|abs }}% + 3px){% endif %}
-          {% if overview[2] >= 0 %}left: calc(50% + {{ overview[2]|abs }}% + 3px){% endif %}
+          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
         ">
-          {% if overview[2] > 0 %}+{% endif %}{{ overview [2] }}%
+          {% if item.change > 0 %}+{% endif %}{{ item.change }}%
         </div>
         <div class="centre-line hidden-sm hidden-xs"></div>
         <div class="bar hidden-sm hidden-xs" style="
-          background-color: {% if overview[2] < 0 %}#d9534f{% endif %};
-          float:{% if overview[2] < 0 %}right{% endif %};
-          width: {% if overview[2] > 0 %}calc(1px + {{ overview[2]|abs }}%){% else %}{{ overview[2]|abs }}%{% endif %};
-          margin-{% if overview[2] < 0 %}right{% else %}left{% endif %}: 50%;
-          border-radius: {% if overview[2] < 0 %}4px 0 0 4px{% else %}0 4px 4px 0{% endif %}
+          background-color: {% if item.change < 0 %}#d9534f{% endif %};
+          float:{% if item.change < 0 %}right{% endif %};
+          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs }}%){% else %}{{ item.change|abs }}%{% endif %};
+          margin-{% if item.change < 0 %}right{% else %}left{% endif %}: 50%;
+          border-radius: {% if item.change < 0 %}4px 0 0 4px{% else %}0 4px 4px 0{% endif %}
           ">
         </div>
         <div class="value-mobile hidden-md hidden-lg">
-          <span class="label label-{% if overview[2] > 0 %}success{% else %}danger{% endif %}">{% if overview[2] > 0 %}+{% endif %}{{ overview [2] }}%</span>
+          <span class="label label-{% if item.change > 0 %}success{% else %}danger{% endif %}">{% if item.change > 0 %}+{% endif %}{{ item.change }}%</span>
         </div>
       </td>
     </tr>

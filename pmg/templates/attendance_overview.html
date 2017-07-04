@@ -9,7 +9,7 @@
     <thead>
       <th class="th-rank hidden-xs hidden-sm">Rank</th>
       <th class="th-cte-name">Committee</th>
-      <th class="th-number-meetings hidden-xs">Number of meetings</th>
+      <th class="th-number-meetings hidden-xs"># of meetings</th>
       <th class="th-attendance" data-defaultsort="desc">Attendance</th>
       <th class="th-attendance-change">Since 2016</th>
     </thead>
@@ -21,29 +21,29 @@
       <td class="attendance">
         <div class="progress">
           <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ item.avg_attendance }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.avg_attendance }}%;">
-            {{ item.avg_attendance }}%
+            {{ item.avg_attendance|round|int }}%
           </div>
         </div>
       </td>
       <td class="attendance-change" data-value="{{ item.change }}">
+        {% if item.avg_attendance == item.change  %}
+        <div style="font-size: 10px; line-height: 20px; text-align: center;">N/A</div>
+        {% else %}
         <div class="value hidden-sm hidden-xs" style="
-          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
-          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs / 2 }}% + 3px){% endif %}
+          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs / 2 }}% + 3px){% endif %}
         ">
-          {% if item.change > 0 %}+{% endif %}{{ item.change }}%
+          {% if item.change|round > 0 %}+{% endif %}{{ item.change|round|int }}%
         </div>
         <div class="centre-line hidden-sm hidden-xs"></div>
-        <div class="bar hidden-sm hidden-xs" style="
-          background-color: {% if item.change < 0 %}#d9534f{% endif %};
-          float:{% if item.change < 0 %}right{% endif %};
-          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs }}%){% else %}{{ item.change|abs }}%{% endif %};
-          margin-{% if item.change < 0 %}right{% else %}left{% endif %}: 50%;
-          border-radius: {% if item.change < 0 %}4px 0 0 4px{% else %}0 4px 4px 0{% endif %}
+        <div class="bar hidden-sm hidden-xs {% if item.change < 0 %}negative{% else %}positive{% endif %}" style="
+          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs / 2 }}%){% else %}{{ item.change|abs / 2 }}%{% endif %};
           ">
         </div>
         <div class="value-mobile hidden-md hidden-lg">
-          <span class="label label-{% if item.change > 0 %}success{% else %}danger{% endif %}">{% if item.change > 0 %}+{% endif %}{{ item.change }}%</span>
+          <span class="label label-{% if item.change > 0 %}success{% else %}danger{% endif %}">{% if item.change > 0 %}+{% endif %}{{ item.change|int }}%</span>
         </div>
+      {% endif %}
       </td>
     </tr>
     {% endfor %}

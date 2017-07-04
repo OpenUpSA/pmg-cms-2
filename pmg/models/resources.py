@@ -6,6 +6,7 @@ import os
 import re
 import base64
 import tempfile
+import pytz
 
 from sqlalchemy import desc, func, sql
 from sqlalchemy.sql.expression import nullslast
@@ -618,7 +619,10 @@ class Committee(ApiResource, db.Model):
     contact_details = db.Column(db.Text())
     ad_hoc = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
     premium = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    # is this committee considered active? (only for ad-hoc committees)
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
+    # year when this committee was last active (only for ad-hoc committees)
+    last_active_year = db.Column(db.Integer)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
@@ -634,7 +638,7 @@ class Committee(ApiResource, db.Model):
     # Time after last meeting after which ad-hoc committees are considered inactive
     AD_HOC_INACTIVE_DAYS = 365
 
-    POPULAR_COMMITTEES = [38,19,24,98,63,28,65,62,37,111]
+    POPULAR_COMMITTEES = [38, 19, 24, 98, 63, 28, 65, 62, 37, 111]
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -676,11 +680,17 @@ class Committee(ApiResource, db.Model):
         """ Set this cte as (in)active based on recent meetings.
         Generally only used for ad-hoc committees.
         """
-        threshold = datetime.datetime.utcnow() - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
+        # get most recent meeting
         meeting = CommitteeMeeting.query\
-            .filter(CommitteeMeeting.committee == self, CommitteeMeeting.date >= threshold)\
+            .filter(CommitteeMeeting.committee == self)\
+            .order_by(desc(CommitteeMeeting.date))\
             .first()
-        self.active = meeting is not None
+
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+        threshold = now - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
+
+        self.active = meeting is not None and meeting.date >= threshold
+        self.last_active_year = meeting.date.year if meeting else None
 
     def __unicode__(self):
         tmp = self.name

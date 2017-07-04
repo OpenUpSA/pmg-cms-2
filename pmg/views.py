@@ -198,7 +198,7 @@ def bills(bill_type, year=None):
 
         if year not in year_list:
             abort(404)
-        params = 'filter[year]=%d' % year
+        params['filter[year]'] = year
 
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']

@@ -364,15 +364,12 @@ def attendance_overview():
 
         if not curr:
             continue
-        if not prev:
-            prev = object()
-            prev.avg_attendance = 0
 
         attendance.append({
             'committee': cte.name,
             'n_meetings': curr.n_meetings,
             'avg_attendance': curr.avg_attendance * 100,
-            'change': (curr.avg_attendance - prev.avg_attendance) * 100,
+            'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
         })
 
     # rank them

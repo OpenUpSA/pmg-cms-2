@@ -4,51 +4,51 @@
 
 {% block page %}
 <section class="committee-attendance-overview">
-  <div class="container">
-    <h1>2017 attendance stats</h1>
-    <table class="table table-hover sortable">
-      <thead>
-        <th>Rank</th>
-        <th>Committee</th>
-        <th>Number of meetings</th>
-        <th data-defaultsort="desc">Attendance</th>
-        <th>Since 2016</th>
-      </thead>
-      {% for item in attendance %}
-      <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ item.committee }}</td>
-        <td>{{ item.n_meetings }}</td>
-        <td>
-          <div class="progress">
-            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ item.avg_attendance|int }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.avg_attendance }}%;">
-              {{ item.avg_attendance|int }}%
-            </div>
+  <h1>2017 attendance stats</h1>
+  <table class="table table-hover sortable">
+    <thead>
+      <th class="th-rank hidden-xs hidden-sm">Rank</th>
+      <th class="th-cte-name">Committee</th>
+      <th class="th-number-meetings hidden-xs">Number of meetings</th>
+      <th class="th-attendance" data-defaultsort="desc">Attendance</th>
+      <th class="th-attendance-change">Since 2016</th>
+    </thead>
+    {% for overview in attendance_overview %}
+    <tr>
+      <td class="rank hidden-xs hidden-sm">{{ loop.index }}</td>
+      <td class="cte-name">{{ overview[0] }}</td>
+      <td class="number-meetings hidden-xs">{{ overview[1] }}</td>
+      <td class="attendance">
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ overview[3] }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ overview[3] }}%;">
+            {{ overview[3] }}%
           </div>
-        </td>
-        <td class="attendance-change" data-value="{{ item.change|int }}">
-          <div class="value" style="
-            {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
-            {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+        </div>
+      </td>
+      <td class="attendance-change" data-value="{{ overview[2] }}">
+        <div class="value hidden-sm hidden-xs" style="
+          {% if overview[2] < 0 %}right: calc(50% + {{ overview[2]|abs }}% + 3px){% endif %}
+          {% if overview[2] >= 0 %}left: calc(50% + {{ overview[2]|abs }}% + 3px){% endif %}
+        ">
+          {% if overview[2] > 0 %}+{% endif %}{{ overview [2] }}%
+        </div>
+        <div class="centre-line hidden-sm hidden-xs"></div>
+        <div class="bar hidden-sm hidden-xs" style="
+          background-color: {% if overview[2] < 0 %}#d9534f{% endif %};
+          float:{% if overview[2] < 0 %}right{% endif %};
+          width: {% if overview[2] > 0 %}calc(1px + {{ overview[2]|abs }}%){% else %}{{ overview[2]|abs }}%{% endif %};
+          margin-{% if overview[2] < 0 %}right{% else %}left{% endif %}: 50%;
+          border-radius: {% if overview[2] < 0 %}4px 0 0 4px{% else %}0 4px 4px 0{% endif %}
           ">
-            {% if item.change > 0 %}+{% endif %}{{ item.change|int }}%
-          </div>
-          <div class="centre-line"></div>
-          <div class="bar" style="
-            background-color: {% if item.change < 0 %}#d9534f{% endif %};
-            float:{% if item.change < 0 %}right{% endif %};
-            width: {% if item.change > 0 %}calc(1px + {{ item.change|abs }}%){% else %}{{ item.change|abs }}%{% endif %};
-            margin-{% if item.change < 0 %}right{% else %}left{% endif %}: 50%;
-            border-radius: {% if item.change < 0 %}4px 0 0 4px{% else %}0 4px 4px 0{% endif %}
-            ">
-          </div>
-        </td>
-      </tr>
-      {% endfor %}
-    </table> 
+        </div>
+        <div class="value-mobile hidden-md hidden-lg">
+          <span class="label label-{% if overview[2] > 0 %}success{% else %}danger{% endif %}">{% if overview[2] > 0 %}+{% endif %}{{ overview [2] }}%</span>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table> 
     
-  </div>
-
 </section>
 
 

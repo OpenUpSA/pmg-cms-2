@@ -631,6 +631,9 @@ class Committee(ApiResource, db.Model):
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
 
+    # Time after last meeting after which ad-hoc committees are considered inactive
+    AD_HOC_INACTIVE_DAYS = 365
+
     POPULAR_COMMITTEES = [38,19,24,98,63,28,65,62,37,111]
 
     def to_dict(self, include_related=False):
@@ -669,11 +672,32 @@ class Committee(ApiResource, db.Model):
 
         return best[0] if best else None
 
+    def reset_active(self):
+        """ Set this cte as (in)active based on recent meetings.
+        Generally only used for ad-hoc committees.
+        """
+        threshold = datetime.datetime.utcnow() - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
+        meeting = CommitteeMeeting.query\
+            .filter(CommitteeMeeting.committee == self, CommitteeMeeting.date >= threshold)\
+            .first()
+        self.active = meeting is not None
+
     def __unicode__(self):
         tmp = self.name
         if self.house:
             tmp = self.house.name_short + " " + tmp
         return unicode(tmp)
+
+    @classmethod
+    def update_active_committees(cls):
+        """ Task to periodically mark ad-hoc committees as (in)active based
+        on recent meetings.
+        """
+        ctes = cls.query.filter(cls.ad_hoc == True).all()  # noqa
+        for cte in ctes:
+            cte.reset_active()
+            db.session.add(cte)
+        db.session.commit()
 
 
 class Membership(db.Model):

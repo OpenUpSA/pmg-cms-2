@@ -6,20 +6,21 @@
 <section class="committee-attendance">
   <div class="container">
     <h1>2017 attendance stats</h1>
-    <table class="table table-hover">
-      <tr>
+    <table class="table table-hover sortable">
+      <thead>
         <th>Rank</th>
         <th>Committee</th>
         <th>Number of meetings</th>
         <th>Attendance</th>
         <th>Attendance</th>
-      </tr>
+      </thead>
       {% for overview in attendance_overview %}
       <tr>
         <td>{{ loop.index }}</td>
         <td>{{ overview[0] }}</td>
         <td>{{ overview[1] }}</td>
-        <td>
+        <td style="position: relative;">
+          <div style="width: 1px; background-color: black; height: 10px; position: absolute; left: 50%; float:right;"></div>
           <div style="background-color: green; height: 10px;width: {{ overview[2]|abs * 4|int }}%"></div>
         </td>
         <td>

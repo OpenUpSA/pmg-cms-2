@@ -1528,3 +1528,31 @@ ul.menu {
   }
 }
 
+.committee-attendance-overview {
+  .progress {
+    margin-bottom: 0;
+  }
+  .attendance-change {
+    position: relative;
+    .value {
+      position: absolute;
+      font-size: 10px;
+      line-height: 20px;
+    }
+    .centre-line {
+      width: 1px;
+      background-color: #000;
+      height: 50px;
+      position: absolute;
+      left: 50%;
+      &:last-of-type {
+        height: 20px;
+      }
+    }
+    .bar {
+      background-color: #0ECBA1;
+      height: 20px;
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    }
+  }
+}

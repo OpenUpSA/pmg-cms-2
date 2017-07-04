@@ -5,6 +5,7 @@ from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 from sqlalchemy import desc, Float
 from sqlalchemy.sql.expression import case, func, cast
+from itertools import groupby
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -345,90 +346,42 @@ def attendance_overview():
     """
     Display overview of attendance for meetings.
     """
+    this_year = datetime.today().year
+    last_year = this_year - 1
+    attendance = CommitteeMeetingAttendance.annual_attendance_trends(last_year, this_year)
+    # index by year and cte id
+    years = {
+        year: {
+            cte_id: list(cte_group)[0] for cte_id, cte_group in groupby(group, lambda r: r.committee_id)
+        }
+        for year, group in groupby(attendance, lambda r: r.year)
+    }
 
-    # attendance
-    subquery = db.session.query(
-        Committee.name.label('committee_name'),
-        Committee.id.label('committee_id'),
-        func.date_part('year', CommitteeMeeting.date).label('year'),
-        func.count(case([(CommitteeMeetingAttendance.attendance.in_(
-            CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
-        ), 1)])).label('n_present'),
-        func.count(CommitteeMeetingAttendance.id).label('n_members')
-    )\
-                         .group_by('year', CommitteeMeeting.id, Committee.name, Committee.id)\
-                         .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-                         .filter(Committee.ad_hoc == False)\
-                         .subquery('attendance')
+    attendance = []
+    for cte in Committee.list().all():
+        curr = years[this_year].get(cte.id)
+        prev = years[last_year].get(cte.id)
 
-    attendance_overview = [
-    (u'Arts and Culture'    ,   57  ,   -7  ,   90  )   ,
-    (u'Basic Education'     ,   72  ,   -5  ,   66  )   ,
-    (u'Budget Committee on Appropriation'   ,   88  ,   5   ,   87  )   ,
-    (u'Committee of Chairpersons'   ,   60  ,   18  ,   65  )   ,
-    (u'Communications'      ,   39  ,   -18 ,   67  )   ,
-    (u'Constitutional Review Committee'     ,   58  ,   -9  ,   78  )   ,
-    (u'Cooperative Governance and Traditional Affairs'      ,   82  ,   13  ,   56  )   ,
-    (u'Correctional Services'   ,   72  ,   6   ,   89  )   ,
-    (u'Defence and Military Veterans'   ,   87  ,   6   ,   53  )   ,
-    (u'Defence'     ,   55  ,   -4  ,   57  )   ,
-    (u'Economic Development'    ,   29  ,   -18 ,   62  )   ,
-    (u'Energy'      ,   97  ,   -15 ,   81  )   ,
-    (u'Environmental Affairs'   ,   41  ,   13  ,   87  )   ,
-    (u'Finance Standing Committee'      ,   62  ,   16  ,   71  )   ,
-    (u'Health'      ,   88  ,   -15 ,   66  )   ,
-    (u'Higher Education and Training'   ,   85  ,   7   ,   88  )   ,
-    (u'Home Affairs'    ,   35  ,   -16 ,   69  )   ,
-    (u'Human Settlements'   ,   31  ,   11  ,   73  )   ,
-    (u'International Relations'     ,   31  ,   -1  ,   53  )   ,
-    (u'Joint Committe on Delegated Legislation'     ,   44  ,   5   ,   67  )   ,
-    (u'Joint Committee on HIV and AIDS'     ,   85  ,   -3  ,   51  )   ,
-    (u'Joint Committee on the Executive Members Ethics Bill'    ,   100 ,   -3  ,   82  )   ,
-    (u'Joint Rules'     ,   32  ,   7   ,   54  )   ,
-    (u'Joint Standing Committee on Financial Management of Parliament'      ,   58  ,   -10 ,   52  )   ,
-    (u'Justice and Correctional Services'   ,   71  ,   -12 ,   89  )   ,
-    (u'Labour'      ,   52  ,   11  ,   66  )   ,
-    (u'Mineral Resources'   ,   44  ,   1   ,   87  )   ,
-    (u'Monitoring Improvement of Quality of Life and Status of Women'   ,   73  ,   -11 ,   90  )   ,
-    (u'NCOP Appropriations'     ,   22  ,   -15 ,   80  )   ,
-    (u'NCOP Communications and Public Enterprise'   ,   23  ,   -8  ,   74  )   ,
-    (u'NCOP Cooperative Governance & Traditional Affairs'   ,   86  ,   14  ,   61  )   ,
-    (u'NCOP Economic and Business Development'      ,   58  ,   -2  ,   80  )   ,
-    (u'NCOP Education and Recreation'   ,   26  ,   -5  ,   56  )   ,
-    (u'NCOP Finance'    ,   33  ,   -16 ,   66  )   ,
-    (u'NCOP Land and Mineral Resources'     ,   81  ,   12  ,   58  )   ,
-    (u'NCOP Petitions and Executive Undertakings'   ,   76  ,   1   ,   62  )   ,
-    (u'NCOP Public Services'    ,   96  ,   -10 ,   76  )   ,
-    (u'NCOP Rules of the National Council of Provinces'     ,   18  ,   13  ,   86  )   ,
-    (u'NCOP Security and Justice'   ,   76  ,   1   ,   73  )   ,
-    (u'NCOP Social Services'    ,   26  ,   -8  ,   69  )   ,
-    (u'NCOP Trade and International Relations'      ,   51  ,   -3  ,   60  )   ,
-    (u'Police'      ,   28  ,   6   ,   68  )   ,
-    (u'Public Accounts'     ,   22  ,   -9  ,   71  )   ,
-    (u'Public Enterprises'      ,   55  ,   10  ,   75  )   ,
-    (u'Public Works'    ,   34  ,   10  ,   77  )   ,
-    (u'Rules of the National Assembly'      ,   94  ,   17  ,   65  )   ,
-    (u'Rural Development and Land Reform'   ,   78  ,   3   ,   65  )   ,
-    (u'Science and Technology'      ,   70  ,   10  ,   82  )   ,
-    (u'Small Business Development'      ,   67  ,   -20 ,   70  )   ,
-    (u'Social Development'      ,   17  ,   -3  ,   84  )   ,
-    (u'Sport and Recreation'    ,   38  ,   -8  ,   79  )   ,
-    (u'Standing Committee on Appropriations'    ,   60  ,   -12 ,   83  )   ,
-    (u'Standing Committee on Auditor General'   ,   27  ,   14  ,   83  )   ,
-    (u'Telecommunications and Postal Services'      ,   90  ,   5   ,   77  )   ,
-    (u'Tourism'     ,   70  ,   12  ,   80  )   ,
-    (u'Trade and Industry'      ,   43  ,   -14 ,   52  )   ,
-    (u'Transport'   ,   100 ,   4   ,   87  )   ,
-    (u'Water and Sanitation'    ,   37  ,   -12 ,   89  )   ,
-    (u'Women in The Presidency'     ,   53  ,   -8  ,   60  )   ,
-    (u"Ethics and Members' Interest"    ,   45  ,   18  ,   63  )   ,
-    (u"Private Members' Legislative Proposals and Special Petitions"    ,   81  ,   -9  ,   76  )   ,
-    ]
+        if not curr:
+            continue
+        if not prev:
+            prev = object()
+            prev.avg_attendance = 0
+
+        attendance.append({
+            'committee': cte.name,
+            'n_meetings': curr.n_meetings,
+            'avg_attendance': curr.avg_attendance * 100,
+            'change': (curr.avg_attendance - prev.avg_attendance) * 100,
+        })
+
+    # rank them
+    attendance.sort(key=lambda a: a['avg_attendance'], reverse=True)
+    for i, item in enumerate(attendance):
+        attendance[i]['rank'] = len(attendance) - i
 
     return render_template('attendance_overview.html',
-                           attendance_overview_json=json.dumps(attendance_overview),
-                           attendance_overview=attendance_overview,
-    )
+                           attendance=attendance)
 
 
 @app.route('/committee-question/<int:question_id>/')

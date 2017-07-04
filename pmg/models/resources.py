@@ -7,7 +7,7 @@ import re
 import base64
 import tempfile
 
-from sqlalchemy import desc, func, sql
+from sqlalchemy import desc, func, sql, case, cast, Float, Integer
 from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import backref, joinedload, validates
 
@@ -1240,6 +1240,12 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         return rows
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        # Don't show URL while it's not served on the API.
+        del tmp['url']
+        return tmp
+
     @classmethod
     def meetings_by_member(cls):
         year = func.date_part('year', CommitteeMeeting.date).label('year')
@@ -1260,11 +1266,34 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         return rows
 
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        # Don't show URL while it's not served on the API.
-        del tmp['url']
-        return tmp
+    @classmethod
+    def annual_attendance_trends(cls, from_year, to_year):
+        start_date = datetime.datetime(from_year, 1, 1)
+        end_date = datetime.datetime(to_year, 12, 31)
+
+        # attendance
+        subquery = db.session.query(
+            CommitteeMeeting.committee_id,
+            func.date_part('year', CommitteeMeeting.date).label('year'),
+            func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
+            func.count(CommitteeMeetingAttendance.id).label('n_members')
+            )\
+            .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id)\
+            .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+            .filter(CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date)\
+            .subquery('attendance')
+
+        return db.session.query(
+            subquery.c.committee_id,
+            cast(subquery.c.year, Integer).label('year'),
+            func.count(1).label('n_meetings'),
+            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
+            cast(func.avg(subquery.c.n_members), Float).label('avg_members')
+            )\
+            .group_by(subquery.c.year, subquery.c.committee_id)\
+            .order_by(subquery.c.year, subquery.c.committee_id)\
+            .all()
+
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
 

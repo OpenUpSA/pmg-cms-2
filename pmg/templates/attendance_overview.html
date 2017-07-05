@@ -9,7 +9,7 @@
 
   <table class="table table-hover sortable">
     <thead>
-      <th class="th-rank hidden-xs"></th>
+      <th class="th-rank"></th>
       <th class="th-cte-name">Committee</th>
       <th class="th-number-meetings hidden-xs">Meetings</th>
       <th class="th-attendance" data-defaultsort="desc">Attendance</th>
@@ -17,7 +17,7 @@
     </thead>
     {% for item in attendance %}
     <tr>
-      <td class="rank hidden-xs">#{{ loop.index }}</td>
+      <td class="rank">#{{ loop.index }}</td>
       <td class="cte-name">{{ item.committee }}</td>
       <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
       <td class="attendance">

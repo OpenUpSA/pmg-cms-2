@@ -1000,6 +1000,15 @@ body.email_alerts {
 }
 
 .attendance-rate {
+  .panel-heading {
+    .panel-title {
+      display: inline;
+    }
+    a {
+      font-size: 12px;
+      line-height: 20px;
+    }
+  }
   .yearly-rate:first-child {
     .year, .rate {
       font-size: 18px;

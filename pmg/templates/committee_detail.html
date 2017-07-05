@@ -174,11 +174,10 @@
   {% if attendance_summary %}
   <div class="panel panel-default attendance-rate">
     <div class="panel-heading">
-      <h4 class="panel-title">Attendance
-        {% if attendance_rank[0] %}
-        <a href="/attendance-overview#{{ committee.id }}" class="pull-right">Ranked {{ attendance_rank[0] }} out of {{ attendance_rank[1] }}</a>
-        {% endif %}
-      </h4>
+      <h4 class="panel-title">Attendance</h4>
+      {% if attendance_rank[0] %}
+      <a href="/attendance-overview#{{ committee.id }}" class="pull-right">Ranked {{ attendance_rank[0] }} out of {{ attendance_rank[1] }}</a>
+      {% endif %}
     </div>
     <div class="panel-body">
     {% for summary in attendance_summary | reverse %}

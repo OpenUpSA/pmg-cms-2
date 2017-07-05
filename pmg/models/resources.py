@@ -1218,33 +1218,36 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     def committee_id(self):
         return self.meeting.committee_id
 
+    def to_dict(self, include_related=False):
+        tmp = serializers.model_to_dict(self, include_related=include_related)
+        # Don't show URL while it's not served on the API.
+        del tmp['url']
+        return tmp
+
     @classmethod
     def list(cls):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
     @classmethod
     def summary(cls):
+        """ Summary of attendance by year, member and committee.
+        """
         year = func.date_part('year', CommitteeMeeting.date).label('year')
 
         rows = db.session.query(
             cls.member_id,
             cls.attendance,
             year,
+            CommitteeMeeting.committee_id,
             func.count(1).label('cnt')
         )\
             .select_from(cls)\
             .join(CommitteeMeeting)\
-            .group_by(cls.member_id, cls.attendance, year)\
-            .order_by(year.desc(), cls.member_id)\
+            .group_by(cls.member_id, cls.attendance, CommitteeMeeting.committee_id, year)\
+            .order_by(year.desc(), cls.member_id, CommitteeMeeting.committee_id)\
             .all()
 
         return rows
-
-    def to_dict(self, include_related=False):
-        tmp = serializers.model_to_dict(self, include_related=include_related)
-        # Don't show URL while it's not served on the API.
-        del tmp['url']
-        return tmp
 
     @classmethod
     def meetings_by_member(cls):
@@ -1268,6 +1271,8 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def annual_attendance_trends(cls, from_year, to_year):
+        """ Attendance summary by year and committee.
+        """
         start_date = datetime.datetime(from_year, 1, 1)
         end_date = datetime.datetime(to_year, 12, 31)
 
@@ -1277,7 +1282,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             func.date_part('year', CommitteeMeeting.date).label('year'),
             func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
             func.count(CommitteeMeetingAttendance.id).label('n_members')
-            )\
+        )\
             .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id)\
             .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
             .filter(CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date)\
@@ -1289,7 +1294,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             func.count(1).label('n_meetings'),
             func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
             cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-            )\
+        )\
             .group_by(subquery.c.year, subquery.c.committee_id)\
             .order_by(subquery.c.year, subquery.c.committee_id)\
             .all()

@@ -365,7 +365,6 @@ def attendance_overview():
     return render_template('attendance_overview.html',
                            attendance=attendance)
 
-
 @app.route('/committee-question/<int:question_id>/')
 def committee_question(question_id):
     """ Display a single committee question.

@@ -1321,6 +1321,17 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             .order_by(subquery.c.year)\
             .all()
 
+    @classmethod
+    def annual_attendance_rank_for_committee(cls, committee_id, year):
+        attendance = cls.annual_attendance_trends(year, year)
+        attendance.sort(key=lambda r: r.avg_attendance, reverse=True)
+        count = len(attendance)
+
+        for i, att in enumerate(attendance):
+            if att.committee_id == committee_id:
+                return i + 1, count
+
+        return None, count
 
 db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
 

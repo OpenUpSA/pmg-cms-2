@@ -631,7 +631,7 @@ class Committee(ApiResource, db.Model):
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
 
-    POPULAR_COMMITTEES = [38,19,24,98,63,28,65,62,37,111]
+    POPULAR_COMMITTEES = [38, 19, 24, 98, 63, 28, 65, 62, 37, 111]
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -1297,6 +1297,28 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         )\
             .group_by(subquery.c.year, subquery.c.committee_id)\
             .order_by(subquery.c.year, subquery.c.committee_id)\
+            .all()
+
+    @classmethod
+    def annual_attendance_trends_for_committee(cls, committee_id):
+        subquery = db.session.query(
+            func.date_part('year', CommitteeMeeting.date).label('year'),
+            func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
+            func.count(CommitteeMeetingAttendance.id).label('n_members')
+        )\
+            .group_by('year', CommitteeMeeting.id)\
+            .filter(CommitteeMeeting.committee_id == committee_id)\
+            .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+            .subquery('attendance')
+
+        return db.session.query(
+            subquery.c.year,
+            func.count(1).label('n_meetings'),
+            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
+            cast(func.avg(subquery.c.n_members), Float).label('avg_members')
+        )\
+            .group_by(subquery.c.year)\
+            .order_by(subquery.c.year)\
             .all()
 
 

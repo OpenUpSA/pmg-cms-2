@@ -3,8 +3,7 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
-from sqlalchemy import desc, Float
-from sqlalchemy.sql.expression import case, func, cast
+from sqlalchemy import desc
 from itertools import groupby
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
@@ -16,7 +15,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, db
+from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -25,8 +24,6 @@ from collections import OrderedDict
 import forms
 import utils
 from helpers import _jinja2_filter_datetime as pretty_date
-
-import json
 
 LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
 
@@ -244,7 +241,8 @@ def bill(bill_id):
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
     else:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')
-    return render_template('bills/detail.html',
+    return render_template(
+        'bills/detail.html',
         bill=bill,
         history=history,
         stages=stages,
@@ -279,28 +277,7 @@ def committee_detail(committee_id):
         return_everything=True)['results']
     sorter = lambda x: x['member']['name']
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
-                 sorted([m for m in membership if not m['chairperson']], key=sorter)
-
-    # attendance
-    subquery = db.session.query(
-        func.date_part('year', CommitteeMeeting.date).label('year'),
-        func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
-        func.count(CommitteeMeetingAttendance.id).label('n_members')
-        )\
-        .group_by('year', CommitteeMeeting.id)\
-        .filter(CommitteeMeeting.committee_id == committee_id)\
-        .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-        .subquery('attendance')
-
-    attendance_summary = db.session.query(
-        subquery.c.year,
-        func.count(1).label('n_meetings'),
-        func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
-        cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-        )\
-        .group_by(subquery.c.year)\
-        .order_by(subquery.c.year)\
-        .all()
+                 sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
 
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
@@ -326,6 +303,7 @@ def committee_detail(committee_id):
         starting_filter = latest_year
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
+    attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(committee_id)
 
     return render_template('committee_detail.html',
                            current_year=now.year,
@@ -509,11 +487,11 @@ def committee_meeting(event_id):
     attendance = [a for a in attendance if a['attendance'] in CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT]
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
-                 sorted([a for a in attendance if not a['chairperson']], key=sorter)
+                 sorted([a for a in attendance if not a['chairperson']], key=sorter)  # noqa
     if event['chairperson']:
-        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
     else:
-        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
 
     return render_template(
         'committee_meeting.html',

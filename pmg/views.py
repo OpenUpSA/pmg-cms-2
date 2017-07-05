@@ -304,6 +304,11 @@ def committee_detail(committee_id):
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
     attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(committee_id)
+    if attendance_summary:
+        year = attendance_summary[-1].year
+        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(committee_id, int(year))
+    else:
+        attendance_rank = None
 
     return render_template('committee_detail.html',
                            current_year=now.year,
@@ -316,6 +321,7 @@ def committee_detail(committee_id):
                            recent_questions=recent_questions,
                            social_summary=social_summary,
                            attendance_summary=attendance_summary,
+                           attendance_rank=attendance_rank,
                            admin_edit_url=admin_url('committee', committee_id))
 
 
@@ -345,10 +351,10 @@ def attendance_overview():
 
         attendance.append({
             'committee': cte.name,
+            'committee_id': cte.id,
             'n_meetings': curr.n_meetings,
             'avg_attendance': curr.avg_attendance * 100,
             'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
-            'url': url_for('committee_detail', committee_id=curr.cte.id),
         })
 
     # rank them

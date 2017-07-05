@@ -6,9 +6,10 @@ import math
 import os
 import logging
 
-from pmg import db, app
+from pmg import app
 
 S3_BUCKET = app.config['S3_BUCKET']
+CACHE_SECS = 3600 * 24
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ def increment_filename(filename):
     We do this by adding a counter as a path component at the start of the filename,
     so that the original name is not changed.
     """
-    if not '/' in filename:
+    if '/' not in filename:
         counter = 0
         rest = filename
     else:
@@ -38,7 +39,7 @@ def increment_filename(filename):
             counter = 0
             rest = filename
 
-    return '%d/%s' % (counter+1, rest)
+    return '%d/%s' % (counter + 1, rest)
 
 
 class S3Bucket():
@@ -64,12 +65,13 @@ class S3Bucket():
                 key = increment_filename(key)
                 tmp_key = self.bucket.get_key(key)
 
+            headers = {'Cache-Control': 'max-age=%d, public' % CACHE_SECS}
             logger.debug("uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + key)
 
             # only upload if the key doesn't exist yet
             tmp_key = Key(self.bucket)
             tmp_key.key = key
-            tmp_key.set_contents_from_filename(path)
+            tmp_key.set_contents_from_filename(path, headers)
 
         except Exception as e:
             logger.error("Cannot upload file to S3. Removing file from disk.")

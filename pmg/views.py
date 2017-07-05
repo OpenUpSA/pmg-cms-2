@@ -344,11 +344,11 @@ def attendance_overview():
             continue
 
         attendance.append({
+            'id': cte.id,
             'committee': cte.name,
             'n_meetings': curr.n_meetings,
             'avg_attendance': curr.avg_attendance * 100,
             'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
-            'url': url_for('committee_detail', committee_id=curr.cte.id),
         })
 
     # rank them
@@ -358,7 +358,6 @@ def attendance_overview():
 
     return render_template('attendance_overview.html',
                            attendance=attendance)
-
 
 @app.route('/committee-question/<int:question_id>/')
 def committee_question(question_id):

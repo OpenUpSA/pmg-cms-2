@@ -4,8 +4,7 @@
 
 {% block page %}
 <section class="committee-attendance-overview">
-  <h1>Committee meeting attendance overview 2017</h1>
-  <a class="btn btn-default" href="https://api.pmg.org.za/committee-meeting-attendance/data.xlsx">Download data</a>
+  <h1><i class="fa fa-fw fa-table" aria-hidden="true"></i> Committee meeting attendance overview 2017 <a class="btn btn-sm btn-success" href="https://api.pmg.org.za/committee-meeting-attendance/data.xlsx">Download data</a></h1>
 
   <table class="table table-hover sortable">
     <thead>
@@ -18,7 +17,7 @@
     {% for item in attendance %}
     <tr>
       <td class="rank">#{{ loop.index }}</td>
-      <td class="cte-name">{{ item.committee }}</td>
+      <td class="cte-name"><a href="{{ item.url }}">{{ item.committee }}</a></td>
       <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
       <td class="attendance">
         <div class="progress">

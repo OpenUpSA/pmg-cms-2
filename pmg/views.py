@@ -348,6 +348,7 @@ def attendance_overview():
             'n_meetings': curr.n_meetings,
             'avg_attendance': curr.avg_attendance * 100,
             'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
+            'url': url_for('committee_detail', committee_id=curr.cte.id),
         })
 
     # rank them

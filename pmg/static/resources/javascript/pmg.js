@@ -176,3 +176,7 @@ $(function() {
     ga('send', 'social', 'email', 'share', url);
   });
 });
+
+$(".committee-attendance-overview .centre-line").each(function() {
+  $(this).height($(this).parent().height() + 17);
+});

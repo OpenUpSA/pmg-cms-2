@@ -1534,7 +1534,7 @@ ul.menu {
     }
   }
   .th-rank, .rank {
-    max-width: 20px;
+    max-width: 15px;
   }
   .cte-name {
     max-width: 100px;
@@ -1552,12 +1552,18 @@ ul.menu {
       font-size: 10px;
       line-height: 20px;
     }
+    .na {
+      font-size: 10px;
+      line-height: 20px;
+      text-align: center;
+    }
     .centre-line {
       width: 1px;
       background-color: #ddd;
-      height: 50px;
+      height: 37px;
       position: absolute;
       left: 50%;
+      top: -2px;
       &:last-of-type {
         height: 20px;
       }
@@ -1576,6 +1582,9 @@ ul.menu {
         border-radius: 4px 0 0 4px;
         float: right;
       }
+    }
+    .value-mobile {
+      text-align: center;
     }
     .label {
       padding: 3px 7px;

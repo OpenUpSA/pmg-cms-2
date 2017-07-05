@@ -4,18 +4,20 @@
 
 {% block page %}
 <section class="committee-attendance-overview">
-  <h1>2017 attendance stats</h1>
+  <h1>Committee meeting attendance overview 2017</h1>
+  <a class="btn btn-default" href="https://api.pmg.org.za/committee-meeting-attendance/data.xlsx">Download data</a>
+
   <table class="table table-hover sortable">
     <thead>
-      <th class="th-rank hidden-xs hidden-sm">Rank</th>
+      <th class="th-rank hidden-xs"></th>
       <th class="th-cte-name">Committee</th>
-      <th class="th-number-meetings hidden-xs"># of meetings</th>
+      <th class="th-number-meetings hidden-xs">Meetings</th>
       <th class="th-attendance" data-defaultsort="desc">Attendance</th>
       <th class="th-attendance-change">Since 2016</th>
     </thead>
     {% for item in attendance %}
     <tr>
-      <td class="rank hidden-xs hidden-sm">{{ loop.index }}</td>
+      <td class="rank hidden-xs">#{{ loop.index }}</td>
       <td class="cte-name">{{ item.committee }}</td>
       <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
       <td class="attendance">
@@ -27,17 +29,17 @@
       </td>
       <td class="attendance-change" data-value="{{ item.change }}">
         {% if item.avg_attendance == item.change  %}
-        <div style="font-size: 10px; line-height: 20px; text-align: center;">N/A</div>
+        <div class="na">N/A</div>
         {% else %}
         <div class="value hidden-sm hidden-xs" style="
-          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs / 2 }}% + 3px){% endif %}
-          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs / 2 }}% + 3px){% endif %}
+          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
         ">
           {% if item.change|round > 0 %}+{% endif %}{{ item.change|round|int }}%
         </div>
         <div class="centre-line hidden-sm hidden-xs"></div>
         <div class="bar hidden-sm hidden-xs {% if item.change < 0 %}negative{% else %}positive{% endif %}" style="
-          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs / 2 }}%){% else %}{{ item.change|abs / 2 }}%{% endif %};
+          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs }}%){% else %}{{ item.change|abs }}%{% endif %};
           ">
         </div>
         <div class="value-mobile hidden-md hidden-lg">
@@ -50,6 +52,5 @@
   </table> 
     
 </section>
-
 
 {% endblock %}

@@ -176,7 +176,7 @@
     <div class="panel-heading">
       <h4 class="panel-title">Attendance
         {% if attendance_rank[0] %}
-        <a href="/attendance-overview" class="pull-right">Ranked {{ attendance_rank[0] }} out of {{ attendance_rank[1] }}</a>
+        <a href="/attendance-overview#{{ committee.id }}" class="pull-right">Ranked {{ attendance_rank[0] }} out of {{ attendance_rank[1] }}</a>
         {% endif %}
       </h4>
     </div>

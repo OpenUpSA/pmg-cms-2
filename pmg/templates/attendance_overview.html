@@ -15,9 +15,9 @@
       <th class="th-attendance-change">Since 2016</th>
     </thead>
     {% for item in attendance %}
-    <tr>
+    <tr id="{{ item.committee_id }}">
       <td class="rank">#{{ loop.index }}</td>
-      <td class="cte-name"><a href="{{ url_for('committee_detail', committee_id=item.id) }}">{{ item.committee }}</a></td>
+      <td class="cte-name"><a href="{{ url_for('committee_detail', committee_id=item.committee_id) }}">{{ item.committee }}</a></td>
       <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
       <td class="attendance">
         <div class="progress">

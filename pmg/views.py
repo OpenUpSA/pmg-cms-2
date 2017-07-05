@@ -198,7 +198,7 @@ def bills(bill_type, year=None):
 
         if year not in year_list:
             abort(404)
-        params = 'filter[year]=%d' % year
+        params['filter[year]'] = year
 
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']
@@ -256,24 +256,23 @@ def committee_detail(committee_id):
     Display all available detail for the committee.
     """
     committee = load_from_api('v2/committees', committee_id)['result']
+    links = committee['_links']
     filtered_meetings = {}
 
     # calls for comment
     committee['calls_for_comments'] = load_from_api(
-        'v2/committees/%s/calls-for-comment' % committee_id,
+        links['calls_for_comment'],
         fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     # tabled reports
     committee['tabled_committee_reports'] = load_from_api(
-        'v2/committees/%s/tabled-reports' % committee_id,
+        links['tabled_reports'],
         fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     # memberships
-    membership = load_from_api(
-        'v2/committees/%s/members' % committee_id,
-        return_everything=True)['results']
+    membership = load_from_api(links['members'], return_everything=True)['results']
     sorter = lambda x: x['member']['name']
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)
@@ -302,8 +301,7 @@ def committee_detail(committee_id):
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
-    all_meetings = load_from_api('v2/committees/%s/meetings' % committee_id,
-                                 fields=['id', 'title', 'date'], return_everything=True)['results']
+    all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']
 
     for meeting in all_meetings:
         d = meeting['parsed_date'] = datetime.strptime(meeting['date'][:10], "%Y-%m-%d")

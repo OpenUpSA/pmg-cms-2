@@ -50,7 +50,7 @@ class ApiException(HTTPException):
 def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, fields=None, params=None):
     """ Load data from the PMG API.
 
-    :param str resource_name: resource to load (used as the start of the URL)
+    :param str resource_name: resource to load (used as the start of the URL), or a full URL
     :param int resource_id: resource id (optional), appended to the resource name
     :param int page: page number to load (default is the first page)
     :param bool return_everything: fetch all pages? (default: False)
@@ -58,8 +58,11 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     :param dict params: additional query params
     """
     params = {} if (params is None) else params
-    v2 = resource_name.startswith('v2')
+    # check for full URL?
+    if resource_name.startswith('http'):
+        resource_name = resource_name.split('/', 3)[3]
 
+    v2 = resource_name.startswith('v2')
     if fields and not v2:
         raise ValueError("Fields parameter is only supported for API v2 urls.")
 

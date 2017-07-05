@@ -317,7 +317,7 @@ class Event(ApiResource, db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
     committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
-    house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
+    house = db.relationship('House', lazy=True, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
     chairperson = db.Column(db.String(256))
 

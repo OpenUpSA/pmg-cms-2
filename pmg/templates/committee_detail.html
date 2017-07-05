@@ -173,7 +173,7 @@
 {% block committee_page_sidebar %}
   <div class="panel panel-default attendance-rate">
     <div class="panel-heading">
-      <h4 class="panel-title">Attendance <span class="pull-right">x / y</span></h4>
+      <h4 class="panel-title">Attendance <a href="/attendance-overview" class="pull-right">Ranked x out of y</a></h4>
     </div>
     <div class="panel-body">
     {% for summary in attendance_summary | reverse %}

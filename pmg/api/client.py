@@ -2,6 +2,7 @@ import logging
 import urllib
 import json
 
+from unidecode import unidecode
 from flask import flash, session, abort, redirect, url_for, request, render_template
 from werkzeug.exceptions import HTTPException
 from flask.ext.security import current_user
@@ -76,6 +77,12 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         params["page"] = str(page)
     if fields:
         params["fields"] = ','.join(fields)
+
+    # ensure decently encoded unicode strings. this is required because
+    # we can't pass unicode to urllib3, which is super lame. This is only
+    # a problem for search queries with unicode, which will be transliterated
+    # in any case.
+    params = {k: unidecode(v) if isinstance(v, basestring) else str(v) for k, v in params.iteritems()}
 
     headers = {}
     # add auth header

@@ -1,9 +1,17 @@
 from marshmallow import fields
+from marshmallow_polyfield import PolyField
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType)
+                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event)
 from pmg.utils import externalise_url
+
+
+def choose_event_schema(base, parent):
+    """ Return the schema to use for Event-based objects.
+    """
+    name = base.__class__.__name__ + "Schema"
+    return globals().get(name, EventSchema)()
 
 
 class AbsoluteUrlFor(ma.UrlFor):
@@ -38,19 +46,26 @@ class HouseSchema(ma.ModelSchema):
     short_name = fields.String(attribute='name_short')
 
 
+class EventSchema(ma.ModelSchema):
+    class Meta:
+        model = Event
+        fields = ('id', 'date', 'title', 'chairperson', 'public_participation', 'committee_id', 'committee', 'type', 'house')
+    committee = fields.Nested('CommitteeSchema')
+    house = fields.Nested('HouseSchema')
+
+
 class CommitteeMeetingSchema(ma.ModelSchema):
     class Meta:
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
                   'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee',
-                  'chairperson',
-                  'premium_content_excluded', 'premium_but_free')
+                  'premium_content_excluded', 'premium_but_free', 'type')
     committee = fields.Nested('CommitteeSchema')
     premium_content_excluded = fields.Method('get_premium_content_excluded')
     body = fields.Method('get_body')
     summary = fields.Method('get_summary')
     files = fields.Nested('FileSchema', attribute='api_files', many=True)
-    bills = fields.Nested('BillSchema', many=True)
+    bills = fields.Nested('BillSchema', many=True, exclude=['events', 'versions'])
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.committee_meetings', id="<id>"),
         'committee': AbsoluteUrlFor('api2.committees', id="<committee_id>"),
@@ -173,8 +188,13 @@ class BillSchema(ma.ModelSchema):
         fields = ('id', 'type', 'status', 'code', 'title', 'number', 'year',
                   'introduced_by', 'place_of_introduction', 'date_of_introduction',
                   'date_of_assent', 'effective_date', 'act_name',
+                  'versions', 'events',
                   'created_at', 'updated_at')
     type = fields.Nested('BillTypeSchema')
+    status = fields.Nested('BillStatusSchema')
+    place_of_introduction = fields.Nested('HouseSchema')
+    versions = fields.Nested('BillVersionSchema', many=True)
+    events = PolyField(serialization_schema_selector=choose_event_schema, many=True)
 
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.bills', id="<id>"),
@@ -185,3 +205,16 @@ class BillTypeSchema(ma.ModelSchema):
     class Meta:
         model = BillType
         fields = ('id', 'prefix', 'description', 'name')
+
+
+class BillStatusSchema(ma.ModelSchema):
+    class Meta:
+        model = BillStatus
+        fields = ('id', 'description', 'name')
+
+
+class BillVersionSchema(ma.ModelSchema):
+    class Meta:
+        model = BillVersion
+        fields = ('id', 'title', 'file', 'date', 'enacted')
+    file = fields.Nested('FileSchema')

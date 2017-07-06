@@ -1077,11 +1077,11 @@ class BillStatusView(MyModelView):
 
 
 class PageView(ViewWithFiles, MyModelView):
-    column_list = ('slug', 'title', 'featured')
+    column_list = ('slug', 'title', 'featured', 'date')
     column_searchable_list = ('slug', 'title')
     column_default_sort = 'slug'
 
-    form_columns = ('title', 'slug', 'path', 'body', 'featured', 'show_files', 'files')
+    form_columns = ('title', 'slug', 'path', 'body', 'featured', 'date', 'show_files', 'files')
     form_extra_fields = {
         'path': fields.TextField('Path'),
     }
@@ -1100,6 +1100,11 @@ class PageView(ViewWithFiles, MyModelView):
     def on_form_prefill(self, form, id):
         super(PageView, self).on_form_prefill(form, id)
         form.path.data = '/page/%s' % form.slug.data
+
+    def on_model_change(self, form, model, is_created):
+        # make sure the new date is timezone aware
+        if model.date:
+            model.date = model.date.replace(tzinfo=SAST)
 
 
 # initialise admin instance

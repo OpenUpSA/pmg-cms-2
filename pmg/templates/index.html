@@ -60,7 +60,7 @@
                 <div class="card feature-card page">
                   <h4>{{ item.title|truncate(100) }}</h4>
                   <h5>{{ item.first_para|truncate(100) }}</h5>
-                  <h6 class="date">{{ item.updated_at|pretty_date|nbsp|safe }}</h6>
+                  <h6 class="date">{{ item.date|pretty_date|nbsp|safe }}</h6>
                 </div>
               </a>
               {% endif %}

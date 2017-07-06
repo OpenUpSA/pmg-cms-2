@@ -361,7 +361,9 @@ def attendance_overview():
         attendance[i]['rank'] = len(attendance) - i
 
     return render_template('attendance_overview.html',
+                           year=this_year,
                            attendance=attendance)
+
 
 @app.route('/committee-question/<int:question_id>/')
 def committee_question(question_id):

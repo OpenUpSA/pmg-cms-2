@@ -11,27 +11,28 @@ ICONS = {
     "house": "house.png",
     "president": "signed-by-president.png",
     "unknown": "bill-introduced.png",
-    }
+}
+
 
 def get_location(event):
-    if event['type'] in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
+    if event.get('type') in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
         return {
             'name': 'Office of the President',
             'class': 'president',
-            }
+        }
 
-    if 'house' in event:
+    if event.get('house'):
         return {
             'name': event['house']['name'],
-            'class': event['house']['name_short'],
-            }
+            'class': event['house']['short_name'],
+        }
 
-    if 'committee' in event:
+    if event.get('committee'):
         if 'house' in event['committee']:
             return {
                 'name': event['committee']['house']['name'],
-                'class': event['committee']['house']['name_short'],
-                }
+                'class': event['committee']['house']['short_name'],
+            }
 
         return {
             'name': event['committee']['name'],
@@ -41,43 +42,43 @@ def get_location(event):
 
     return {'name': 'Unknown', 'class': ''}
 
+
 def get_agent(event, bill):
     info = None
 
-    if event['type'] in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
+    if event.get('type') in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
         info = {
             'name': 'The President',
             'type': 'president',
         }
 
-    elif event['type'] == 'bill-introduced':
+    elif event.get('type') == 'bill-introduced':
         info = {
-            'name': bill['introduced_by'] or bill.get('place_of_introduction', {}).get('name'),
+            'name': bill['introduced_by'] or (bill.get('place_of_introduction') or {}).get('name'),
             'type': 'member',
         }
 
-    elif 'member' in event:
+    elif event.get('member'):
         info = {
             'name': event['member']['name'],
             'type': 'member',
             'url': url_for('member', member_id=event['member']['id'])
         }
 
-    elif 'committee' in event:
+    elif event.get('committee'):
         info = {
             'name': event['committee']['name'],
             'type': 'committee',
             'url': url_for('committee_detail', committee_id=event['committee']['id'])
         }
 
-    elif 'house' in event:
+    elif event.get('house'):
         info = {
             'name': event['house']['name'],
             'type': 'house',
-            }
+        }
     else:
         info = {'name': 'Unknown', 'type': 'unknown'}
-
 
     info['icon'] = ICONS[info['type']]
 

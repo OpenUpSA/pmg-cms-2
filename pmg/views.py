@@ -226,7 +226,7 @@ def bills(bill_type, year=None):
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
-    bill = load_from_api('bill', bill_id)
+    bill = load_from_api('v2/bills', bill_id)['result']
     stages = {
         'enacted': '5',
         'president': '4',
@@ -237,7 +237,7 @@ def bill(bill_id):
     }
     history = bill_history(bill)
 
-    if 'status' in bill:
+    if bill.get('status'):
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
     else:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')

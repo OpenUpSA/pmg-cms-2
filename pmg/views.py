@@ -64,13 +64,13 @@ def shortcircuit_wget():
         It looks like you're crawling us. We'd love to get in touch and see if
         there's a better way we can share this content with you.
 
-        Send us a mail at info@code4sa.org
+        Send us a mail at info@openup.org.za
 
         Best
-        Code4SA (The pmg.org.za developers)
+        OpenUp (The pmg.org.za developers)
         """)
         logger.info("Saying hi to crawler.")
-        return resp, "418 Hi, email us at info@code4sa.org"
+        return resp, "418 Hi, email us at info@openup.org.za"
 
 
 @app.before_request
@@ -154,10 +154,10 @@ def inject_via():
 
 @app.route('/')
 def index():
-    committee_meetings = load_from_api('v2/committee-meetings', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
+    committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
-    questions = load_from_api('v2/minister-questions', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
+    questions = load_from_api('v2/minister-questions/', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
 
     return render_template(
         'index.html',
@@ -198,7 +198,7 @@ def bills(bill_type, year=None):
 
         if year not in year_list:
             abort(404)
-        params = 'filter[year]=%d' % year
+        params['filter[year]'] = year
 
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']
@@ -257,24 +257,23 @@ def committee_detail(committee_id):
     Display all available detail for the committee.
     """
     committee = load_from_api('v2/committees', committee_id)['result']
+    links = committee['_links']
     filtered_meetings = {}
 
     # calls for comment
     committee['calls_for_comments'] = load_from_api(
-        'v2/committees/%s/calls-for-comment' % committee_id,
+        links['calls_for_comment'],
         fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     # tabled reports
     committee['tabled_committee_reports'] = load_from_api(
-        'v2/committees/%s/tabled-reports' % committee_id,
+        links['tabled_reports'],
         fields=['id', 'title', 'start_date'],
         return_everything=True)['results']
 
     # memberships
-    membership = load_from_api(
-        'v2/committees/%s/members' % committee_id,
-        return_everything=True)['results']
+    membership = load_from_api(links['members'], return_everything=True)['results']
     sorter = lambda x: x['member']['name']
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
@@ -282,8 +281,7 @@ def committee_detail(committee_id):
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
     # meetings
-    all_meetings = load_from_api('v2/committees/%s/meetings' % committee_id,
-                                 fields=['id', 'title', 'date'], return_everything=True)['results']
+    all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']
 
     for meeting in all_meetings:
         d = meeting['parsed_date'] = datetime.strptime(meeting['date'][:10], "%Y-%m-%d")
@@ -387,7 +385,7 @@ def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house'])['results']
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house', 'last_active_year'])['results']
 
     nat = {
         'name': 'National Assembly',

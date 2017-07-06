@@ -56,3 +56,18 @@ def track_pageview(path=None, ignore_bots=True):
                  userAgent=user_agent)
 
     return True
+
+
+def externalise_url(url):
+    """ Externalise a URL based on the request scheme and host.
+    """
+    from pmg import app
+
+    if url.startswith('http'):
+        url = url.split('/', 3)[3]
+
+    if url.startswith('/'):
+        url = url[1:]
+
+    scheme = 'http' if app.config['DEBUG'] else 'https'
+    return '%s://%s/%s' % (scheme, request.host, url)

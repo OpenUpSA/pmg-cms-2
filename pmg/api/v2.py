@@ -1,5 +1,6 @@
 from flask import request, Blueprint, abort
 from sqlalchemy import desc
+from sqlalchemy.orm import undefer, defer, noload
 from sqlalchemy.sql.expression import nullslast
 
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
@@ -61,6 +62,17 @@ def committee_meeting_list(id):
         abort(404)
 
     query = CommitteeMeeting.query.filter(CommitteeMeeting.committee == cte).order_by(desc(CommitteeMeeting.date))
+
+    # defer some expensive fields if they're not needed
+    fields = get_api_fields()
+    if fields:
+        for f in ['body', 'summary']:
+            if f not in fields:
+                query = query.options(defer(f))
+
+        if not any(f == 'committee' or f.startswith('committee.') for f in fields):
+            query = query.options(noload('committee'))
+
     return api_list_items(query, CommitteeMeetingSchema)
 
 

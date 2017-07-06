@@ -6,6 +6,7 @@ import os
 import re
 import base64
 import tempfile
+import pytz
 
 from sqlalchemy import desc, func, sql, case, cast, Float, Integer
 from sqlalchemy.sql.expression import nullslast
@@ -316,7 +317,7 @@ class Event(ApiResource, db.Model):
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
     committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
-    house = db.relationship('House', lazy=False, backref=backref('events', order_by=desc('Event.date')))
+    house = db.relationship('House', lazy=True, backref=backref('events', order_by=desc('Event.date')))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
     chairperson = db.Column(db.String(256))
 
@@ -618,7 +619,10 @@ class Committee(ApiResource, db.Model):
     contact_details = db.Column(db.Text())
     ad_hoc = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
     premium = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    # is this committee considered active? (only for ad-hoc committees)
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
+    # year when this committee was last active (only for ad-hoc committees)
+    last_active_year = db.Column(db.Integer)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')
@@ -630,6 +634,9 @@ class Committee(ApiResource, db.Model):
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
+
+    # Time after last meeting after which ad-hoc committees are considered inactive
+    AD_HOC_INACTIVE_DAYS = 365
 
     POPULAR_COMMITTEES = [38, 19, 24, 98, 63, 28, 65, 62, 37, 111]
 
@@ -669,11 +676,38 @@ class Committee(ApiResource, db.Model):
 
         return best[0] if best else None
 
+    def reset_active(self):
+        """ Set this cte as (in)active based on recent meetings.
+        Generally only used for ad-hoc committees.
+        """
+        # get most recent meeting
+        meeting = CommitteeMeeting.query\
+            .filter(CommitteeMeeting.committee == self)\
+            .order_by(desc(CommitteeMeeting.date))\
+            .first()
+
+        now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+        threshold = now - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
+
+        self.active = meeting is not None and meeting.date >= threshold
+        self.last_active_year = meeting.date.year if meeting else None
+
     def __unicode__(self):
         tmp = self.name
         if self.house:
             tmp = self.house.name_short + " " + tmp
         return unicode(tmp)
+
+    @classmethod
+    def update_active_committees(cls):
+        """ Task to periodically mark ad-hoc committees as (in)active based
+        on recent meetings.
+        """
+        ctes = cls.query.filter(cls.ad_hoc == True).all()  # noqa
+        for cte in ctes:
+            cte.reset_active()
+            db.session.add(cte)
+        db.session.commit()
 
 
 class Membership(db.Model):

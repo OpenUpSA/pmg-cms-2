@@ -70,6 +70,7 @@ SQLAlchemy==1.0.8
 tablib==0.11.2
 tzlocal==1.2
 universal-analytics-python==0.2.4
+urllib3==1.21.1
 watchdog==0.8.3
 webassets==0.10.1
 Werkzeug==0.10.1

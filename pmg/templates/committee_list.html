@@ -138,7 +138,7 @@
                     {% endif %}
                     <label>
                     {% endif %}
-                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if not committee.active %} <span class="text-muted">(inactive)</span>{% endif %}
+                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if committee.last_active_year %} <span class="text-muted">({{ committee.last_active_year }})</span>{% endif %}
                     {% if current_user.is_authenticated() %}
                     </label>
                     {% endif %}

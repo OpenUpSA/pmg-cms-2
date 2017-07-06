@@ -20,6 +20,7 @@ from pmg.models import *  # noqa
 from pmg.models.base import resource_slugs
 from pmg.admin.xlsx import XLSXBuilder
 import pmg.models.serializers as serializers
+from pmg.utils import externalise_url
 
 logger = logging.getLogger(__name__)
 
@@ -135,7 +136,7 @@ def create_next_page_url(count, page, per_page):
         args['page'] = page + 1
         # TODO: this isn't great, it allows users to pass in keyword params just by passing
         # in query params
-        return url_for(request.endpoint, _external=True, **args)
+        return externalise_url(url_for(request.endpoint, _external=True, **args))
 
     return None
 
@@ -194,7 +195,7 @@ def landing():
     endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
     return send_api_response({
         'endpoints': endpoints,
-        'documentation': 'https://github.com/Code4SA/pmg-cms-2/blob/master/API.md',
+        'documentation': 'https://github.com/OpenUpSA/pmg-cms-2/blob/master/API.md',
     })
 
 

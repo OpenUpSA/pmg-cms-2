@@ -226,7 +226,7 @@ def bills(bill_type, year=None):
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
 def bill(bill_id):
-    bill = load_from_api('v2/bills', bill_id)['result']
+    bill = load_from_api('bill', bill_id)
     stages = {
         'enacted': '5',
         'president': '4',
@@ -237,7 +237,7 @@ def bill(bill_id):
     }
     history = bill_history(bill)
 
-    if bill.get('status'):
+    if 'status' in bill:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
     else:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')
@@ -370,7 +370,15 @@ def committee_question(question_id):
     """ Display a single committee question.
     """
     question = load_from_api('committee-question', question_id)
-    committee = question['committee']
+    if 'committee' in question:
+        committee = question['committee']
+    else:
+        committee = {
+                        'name': question['question_to_name'],
+                        'house': {
+                        },
+                        'id': 0
+                    }
     social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',

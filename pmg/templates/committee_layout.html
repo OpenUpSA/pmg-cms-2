@@ -24,7 +24,11 @@
               <div class="premium col-xs-12 col-sm-4 text-sm-right"><i class="fa fa-key"></i> <a href="{{ url_for('committee_subscriptions') }}">Premium</a></div>
               {% endif %}
           </div>
+          {% if committee.id == 0 %}
+          <h4 class="light-red">{{ committee.house.name }}</h4>
+          {% else %}
           <h4 class="light-red">{{ committee.house.name }} Committee</h4>
+          {% endif %}
           <span class="pull-right">{% include '_social_sharing.html' %}</span>
         {% endblock %}
       </header>

@@ -4,18 +4,23 @@
 {% block title %}Question to {{ committee.name }} - {{ question.code }} | PMG{% endblock %}
 
 {% block committee_breadcrumb %}
-  {{ super() }}
-  <li><a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">Committee Questions</a></li>
+  {% if committee.id == 0 %}
+  {% else %}
+    {{ super() }}
+    <li><a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">Committee Questions</a></li>
+  {% endif %}
 {% endblock %}
-
 
 {% block committee_title %}
   {{ super() }}
   <div class="question-highlight">
-	  <strong>Question to the Minister of {{ committee.name }}</strong> (<a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">more questions</a>)
+    {% if committee.id == 0 %}
+    <strong>Question to the {{ committee.name }}</strong>
+    {% else %}
+    <strong>Question to the Minister of {{ committee.name }}</strong> (<a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">more questions</a>)
+    {% endif %}
   </div>
 {% endblock %}
-
 
 {% block committee_page %}
 {% include '_committee_question_detail.html' with context %}

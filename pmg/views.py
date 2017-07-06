@@ -5,6 +5,7 @@ from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 from sqlalchemy import desc
 from itertools import groupby
+from unidecode import unidecode
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -935,7 +936,12 @@ def search(page=0):
     for k, v in filters.iteritems():
         if v == "None":
             filters[k] = None
-    q = request.args.get('q', '').strip()
+
+    # ensure decently encoded unicode strings. this is required because
+    # we can't pass unicode to urllib3, which is super lame. This is only
+    # a problem for search queries with unicode, which will be transliterated
+    # in any case.
+    q = unidecode(request.args.get('q', '').strip())
 
     params = dict(filters)
     params["q"] = q

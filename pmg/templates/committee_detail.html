@@ -171,9 +171,13 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
+  {% if attendance_summary %}
   <div class="panel panel-default attendance-rate">
     <div class="panel-heading">
       <h4 class="panel-title">Attendance</h4>
+      {% if attendance_rank[0] %}
+      <a href="/attendance-overview#{{ committee.id }}" class="pull-right">Ranked {{ attendance_rank[0] }} out of {{ attendance_rank[1] }}</a>
+      {% endif %}
     </div>
     <div class="panel-body">
     {% for summary in attendance_summary | reverse %}
@@ -188,9 +192,11 @@
         </div>
       </div>
     {% endfor %}
-    <a class="pull-right" href="http://www.pa.org.za/mp-attendance/">Explore detailed MP attendance <i class="fa fa-external-link" aria-hidden="true"></i></a>
+    Detailed attendance data by <a href="/attendance-overview">committee</a> and <a href="http://www.pa.org.za/mp-attendance/">MP</a>
     </div>
   </div>
+  {% endif %}
+
   <!-- /Members -->
   <div class="panel panel-default membership">
     <div class="panel-heading">

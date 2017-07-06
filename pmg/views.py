@@ -3,8 +3,8 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
-from sqlalchemy import desc, Float
-from sqlalchemy.sql.expression import case, func, cast
+from sqlalchemy import desc
+from itertools import groupby
 
 from flask import request, flash, url_for, session, render_template, abort, redirect
 from flask.ext.security import current_user
@@ -15,7 +15,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, db
+from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -241,7 +241,8 @@ def bill(bill_id):
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
     else:
         social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')
-    return render_template('bills/detail.html',
+    return render_template(
+        'bills/detail.html',
         bill=bill,
         history=history,
         stages=stages,
@@ -275,28 +276,7 @@ def committee_detail(committee_id):
     membership = load_from_api(links['members'], return_everything=True)['results']
     sorter = lambda x: x['member']['name']
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
-                 sorted([m for m in membership if not m['chairperson']], key=sorter)
-
-    # attendance
-    subquery = db.session.query(
-        func.date_part('year', CommitteeMeeting.date).label('year'),
-        func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
-        func.count(CommitteeMeetingAttendance.id).label('n_members')
-        )\
-        .group_by('year', CommitteeMeeting.id)\
-        .filter(CommitteeMeeting.committee_id == committee_id)\
-        .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-        .subquery('attendance')
-
-    attendance_summary = db.session.query(
-        subquery.c.year,
-        func.count(1).label('n_meetings'),
-        func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
-        cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-        )\
-        .group_by(subquery.c.year)\
-        .order_by(subquery.c.year)\
-        .all()
+                 sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
 
     recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
 
@@ -321,6 +301,12 @@ def committee_detail(committee_id):
         starting_filter = latest_year
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
+    attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(committee_id)
+    if attendance_summary:
+        year = attendance_summary[-1].year
+        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(committee_id, int(year))
+    else:
+        attendance_rank = None
 
     return render_template('committee_detail.html',
                            current_year=now.year,
@@ -333,7 +319,50 @@ def committee_detail(committee_id):
                            recent_questions=recent_questions,
                            social_summary=social_summary,
                            attendance_summary=attendance_summary,
+                           attendance_rank=attendance_rank,
                            admin_edit_url=admin_url('committee', committee_id))
+
+
+@app.route('/attendance-overview')
+def attendance_overview():
+    """
+    Display overview of attendance for meetings.
+    """
+    this_year = datetime.today().year
+    last_year = this_year - 1
+    attendance = CommitteeMeetingAttendance.annual_attendance_trends(last_year, this_year)
+    # index by year and cte id
+    years = {
+        year: {
+            cte_id: list(cte_group)[0] for cte_id, cte_group in groupby(group, lambda r: r.committee_id)
+        }
+        for year, group in groupby(attendance, lambda r: r.year)
+    }
+
+    attendance = []
+    for cte in Committee.list().all():
+        curr = years[this_year].get(cte.id)
+        prev = years[last_year].get(cte.id)
+
+        if not curr:
+            continue
+
+        attendance.append({
+            'committee': cte.name,
+            'committee_id': cte.id,
+            'n_meetings': curr.n_meetings,
+            'avg_attendance': curr.avg_attendance * 100,
+            'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
+        })
+
+    # rank them
+    attendance.sort(key=lambda a: a['avg_attendance'], reverse=True)
+    for i, item in enumerate(attendance):
+        attendance[i]['rank'] = len(attendance) - i
+
+    return render_template('attendance_overview.html',
+                           year=this_year,
+                           attendance=attendance)
 
 
 @app.route('/committee-question/<int:question_id>/')
@@ -374,7 +403,7 @@ def committees():
     }
 
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
-    
+
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
 
@@ -464,11 +493,11 @@ def committee_meeting(event_id):
     attendance = [a for a in attendance if a['attendance'] in CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT]
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
-                 sorted([a for a in attendance if not a['chairperson']], key=sorter)
+                 sorted([a for a in attendance if not a['chairperson']], key=sorter)  # noqa
     if event['chairperson']:
-        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
     else:
-        social_summary="A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
 
     return render_template(
         'committee_meeting.html',

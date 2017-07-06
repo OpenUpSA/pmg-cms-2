@@ -88,6 +88,7 @@ assets.register('css',
       Bundle(
         'resources/css/style.scss',
         'resources/css/bill-progress.scss',
+        'resources/css/bootstrap-sortable.css',
         filters=PyScss(load_paths=assets.load_path),
         output='stylesheets/styles.%(version)s.css'),
       output='stylesheets/app.%(version)s.css'))
@@ -110,6 +111,8 @@ assets.register('js', Bundle(
     'resources/javascript/users.js',
     'resources/javascript/members.js',
     'resources/javascript/pmg.js',
+    'resources/javascript/moment.min.js',
+    'resources/javascript/bootstrap-sortable.js',
     output='javascript/app.%(version)s.js'))
 
 assets.register('admin-js', Bundle(

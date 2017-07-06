@@ -1000,6 +1000,15 @@ body.email_alerts {
 }
 
 .attendance-rate {
+  .panel-heading {
+    .panel-title {
+      display: inline;
+    }
+    a {
+      font-size: 12px;
+      line-height: 20px;
+    }
+  }
   .yearly-rate:first-child {
     .year, .rate {
       font-size: 18px;
@@ -1525,5 +1534,75 @@ ul.menu {
   @media (min-width: $screen-sm-min) {
     float: right;
     display: inline;
+  }
+}
+
+.committee-attendance-overview {
+  table {
+    @media (max-width: 768px) {
+    }
+  }
+  .rank {
+    width: 20px;
+  }
+  .cte-name {
+    max-width: 250px;
+  }
+  .th-number-meetings {
+    max-width: 50px;
+  }
+  .progress {
+    margin-bottom: 0;
+  }
+  .th-attendance-change {
+    text-align: center;
+  }
+  .attendance-change {
+    position: relative;
+    .value {
+      position: absolute;
+      font-size: 10px;
+      line-height: 20px;
+    }
+    .na {
+      font-size: 10px;
+      line-height: 20px;
+      text-align: center;
+    }
+    .centre-line {
+      width: 1px;
+      background-color: #ddd;
+      height: 37px;
+      position: absolute;
+      left: 50%;
+      top: -2px;
+      &:last-of-type {
+        height: 20px;
+      }
+    }
+    .bar {
+      height: 20px;
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+      &.positive {
+        background-color: #0ECBA1;
+        margin-left: 50%;
+        border-radius: 0 4px 4px 0;
+      }
+      &.negative {
+        background-color: #d9534f;
+        margin-right: 50%;
+        border-radius: 4px 0 0 4px;
+        float: right;
+      }
+    }
+    .value-mobile {
+      text-align: center;
+    }
+    .label {
+      padding: 3px 7px;
+      font-size: 10px;
+      line-height: 20px;
+      vertical-align: top;
+    }
   }
 }

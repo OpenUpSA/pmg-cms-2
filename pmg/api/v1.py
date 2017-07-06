@@ -549,20 +549,22 @@ def committee_meeting_attendance_download():
     # of the three major parties until we determine how to present
     # faulty passed records for alternate members
     members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
+    ctes = {c.id: c for c in Committee.list().all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
-    rows = [["year", "member", "party"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
+    rows = [["year", "member", "party", "committee"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 
     raw_data = CommitteeMeetingAttendance.summary()
 
-    for grp, group in groupby(raw_data, lambda r: [r.year, r.member_id]):
-        year, member_id = grp
+    for grp, group in groupby(raw_data, lambda r: [r.year, r.member_id, r.committee_id]):
+        year, member_id, cte_id = grp
         member = members.get(member_id, None)
+        cte = ctes[cte_id]
         # This check can be removed once we return all party members
         if member:
             party = member.party.name if member.party else None
             attendance = {r.attendance: r.cnt for r in group}
 
-            row = [year, member.name, party]
+            row = [year, member.name, party, cte.name]
             row.extend(attendance.get(k, 0) for k in keys)
             rows.append(row)
 

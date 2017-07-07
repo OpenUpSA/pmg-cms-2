@@ -1,26 +1,28 @@
-{% if current_user.is_authenticated() %}
-  <div class="cte-signup-box email-alert-box text-center">
-    {% if current_user.follows(committee.id) %}
-    <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
-    {% else %}
-    <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
-    {% endif %}
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <input type="hidden" name="next" value="{{ request.url }}">
+{% if committee.id != 0 %}
+  {% if current_user.is_authenticated() %}
+    <div class="cte-signup-box email-alert-box text-center">
       {% if current_user.follows(committee.id) %}
-      <input class="checkbox" type="checkbox" checked />
-      <label>Unfollow this committee</label>
+      <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
       {% else %}
-      <input class="checkbox" type="checkbox" />
-      <label>Follow this committee</label>
+      <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
       {% endif %}
-    </form>
-  </div>
-{% else %}
-  <div class="email-alert-box">
-    <p>
-      <a class="btn btn-success btn-block" href="{{ url_for('security.register', next=request.path, via='cte-alert-box') }}">Follow this committee</a>
-    </p>
-    Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
-  </div>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ request.url }}">
+        {% if current_user.follows(committee.id) %}
+        <input class="checkbox" type="checkbox" checked />
+        <label>Unfollow this committee</label>
+        {% else %}
+        <input class="checkbox" type="checkbox" />
+        <label>Follow this committee</label>
+        {% endif %}
+      </form>
+    </div>
+  {% else %}
+    <div class="email-alert-box">
+      <p>
+        <a class="btn btn-success btn-block" href="{{ url_for('security.register', next=request.path, via='cte-alert-box') }}">Follow this committee</a>
+      </p>
+      Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
+    </div>
+  {% endif %}
 {% endif %}

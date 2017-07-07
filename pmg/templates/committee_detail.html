@@ -60,13 +60,13 @@
           <table class="table table-striped results-list">
           </table>
         </div>
-      <div class="cte-dtl-meetings-list lunr-dict">
-        {% for filter, meetings in filtered_meetings.iteritems() %}
-          {% if filter == starting_filter %}
-          <table class="table table-striped" id="m-{{ filter }}">
-          {% else %}
-          <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
-          {% endif %}
+        <div class="cte-dtl-meetings-list lunr-dict">
+          {% for filter, meetings in filtered_meetings.iteritems() %}
+            {% if filter == starting_filter %}
+            <table class="table table-striped" id="m-{{ filter }}">
+            {% else %}
+            <table class="table table-striped" style="display:none;" id="m-{{ filter }}">
+            {% endif %}
             {% for meeting in meetings %}
               {% if filter == 'six-months' %}
               <tr class="item exclude" data-id="{{ filter }}-{{ loop.index }}">
@@ -81,15 +81,32 @@
                 {% endif %}
               </tr>
             {% endfor %}
-          </table>
-        {% endfor %}
+            </table>
+          {% endfor %}
+        </div>
+        <div class="cte-dtl-meetings-filter down">
+          <div class="form-group btn-block">
+            <select class="form-control">
+              {% if filtered_meetings['six-months'] | length > 0 %}
+              <option data-filter="six-months" value="six-months">Last 6 months</option>
+              {% endif %}
+              {% if filtered_meetings[current_year] | length > 0 %}
+              <option data-filter="{{ current_year }}" value="{{ current_year }}">{{ current_year }}</option>
+              {% endif %}
+              {% for year in range(earliest_year,current_year) | reverse %}
+                {% if filtered_meetings[year] | length > 0 %}
+                <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        {% else %}
+        <p>
+          There are no meetings for this committee.
+        </p>
+        {% endif %}
       </div>
-      {% else %}
-      <p>
-        There are no meetings for this committee.
-      </p>
-      {% endif %}
-    </div>
     <div class="tab-pane fade in cte-dtl-meetings-tab-rep" id="tr">
       {% if committee.tabled_committee_reports %}
         <table class="table table-striped">
@@ -105,23 +122,6 @@
         There are no committee reports at this time.
       </p>
       {% endif %}
-    </div>
-    <div class="cte-dtl-meetings-filter down">
-      <div class="form-group btn-block">
-        <select class="form-control">
-          {% if filtered_meetings['six-months'] | length > 0 %}
-          <option data-filter="six-months" value="six-months">Last 6 months</option>
-          {% endif %}
-          {% if filtered_meetings[current_year] | length > 0 %}
-          <option data-filter="{{ current_year }}" value="{{ current_year }}">{{ current_year }}</option>
-          {% endif %}
-          {% for year in range(earliest_year,current_year) | reverse %}
-            {% if filtered_meetings[year] | length > 0 %}
-            <option data-filter="{{ year }}" value="{{ year }}">{{ year }}</option>
-            {% endif %}
-          {% endfor %}
-        </select>
-      </div>
     </div>
     <div class="tab-pane fade in cte-dtl-meetings-call-com" id="cc">
       {% if committee.calls_for_comments %}

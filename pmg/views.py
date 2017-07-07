@@ -371,7 +371,15 @@ def committee_question(question_id):
     """ Display a single committee question.
     """
     question = load_from_api('committee-question', question_id)
-    committee = question['committee']
+    if 'committee' in question:
+        committee = question['committee']
+    else:
+        committee = {
+                        'name': question['question_to_name'],
+                        'house': {
+                        },
+                        'id': 0
+                    }
     social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',

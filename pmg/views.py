@@ -303,9 +303,11 @@ def committee_detail(committee_id):
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
     attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(committee_id)
-    if attendance_summary:
+
+    if attendance_summary and committee['house']['short_name'] != 'Joint':
         year = attendance_summary[-1].year
-        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(committee_id, int(year))
+        cte = Committee.query.get(committee_id)
+        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(cte, int(year))
     else:
         attendance_rank = None
 
@@ -340,15 +342,19 @@ def attendance_overview():
         for year, group in groupby(attendance, lambda r: r.year)
     }
 
-    attendance = []
+    attendance = {
+        'NA': [],
+        'NCOP': [],
+    }
+
     for cte in Committee.list().all():
         curr = years[this_year].get(cte.id)
         prev = years[last_year].get(cte.id)
 
-        if not curr:
+        if not curr or cte.ad_hoc or cte.house.name_short == 'Joint':
             continue
 
-        attendance.append({
+        attendance[cte.house.name_short].append({
             'committee': cte.name,
             'committee_id': cte.id,
             'n_meetings': curr.n_meetings,
@@ -357,13 +363,15 @@ def attendance_overview():
         })
 
     # rank them
-    attendance.sort(key=lambda a: a['avg_attendance'], reverse=True)
-    for i, item in enumerate(attendance):
-        attendance[i]['rank'] = len(attendance) - i
+    for att in attendance.itervalues():
+        att.sort(key=lambda a: a['avg_attendance'], reverse=True)
+        for i, item in enumerate(att):
+            att[i]['rank'] = len(att) - i
 
     return render_template('attendance_overview.html',
                            year=this_year,
-                           attendance=attendance)
+                           attendance_na=attendance['NA'],
+                           attendance_ncop=attendance['NCOP'])
 
 
 @app.route('/committee-question/<int:question_id>/')

@@ -551,7 +551,7 @@ def committee_meeting_attendance_download():
     members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
     ctes = {c.id: c for c in Committee.list().all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
-    rows = [["year", "member", "party", "committee"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
+    rows = [["year", "member", "party", "committee", "house", "ad-hoc"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
 
     raw_data = CommitteeMeetingAttendance.summary()
 
@@ -564,7 +564,7 @@ def committee_meeting_attendance_download():
             party = member.party.name if member.party else None
             attendance = {r.attendance: r.cnt for r in group}
 
-            row = [year, member.name, party, cte.name]
+            row = [year, member.name, party, cte.name, cte.house.name_short, cte.ad_hoc]
             row.extend(attendance.get(k, 0) for k in keys)
             rows.append(row)
 

@@ -7,6 +7,7 @@
   <h1><i class="fa fa-fw fa-table" aria-hidden="true"></i> Committee meeting attendance trends for {{ year }}</h1>
   <a class="btn btn-sm btn-success" href="https://api.pmg.org.za/committee-meeting-attendance/data.xlsx">Download data</a>
 
+  <h2>National Assembly</h2>
   <table class="table table-hover sortable">
     <thead>
       <th class="th-rank"></th>
@@ -50,7 +51,51 @@
     </tr>
     {% endfor %}
   </table> 
-    
+  
+  <h2>National Council of Provinces</h2>
+  <table class="table table-hover sortable">
+    <thead>
+      <th class="th-rank"></th>
+      <th class="th-cte-name">Committee</th>
+      <th class="th-number-meetings hidden-xs">Meetings</th>
+      <th class="th-attendance" data-defaultsort="desc">Attendance</th>
+      <th class="th-attendance-change">Since 2016</th>
+    </thead>
+    {% for item in attendance %}
+    <tr id="{{ item.committee_id }}">
+      <td class="rank">#{{ loop.index }}</td>
+      <td class="cte-name"><a href="{{ url_for('committee_detail', committee_id=item.committee_id) }}">{{ item.committee }}</a></td>
+      <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
+      <td class="attendance">
+        <div class="progress">
+          <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ item.avg_attendance }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.avg_attendance }}%;">
+            {{ item.avg_attendance|round|int }}%
+          </div>
+        </div>
+      </td>
+      <td class="attendance-change" data-value="{{ item.change }}">
+        {% if item.avg_attendance == item.change  %}
+        <div class="na">N/A</div>
+        {% else %}
+        <div class="value hidden-sm hidden-xs" style="
+          {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+          {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
+        ">
+          {% if item.change|round > 0 %}+{% endif %}{{ item.change|round|int }}%
+        </div>
+        <div class="centre-line hidden-sm hidden-xs"></div>
+        <div class="bar hidden-sm hidden-xs {% if item.change < 0 %}negative{% else %}positive{% endif %}" style="
+          width: {% if item.change > 0 %}calc(1px + {{ item.change|abs }}%){% else %}{{ item.change|abs }}%{% endif %};
+          ">
+        </div>
+        <div class="value-mobile hidden-md hidden-lg">
+          <span class="label label-{% if item.change > 0 %}success{% else %}danger{% endif %}">{% if item.change > 0 %}+{% endif %}{{ item.change|int }}%</span>
+        </div>
+      {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
 </section>
 
 {% endblock %}

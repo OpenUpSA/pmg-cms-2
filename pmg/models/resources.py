@@ -1305,7 +1305,8 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def annual_attendance_trends(cls, from_year, to_year):
-        """ Attendance summary by year and committee.
+        """ Attendance summary by year and committee. Excludes ad-hoc committees.
+        Returns row tuples: (committe_id, house name, year, n_meetings, avg_attendance, avg_members)
         """
         start_date = datetime.datetime(from_year, 1, 1)
         end_date = datetime.datetime(to_year, 12, 31)
@@ -1313,23 +1314,28 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         # attendance
         subquery = db.session.query(
             CommitteeMeeting.committee_id,
+            House.name_short.label('house'),
             func.date_part('year', CommitteeMeeting.date).label('year'),
             func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
             func.count(CommitteeMeetingAttendance.id).label('n_members')
         )\
-            .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id)\
-            .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+            .join(Committee, Committee.id == CommitteeMeeting.committee_id)\
+            .join(House, House.id == Committee.house_id)\
+            .join(CommitteeMeetingAttendance, CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+            .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id, House.name_short)\
             .filter(CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date)\
+            .filter(Committee.ad_hoc == False)\
             .subquery('attendance')
 
         return db.session.query(
             subquery.c.committee_id,
+            subquery.c.house,
             cast(subquery.c.year, Integer).label('year'),
             func.count(1).label('n_meetings'),
             func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
             cast(func.avg(subquery.c.n_members), Float).label('avg_members')
         )\
-            .group_by(subquery.c.year, subquery.c.committee_id)\
+            .group_by(subquery.c.year, subquery.c.committee_id, subquery.c.house)\
             .order_by(subquery.c.year, subquery.c.committee_id)\
             .all()
 
@@ -1356,13 +1362,17 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             .all()
 
     @classmethod
-    def annual_attendance_rank_for_committee(cls, committee_id, year):
+    def annual_attendance_rank_for_committee(cls, committee, year):
         attendance = cls.annual_attendance_trends(year, year)
+
+        # match house
+        attendance = [a for a in attendance if a.house == committee.house.name_short]
+
         attendance.sort(key=lambda r: r.avg_attendance, reverse=True)
         count = len(attendance)
 
         for i, att in enumerate(attendance):
-            if att.committee_id == committee_id:
+            if att.committee_id == committee.id:
                 return i + 1, count
 
         return None, count

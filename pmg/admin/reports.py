@@ -151,6 +151,28 @@ order by
   e.date desc,
   c.name,
   m.name'''),
+        Report(6,
+               name="Committee alert subscriptions",
+               description="Number of users subscribing to committee alerts, by committee",
+               sql='''
+select * from (
+  select
+    cte.name as "committee",
+    count(1) as "subscriptions"
+  from
+    committee cte
+    inner join user_committee_alerts a on cte.id = a.committee_id
+  group by
+    cte.name
+  union
+  select
+    'TOTAL',
+    count(1) as "subscriptions"
+  from
+    user_committee_alerts
+  ) as q
+order by "subscriptions" desc;
+  '''),
     )
 
     @expose('/')

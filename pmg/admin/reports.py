@@ -166,8 +166,8 @@ select * from (
     cte.name
   union
   select
-    'TOTAL',
-    count(1) as "subscriptions"
+    'TOTAL UNIQUE SUBSCRIBING USERS',
+    count(distinct user_id) as "subscriptions"
   from
     user_committee_alerts
   ) as q

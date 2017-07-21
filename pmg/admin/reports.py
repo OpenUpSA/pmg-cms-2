@@ -173,6 +173,18 @@ select * from (
   ) as q
 order by "subscriptions" desc;
   '''),
+        Report(7,
+               name="Daily schedule subscriptions",
+               description="Number of users subscribing to the Daily Schedule alert",
+               sql='''
+select
+  case when subscribe_daily_schedule is true then 'subscribes to daily schedule' else 'does not subscribe to daily schedule' end as "status",
+  count(1) as users
+from
+  "user"
+group by
+  "status"
+'''),
     )
 
     @expose('/')

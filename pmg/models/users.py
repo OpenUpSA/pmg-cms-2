@@ -207,9 +207,10 @@ class User(db.Model, UserMixin):
         return tmp
 
 
-@event.listens_for(User, 'after_insert')
-def user_created(mapper, connection, user):
-    subscribe_to_newsletter(user)
+@event.listens_for(User.confirmed_at, 'set')
+def user_confirmed_at_set(user, value, oldvalue, initiator):
+    if oldvalue is None and value is not None:
+        subscribe_to_newsletter(user)
 
 
 def subscribe_to_newsletter(user):
@@ -286,4 +287,4 @@ user_committee_alerts = db.Table(
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, register_form=forms.RegisterForm)
+security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm)

@@ -1089,6 +1089,11 @@ body.email_alerts {
   .panel-body {
     padding: 0;
   }
+
+  .no-members {
+    padding: 8px 15px;
+    border-left: 1px solid #ddd;
+  }
 }
 
 .cte-dtl-meetings-nav {

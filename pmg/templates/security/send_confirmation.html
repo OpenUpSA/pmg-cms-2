@@ -6,7 +6,7 @@
 {% block page %}
   <h1>Resend confirmation instructions</h1>
   <hr>
-  <form class="form-horizontal" role="form" action="{{ url_for('send_confirmation') }}" method="POST" name="send_confirmation_form">
+  <form class="form-horizontal" role="form" action="{{ url_for('security.send_confirmation') }}" method="POST" name="send_confirmation_form">
     {{ send_confirmation_form.hidden_tag() }}
     {{ render_field(send_confirmation_form.email) }}
     {{ render_field(send_confirmation_form.next) }}

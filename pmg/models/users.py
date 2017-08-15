@@ -287,4 +287,4 @@ user_committee_alerts = db.Table(
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm)
+security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm, send_confirmation_form=forms.SendConfirmationForm)

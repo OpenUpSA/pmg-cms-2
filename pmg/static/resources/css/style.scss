@@ -1611,3 +1611,14 @@ ul.menu {
     }
   }
 }
+
+.confirm-email {
+  background-color: $brand-danger;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 0;
+  a {
+    color: #fff;
+    text-decoration: underline;
+  }
+} 

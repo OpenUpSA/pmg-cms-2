@@ -99,7 +99,7 @@ SECURITY_RESET_URL = "/forgot-password/"
 SECURITY_REGISTER_URL = "/register/"
 
 # Flask-Security email subject lines
-SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
+SECURITY_EMAIL_SUBJECT_REGISTER = "Please confirm your email address to complete PMG signup"
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"
 SECURITY_EMAIL_SUBJECT_CONFIRM = "Email address confirmation for your PMG account"
 

@@ -6,6 +6,10 @@ from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+from flask.ext.security.signals import user_confirmed
+from flask import render_template
+
+from flask_mail import Message
 
 from pmg import app, db
 import serializers
@@ -211,10 +215,16 @@ class User(db.Model, UserMixin):
         return tmp
 
 
-@event.listens_for(User.confirmed_at, 'set')
-def user_confirmed_at_set(user, value, oldvalue, initiator):
-    if oldvalue is None and value is not None:
-        subscribe_to_newsletter(user)
+def user_confirmed_handler(sender, user, **kwargs):
+    subscribe_to_newsletter(user)
+
+    html = render_template('post_confirm_welcome_email.html')
+    msg = Message(
+        subject="Welcome to the Parliamentary Monitoring Group",
+        recipients=[user.email],
+        html=html,
+    )
+    app.extensions.get('mail').send(msg)
 
 
 def subscribe_to_newsletter(user):
@@ -292,3 +302,4 @@ user_committee_alerts = db.Table(
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm, send_confirmation_form=forms.SendConfirmationForm)
+user_confirmed.connect(user_confirmed_handler, app)

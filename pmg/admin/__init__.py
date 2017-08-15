@@ -15,6 +15,7 @@ from flask.ext.admin.form import rules
 from flask.ext.admin.helpers import get_url
 from flask.ext.security.changeable import change_user_password
 from wtforms import fields
+from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_
@@ -253,6 +254,7 @@ class UserView(MyModelView):
     form_columns = [
         'email',
         'name',
+        'confirmed_at',
         'active',
         'roles',
         'organisation',
@@ -265,8 +267,15 @@ class UserView(MyModelView):
         'subscriptions': {
             'query_factory': Committee.premium_for_select,
             'widget': widgets.CheckboxSelectWidget(multiple=True),
-        }
+        },
+        'confirmed_at': {
+            'widget': wtforms_widgets.TextInput(),
+        },
     }
+    form_widget_args = {
+        'confirmed_at': {'readonly': True},
+    }
+    column_labels = {'confirmed_at': 'Email address confirmed at', }
     column_default_sort = (User.created_at, True)
     column_formatters = {'current_login_at': macro("datetime_as_date")}
     column_formatters_export = {}

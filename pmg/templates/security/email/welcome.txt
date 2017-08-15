@@ -3,7 +3,7 @@
 
 Welcome to PMG and thanks for signing up.
 
-Please confirm your email by clicking this link:
+Please confirm your email address by clicking this link:
 
 {{ confirmation_link }}
 

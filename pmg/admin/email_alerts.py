@@ -100,7 +100,7 @@ class EmailAlertForm(Form):
         committee_list = Committee.query.order_by(Committee.house_id.desc()).order_by(Committee.name).all()
 
         # count of daily schedule subscribers
-        subs = User.query.filter(User.subscribe_daily_schedule == True).count()  # noqa
+        subs = User.query.filter(User.subscribe_daily_schedule == True, User.confirmed_at != None).count()  # noqa
         self.daily_schedule_subscribers.label.text += " (%d)" % subs
 
         # count subscribers for committees
@@ -108,6 +108,8 @@ class EmailAlertForm(Form):
                 for t in db.session\
                     .query(user_committee_alerts.c.committee_id,
                            count(1))\
+                    .join(User, User.id == user_committee_alerts.c.user_id)\
+                    .filter(User.confirmed_at != None)\
                     .group_by(user_committee_alerts.c.committee_id)\
                     .all()}
 
@@ -173,6 +175,7 @@ class EmailAlertForm(Form):
                         lazyload(User.committee_alerts),
                     )\
                     .filter(User.subscribe_daily_schedule == True)
+                    .filter(User.confirmed_at != None)
                     .all())
 
         if self.committee_ids.data:
@@ -189,6 +192,7 @@ class EmailAlertForm(Form):
                         lazyload(User.committee_alerts),
                     )\
                     .filter(User.id.in_(user_ids))
+                    .filter(User.confirmed_at != None)
                     .all())
 
         return set(u for u in chain(*groups))

@@ -130,9 +130,18 @@ class SavedSearch(db.Model):
     def send_all_alerts(cls):
         """ Find saved searches with new content and send the email alerts.
         """
+        from pmg.models.users import User
+
         log.info("Sending all alerts")
-        for alert in SavedSearch.query.all():
+
+        searches = SavedSearch.query\
+            .join(User)\
+            .filter(User.confirmed_at != None)\
+            .all()  # noqa
+
+        for alert in searches:
             alert.check_and_send_alert()
+
         log.info("Sending alerts finished")
 
     @classmethod

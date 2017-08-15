@@ -113,6 +113,10 @@ class User(db.Model, UserMixin):
     def __unicode__(self):
         return unicode(self.email)
 
+    @property
+    def confirmed(self):
+        return self.confirmed_at is not None
+
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
@@ -194,7 +198,7 @@ class User(db.Model, UserMixin):
         tmp.pop('current_login_ip')
         tmp.pop('last_login_at')
         tmp.pop('current_login_at')
-        tmp['confirmed'] = tmp.pop('confirmed_at') is not None
+        tmp.pop('confirmed_at')
         tmp.pop('login_count')
         tmp['has_expired'] = self.has_expired()
 

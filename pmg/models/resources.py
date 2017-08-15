@@ -408,6 +408,9 @@ class CommitteeMeeting(Event):
             if not current_user.is_authenticated():
                 return False
 
+            if not current_user.confirmed:
+                return False
+
             # check subscription
             return current_user.subscribed_to_committee(self.committee)
 

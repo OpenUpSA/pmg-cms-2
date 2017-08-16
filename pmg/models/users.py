@@ -117,8 +117,7 @@ class User(db.Model, UserMixin):
     def __unicode__(self):
         return unicode(self.email)
 
-    @property
-    def confirmed(self):
+    def is_confirmed(self):
         return self.confirmed_at is not None
 
     def has_expired(self):

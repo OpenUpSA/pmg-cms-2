@@ -25,7 +25,7 @@
       </div>
     </div>
   {% endif %}
-  {% if current_user.is_authenticated() and not current_user.confirmed %}
+  {% if current_user.is_authenticated() and not current_user.is_confirmed() %}
     <div class="row">
       <div class="col-sm-5 col-sm-offset-4">
         <div class="alert alert-info">
@@ -51,7 +51,7 @@
     <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
   {% endif %}
 
-  <fieldset{% if not current_user.confirmed %} disabled{% endif %}>
+  <fieldset{% if not current_user.is_confirmed() %} disabled{% endif %}>
     <ul class="list-unstyled daily-schedule">
       <li class="checkbox">
         <label>

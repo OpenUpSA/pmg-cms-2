@@ -50,6 +50,27 @@
       <li>Public education institutions</li>
     </ul>
 
+    {% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="alert alert-info">
+            <h4>Confirm your email address</h4>
+            <p>Your subscription will only be active once you confirm your email address.</p>
+            <br>
+            <p>We sent you an email with a confirmation link when you signed up. If you have not received it, you can <a href="{{ url_for('security.send_confirmation', next=request.full_path) }}">request another confirmation email</a>.</p>
+            <br>
+
+            <div class="row">
+              <div class="btn">
+                <a class="form-control btn btn-primary" href="{{ url_for('security.send_confirmation', next=request.full_path) }}">Resend confirmation email</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+
     <p>Email <a href="mailto:info@pmg.org.za">info@pmg.org.za</a> if you cannot get in and you belong to one of the above.</p>
 
     <p>Business, government and other users need to subscribe to access meeting reports of these 15 National Assembly committees. <a href="{{ url_for('committee_subscriptions')}} ">Find out more about subscribing</a>.</p>
@@ -126,4 +147,3 @@
     {% endif %}
   {% endblock %}
 {% endif %}
-

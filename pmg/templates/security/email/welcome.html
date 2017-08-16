@@ -3,13 +3,8 @@
 
 <p>Welcome to PMG and thanks for signing up.</p>
 
-{% if security.confirmable %}
-<p>Please click here to <a href="{{ confirmation_link }}">confirm your email address</a>.</p>
-{% endif %}
+<p>Please confirm your email address by clicking this link:</p>
 
-<ul>
-  <li><a href="https://pmg.org.za/email-alerts/">Sign up for free email alerts</a> to get the daily parliamentary schedule and alerts when committees are updated.</li>
-  <li><a href="https://pmg.org.za/committee-subscriptions/">Manage you subscription</a> for access to the activities of select premium committees.</li>
-<p>
+<p><a href="{{ confirmation_link }}">Confirm my account</a></p>
 
 {% endblock %}

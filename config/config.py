@@ -45,8 +45,12 @@ S3_BUCKET = "pmg-assets"
 STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
 UPLOAD_PATH = "/tmp/pmg_upload/"
 
-RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY')
-RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY')
+if DEBUG:
+    RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI')
+    RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY',  '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe')
+else:
+    RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY')
+    RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY')
 
 # must match client_max_body_size in nginx.conf
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # size cap on uploads
@@ -73,9 +77,9 @@ SENDGRID_API_KEY = env.get('SENDGRID_API_KEY')
 SENDGRID_TRANSACTIONAL_TEMPLATE_ID = '2ef9656f-db37-4072-9ed8-449368b73617'
 
 # Flask-Mail
-MAIL_SERVER = 'smtp.sendgrid.com'
-MAIL_PORT = 465
-MAIL_USE_SSL = True
+MAIL_SERVER = env.get('MAIL_SERVER', 'smtp.sendgrid.com')
+MAIL_PORT = int(env.get('MAIL_PORT', '465'))
+MAIL_USE_SSL = env.get('MAIL_USE_SSL', 'true') == 'true'
 MAIL_USERNAME = 'pmg-website'
 MAIL_PASSWORD = env.get('MAIL_PASSWORD')
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
@@ -95,11 +99,12 @@ SECURITY_RESET_URL = "/forgot-password/"
 SECURITY_REGISTER_URL = "/register/"
 
 # Flask-Security email subject lines
-SECURITY_EMAIL_SUBJECT_REGISTER = "Welcome to the Parliamentary Monitoring Group"
+SECURITY_EMAIL_SUBJECT_REGISTER = "Please confirm your email address to complete PMG signup"
 SECURITY_EMAIL_SUBJECT_PASSWORD_RESET = "Password reset instructions for your PMG account"
+SECURITY_EMAIL_SUBJECT_CONFIRM = "Email address confirmation for your PMG account"
 
 # Flask-Security features
-SECURITY_CONFIRMABLE = False
+SECURITY_CONFIRMABLE = True
 SECURITY_LOGIN_WITHOUT_CONFIRMATION = True
 SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True

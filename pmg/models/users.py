@@ -6,6 +6,10 @@ from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
 from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+from flask.ext.security.signals import user_confirmed
+from flask import render_template
+
+from flask_mail import Message
 
 from pmg import app, db
 import serializers
@@ -113,6 +117,9 @@ class User(db.Model, UserMixin):
     def __unicode__(self):
         return unicode(self.email)
 
+    def is_confirmed(self):
+        return self.confirmed_at is not None
+
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
@@ -194,7 +201,7 @@ class User(db.Model, UserMixin):
         tmp.pop('current_login_ip')
         tmp.pop('last_login_at')
         tmp.pop('current_login_at')
-        tmp['confirmed'] = tmp.pop('confirmed_at') is not None
+        tmp.pop('confirmed_at')
         tmp.pop('login_count')
         tmp['has_expired'] = self.has_expired()
 
@@ -207,9 +214,16 @@ class User(db.Model, UserMixin):
         return tmp
 
 
-@event.listens_for(User, 'after_insert')
-def user_created(mapper, connection, user):
+def user_confirmed_handler(sender, user, **kwargs):
     subscribe_to_newsletter(user)
+
+    html = render_template('post_confirm_welcome_email.html')
+    msg = Message(
+        subject="Welcome to the Parliamentary Monitoring Group",
+        recipients=[user.email],
+        html=html,
+    )
+    app.extensions.get('mail').send(msg)
 
 
 def subscribe_to_newsletter(user):
@@ -286,4 +300,5 @@ user_committee_alerts = db.Table(
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore, register_form=forms.RegisterForm)
+security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm, send_confirmation_form=forms.SendConfirmationForm)
+user_confirmed.connect(user_confirmed_handler, app)

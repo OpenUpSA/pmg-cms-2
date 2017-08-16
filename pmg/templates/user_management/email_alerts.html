@@ -25,6 +25,25 @@
       </div>
     </div>
   {% endif %}
+  {% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+    <div class="row">
+      <div class="col-sm-5 col-sm-offset-4">
+        <div class="alert alert-info">
+          <h4>Confirm your email address</h4>
+          <p>Once you confirm your email address, you can subscribe to free email alerts.</p>
+          <br>
+          <p>We sent you an email with a confirmation link when you signed up. If you have not received it, you can <a href="{{ url_for('security.send_confirmation', next=request.full_path) }}">request another confirmation email</a>.</p>
+          <br>
+
+          <div class="row">
+            <div class="btn">
+              <a class="form-control btn btn-primary" href="{{ url_for('security.send_confirmation', next=request.full_path) }}">Resend confirmation email</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
   <p class="lead">Which email alerts should we send to you?</p>
 
@@ -32,32 +51,34 @@
     <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
   {% endif %}
 
-  <ul class="list-unstyled daily-schedule">
-    <li class="checkbox">
-      <label>
-        <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
-        Receive a daily schedule for Parliament
-        <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
-      </label>
-    </li>
-  </ul>
-
-  <div>
-    <!-- Nav tabs -->
-    <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee Alerts</a></li>
-      <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
+  <fieldset{% if not current_user.is_confirmed() %} disabled{% endif %}>
+    <ul class="list-unstyled daily-schedule">
+      <li class="checkbox">
+        <label>
+          <input type="checkbox" id="select-daily-schedule" name="subscribe_daily_schedule" {% if current_user.subscribe_daily_schedule %} checked{% endif %} value="1">
+          Receive a daily schedule for Parliament
+          <span class="status-indicator hidden"><i class="fa fa-check"></i></span>
+        </label>
+      </li>
     </ul>
 
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div role="tabpanel" class="tab-pane active" id="committee-alerts">
-        {% include 'user_management/committee_alerts.html' %}
-      </div>
-      <div role="tabpanel" class="tab-pane" id="search-alerts">
-        {% include 'user_management/search_alerts.html' %}
+    <div>
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#committee-alerts" aria-controls="commitee-alerts" role="tab" data-toggle="tab">Committee Alerts</a></li>
+        <li role="presentation"><a href="#search-alerts" aria-controls="search-alerts" role="tab" data-toggle="tab">Search Alerts</a></li>
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="committee-alerts">
+          {% include 'user_management/committee_alerts.html' %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="search-alerts">
+          {% include 'user_management/search_alerts.html' %}
+        </div>
       </div>
     </div>
-  </div>
+  </fieldset>
 
 {% endblock page %}

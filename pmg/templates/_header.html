@@ -1,3 +1,11 @@
+{% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+<div class="confirm-email">
+  <div class="container">
+    <i class="fa fa-fw fa-envelope-open" aria-hidden="true"></i> Thank you for signing up! <b>We've sent you an email, please confirm your email address</b> by following the link provided. <a href="{{ url_for('security.send_confirmation') }}">Didn't receive an email?</a>
+  </div>
+</div>
+{% endif %}
+
 <nav class="navbar navbar-default navbar-pmg" role="navigation">
   <div class="container">
     <div class="row">

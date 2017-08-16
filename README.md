@@ -82,6 +82,16 @@ Start the server:
 
 You should now see it running at [http://pmg.dev:5000/](http://pmg.dev:5000/) and [http://api.pmg.dev:5000/](http://api.pmg.dev:5000/).
 
+### Developing email features
+
+Run [a local mock SMTP server](http://nilhcem.com/FakeSMTP/index.html) on port 2525
+
+Set the SMTP environment variables
+
+```
+source env.localmail
+```
+
 ### Running tests
 
 Create a test database:

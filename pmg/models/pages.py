@@ -8,6 +8,7 @@ from .base import resource_slugs, FileLinkMixin
 
 import serializers
 
+
 class Redirect(db.Model):
     __tablename__ = 'redirect'
 
@@ -88,7 +89,6 @@ class Page(db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         return tmp
-
 
 
 class PageFile(FileLinkMixin, db.Model):

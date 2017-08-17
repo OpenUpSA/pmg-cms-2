@@ -260,27 +260,27 @@ article.page {
         height: 100%;
         position: relative;
       }
-
-      .call-to-action {
-        position: absolute;
-        width: 50%;
-        max-height: 100%;
-        bottom: 10px;
-        color: #fff;
-        background-color: $grey-darkest;
-        opacity: 0.9;
-        padding: 15px;
-
-        &:hover {
-          opacity: 0.95;
-        }
-
-        a {
+      .single-feature {
+        display: none;
+        .call-to-action {
+          width: 50%;
+          max-height: 100%;
+          bottom: 10px;
           color: #fff;
-        }
+          background-color: $grey-darkest;
+          padding: 15px;
 
-        h2 {
-          margin: 0;
+          &:hover {
+            opacity: 0.95;
+          }
+
+          a {
+            color: #fff;
+          }
+
+          h2 {
+            margin: 0;
+          }
         }
       }
     }

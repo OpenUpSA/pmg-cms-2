@@ -180,3 +180,16 @@ $(function() {
 $(".committee-attendance-overview .centre-line").each(function() {
   $(this).height($(this).parent().height() + 17);
 });
+
+var featuredDuration = 2000;
+var featuredFade = 0
+var featuredNumber = $(".home-banner .single-feature").length;
+var featuredInterval = featuredNumber * featuredDuration;
+
+function featuredLoop() {
+  $(".home-banner .single-feature").each(function(index) {
+    $(this).delay(index * featuredDuration).fadeIn(featuredFade);
+    $(this).delay(featuredDuration).fadeOut(featuredFade);
+    setTimeout(featuredLoop, featuredInterval);
+  });
+}

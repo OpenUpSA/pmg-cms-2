@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %} Blog | PMG{% endblock %}
+
+{% block page %}
+
+<section class="blog-page">
+  <div class="row">
+    <div class="col-sm-8 post-list">
+      <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> This week in Parliament</h1>
+      <div class="single-post">
+        <h3 class="title"><a href="#">The Week Ahead: Getting Down to Third Term Business</a></h3>
+        <div class="date">August 14, 2017</div>
+        <div class="preview">
+          <p>There's a full and mixed flavour to the coming week's parliamentary business in the Committee corridor with MPs processing assorted Bills, scrutinising Executive action and dealing with statutory appointments.</p>
+          <p>In addition, a number of Portfolio and Select Committees have scheduled oversight visits during this week. The purpose of ...</p>
+        </div>
+      </div>
+      <div class="single-post">
+        <h3 class="title"><a href="#">Do you support a secret vote?</a></h3>
+        <div class="date">August 2, 2017</div>
+        <div class="preview">
+          <p>The countdown to the debate on the Motion of No Confidence in President Jacob Zuma has begun. The long-awaited vote is set to happen on 8 August 2017. </p>
+          <p>One of the intriguing subplots has been whether the vote should be done via secret ballot. The Constitutional Court ruled that the ...</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <h1>&nbsp;</h1>
+      <div class="sidebar">
+        <img src="/static/resources/images/pa-logo.png" alt="People's Assembly"></a>
+        <p>"This week in Parliament" is a series of blog posts in which the important Parliamentary events of the week are discussed.</p>
+        <p>This page contains the 10 latest posts of this blog, written by <a href="http://pa.org.za">People's Assembly</a>. You can read older articles <a href="#">here</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1102,3 +1102,7 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
+
+@app.route('/blog')
+def blog():
+    return render_template('/blog.html')

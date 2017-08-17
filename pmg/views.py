@@ -1103,13 +1103,29 @@ def correct_this_page():
 
     return redirect(request.form.get('url', '/'))
 
+
 @app.route('/blog')
 def blog():
-    latest_post = Post.query\
-                      .order_by(desc(Post.date))\
-                      .limit(1)\
-                      .first()
+    posts = Post.query\
+                .order_by(desc(Post.date))\
+                .limit(10)\
+                .all()
 
     return render_template('/blog.html',
-                           latest_post=latest_post
-    )
+                           posts=posts)
+
+
+@app.route('/blog/<path:slug>')
+def blog_post(slug):
+    slug = Post().validate_slug(None, slug)
+    post = Post.query.filter(Page.slug == slug).first()
+    if not post:
+        abort(404)
+
+    files = [f.file for f in (post.files or [])]
+    files.sort(key=lambda f: (f.title, f.file_path))
+
+    return render_template('blog_post.html',
+                           post=post,
+                           attachments=files,
+                           admin_edit_url=admin_url('posts', post.id))

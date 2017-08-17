@@ -8,21 +8,15 @@
   <div class="row">
     <div class="col-sm-8 post-list">
       <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> This week in Parliament</h1>
+      {% for post in posts %}
       <div class="single-post">
-        <h3 class="title"><a href="#">{{ latest_post.title }}</a></h3>
-        <div class="date">{{ latest_post.date }}</div>
+        <h3 class="title"><a href="#">{{ post.title }}</a></h3>
+        <div class="date">{{ post.date }}</div>
         <div class="preview">
-          {{ latest_post.body | safe }}
+          {{ post.body[:300] | striptags | safe }}
         </div>
       </div>
-      <div class="single-post">
-        <h3 class="title"><a href="#">Do you support a secret vote?</a></h3>
-        <div class="date">August 2, 2017</div>
-        <div class="preview">
-          <p>The countdown to the debate on the Motion of No Confidence in President Jacob Zuma has begun. The long-awaited vote is set to happen on 8 August 2017. </p>
-          <p>One of the intriguing subplots has been whether the vote should be done via secret ballot. The Constitutional Court ruled that the ...</p>
-        </div>
-      </div>
+      {% endfor %}
     </div>
     <div class="col-sm-4">
       <h1>&nbsp;</h1>

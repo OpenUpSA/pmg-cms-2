@@ -9,11 +9,10 @@
     <div class="col-sm-8 post-list">
       <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> This week in Parliament</h1>
       <div class="single-post">
-        <h3 class="title"><a href="#">The Week Ahead: Getting Down to Third Term Business</a></h3>
-        <div class="date">August 14, 2017</div>
+        <h3 class="title"><a href="#">{{ latest_post.title }}</a></h3>
+        <div class="date">{{ latest_post.date }}</div>
         <div class="preview">
-          <p>There's a full and mixed flavour to the coming week's parliamentary business in the Committee corridor with MPs processing assorted Bills, scrutinising Executive action and dealing with statutory appointments.</p>
-          <p>In addition, a number of Portfolio and Select Committees have scheduled oversight visits during this week. The purpose of ...</p>
+          {{ latest_post.body | safe }}
         </div>
       </div>
       <div class="single-post">

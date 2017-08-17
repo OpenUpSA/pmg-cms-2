@@ -16,7 +16,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -1105,4 +1105,11 @@ def correct_this_page():
 
 @app.route('/blog')
 def blog():
-    return render_template('/blog.html')
+    latest_post = Post.query\
+                      .order_by(desc(Post.date))\
+                      .limit(1)\
+                      .first()
+
+    return render_template('/blog.html',
+                           latest_post=latest_post
+    )

@@ -263,6 +263,7 @@ article.page {
       .single-feature {
         display: none;
         .call-to-action {
+          position: absolute;
           width: 50%;
           max-height: 100%;
           bottom: 10px;

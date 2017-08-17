@@ -182,7 +182,7 @@ $(".committee-attendance-overview .centre-line").each(function() {
 });
 
 var featuredDuration = 2000;
-var featuredFade = 0
+var featuredFade = 200
 var featuredNumber = $(".home-banner .single-feature").length;
 var featuredInterval = featuredNumber * featuredDuration;
 
@@ -193,3 +193,5 @@ function featuredLoop() {
     setTimeout(featuredLoop, featuredInterval);
   });
 }
+
+featuredLoop();

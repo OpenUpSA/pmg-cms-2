@@ -1622,3 +1622,32 @@ ul.menu {
     text-decoration: underline;
   }
 } 
+
+.blog-page {
+  .post-list {
+    .single-post {
+      margin-bottom: 45px;
+      .title {
+        margin-bottom: 0;
+      }
+      .date {
+        color: #999;
+        margin-bottom: 10px;
+      }
+      .preview {
+
+      }
+    }
+  }
+  .sidebar {
+    width: 100%;
+    padding: 15px;
+    background-color: $grey-light;
+    overflow: auto;
+    img {
+      width: 140px;
+      padding: 10px;
+      float: right;
+    }
+  }
+}

@@ -12,21 +12,15 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-9 col-md-8 banner-content">
-          <a class="single-feature 1" href="#">
-            <div class="call-to-action">
-              <h2>A first item</h2>
-            </div>
-          </a>
-          <a class="single-feature 2" href="#">
-            <div class="call-to-action">
-              <h2>Something a bit longer that might even take up two lines</h2>
-            </div>
-          </a>
-          <a class="single-feature 3" href="#">
-            <div class="call-to-action">
-              <h2>Last thing, bit shorter than previous one</h2>
-            </div>
-          </a>
+         {% if featured_content.features %}
+           <a href="{{ featured_content.features }}">
+           {% for feature in featured_content.features %}
+              <div class="call-to-action">
+                <h2>{{ feature.title }}</h2>
+              </div>
+             </a>
+           {% endfor %}
+         {% endif %}
         </div>
 
         <div class="col-lg-3 col-md-4 hidden-xs hidden-sm banner-content banner-cards">

@@ -7,7 +7,7 @@ from sqlalchemy import desc
 from itertools import groupby
 from unidecode import unidecode
 
-from flask import request, flash, url_for, session, render_template, abort, redirect
+from flask import request, flash, url_for, session, render_template, abort, redirect, send_file
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 from flask import make_response
@@ -16,7 +16,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -1085,6 +1085,15 @@ def docs(path, dir=''):
         logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     return redirect(app.config['STATIC_HOST'] + dir + path)
+
+
+@app.route('/files/tmp/pmg_upload/<path:path>') # development
+def dev_docs(path):
+    file = File.query.filter(File.file_path == '/tmp/pmg_upload/' + path).first()
+    if not file:
+        abort(404)
+
+    return send_file(file.open(), mimetype=file.file_mime)
 
 
 @app.route('/correct-this-page', methods=['POST'])

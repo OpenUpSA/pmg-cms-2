@@ -1138,9 +1138,11 @@ def blog_post(slug):
     excerpt = BeautifulSoup(post.body[:300] + '..') if len(post.body) > 300 else post.body
     social_summary = excerpt.get_text()
 
+    social_image = '/files' + files[0].file_path
+
     return render_template('blog_post.html',
                            post=post,
                            attachments=files,
                            admin_edit_url=admin_url('posts', post.id),
-                           social_summary=social_summary
-                           )
+                           social_summary=social_summary,
+                           social_image=social_image)

@@ -255,13 +255,15 @@ article.page {
 
     .row {
       height: 100%;
-
       .banner-content {
         height: 100%;
         position: relative;
       }
       .single-feature {
         display: none;
+        &:first-child {
+          display: block;
+        }
         .call-to-action {
           position: absolute;
           width: 50%;

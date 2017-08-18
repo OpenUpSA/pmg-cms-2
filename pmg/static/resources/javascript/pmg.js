@@ -181,17 +181,21 @@ $(".committee-attendance-overview .centre-line").each(function() {
   $(this).height($(this).parent().height() + 17);
 });
 
-var featuredDuration = 2000;
-var featuredFade = 200
-var featuredNumber = $(".home-banner .single-feature").length;
-var featuredInterval = featuredNumber * featuredDuration;
+var displayTime = 8000,
+    transitionTime = 500;
+var currIndex = 0;
+var $features = $(".home-banner .single-feature");
+var featuresLength = $features.length;
 
-function featuredLoop() {
-  $(".home-banner .single-feature").each(function(index) {
-    $(this).delay(index * featuredDuration).fadeIn(featuredFade);
-    $(this).delay(featuredDuration).fadeOut(featuredFade);
-    setTimeout(featuredLoop, featuredInterval);
-  });
+function featuresSlide() {
+  currIndex = (currIndex < (featuresLength - 1)) ? currIndex + 1 : 0;
+  setTimeout(function() {
+    $features.css('z-index', 1);
+    $features.eq(currIndex).css('z-index', 2).fadeIn(transitionTime, function() {
+      $features.not(this).hide();
+      featuresSlide();
+    });
+  }, displayTime)
 }
 
-featuredLoop();
+featuresSlide();

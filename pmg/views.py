@@ -1118,7 +1118,7 @@ def blog():
 @app.route('/blog/<path:slug>')
 def blog_post(slug):
     slug = Post().validate_slug(None, slug)
-    post = Post.query.filter(Page.slug == slug).first()
+    post = Post.query.filter(Post.slug == slug).first()
     if not post:
         abort(404)
 

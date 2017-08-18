@@ -1134,7 +1134,13 @@ def blog_post(slug):
     files = [f.file for f in (post.files or [])]
     files.sort(key=lambda f: (f.title, f.file_path))
 
+
+    excerpt = BeautifulSoup(post.body[:300] + '..') if len(post.body) > 300 else post.body
+    social_summary = excerpt.get_text()
+
     return render_template('blog_post.html',
                            post=post,
                            attachments=files,
-                           admin_edit_url=admin_url('posts', post.id))
+                           admin_edit_url=admin_url('posts', post.id),
+                           social_summary=social_summary
+                           )

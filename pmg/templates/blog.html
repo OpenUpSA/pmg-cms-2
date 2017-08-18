@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Blog | PMG{% endblock %}
+{% block title %}Blog | PMG{% endblock %}
 
 {% block page %}
 
@@ -10,8 +10,8 @@
       <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> This week in Parliament</h1>
       {% for post in posts %}
       <div class="single-post">
-        <h3 class="title"><a href="#">{{ post.title }}</a></h3>
-        <div class="date">{{ post.date }}</div>
+        <h3 class="title"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
+        <div class="date">{{ post.date.strftime('%d-%m-%Y') }}</div>
         <div class="preview">
           {{ post.body | striptags | truncate }}
         </div>
@@ -21,9 +21,9 @@
     <div class="col-sm-4">
       <h1>&nbsp;</h1>
       <div class="sidebar">
-        <img src="/static/resources/images/pa-logo.png" alt="People's Assembly"></a>
+        <a href="https://pa.org.za"><img src="/static/resources/images/pa-logo.png" alt="People's Assembly"></a></a>
         <p>"This week in Parliament" is a series of blog posts in which the important Parliamentary events of the week are discussed.</p>
-        <p>This page contains the 10 latest posts of this blog, written by <a href="http://pa.org.za">People's Assembly</a>. You can read older articles <a href="#">here</a>.</p>
+        <p>This page contains the 10 latest posts of this blog, written by <a href="https://pa.org.za">People's Assembly</a>. You can read older articles <a href="#">here</a>.</p>
         </div>
       </div>
     </div>

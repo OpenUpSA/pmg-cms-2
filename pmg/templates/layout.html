@@ -40,7 +40,7 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="{{ self.title() }}" />
-  <meta property="og:description" content="{% if social_summary %}{{ social_summary }}{% else %}PMG provides information on all South African parliamentary committee proceedings{% endif %}" />
+  <meta property="og:description" content="{% if social_summary %}{{ social_summary | striptags | truncate }}{% else %}PMG provides information on all South African parliamentary committee proceedings{% endif %}" />
   <meta property="og:image" content="{% if social_image %}{{ social_image }}{% else %}https://pmg.org.za/static/resources/images/logo-artwork.png{% endif %}" />
 
   {% block head_meta %}{% endblock %}

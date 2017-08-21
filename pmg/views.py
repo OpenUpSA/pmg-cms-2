@@ -1131,8 +1131,7 @@ def blog_post(slug):
     if not post:
         abort(404)
 
-    files = [f.file for f in (post.files or [])]
-    files.sort(key=lambda f: (f.title, f.file_path))
+    files = [f.file for f in post.files]
 
     social_summary = post.body
 

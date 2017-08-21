@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | PMG{% endblock %}
+
+{% block page %}
+
+<section class="single-blog">
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="single-post">
+        <h2 class="title">{{ post.title }}</h2>
+        <div class="date">{{ post.date.strftime('%d-%m-%Y') }}</div>
+        <div class="body">
+          {{ post.body | safe }}
+          {% for image in attachments %}
+          <div>
+            <a href="{{ image.url }}" target="_blank"><img src="{{ image.url }}" alt="{{ image.title }}" /></a>
+          </div>
+          {% endfor %}
+        </div>
+        {% include '_blog_infobox.html' %}
+        {% include '_social_sharing.html' %}
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <h1>&nbsp;</h1>
+      {% include '_blog_infobox.html' %}
+      {% include '_social_sharing.html' %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -7,7 +7,7 @@ from sqlalchemy import desc
 from itertools import groupby
 from unidecode import unidecode
 
-from flask import request, flash, url_for, session, render_template, abort, redirect
+from flask import request, flash, url_for, session, render_template, abort, redirect, send_file
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 from flask import make_response
@@ -16,7 +16,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -1087,6 +1087,15 @@ def docs(path, dir=''):
     return redirect(app.config['STATIC_HOST'] + dir + path)
 
 
+@app.route('/files/tmp/pmg_upload/<path:path>') # development
+def dev_docs(path):
+    file = File.query.filter(File.file_path == '/tmp/pmg_upload/' + path).first()
+    if not file:
+        abort(404)
+
+    return send_file(file.open(), mimetype=file.file_mime)
+
+
 @app.route('/correct-this-page', methods=['POST'])
 def correct_this_page():
     form = forms.CorrectThisPageForm(request.form)
@@ -1102,3 +1111,39 @@ def correct_this_page():
         flash('Thanks for your feedback.', 'info')
 
     return redirect(request.form.get('url', '/'))
+
+
+@app.route('/blog')
+def blog():
+    posts = Post.query\
+                .order_by(desc(Post.date))\
+                .limit(10)\
+                .all()
+
+    return render_template('/blog.html',
+                           posts=posts)
+
+
+@app.route('/blog/<path:slug>')
+def blog_post(slug):
+    slug = Post().validate_slug(None, slug)
+    post = Post.query.filter(Post.slug == slug).first()
+    if not post:
+        abort(404)
+
+    files = [f.file for f in (post.files or [])]
+    files.sort(key=lambda f: (f.title, f.file_path))
+
+    social_summary = post.body
+
+    if files:
+        social_image = '/files' + files[0].file_path
+    else:
+        social_image = None
+
+    return render_template('blog_post.html',
+                           post=post,
+                           attachments=files,
+                           admin_edit_url=admin_url('posts', post.id),
+                           social_summary=social_summary,
+                           social_image=social_image)

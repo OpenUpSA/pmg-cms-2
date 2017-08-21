@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Blog | PMG{% endblock %}
+
+{% block page %}
+
+<section class="blog-page">
+  <div class="row">
+    <div class="col-sm-8 post-list">
+      <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> This week in Parliament</h1>
+      {% for post in posts %}
+      <div class="single-post">
+        <h3 class="title"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
+        <div class="date">{{ post.date.strftime('%d-%m-%Y') }}</div>
+        <div class="preview">
+          {{ post.body | striptags | truncate }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col-sm-4">
+      <h1>&nbsp;</h1>
+      {% include '_blog_infobox.html' %}
+      {% include '_social_sharing.html' %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

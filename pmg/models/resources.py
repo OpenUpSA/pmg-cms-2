@@ -219,7 +219,11 @@ class File(db.Model):
     @property
     def url(self):
         """ The friendly URL a user can use to download this file. """
-        return url_for('docs', path=self.file_path)
+        if self.file_path.startswith('/'): # For dev upload paths
+            path = self.file_path[1:]
+        else:
+            path = self.file_path
+        return url_for('docs', path=path)
 
     def from_upload(self, file_data):
         """ Handle a POST-based file upload and use it as the content for this file. """

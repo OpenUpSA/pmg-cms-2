@@ -1116,6 +1116,40 @@ class PageView(ViewWithFiles, MyModelView):
             model.date = model.date.replace(tzinfo=SAST)
 
 
+class PostView(ViewWithFiles, MyModelView):
+    column_list = ('slug', 'title', 'date')
+    column_searchable_list = ('slug', 'title')
+    column_default_sort = 'slug'
+
+    form_columns = ('title', 'slug', 'path', 'body', 'featured', 'date', 'files')
+    form_extra_fields = {
+        'path': fields.TextField('Path'),
+    }
+    form_widget_args = {
+        'body': {'class': 'ckeditor'},
+        'path': {'readonly': True},
+    }
+    form_args = {
+        'date': {'default': datetime.datetime.now()},
+    }
+    inline_models = [InlineFile(PostFile)]
+    column_descriptions = {
+        'show_files': 'Show a list of the files attached to this page in a box on the right?',
+    }
+
+    def frontend_url(self, model):
+        return '/blog/%s' % model.slug
+
+    def on_form_prefill(self, form, id):
+        super(PostView, self).on_form_prefill(form, id)
+        form.path.data = '/blog/%s' % form.slug.data
+
+    def on_model_change(self, form, model, is_created):
+        # make sure the new date is timezone aware
+        if model.date:
+            model.date = model.date.replace(tzinfo=SAST)
+
+
 # initialise admin instance
 admin = Admin(app, name='PMG-CMS', base_template='admin/my_base.html', index_view=MyIndexView(name='Home'), template_mode='bootstrap3')
 
@@ -1148,6 +1182,7 @@ admin.add_view(BriefingView(Briefing, db.session, type="media-briefing", name="M
 admin.add_view(RedirectView(Redirect, db.session, category='Other Content', name="Legacy Redirects", endpoint='redirects'))
 admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))
 admin.add_view(PageView(Page, db.session, category='Other Content', name="Static Pages", endpoint='pages'))
+admin.add_view(PostView(Post, db.session, category='Other Content', name="Blog Posts", endpoint='posts'))
 admin.add_view(FileView(File, db.session, category='Other Content', name="Uploaded Files", endpoint='files'))
 
 # ---------------------------------------------------------------------------------

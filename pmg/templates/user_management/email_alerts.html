@@ -51,7 +51,7 @@
     <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
   {% endif %}
 
-  <fieldset{% if not current_user.is_confirmed() %} disabled{% endif %}>
+  <fieldset{% if current_user.is_authenticated() and not current_user.is_confirmed() %} disabled{% endif %}>
     <ul class="list-unstyled daily-schedule">
       <li class="checkbox">
         <label>

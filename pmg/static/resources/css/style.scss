@@ -1545,9 +1545,10 @@ ul.menu {
 .page-sharing {
   font-size: 14px;
   display: block;
-  @media (min-width: $screen-sm-min) {
+  @media (min-width: $screen-md-min) {
     float: right;
     display: inline;
+    margin-top: -33px;
   }
 }
 

@@ -894,6 +894,9 @@ body.email_alerts {
     margin: 0px 0px 5px;
     color: #777;
   }
+  .no-about .page-sharing {
+    margin-top: -33px;
+  }
 }
 
 .cte-list-search {
@@ -1548,7 +1551,6 @@ ul.menu {
   @media (min-width: $screen-md-min) {
     float: right;
     display: inline;
-    margin-top: -33px;
   }
 }
 

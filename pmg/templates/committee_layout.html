@@ -29,7 +29,7 @@
           {% else %}
           <h4 class="light-red">{{ committee.house.name }} Committee</h4>
           {% endif %}
-          <div>{% include '_social_sharing.html' %}</div>
+          <div class="{% if not committee.about %}no-about{% endif %}">{% include '_social_sharing.html' %}</div>
         {% endblock %}
       </header>
       <div class="committee-page">

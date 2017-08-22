@@ -255,32 +255,36 @@ article.page {
 
     .row {
       height: 100%;
-
       .banner-content {
         height: 100%;
         position: relative;
       }
-
-      .call-to-action {
-        position: absolute;
-        width: 50%;
-        max-height: 100%;
-        bottom: 10px;
-        color: #fff;
-        background-color: $grey-darkest;
-        opacity: 0.9;
-        padding: 15px;
-
-        &:hover {
-          opacity: 0.95;
+      .single-feature {
+        display: none;
+        &:first-child {
+          display: block;
         }
-
-        a {
+        .call-to-action {
+          position: absolute;
+          width: 50%;
+          max-height: 100%;
+          bottom: 10px;
           color: #fff;
-        }
+          background-color: $grey-darkest;
+          padding: 15px;
+          opacity: 0.9;
 
-        h2 {
-          margin: 0;
+          &:hover {
+            opacity: 0.95;
+          }
+
+          a {
+            color: #fff;
+          }
+
+          h2 {
+            margin: 0;
+          }
         }
       }
     }

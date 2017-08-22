@@ -180,3 +180,22 @@ $(function() {
 $(".committee-attendance-overview .centre-line").each(function() {
   $(this).height($(this).parent().height() + 17);
 });
+
+var displayTime = 8000,
+    transitionTime = 500;
+var currIndex = 0;
+var $features = $(".home-banner .single-feature");
+var featuresLength = $features.length;
+
+function featuresSlide() {
+  currIndex = (currIndex < (featuresLength - 1)) ? currIndex + 1 : 0;
+  setTimeout(function() {
+    $features.css('z-index', 1);
+    $features.eq(currIndex).css('z-index', 2).fadeIn(transitionTime, function() {
+      $features.not(this).hide();
+      featuresSlide();
+    });
+  }, displayTime)
+}
+
+featuresSlide();

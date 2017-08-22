@@ -6,19 +6,23 @@
 {% block content %}
 {% include "_header.html" %}
 
-
 <article>
+
   <header class="home-banner" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
     <div class="container">
       <div class="row">
         <div class="col-lg-9 col-md-8 banner-content">
-         {% if featured_content.feature %}
-          <a href="{{ featured_content.feature.link }}">
-            <div class="call-to-action">
-              <h2>{{ featured_content.feature.title }}</h2>
-            </div>
-          </a>
-         {% endif %}
+          {% if featured_content.features %}
+            {% for feature in featured_content.features %}
+              <div class="single-feature">
+                <a href="{{ feature.link }}">
+                  <div class="call-to-action">
+                    <h2>{{ feature.title }}</h2>
+                  </div>
+                </a>
+              </div>
+            {% endfor %}
+          {% endif %}
         </div>
 
         <div class="col-lg-3 col-md-4 hidden-xs hidden-sm banner-content banner-cards">

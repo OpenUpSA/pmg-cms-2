@@ -108,7 +108,7 @@ def classify_attachments(files):
 def get_featured_content():
     info = {}
 
-    info['feature'] = Featured.query.order_by(desc(Featured.start_date)).first()
+    info['features'] = Featured.query.order_by(desc(Featured.start_date)).all()
     info['committee_meetings'] = CommitteeMeeting.query\
         .filter(CommitteeMeeting.featured == True)\
         .order_by(desc(CommitteeMeeting.date))\

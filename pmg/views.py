@@ -902,11 +902,10 @@ def question_replies(page=0):
     Page through all available question_replies + committee_questions.
     """
     logger.debug("question_replies page called")
-    committees = load_from_api('committee/question_reply', return_everything=True)['results']
+    ministers = load_from_api('v2/ministers', return_everything=True)['results']
     filters = {}
     params = {}
-    filters["committee"] = params[
-        'filter[committee_id]'] = request.args.get('filter[committee]')
+    filters["minister"] = params['filter[minister_id]'] = request.args.get('filter[minister]')
     questions = load_from_api(
         'minister-questions-combined',
         page=page,
@@ -928,7 +927,7 @@ def question_replies(page=0):
         icon="question-circle",
         title="Questions and Replies",
         content_type="minister_question",
-        committees=committees,
+        ministers=ministers,
         all_committees_option="All Ministries",
         filters=filters)
 

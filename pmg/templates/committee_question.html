@@ -1,27 +1,29 @@
-{% extends "committee_layout.html" %}
+{% extends "base.html" %}
 {% from 'macros/members.html' import member_badge %}
 
-{% block title %}Question to {{ committee.name }} - {{ question.code }} | PMG{% endblock %}
+{% block title %}Question to the {{ minister.name }} - {{ question.code }} | PMG{% endblock %}
 
-{% block committee_breadcrumb %}
-  {% if committee.id == 0 %}
-  {% else %}
-    {{ super() }}
-    <li><a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">Committee Questions</a></li>
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('question_replies') }}">Questions and Replies</a></li>
+  {% if committee.id != 0 %}
+  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
   {% endif %}
+  <li><a href="{{ url_for('question_replies', **{'filter[minister]': minister.id}) }}">{{ minister.name }}</a></li>
+</ol>
 {% endblock %}
 
-{% block committee_title %}
-  {{ super() }}
-  <div class="question-highlight">
-    {% if committee.id == 0 %}
-    <strong>Question to the {{ committee.name }}</strong>
-    {% else %}
-    <strong>Question to the Minister of {{ committee.name }}</strong> (<a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">more questions</a>)
-    {% endif %}
+{% block page %}
+<div class="row">
+  <div class="col-md-10">
+    <h1>Question {{ question.code }} to the {{ minister.name }}</h1>
+    <div class="clearfix">
+      {% include "_social_sharing.html" %}
+    </div>
+
+    {% include '_committee_question_detail.html' with context %}
+
+    {% include "_correct_this_page.html" %}
   </div>
-{% endblock %}
-
-{% block committee_page %}
-{% include '_committee_question_detail.html' with context %}
+</div>
 {% endblock %}

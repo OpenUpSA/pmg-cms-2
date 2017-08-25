@@ -380,11 +380,10 @@ def committee_question(question_id):
     """
     question = load_from_api('v2/minister-questions', question_id)['result']
     minister = question['minister']
-    #committee = minister.get('committee', {
-    committee = {
+    committee = minister.get('committee', {
         'house': {},
         'id': 0
-    }
+    })
     social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',

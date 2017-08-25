@@ -282,7 +282,7 @@ def committee_detail(committee_id):
     minister = committee.get('minister')
     recent_questions = []
     if minister:
-        load_from_api('minister-questions-combined', params={'filter[minister_id]': minister['id']})['results']
+        recent_questions = load_from_api('minister-questions-combined', params={'filter[minister_id]': minister['id']})['results']
 
     # meetings
     all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']

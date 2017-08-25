@@ -28,8 +28,9 @@ class CommitteeSchema(ma.ModelSchema):
     class Meta:
         model = Committee
         fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'active', 'premium',
-                  'last_active_year', '_links')
+                  'minister', 'last_active_year', '_links')
     house = fields.Nested('HouseSchema')
+    minister = fields.Nested('MinisterSchema', exclude=['committee'])
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.committees', id="<id>"),
         'meetings': AbsoluteUrlFor('api2.committee_meeting_list', id="<id>"),
@@ -160,7 +161,7 @@ class MinisterSchema(ma.ModelSchema):
         model = Minister
         fields = ('id', 'name', '_links', 'committee')
 
-    committee = fields.Nested('CommitteeSchema')
+    committee = fields.Nested('CommitteeSchema', exclude=['minister'])
     # TODO: add link to questions to this minister
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.ministers', id="<id>"),

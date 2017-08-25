@@ -783,10 +783,6 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # TODO: delete this reference and use the minister relation instead
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('questions', order_by=desc('date')), lazy='joined')
-
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
     minister = db.relationship('Minister', lazy='joined')
 
@@ -1024,9 +1020,6 @@ class QuestionReply(ApiResource, db.Model):
     slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
-    # TODO: delete this reference and use the minister relation instead
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
     minister = db.relationship('Minister', lazy='joined')
     title = db.Column(db.String(255), nullable=False)

@@ -148,7 +148,7 @@
             <td class="name">
               {# handle QuestionReply and CommitteeQuestion objects differently #}
               {% if item.date %}
-              <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.code }} by {{ item.asked_by_name }}</a>
+              <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.code }} by {{ item.asked_by_name }}</a> - {{ item.question | striptags | truncate(50) }}</a>
               {% else %}
               <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
               {% endif %}

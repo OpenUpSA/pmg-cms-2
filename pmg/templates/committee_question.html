@@ -16,7 +16,7 @@
 {% block page %}
 <div class="row">
   <div class="col-md-10">
-    <h1>Question {{ question.code }} to the {{ minister.name }}</h1>
+    <h1>Question {{ question.code }} to the {{ question.question_to_name }}</h1>
     <div class="clearfix">
       {% include "_social_sharing.html" %}
     </div>

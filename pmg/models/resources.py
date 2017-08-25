@@ -931,7 +931,7 @@ class CommitteeQuestion(ApiResource, db.Model):
         q = questions[0]
 
         self.question_to_name = q['questionto']
-        self.committee = self.committee_from_minister_name(self.question_to_name)
+        self.minister = self.minister_from_minister_name(self.question_to_name)
 
         self.asked_by_name = q['askedby']
         parts = re.split(' +', self.asked_by_name)
@@ -945,22 +945,16 @@ class CommitteeQuestion(ApiResource, db.Model):
     def parse_answer_html(self, html):
         self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
 
-    def committee_from_minister_name(self, minister):
+    def minister_from_minister_name(self, minister):
         name = minister\
             .replace('Minister of ', '')\
             .replace('Minister in the ', '')
-        return Committee.find_by_inexact_name(name)
+        return Minister.find_by_inexact_name(name)
 
     @validates('date')
     def validate_date(self, key, value):
         self.year = value.year
         return value
-
-    @validates('committee')
-    def validate_committee(self, key, cte):
-        if cte:
-            self.minister = cte.minister
-        return cte
 
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
@@ -1411,6 +1405,19 @@ class Minister(ApiResource, db.Model):
             .query\
             .options(joinedload('committee'))\
             .order_by(cls.name)
+
+    @classmethod
+    def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
+        candidates = candidates or cls.query.all()
+        best = None
+
+        for cte in candidates:
+            score = levenshtein(cte.name, name)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (cte, score)
+
+        return best[0] if best else None
 
 
 # Listen for model updates

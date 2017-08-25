@@ -1,6 +1,6 @@
 from flask import request, Blueprint, abort
 from sqlalchemy import desc
-from sqlalchemy.orm import undefer, defer, noload
+from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast
 
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
@@ -135,6 +135,15 @@ def minister_questions(id=None):
         return api_get_item(id, CommitteeQuestion, CommitteeQuestionSchema)
     else:
         return api_list_items(CommitteeQuestion.list(), CommitteeQuestionSchema)
+
+
+@api.route('/ministers/')
+@api.route('/ministers/<int:id>')
+def ministers(id=None):
+    if id:
+        return api_get_item(id, Minister, MinisterSchema)
+    else:
+        return api_list_items(Minister.list(), MinisterSchema)
 
 
 @api.route('/members/')

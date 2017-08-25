@@ -636,7 +636,7 @@ class Committee(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
-    minister = db.relationship('Minister', lazy=True)
+    minister = db.relationship('Minister', backref=backref('committee', uselist=False), lazy=True)
 
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
@@ -1407,7 +1407,10 @@ class Minister(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(cls.name)
+        return cls\
+            .query\
+            .options(joinedload('committee'))\
+            .order_by(cls.name)
 
 
 # Listen for model updates

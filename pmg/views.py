@@ -378,19 +378,17 @@ def attendance_overview():
 def committee_question(question_id):
     """ Display a single committee question.
     """
-    question = load_from_api('committee-question', question_id)
-    if 'committee' in question:
-        committee = question['committee']
-    else:
-        committee = {
-                        'name': question['question_to_name'],
-                        'house': {
-                        },
-                        'id': 0
-                    }
+    question = load_from_api('v2/minister-questions', question_id)['result']
+    minister = question['minister']
+    #committee = minister.get('committee', {
+    committee = {
+        'house': {},
+        'id': 0
+    }
     social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',
+                           minister=minister,
                            committee=committee,
                            question=question,
                            hide_replies=False,

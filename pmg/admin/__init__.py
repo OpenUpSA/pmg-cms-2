@@ -782,7 +782,7 @@ class CommitteeQuestionView(MyModelView):
 
 class QuestionReplyView(MyModelView):
     column_list = (
-        'committee',
+        'minister',
         'title',
         'start_date',
         'question_number',
@@ -790,7 +790,7 @@ class QuestionReplyView(MyModelView):
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', 'question_number')
     form_columns = (
-        'committee',
+        'minister',
         'title',
         'start_date',
         'question_number',
@@ -800,6 +800,12 @@ class QuestionReplyView(MyModelView):
         'body': {'class': 'ckeditor'},
     }
     inline_models = [InlineFile(QuestionReplyFile)]
+    column_labels = {
+        'minister': "Question To Minister",
+    }
+    form_args = {
+        'minister': {'validators': [data_required()]},
+    }
 
 
 class CallForCommentView(MyModelView):

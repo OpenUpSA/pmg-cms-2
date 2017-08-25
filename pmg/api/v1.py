@@ -397,7 +397,6 @@ def minister_questions_combined():
         .filter(CommitteeQuestion.id.in_(cq_ids))\
         .order_by(CommitteeQuestion.date.desc())\
         .options(
-            lazyload('committee'),
             lazyload('minister'),
             joinedload('asked_by_member'),
             lazyload('asked_by_member.memberships'))

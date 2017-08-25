@@ -137,6 +137,15 @@ def minister_questions(id=None):
         return api_list_items(CommitteeQuestion.list(), CommitteeQuestionSchema)
 
 
+@api.route('/minister-questions/legacy/')
+@api.route('/minister-questions/legacy/<int:id>')
+def minister_questions_legacy(id=None):
+    if id:
+        return api_get_item(id, QuestionReply, QuestionReplySchema)
+    else:
+        return api_list_items(QuestionReply.list(), QuestionReplySchema)
+
+
 @api.route('/ministers/')
 @api.route('/ministers/<int:id>')
 def ministers(id=None):

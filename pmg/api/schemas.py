@@ -3,7 +3,7 @@ from marshmallow_polyfield import PolyField
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event)
+                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event, QuestionReply)
 from pmg.utils import externalise_url
 
 
@@ -182,6 +182,17 @@ class CommitteeQuestionSchema(ma.ModelSchema):
     source_file = fields.Nested('FileSchema')
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.minister_questions', id="<id>"),
+    })
+
+
+class QuestionReplySchema(ma.ModelSchema):
+    class Meta:
+        model = QuestionReply
+        fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
+                  'question_number', 'minister', 'minister_id', '_links',)
+    minister = fields.Nested('MinisterSchema')
+    _links = ma.Hyperlinks({
+        'self': AbsoluteUrlFor('api2.minister_questions_legacy', id="<id>"),
     })
 
 

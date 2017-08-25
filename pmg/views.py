@@ -279,7 +279,10 @@ def committee_detail(committee_id):
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
 
-    recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
+    minister = committee.get('minister')
+    recent_questions = []
+    if minister:
+        load_from_api('minister-questions-combined', params={'filter[minister_id]': minister['id']})['results']
 
     # meetings
     all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']
@@ -880,17 +883,15 @@ def daily_schedules(page=0):
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
-    question_reply = load_from_api('question_reply', question_reply_id)
-
-    if question_reply.get('committee'):
-        template = 'committee_question_reply.html'
-    else:
-        template = 'question_reply_detail.html'
+    question_reply = load_from_api('v2/minister-questions/legacy', question_reply_id)['result']
+    minister = question_reply.get('minister') or {}
+    committee = minister.get('committee')
 
     return render_template(
-        template,
+        'question_reply_detail.html',
         question_reply=question_reply,
-        committee=question_reply.get('committee'),
+        minister=minister,
+        committee=committee,
         content_date=question_reply['start_date'],
         admin_edit_url=admin_url('question', question_reply_id))
 

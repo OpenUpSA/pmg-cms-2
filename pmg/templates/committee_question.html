@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from 'macros/members.html' import member_badge %}
+{% from 'macros/attachments.html' import attachments_panel %}
 
 {% block title %}Question to the {{ minister.name }} - {{ question.code }} | PMG{% endblock %}
 
@@ -15,15 +16,24 @@
 
 {% block page %}
 <div class="row">
-  <div class="col-md-10">
-    <h1>Question {{ question.code }} to the {{ question.question_to_name }}</h1>
+  <div class="col-sm-9">
+    <header class="detail-page-header">
+      <h1><i class="fa fa-question-circle"></i> Question {{ question.code }} to the {{ question.question_to_name }}</h1>
+    </header>
     <div class="clearfix">
       {% include "_social_sharing.html" %}
     </div>
 
     {% include '_committee_question_detail.html' with context %}
 
-    {% include "_correct_this_page.html" %}
   </div>
+  <div class="col-sm-3">
+    {% if question.source_file %}
+      {{ attachments_panel("Documents", [question.source_file], 'fa-file-pdf-o') }}
+    {% endif %}
+  </div>
+
 </div>
+
+{% include "_correct_this_page.html" %}
 {% endblock %}

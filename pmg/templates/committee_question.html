@@ -1,27 +1,39 @@
-{% extends "committee_layout.html" %}
+{% extends "base.html" %}
 {% from 'macros/members.html' import member_badge %}
+{% from 'macros/attachments.html' import attachments_panel %}
 
-{% block title %}Question to {{ committee.name }} - {{ question.code }} | PMG{% endblock %}
+{% block title %}Question to the {{ minister.name }} - {{ question.code }} | PMG{% endblock %}
 
-{% block committee_breadcrumb %}
-  {% if committee.id == 0 %}
-  {% else %}
-    {{ super() }}
-    <li><a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">Committee Questions</a></li>
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('question_replies') }}">Questions and Replies</a></li>
+  {% if committee.id != 0 %}
+  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
   {% endif %}
+  <li><a href="{{ url_for('question_replies', **{'filter[minister]': minister.id}) }}">{{ minister.name }}</a></li>
+</ol>
 {% endblock %}
 
-{% block committee_title %}
-  {{ super() }}
-  <div class="question-highlight">
-    {% if committee.id == 0 %}
-    <strong>Question to the {{ committee.name }}</strong>
-    {% else %}
-    <strong>Question to the Minister of {{ committee.name }}</strong> (<a href="{{ url_for('question_replies', **{'filter[committee]': committee.id}) }}">more questions</a>)
+{% block page %}
+<div class="row">
+  <div class="col-sm-9">
+    <header class="detail-page-header">
+      <h1><i class="fa fa-question-circle"></i> Question {{ question.code }} to the {{ question.question_to_name }}</h1>
+    </header>
+    <div class="clearfix">
+      {% include "_social_sharing.html" %}
+    </div>
+
+    {% include '_committee_question_detail.html' with context %}
+
+  </div>
+  <div class="col-sm-3">
+    {% if question.source_file %}
+      {{ attachments_panel("Documents", [question.source_file], 'fa-file-pdf-o') }}
     {% endif %}
   </div>
-{% endblock %}
 
-{% block committee_page %}
-{% include '_committee_question_detail.html' with context %}
+</div>
+
+{% include "_correct_this_page.html" %}
 {% endblock %}

@@ -279,7 +279,10 @@ def committee_detail(committee_id):
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
 
-    recent_questions = load_from_api('minister-questions-combined', params={'filter[committee_id]': committee_id})['results']
+    minister = committee.get('minister')
+    recent_questions = []
+    if minister:
+        load_from_api('minister-questions-combined', params={'filter[minister_id]': minister['id']})['results']
 
     # meetings
     all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']
@@ -378,19 +381,16 @@ def attendance_overview():
 def committee_question(question_id):
     """ Display a single committee question.
     """
-    question = load_from_api('committee-question', question_id)
-    if 'committee' in question:
-        committee = question['committee']
-    else:
-        committee = {
-                        'name': question['question_to_name'],
-                        'house': {
-                        },
-                        'id': 0
-                    }
+    question = load_from_api('v2/minister-questions', question_id)['result']
+    minister = question['minister']
+    committee = minister.get('committee', {
+        'house': {},
+        'id': 0
+    })
     social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template('committee_question.html',
+                           minister=minister,
                            committee=committee,
                            question=question,
                            hide_replies=False,
@@ -883,17 +883,15 @@ def daily_schedules(page=0):
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
-    question_reply = load_from_api('question_reply', question_reply_id)
-
-    if question_reply.get('committee'):
-        template = 'committee_question_reply.html'
-    else:
-        template = 'question_reply_detail.html'
+    question_reply = load_from_api('v2/minister-questions/legacy', question_reply_id)['result']
+    minister = question_reply.get('minister') or {}
+    committee = minister.get('committee')
 
     return render_template(
-        template,
+        'question_reply_detail.html',
         question_reply=question_reply,
-        committee=question_reply.get('committee'),
+        minister=minister,
+        committee=committee,
         content_date=question_reply['start_date'],
         admin_edit_url=admin_url('question', question_reply_id))
 
@@ -905,11 +903,10 @@ def question_replies(page=0):
     Page through all available question_replies + committee_questions.
     """
     logger.debug("question_replies page called")
-    committees = load_from_api('committee/question_reply', return_everything=True)['results']
+    ministers = load_from_api('v2/ministers', return_everything=True)['results']
     filters = {}
     params = {}
-    filters["committee"] = params[
-        'filter[committee_id]'] = request.args.get('filter[committee]')
+    filters["minister"] = params['filter[minister_id]'] = request.args.get('filter[minister]')
     questions = load_from_api(
         'minister-questions-combined',
         page=page,
@@ -931,7 +928,7 @@ def question_replies(page=0):
         icon="question-circle",
         title="Questions and Replies",
         content_type="minister_question",
-        committees=committees,
+        ministers=ministers,
         all_committees_option="All Ministries",
         filters=filters)
 

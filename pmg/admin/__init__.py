@@ -710,7 +710,7 @@ class CommitteeQuestionView(MyModelView):
 
     column_list = (
         'code',
-        'committee',
+        'minister',
         'question_number',
         'date',
     )
@@ -724,7 +724,7 @@ class CommitteeQuestionView(MyModelView):
         'asked_by_name',
         'asked_by_member',
         'question_to_name',
-        'committee',
+        'minister',
         'answer',
         'source_file',
         'written_number',
@@ -734,10 +734,11 @@ class CommitteeQuestionView(MyModelView):
     )
     column_labels = {
         'question_to_name': "Question To",
-        'committee': "Question To Committee",
+        'minister': "Question To Minister",
     }
     form_args = {
         'files': {'widget': widgets.InlineFileWidget()},
+        'minister': {'validators': [data_required()]},
     }
     form_widget_args = {
         'answer': {'class': 'ckeditor'},
@@ -774,14 +775,14 @@ class CommitteeQuestionView(MyModelView):
             return redirect(return_url)
 
     def frontend_url(self, model):
-        if model.id and model.committee:
+        if model.id:
             return url_for('committee_question', question_id=model.id)
         return None
 
 
 class QuestionReplyView(MyModelView):
     column_list = (
-        'committee',
+        'minister',
         'title',
         'start_date',
         'question_number',
@@ -789,7 +790,7 @@ class QuestionReplyView(MyModelView):
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', 'question_number')
     form_columns = (
-        'committee',
+        'minister',
         'title',
         'start_date',
         'question_number',
@@ -799,6 +800,12 @@ class QuestionReplyView(MyModelView):
         'body': {'class': 'ckeditor'},
     }
     inline_models = [InlineFile(QuestionReplyFile)]
+    column_labels = {
+        'minister': "Question To Minister",
+    }
+    form_args = {
+        'minister': {'validators': [data_required()]},
+    }
 
 
 class CallForCommentView(MyModelView):

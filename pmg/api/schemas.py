@@ -3,7 +3,7 @@ from marshmallow_polyfield import PolyField
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event)
+                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event, QuestionReply)
 from pmg.utils import externalise_url
 
 
@@ -158,8 +158,13 @@ class FileSchema(ma.ModelSchema):
 class MinisterSchema(ma.ModelSchema):
     class Meta:
         model = Minister
-        fields = ('id', 'name')
-        # TODO: add _links and link to questions to this minister
+        fields = ('id', 'name', '_links', 'committee')
+
+    committee = fields.Nested('CommitteeSchema')
+    # TODO: add link to questions to this minister
+    _links = ma.Hyperlinks({
+        'self': AbsoluteUrlFor('api2.ministers', id="<id>"),
+    })
 
 
 class CommitteeQuestionSchema(ma.ModelSchema):
@@ -168,17 +173,26 @@ class CommitteeQuestionSchema(ma.ModelSchema):
         fields = ('id', 'date', 'intro', 'year', 'code',
                   'answer', 'answer_type', 'asked_by_member_id', 'asked_by_name', 'asked_by_member',
                   'question', 'question_number', 'question_to_name',
-                  'committee_id', 'committee',
                   'created_at', 'updated_at',
                   'written_number', 'oral_number', 'president_number', 'deputy_president_number',
                   'house', 'house_id', 'minister', 'minister_id',
                   'translated', 'source_file', 'url', '_links',)
-    committee = fields.Nested('CommitteeSchema')
     asked_by_member = fields.Nested('MemberSchema')
     minister = fields.Nested('MinisterSchema')
     source_file = fields.Nested('FileSchema')
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.minister_questions', id="<id>"),
+    })
+
+
+class QuestionReplySchema(ma.ModelSchema):
+    class Meta:
+        model = QuestionReply
+        fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
+                  'question_number', 'minister', 'minister_id', '_links',)
+    minister = fields.Nested('MinisterSchema')
+    _links = ma.Hyperlinks({
+        'self': AbsoluteUrlFor('api2.minister_questions_legacy', id="<id>"),
     })
 
 

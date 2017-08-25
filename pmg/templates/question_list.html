@@ -1,17 +1,51 @@
-{% extends "question_layout.html" %}
+{% extends "base.html" %}
 
 {% block title %}Questions to Ministers | PMG{% endblock %}
 
-{% block question_page %}
-<section class="committee-question-list">
-{% for question in questions.results %}
-  {% if question.code %}
-    {% include '_committee_question_detail.html' with context %}
-  {% else %}
-    {% include '_question_reply_detail.html' with context %}
-  {% endif %}
-{% endfor %}
-</section>
+{% block page %}
+  <h1><i class="fa fa-icon fa-{{ icon }}"></i> Questions and Replies</h1>
 
-{% include 'pagination.html' %}
+  <div class="space-bottom">
+    <div class="row">
+      <div class="col-md-6">
+        <form action="/search">
+          <input type="hidden" name="filter[type]" value="{{content_type}}">
+          <input type="hidden" name="filter[minister]" value="{{filters.minister}}">
+          <div class="input-group">
+            <input type="text" name="q" placeholder="Search Questions and Replies" class="form-control">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-success">Search</button>
+            </span>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-6">
+        <form>
+          <select name="filter[minister]" class="chosen space-bottom-sm search-filter" onchange="form.submit()" >
+            <option value="" {% if not filters.minister %} selected="selected" {% endif %}>All Ministries</option>
+
+            {% for minister in ministers %}
+              <option value="{{ minister.id }}" {% if filters.minister|int == minister.id|int %} selected="selected" {% endif %}>{{ minister.name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <section class="committee-question-list">
+  {% for question in questions.results %}
+    {% if question.code %}
+      {% include '_committee_question_detail.html' with context %}
+    {% else %}
+      {% include '_question_reply_detail.html' with context %}
+    {% endif %}
+  {% endfor %}
+  </section>
+
+  {% include 'pagination.html' %}
+
+  {% include "_correct_this_page.html" %}
+
 {% endblock %}

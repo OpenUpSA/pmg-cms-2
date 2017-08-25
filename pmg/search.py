@@ -390,8 +390,9 @@ class Transforms:
             "title": "intro",
             "fulltext": ["question", "answer"],
             "date": "date",
-            "committee_name": "committee.name",
-            "committee_id": "committee.id",
+            "committee_name": "minister.committee.name",
+            "committee_id": "minister.committee.id",
+            "minister_id": "minister.id",
         },
         Member: {
             "title": "name",
@@ -422,8 +423,9 @@ class Transforms:
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
-            "committee_name": "committee.name",
-            "committee_id": "committee.id",
+            "committee_name": "minister.committee.name",
+            "committee_id": "minister.committee.id",
+            "minister_id": "minister.id",
         },
         TabledCommitteeReport: {
             "title": "title",

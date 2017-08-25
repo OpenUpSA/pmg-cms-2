@@ -636,7 +636,7 @@ class Committee(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
-    minister = db.relationship('Minister', lazy=True)
+    minister = db.relationship('Minister', backref=backref('committee', uselist=False), lazy=True)
 
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
@@ -783,10 +783,6 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    # TODO: delete this reference and use the minister relation instead
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('questions', order_by=desc('date')), lazy='joined')
-
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
     minister = db.relationship('Minister', lazy='joined')
 
@@ -931,7 +927,7 @@ class CommitteeQuestion(ApiResource, db.Model):
         q = questions[0]
 
         self.question_to_name = q['questionto']
-        self.committee = self.committee_from_minister_name(self.question_to_name)
+        self.minister = self.minister_from_minister_name(self.question_to_name)
 
         self.asked_by_name = q['askedby']
         parts = re.split(' +', self.asked_by_name)
@@ -945,22 +941,16 @@ class CommitteeQuestion(ApiResource, db.Model):
     def parse_answer_html(self, html):
         self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
 
-    def committee_from_minister_name(self, minister):
+    def minister_from_minister_name(self, minister):
         name = minister\
             .replace('Minister of ', '')\
             .replace('Minister in the ', '')
-        return Committee.find_by_inexact_name(name)
+        return Minister.find_by_inexact_name(name)
 
     @validates('date')
     def validate_date(self, key, value):
         self.year = value.year
         return value
-
-    @validates('committee')
-    def validate_committee(self, key, cte):
-        if cte:
-            self.minister = cte.minister
-        return cte
 
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
@@ -1030,9 +1020,6 @@ class QuestionReply(ApiResource, db.Model):
     slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
-    # TODO: delete this reference and use the minister relation instead
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('questions_replies'), lazy='joined')
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
     minister = db.relationship('Minister', lazy='joined')
     title = db.Column(db.String(255), nullable=False)
@@ -1407,7 +1394,23 @@ class Minister(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(cls.name)
+        return cls\
+            .query\
+            .options(joinedload('committee'))\
+            .order_by(cls.name)
+
+    @classmethod
+    def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
+        candidates = candidates or cls.query.all()
+        best = None
+
+        for cte in candidates:
+            score = levenshtein(cte.name, name)
+            if score >= threshold:
+                if not best or score > best[1]:
+                    best = (cte, score)
+
+        return best[0] if best else None
 
 
 # Listen for model updates

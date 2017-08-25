@@ -5,25 +5,25 @@
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
-  {% if question_reply.committee %}
-  <li><a href="{{ url_for('committees') }}">Committees</a></li>
-  <li><a href="{{ url_for('committee_detail', committee_id=question_reply.committee.id) }}">{{ question_reply.committee.name }}</a></li>
-  <li>Questions and Replies</li>
-  {% else %}
   <li><a href="{{ url_for('question_replies') }}">Questions and Replies</a></li>
+  {% if committee %}
+    <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+  {% endif %}
+  {% if minister %}
+    <li><a href="{{ url_for('question_replies', **{'filter[minister]': minister.id}) }}">{{ minister.name }}</a></li>
   {% endif %}
 </ol>
 {% endblock %}
 
 {% block page %}
-
   <div class="row">
     <div class="col-sm-9">
-      <h1><i class="fa fa-question-circle"></i> Question &amp; Reply: {{ question_reply.title }}</h1>
-
-      {% if question_reply.committee %}
-      <h4><a href="/committee/{{question_reply.committee.id}}">{{ question_reply.committee.name }}</a></h4>
-      {% endif %}
+      <header class="detail-page-header">
+        <h1><i class="fa fa-question-circle"></i> Questions &amp; Replies: {{ question_reply.title }}</h1>
+      </header>
+      <div class="clearfix">
+        {% include "_social_sharing.html" %}
+      </div>
 
       <h5>{{ question_reply.start_date }}</h5>
 
@@ -31,19 +31,11 @@
     </div>
 
     <div class="col-sm-3">
-      {% if question_reply.committee %}
-        {% set committee = question_reply.committee %}
-        {% include 'user_management/_committee_alerts_signup.html' %}
-      {% endif %}
-
-      <br>
-
       {% if question_reply.files %}
         {{ attachments_panel("Documents", question_reply.files, 'fa-file-pdf-o') }}
       {% endif %}
     </div>
   </div>
 
-{% include "_correct_this_page.html" %}
-{% include '_social_sharing.html' %}
+  {% include "_correct_this_page.html" %}
 {% endblock %}

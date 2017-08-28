@@ -145,3 +145,16 @@ We use [Flask-Migrate](https://flask-migrate.readthedocs.org/en/latest/) and [Al
 Then to run the script on your local machine:
 
     python app.py db upgrade
+
+### Updating parliamentary days
+
+PMG needs to know the individual days in which Parliament sat, for each year. It uses this information
+to calculate the number of parliamentary days that it took for bills to be adopted. It reads these days
+from the file `data/parliament-sitting-days.txt`.
+
+Updating this information is a two-step process:
+
+1. Update the spreadsheet `data/parliament-sitting-days.xlsx` that lists the days parliament sits
+2. Run `python bin/load_parliamentary_days --pm-days data/parliament-sitting-days.xlsx` to update `data/parliament-sitting-days.txt`
+3. Run `git diff` to sanity check the changes
+3. Commit the changes

@@ -1,20 +1,67 @@
 from flask import abort, request, make_response
 from flask.ext.admin import expose, BaseView
+from datetime import date
 
 from .rbac import RBACMixin
 from .xlsx import XLSXBuilder
 from pmg import db
+from pmg.bills import count_parliamentary_days
+
+
+def add_bill_parliament_days(report, rows):
+    """ Decorate the rows returned by the bills report to include a column
+    that counts them number of parliamentary days from introduction to adoption.
+    """
+    rows = MutableResultProxy(rows)
+
+    def str_to_date(d):
+        return date(*(int(x) for x in d.split('-')))
+
+    for r in rows:
+        if r['date_of_introduction'] and r['date_of_adoption']:
+            days_to_adoption = count_parliamentary_days(
+                str_to_date(r['date_of_introduction']),
+                str_to_date(r['date_of_adoption'])
+            )
+        else:
+            days_to_adoption = None
+        r['pm_days_to_adoption'] = days_to_adoption
+
+    rows._keys.append('pm_days_to_adoption')
+
+    return rows
+
+
+class MutableResultProxy(object):
+    def __init__(self, rows):
+        self._keys = rows.keys()
+        self._rows = [dict(r) for r in rows]
+
+    def __iter__(self):
+        return self._rows.__iter__()
+
+    def keys(self):
+        return self._keys
+
+    @property
+    def rowcount(self):
+        return len(self._rows)
 
 
 class Report(object):
-    def __init__(self, id, name, description, sql):
+    def __init__(self, id, name, description, sql, transform=None):
         self.id = id
         self.name = name
         self.description = description
         self.sql = sql
+        self.transform = transform
+
+    def process(self, results):
+        if self.transform:
+            return self.transform(self, results)
 
     def run(self):
-        return db.engine.execute(self.sql)
+        return self.process(db.engine.execute(self.sql))
 
     def as_xlsx(self):
         result = self.run()
@@ -53,6 +100,7 @@ order by
         Report(2,
                name="Bill events",
                description="Events dates for bills",
+               transform=add_bill_parliament_days,
                sql="""
 select
   b.id,

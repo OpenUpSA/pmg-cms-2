@@ -915,13 +915,14 @@ def question_replies(page=0):
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
 
-    url = "/question_replies"
+    # sort ministers to put President first
+    ministers.sort(key=lambda m: 0 if m['name'] == 'President' else m['name'])
 
     return render_template(
         'question_list.html',
         questions=questions,
         hide_replies=True,
-        url=url,
+        url="/question_replies",
         num_pages=num_pages,
         per_page=per_page,
         page=page,

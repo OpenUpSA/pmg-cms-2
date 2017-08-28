@@ -100,6 +100,7 @@ order by
         Report(2,
                name="Bill events",
                description="Events dates for bills",
+               transform=add_bill_parliament_days,
                sql="""
 select
   b.id,

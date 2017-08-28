@@ -1,4 +1,6 @@
 from itertools import groupby
+from datetime import date
+import bisect
 
 from flask import url_for
 
@@ -105,3 +107,22 @@ def bill_history(bill):
         history.append(info)
 
     return history
+
+
+def count_parliamentary_days(date_from, date_to):
+    """ Count the number of parliamentary days between two dates.
+    """
+    i = bisect.bisect(PARLIAMENTARY_DAYS, date_from)
+    j = bisect.bisect(PARLIAMENTARY_DAYS, date_to)
+    return j - i
+
+
+def load_parliamentary_days():
+    return [
+        date(2015, 1, 28),
+        date(2015, 1, 29),
+        date(2015, 1, 30),
+    ]
+
+
+PARLIAMENTARY_DAYS = load_parliamentary_days()

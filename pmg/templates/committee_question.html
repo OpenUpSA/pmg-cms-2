@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from 'macros/members.html' import member_badge %}
 {% from 'macros/attachments.html' import attachments_panel %}
+{% from 'macros/attachments.html' import related_attachments %}
 
 {% block title %}Question to the {{ minister.name }} - {{ question.code }} | PMG{% endblock %}
 
@@ -29,7 +30,10 @@
   </div>
   <div class="col-sm-3">
     {% if question.source_file %}
-      {{ attachments_panel("Documents", [question.source_file], 'fa-file-pdf-o') }}
+      {{ attachments_panel("Source file", [question.source_file], 'fa-file-text-o') }}
+    {% endif %}
+    {% if question.files %}
+      {{ related_attachments(question.files) }}
     {% endif %}
   </div>
 

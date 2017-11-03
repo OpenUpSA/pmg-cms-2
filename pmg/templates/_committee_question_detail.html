@@ -51,13 +51,6 @@
       {% if question.answer %}
         <div class="committee-question-reply {% if hide_replies %}collapse{% endif %}" id="commitee-question-reply-{{ question.id}}">
           <h4>Reply:</h4>
-
-          {% if question.files %}
-          <div class="col-sm-4 pull-right">
-            {{ related_attachments(question.files) }}
-          </div>
-          {% endif %}
-
           {{ question.answer|safe }}
         </div>
       {% endif %}

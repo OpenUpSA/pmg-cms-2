@@ -181,7 +181,7 @@ class CommitteeQuestionSchema(ma.ModelSchema):
     asked_by_member = fields.Nested('MemberSchema')
     minister = fields.Nested('MinisterSchema')
     source_file = fields.Nested('FileSchema')
-    files = fields.Nested('FileSchema', many=True)
+    files = fields.Nested('FileSchema', attribute='api_files', many=True)
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.minister_questions', id="<id>"),
     })

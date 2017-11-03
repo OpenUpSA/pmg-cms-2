@@ -952,6 +952,9 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.year = value.year
         return value
 
+    def api_files(self):
+        return [f.file for f in self.files]
+
     @classmethod
     def import_from_uploaded_answer_file(cls, upload):
         # save the file to disk

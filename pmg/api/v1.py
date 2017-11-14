@@ -432,7 +432,6 @@ def minister_questions(minister_id):
         .filter(CommitteeQuestion.minister_id == minister_id)\
         .order_by(CommitteeQuestion.date.desc())\
         .options(
-            lazyload('committee'),
             lazyload('minister'),
             joinedload('asked_by_member'),
             lazyload('asked_by_member.memberships'))

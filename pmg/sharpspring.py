@@ -29,7 +29,7 @@ class Sharpspring(object):
             # all good
             log.info("Lead created.")
         else:
-            log.erro("Couldn't create SharpSpring contact: %s" % resp)
+            log.error("Couldn't create SharpSpring contact: %s" % resp)
             raise ValueError("Couldn't subscribe to SharpSpring: %s" % resp)
 
         # subscribe to list

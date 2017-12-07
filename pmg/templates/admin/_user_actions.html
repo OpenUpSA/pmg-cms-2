@@ -6,7 +6,7 @@
     <div class="btn-group">
       <a href="https://app.sendgrid.com/email_activity?email={{ model.email | urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-default btn-sm">Check recent emails</a>
     </div>
-    {% if not model.is_confirmed %}
+    {% if not model.confirmed_at %}
     <div class="btn-group">
       <form action="{{ get_url('.confirm_user', model_id=model.id, url=return_url) }}" method="POST">
         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">

@@ -1,6 +1,21 @@
-<button type="button" class="btn btn-danger btn-sm pull-right" data-toggle="modal" data-target="#password-reset-modal">
-  Reset user password
-</button>
+<div class="pull-right">
+  <div class="btn-toolbar" role="toolbar">
+    <div class="btn-group">
+      <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#password-reset-modal">Reset user password</button>
+    </div>
+    <div class="btn-group">
+      <a href="https://app.sendgrid.com/email_activity?email={{ model.email | urlencode }}" target="_blank" rel="noopener noreferrer" class="btn btn-default btn-sm">Check recent emails</a>
+    </div>
+    {% if not model.is_confirmed %}
+    <div class="btn-group">
+      <form action="{{ get_url('.confirm_user', model_id=model.id, url=return_url) }}" method="POST">
+        <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-success btn-sm pull-right">Confirm email address</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
 
 <div class="modal fade" id="password-reset-modal" tabindex="-1" role="dialog" aria-labelledby="password-reset-label">
     <div class="modal-dialog" role="document">

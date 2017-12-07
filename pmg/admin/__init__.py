@@ -14,6 +14,7 @@ from flask.ext.admin.model.template import macro
 from flask.ext.admin.form import rules
 from flask.ext.admin.helpers import get_url
 from flask.ext.security.changeable import change_user_password
+from flask.ext.security.confirmable import confirm_user
 from wtforms import fields
 from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required
@@ -314,6 +315,21 @@ class UserView(MyModelView):
         db.session.commit()
 
         flash(gettext('The password has been changed successfully. A notification has been sent to %s.' % user.email))
+        return redirect(return_url)
+
+    @expose('/confirm', methods=['GET', 'POST'])
+    def confirm_user(self):
+        user = User.query.get(request.args['model_id'])
+        return_url = request.headers['Referer']
+
+        if user is None:
+            flash(gettext('User not found. Please try again.'), 'error')
+            return redirect(return_url)
+
+        confirm_user(user)
+        db.session.commit()
+
+        flash(gettext('The user\'s email address %s has been confirmed. They will now received emails.' % user.email))
         return redirect(return_url)
 
 

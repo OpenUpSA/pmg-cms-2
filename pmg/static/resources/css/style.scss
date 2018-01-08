@@ -1012,6 +1012,14 @@ header.detail-page-header {
   max-height: 150px;
 }
 
+.provincial-box {
+  margin: 10px 0px;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid $green-light;
+  text-align: center;
+}
+
 .attendance-rate {
   .panel-heading {
     .panel-title {
@@ -1028,7 +1036,7 @@ header.detail-page-header {
     }
     .rate-text {
       padding-right: 8px;
-    } 
+    }
   }
     .progress {
       height: 8px;
@@ -1639,7 +1647,7 @@ ul.menu {
     color: #fff;
     text-decoration: underline;
   }
-} 
+}
 
 .blog-page, .single-blog {
   .single-post {

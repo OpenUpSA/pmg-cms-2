@@ -1018,6 +1018,13 @@ header.detail-page-header {
   border-radius: 5px;
   border: 1px solid $green-light;
   text-align: center;
+  img {
+    width: 100%;
+    padding: 5px 35% 20px 35%;
+  }
+  .btn {
+    margin-top: 10px;
+  }
 }
 
 .attendance-rate {

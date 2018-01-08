@@ -411,8 +411,7 @@ article.page {
     border-radius: 5px;
     border-bottom: 1px solid #ddd;
     background-color: white;
-
-    height: 140px;
+    height: 160px;
 
     @media (max-width: $screen-xs-max) {
       height: 115px;
@@ -497,7 +496,7 @@ article.page {
   }
 
   &.moreable {
-    max-height: 160px;
+    max-height: 180px;
     overflow: hidden;
 
     @media (max-width: $screen-xs-max) {
@@ -505,7 +504,7 @@ article.page {
     }
 
     &.feature-cards {
-      max-height: 320px;
+      max-height: 370px;
 
       @media (max-width: $screen-xs-max) {
         max-height: 270px;

@@ -642,6 +642,7 @@ class Committee(ApiResource, db.Model):
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
+    WESTERN_CAPE = 5
 
     # Time after last meeting after which ad-hoc committees are considered inactive
     AD_HOC_INACTIVE_DAYS = 365

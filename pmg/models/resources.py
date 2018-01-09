@@ -45,6 +45,7 @@ class House(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     name_short = db.Column(db.String(20), nullable=False)
+    sphere = db.Column(db.String(20), nullable=False)
 
     def __unicode__(self):
         return unicode(self.name)

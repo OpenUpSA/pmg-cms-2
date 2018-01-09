@@ -638,6 +638,7 @@ class Committee(ApiResource, db.Model):
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
     minister = db.relationship('Minister', backref=backref('committee', uselist=False), lazy=True)
 
+    WESTERN_CAPE = 5
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1

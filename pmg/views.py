@@ -420,8 +420,12 @@ def committees():
         'name': 'Joint Committees',
         'committees': []
     }
+    wc = {
+        'name': 'Western Cape Legislature',
+        'committees': []
+    }
 
-    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
+    adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt), ('wc', wc)))
 
     reg_committees = deepcopy(adhoc_committees)
     committees_type = None
@@ -446,6 +450,8 @@ def committees():
                 committees_type['ncp']['committees'].append(committee)
             elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
                 committees_type['jnt']['committees'].append(committee)
+            elif committee['house']['id'] is Committee.WESTERN_CAPE:
+                committees_type['wc']['committees'].append(committee)
 
     for typ in adhoc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))

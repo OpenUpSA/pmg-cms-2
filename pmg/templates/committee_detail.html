@@ -171,12 +171,14 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
+  {% if committee.house.id == 5 %}
   <div class="provincial-box">
-    <img src="/static/resources/images/wc.svg">
+    <img src="/static/resources/images/provinces/{{ committee.house.short_name }}.svg">
     <p>This is one of the <b>provincial legislature committees</b> we've recently added.</p>
     <p>Does this content interest you?<br>Please let us know!</p>
     <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
   </div>
+  {% endif %}
 
   {% if attendance_summary %}
   <div class="panel panel-default attendance-rate">

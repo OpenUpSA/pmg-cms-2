@@ -376,6 +376,8 @@ class Transforms:
         Committee: {
             "title": "name",
             "description": "about",
+            "house_name": "house.name",
+            "house_name_short": "house.name_short",
         },
         CommitteeMeeting: {
             "title": "title",

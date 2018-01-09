@@ -49,16 +49,6 @@
 
         <div class="content-cards feature-cards moreable">
           <div class="row">
-            <div class="col-xs-12 col-sm-6 col-md-3">
-              <a href="">
-                <div class="card feature-card committee-meeting">
-                  <h4>Water committee</h4>
-                  <h4 class="text-muted">Western Cape Legislature</h4>
-                  <h5>Some sample content for this committee. It's truncated after 100 chara...</h5>
-                  <h6 class="date">31 Oct 2017</h6>
-                </div>
-              </a>
-            </div>
             {% for item in featured_content.content %}
             <div class="col-xs-12 col-sm-6 col-md-3">
               {% if item.type == 'committee-meeting' %}
@@ -123,7 +113,7 @@
                     <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id, via='homepage-card') }}">
                       <div class="card">
                         <h4>{{ committee_meeting.committee.name }}</h4>
-                        <h4 class="text-muted">{{ committee_meeting.committee.house }} National Assembly</h4>
+                        <h4 class="text-muted">{{ committee_meeting.committee.house.name }}</h4>
                         <h5>{{ committee_meeting.title|truncate(100) }}</h5>
                         <h6>{{ committee_meeting.date|pretty_date|nbsp|safe }}</h6>
                       </div>

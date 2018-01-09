@@ -334,7 +334,9 @@ def attendance_overview():
     """
     Display overview of attendance for meetings.
     """
-    this_year = datetime.today().year
+    # this_year = datetime.today().year
+    this_year = 2017
+    # Temporary fix for early in the year when there are no meetings yet, replace with line above after enough meetings
     last_year = this_year - 1
     attendance = CommitteeMeetingAttendance.annual_attendance_trends(last_year, this_year)
     # index by year and cte id

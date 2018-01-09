@@ -752,10 +752,14 @@ mark {
   border-radius: 5px;
   background-color: $grey-light;
   text-align: center;
-
   button {
     white-space: normal;
     height: auto;
+  }
+  &.cte-signup-box {
+    label {
+      line-height: 24px;
+    }
   }
 }
 
@@ -1548,7 +1552,7 @@ ul.menu {
   padding: 3px;
 }
 
-.free-pre-2016 {
+.free-banner {
   background-color: $green-dark;
   padding: 10px;
   font-size: 16px;

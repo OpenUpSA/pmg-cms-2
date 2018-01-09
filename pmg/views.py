@@ -421,13 +421,13 @@ def committees():
         'committees': []
     }
     wc = {
-        'name': 'Provincial Legislatures',
+        'name': 'Western Cape Provincial Legislature',
         'committees': []
     }
 
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
-    prov_committees = OrderedDict((('wc', wc)))
+    prov_committees = OrderedDict((('wc', wc),))
 
     committees_type = None
 

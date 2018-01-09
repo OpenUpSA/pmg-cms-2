@@ -1,7 +1,7 @@
 {% if result._source %}
   {% if result.highlight.title %}
     {% set title = result.highlight.title|search_snippet %}
-  {% else %}  
+  {% else %}
     {% set title = result._source.title %}
   {% endif %}
   {% if  result._source.committee_id %}
@@ -9,6 +9,7 @@
   {% endif %}
   {% if  result._source.committee_name %}
     {% set committee_name = result._source.committee_name %}
+    {% set house_name = result._source %}
   {% endif %}
   {% set date = result._source.date %}
   {% set id = result._id %}
@@ -19,6 +20,7 @@
   {% set id = result.id %}
   {% if result.committee %}
     {% set committee_name = result.committee.name %}
+    {% set house_name = result.committee.house.name_short %}
     {% set committee_id = result.committee.id %}
   {% endif %}
 {% endif %}
@@ -28,6 +30,7 @@
   <h5>
     <span class="type">Committee Meeting -</span>
     {{ committee_name }}
+    <pre>{{ house_name }}</pre>
   </h5>
 
   {% if result.highlight %}

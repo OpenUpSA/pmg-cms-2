@@ -115,6 +115,7 @@
       <ul class="list-unstyled item-list search-list">
         {% for result in search.results %}
         <li>
+          <pre>{{ result }}</pre>
           {% include result._type + '_stub.html' %}
         </li>
         {% endfor %}
@@ -126,4 +127,3 @@
 {% endif %}
 
 {% endblock %}
-

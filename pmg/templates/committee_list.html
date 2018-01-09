@@ -10,7 +10,6 @@
       <li class="active">
         <a href="#nat" data-toggle="tab">National Assembly</a>
       </li>
-
       <li>
         <a href="#ncp" data-toggle="tab">National Council of Provinces</a>
       </li>
@@ -160,9 +159,40 @@
 
     <div class="tab-pane prov cte-items" id="prov">
       <div class="row">
+        {% for key, ctype in prov_committees.iteritems() %}
         <div class="col-xs-12 col-md-4">
-          <h3>Western Cape</h3>
+          <h3>{{ ctype.name }}</h3>
+          <ul>
+            {% for committee in ctype.committees %}
+              <li class="committee item {% if not committee.active %}in{% endif %}active" data-id="{{ committee.id }}" {% if committee.followed %} data-following="true" {% endif %}>
+                  {% if committee.followed %}
+                  <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
+                  {% else %}
+                  <form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
+                  {% endif %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="next" value="{{ request.url }}">
+                    {% if current_user.is_authenticated() %}
+                    {% if committee.followed %}
+                    <input type="checkbox" checked />
+                    {% else %}
+                    <input type="checkbox" />
+                    {% endif %}
+                    <label>
+                    {% endif %}
+                    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if committee.last_active_year %} <span class="text-muted">({{ committee.last_active_year }})</span>{% endif %}
+                    {% if current_user.is_authenticated() %}
+                    </label>
+                    {% endif %}
+                </form>
+                {% if committee.premium %}
+                  <span class="premium exclude"><i class="fa fa-key"></i></span>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
         </div>
+        {% endfor %}
       </div>
     </div>
 

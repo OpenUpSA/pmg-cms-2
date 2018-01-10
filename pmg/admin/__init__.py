@@ -7,6 +7,7 @@ from flask import flash, redirect, url_for, request, make_response
 from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
 from flask.ext.admin.babel import gettext
 from flask.ext.admin.contrib.sqla import ModelView
+from flask.ext.admin.contrib.sqla.ajax import QueryAjaxModelLoader, DEFAULT_PAGE_SIZE
 from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
 from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
 from flask.ext.admin.model.form import InlineFormAdmin
@@ -19,7 +20,7 @@ from wtforms import fields
 from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required
 from sqlalchemy import func
-from sqlalchemy.sql.expression import or_
+from sqlalchemy.sql.expression import or_, and_
 from jinja2 import Markup
 import humanize
 import psycopg2
@@ -986,6 +987,20 @@ class InlineBillVersionForm(InlineFormAdmin):
             model.file.from_upload(file_data)
 
 
+class BillHouseAjaxModelLoader(QueryAjaxModelLoader):
+    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+        query = self.session.query(self.model)
+
+        filters = list((field.ilike(u'%%%s%%' % term) for field in self._cached_fields))
+        query = query.filter(or_(*filters))
+        query = query.filter(and_(House.sphere == "national"))
+
+        if self.order_by:
+            query = query.order_by(self.order_by)
+
+        return query.offset(offset).limit(limit).all()
+
+
 class BillsView(MyModelView):
     column_list = (
         'code',
@@ -996,6 +1011,9 @@ class BillsView(MyModelView):
     column_labels = {
         'type.name': 'Type',
         'status.name': 'Status',
+    }
+    form_ajax_refs = {
+        'place_of_introduction': BillHouseAjaxModelLoader('place_of_introduction', db.session, House, fields=['name', 'name_short']),
     }
     form_columns = (
         'year',

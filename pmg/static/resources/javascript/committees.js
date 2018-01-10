@@ -399,3 +399,17 @@ if ($('body').hasClass('committee_detail')) {
   window.addEventListener('popstate', unpackUrl);
   unpackUrl();
 }
+
+$(document).ready(function() {
+  if (window.location.href.indexOf("nat") > -1) {
+    $(".tab-switch-nat").click();
+  } else if (window.location.href.indexOf("ncp") > -1) {
+    $(".tab-switch-ncp").click();
+  } else if (window.location.href.indexOf("jnt") > -1) {
+    $(".tab-switch-jnt").click();
+  } else if (window.location.href.indexOf("adhoc") > -1) {
+    $(".tab-switch-adhoc").click();
+  } else if (window.location.href.indexOf("prov") > -1) {
+    $(".tab-switch-prov").click();
+  }
+});

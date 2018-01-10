@@ -376,6 +376,8 @@ class Transforms:
         Committee: {
             "title": "name",
             "description": "about",
+            "house_name": "house.name",
+            "house_name_short": "house.name_short",
         },
         CommitteeMeeting: {
             "title": "title",
@@ -384,6 +386,8 @@ class Transforms:
             "date": "date",
             "committee_name": "committee.name",
             "committee_id": "committee.id",
+            "house_name": "committee.house.name",
+            "house_name_short": "committee.house.name_short",
         },
         CommitteeQuestion: {
             "id": ["slug_prefix", "id"],
@@ -397,6 +401,8 @@ class Transforms:
         Member: {
             "title": "name",
             "description": "bio",
+            "house_name": "house.name",
+            "house_name_short": "house.name_short",
         },
         Bill: {
             "title": "title",
@@ -404,6 +410,8 @@ class Transforms:
             "number": "number",
             "code": "code",
             "attachments": "latest_version_for_indexing",
+            "house_name": "place_of_introduction.name",
+            "house_name_short": "place_of_introduction.name_short",
         },
         Hansard: {
             "title": "title",
@@ -433,6 +441,8 @@ class Transforms:
             "date": "start_date",
             "committee_name": "committee.name",
             "committee_id": "committee.id",
+            "house_name": "committee.house.name",
+            "house_name_short": "committee.house.name_short",
         },
         CallForComment: {
             "title": "title",
@@ -440,6 +450,8 @@ class Transforms:
             "date": "start_date",
             "committee_name": "committee.name",
             "committee_id": "committee.id",
+            "house_name": "committee.house.name",
+            "house_name_short": "committee.house.name_short",
         },
         PolicyDocument: {
             "title": "title",

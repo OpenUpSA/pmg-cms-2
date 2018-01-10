@@ -502,6 +502,18 @@ class EventView(ViewWithFiles, MyModelView):
             .filter(self.model.type == self.type)
 
 
+class AttendanceMemberAjaxModelLoader(QueryAjaxModelLoader):
+    def format(self, model):
+        if not model:
+            return None
+
+        if model.house:
+            model_unicode = u"%s (%s)" % (model.name, model.house.name)
+        else:
+            model_unicode = u"%s" % model.name
+        return (getattr(model, self.pk), model_unicode)
+
+
 class InlineCommitteeMeetingAttendance(InlineFormAdmin):
     form_columns = (
         'id',
@@ -511,10 +523,7 @@ class InlineCommitteeMeetingAttendance(InlineFormAdmin):
         'alternate_member',
     )
     form_ajax_refs = {
-        'member': {
-            'fields': ('name',),
-            'page_size': 25
-        }
+        'member': AttendanceMemberAjaxModelLoader('committeemeetingattendance-member', db.session, Member, fields=['name'], limit=25),
     }
     form_choices = {
         'attendance': [

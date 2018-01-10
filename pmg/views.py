@@ -16,7 +16,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File, House
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -453,11 +453,11 @@ def committees():
                 committee['followed'] = True
 
         if committee['house']:
-            if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
+            if committee['house']['id'] is House.NATIONAL_ASSEMBLY:
                 committees_type['nat']['committees'].append(committee)
-            elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
+            elif committee['house']['id'] is House.NAT_COUNCIL_OF_PROV:
                 committees_type['ncp']['committees'].append(committee)
-            elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
+            elif committee['house']['id'] is House.JOINT_COMMITTEE:
                 committees_type['jnt']['committees'].append(committee)
             elif committee['house']['sphere'] == 'provincial':
                 committees_type[house['short_name']]['committees'].append(committee)
@@ -476,6 +476,19 @@ def committees():
     )
 
 
+def sort_houses(houses):
+    sorted_houses = []
+    houses_dict = OrderedDict()
+    for house in houses:
+        houses_dict[house.id] = house
+    sorted_houses.append(houses_dict.pop(House.NATIONAL_ASSEMBLY))
+    sorted_houses.append(houses_dict.pop(House.NAT_COUNCIL_OF_PROV))
+    sorted_houses.append(houses_dict.pop(House.JOINT_COMMITTEE))
+    for house in houses_dict.values():
+        sorted_houses.append(house)
+    return sorted_houses
+
+
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
 def committee_meetings(page=0):
@@ -483,6 +496,7 @@ def committee_meetings(page=0):
     Page through all available committee meetings.
     """
     committees = load_from_api('committee', return_everything=True)['results']
+    houses = sort_houses(House.query.all())
     filters = {'committee': None}
     params = {}
 
@@ -506,6 +520,7 @@ def committee_meetings(page=0):
         content_type="committee-meeting",
         icon="comment",
         committees=committees,
+        houses=houses,
         filters=filters)
 
 
@@ -1009,6 +1024,7 @@ def search(page=0):
         search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], None)
 
     committees = load_from_api('committee', return_everything=True)['results']
+    houses = sort_houses(House.query.all())
 
     def search_url(**kwargs):
         args = dict(filters)
@@ -1055,6 +1071,7 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
+        houses=houses,
         search_types=Search.friendly_data_types.items(),
         saved_search=saved_search,
         suggest_phrase=suggest_phrase,

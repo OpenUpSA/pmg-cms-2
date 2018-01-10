@@ -158,9 +158,9 @@
     </div>
 
     <div class="tab-pane prov cte-items" id="prov">
-      <div class="row">
+      <div class="row prov-row">
         {% for key, ctype in prov_committees.iteritems() %}
-        <div class="col-xs-12 col-md-4">
+        <div class="col-xs-12 col-md-6 single-prov">
           <h3>{{ ctype.name }}</h3>
           <ul>
             {% for committee in ctype.committees %}

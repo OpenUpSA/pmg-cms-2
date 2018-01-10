@@ -461,6 +461,9 @@ def committees():
     for typ in adhoc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
+    for typ in prov_committees.itervalues():
+        typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
+
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,

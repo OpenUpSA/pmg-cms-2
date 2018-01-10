@@ -885,6 +885,13 @@ body.email_alerts {
       margin-top: 10px;
       padding-top: 5px;
     }
+    .prov-row {
+      display: flex;
+      flex-wrap: wrap;
+      .single-prov {
+        margin-bottom: 40px;
+      }
+    }
   }
 }
 

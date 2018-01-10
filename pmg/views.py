@@ -356,6 +356,8 @@ def attendance_overview():
         curr = years[this_year].get(cte.id)
         prev = years[last_year].get(cte.id)
 
+        if cte.house.sphere != 'national':
+            continue
         if not curr or cte.ad_hoc or cte.house.name_short == 'Joint':
             continue
 

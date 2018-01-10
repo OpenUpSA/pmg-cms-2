@@ -68,7 +68,7 @@
     </div>
   </div>
 
-  <h2>Ad-Hoc committees</h2>
+  <h2>Ad-Hoc Committees</h2>
   <div class="row">
     <div class="col-md-4">
       <h3>National Assembly</h3>
@@ -104,5 +104,21 @@
       </ul>
     </div>
   </div>
+
+  <h2>Provincial Legislatures Committees</h2>
+  <div class="row">
+    <div class="col-md-4">
+      <h3>Western Cape</h3>
+      <ul class="list-unstyled">
+        {{ render_select_all() }}
+        {% for committee in committees %}
+          {% if committee.house.id == 5 %}
+            {{ render_committee_checkbox(committee) }}
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
 
 </form>

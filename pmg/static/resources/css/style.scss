@@ -611,28 +611,39 @@ article.page {
 }
 
 // member listing page
-ul.member-list {
-  > li {
-    display: table;
-    width: 100%;
-    border-bottom: 1px solid #ccc;
-    padding: 5px;
-
-    .pic {
-      float: left;
-      width: 50px;
+.mp-list {
+  &.collapsed {
+    max-height: 250px;
+    overflow: hidden;
+  }
+  &.searching {
+    overflow: inherit !important;
+  }
+  .col {
+    min-height: 0;
+  }
+  .single-member {
+    display: block;
+    margin-bottom: 20px;
+    border: 1px solid $grey-light;
+    border-radius: 2px;
+    color: $black;
+    &:hover {
+      border-color: $grey-medium;
+    }
+    .photo {
       height: 75px;
-      margin-right: 5px;
-      background-color: #ccc;
+      width: 50px;
+      border-radius: 2px 0 0 2px;
+      img {
+        width: 100%;
+      }
     }
-
     .name {
-      margin-top: 0px;
+      margin-top: 15px;
     }
-
-    .party,
-    .province {
-      display: block;
+    .party, .province {
+      color: $grey-dark;
     }
   }
 }
@@ -1064,6 +1075,21 @@ header.detail-page-header {
   .yearly-rate:last-child {
     .progress {
       margin: 5px 0 0 0;
+    }
+  }
+}
+
+.members-of-parliament {
+  margin-bottom: 20px;
+  .pa-button {
+    margin-top: 20px;
+    border: 1px solid $grey-medium;
+    background-color: #fbfbfb;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    img {
+      margin-bottom: 10px;
     }
   }
 }

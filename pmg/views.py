@@ -780,9 +780,8 @@ def members():
     for member in members:
         if member.get('house') and member['current']:
             members_by_house.setdefault(member['house']['name'], []).append(member)
-    colsize = 12 / len(members_by_house)
 
-    return render_template('member_list.html', members_by_house=members_by_house, colsize=colsize)
+    return render_template('member_list.html', members_by_house=members_by_house)
 
 
 @app.route('/member/<int:member_id>')

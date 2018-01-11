@@ -3,7 +3,7 @@
 {% block title %}Members of Parliament | PMG{% endblock %}
 
 {% block page %}
-<div class="row">
+<div class="row members-of-parliament">
   <div class="col-sm-6">
     <h1><i class="fa fa-icon fa-user"></i> Members of Parliament</h1>
 
@@ -19,32 +19,30 @@
     </form>
   </div>
 
-  <div class="col-sm-3 col-sm-offset-3">
+  <div class="col-sm-6 col-md-4 col-md-offset-2">
     <div class="pa-button">
-      <a href="http://www.pa.org.za">
-        <img src="/static/resources/images/pa-logo.png" alt="People's Assembly">
-        <div>Explore parliamentary members, their declared interests and more at PA.org.za.</div>
+      <a href="https://www.pa.org.za">
+        <img class="center-block" src="/static/resources/images/pa-logo.png" alt="People's Assembly">
       </a>
+      <p>Explore parliamentary members, their declared interests and more at <a href="https://www.pa.org.za">PA.org.za</a></p>
     </div>
   </div>
 </div>
 
-<div class="row">
 {% for house, members in members_by_house|dictsort %}
-
-  <div class="col-md-{{ colsize }}">
-    <h2>{{ house }}</h2>
-
-    <ul class="list-unstyled member-list">
-      {% for member in members %}
-        <li>
-          <div class="pic">
-            {% if member.profile_pic_url %}
-              <a href="{{ member|member_url }}"><img class="member-profile-pic" src="{{ member.profile_pic_url }}" alt="{{ member.name }}" ></a>
-            {% endif %}
+<h2>{{ house }}</h2>
+<div class="row mp-list collapsed">
+  {% for member in members %}
+  <div class="col col-sm-6 col-md-4">
+    <a class="single-member" href="{{ member|member_url }}">
+      <div class="row">
+        <div class="col-xs-2">
+          <div class="photo">
+            <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
           </div>
-
-          <h3 class="name"><a href="{{ member|member_url }}">{{ member.name }}</a></h3>
+        </div>
+        <div class="col-xs-10">
+          <h3 class="name">{{ member.name }}</h3>
 
           {% if member.party %}
           <span class="party">{{ member.party.name }}</span>
@@ -53,12 +51,13 @@
           {% if member.province %}
           <span class="province">{{ member.province.name }}</span>
           {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+        </div>
+      </div>
+    </a>
   </div>
-
-{% endfor %}
+  {% endfor %}
 </div>
+<a class="btn btn-sm btn-success show-all" href="#"><i class="fa fa-fw fa-caret-down" aria-hidden="true"></i> Show all</a>
+{% endfor %}
 
 {% endblock page %}

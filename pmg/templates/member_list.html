@@ -30,8 +30,10 @@
 </div>
 
 {% for house, members in members_by_house|dictsort %}
-<h2>{{ house }}</h2>
-<div class="row mp-list collapsed">
+<div class="row mp-list collapsed ">
+  <div class="col-xs-12">
+    <h2>{{ house }}</h2>
+  </div>
   {% for member in members %}
   <div class="col col-sm-6 col-md-4">
     <a class="single-member" href="{{ member|member_url }}">

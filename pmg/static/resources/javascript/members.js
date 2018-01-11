@@ -38,13 +38,10 @@ $(function() {
 });
 
 $("#member-search-form input.form-control").bind("change keyup mouseout", function () {
-  console.log("something changing");
   if ( $("#member-search-form input.form-control").val().length > 0 ) {
-    console.log("something here");
     $(".show-all").hide();
     $(".mp-list").addClass("searching");
   } else {
-    console.log("nothing here");
     $(".show-all").show();
     $(".mp-list").removeClass("searching");
   }
@@ -57,7 +54,7 @@ $(".show-all").click(function(e) {
 });
 
 $(".mp-list").each(function(){
-  if ( $(this).height() < 190 ) {
+  if ( $(this).height() < 250 ) {
     $(this).next(".show-all").remove();
   }
 });

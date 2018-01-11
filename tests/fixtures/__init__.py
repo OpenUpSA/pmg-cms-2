@@ -9,18 +9,22 @@ class HouseData(DataSet):
     class joint:
         name = 'Joint (NA + NCOP)'
         name_short = 'Joint'
+        sphere = 'national'
 
     class ncop:
         name = 'National Council of Provinces'
         name_short = 'NCOP'
+        sphere = 'national'
 
     class na:
         name = 'National Assembly'
         name_short = 'NA'
+        sphere = 'national'
 
     class president:
         name = 'The President\'s Office',
         name_short = 'President'
+        sphere = 'national'
 
 
 class CommitteeData(DataSet):

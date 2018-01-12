@@ -9,7 +9,7 @@
 <ol class="breadcrumb">
   <li><a href="{{ url_for('question_replies') }}">Questions and Replies</a></li>
   {% if committee and committee.id != 0 %}
-  <li><a href="/committees#{% committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
+  <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
   <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
   {% endif %}
   <li><a href="{{ url_for('question_replies', **{'filter[minister]': minister.id}) }}">{{ minister.name }}</a></li>

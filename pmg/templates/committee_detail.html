@@ -2,7 +2,7 @@
 
 {% block committee_page %}
   {% if committee.about %}
-    <h3 class="collapse-link cte-about-link"><span class="fa fa-caret-right"></span> <a href="#">About this committee</a></h3>
+    <h3 class="collapse-link cte-about-link"><span class="fa fa-fw fa-caret-right"></span> <a href="#">About this committee</a></h3>
     <div class="collapse">
       {{ committee.about|safe }}
     </div>
@@ -171,6 +171,15 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
+  {% if committee.house.sphere == 'provincial' %}
+  <div class="provincial-box">
+    <img src="/static/resources/images/provinces/{{ committee.house.short_name }}.svg">
+    <p>This is one of the <b>provincial legislature committees</b> we've recently added.</p>
+    <p>Does this content interest you?<br>Please let us know!</p>
+    <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+  </div>
+  {% endif %}
+
   {% if attendance_summary %}
   <div class="panel panel-default attendance-rate">
     <div class="panel-heading">

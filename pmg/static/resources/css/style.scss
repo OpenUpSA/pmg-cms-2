@@ -411,8 +411,7 @@ article.page {
     border-radius: 5px;
     border-bottom: 1px solid #ddd;
     background-color: white;
-
-    height: 140px;
+    height: 160px;
 
     @media (max-width: $screen-xs-max) {
       height: 115px;
@@ -497,7 +496,7 @@ article.page {
   }
 
   &.moreable {
-    max-height: 160px;
+    max-height: 180px;
     overflow: hidden;
 
     @media (max-width: $screen-xs-max) {
@@ -505,7 +504,7 @@ article.page {
     }
 
     &.feature-cards {
-      max-height: 320px;
+      max-height: 370px;
 
       @media (max-width: $screen-xs-max) {
         max-height: 270px;
@@ -612,28 +611,39 @@ article.page {
 }
 
 // member listing page
-ul.member-list {
-  > li {
-    display: table;
-    width: 100%;
-    border-bottom: 1px solid #ccc;
-    padding: 5px;
-
-    .pic {
-      float: left;
-      width: 50px;
+.mp-list {
+  &.collapsed {
+    max-height: 250px;
+    overflow: hidden;
+  }
+  &.searching {
+    overflow: inherit !important;
+  }
+  .col {
+    min-height: 0;
+  }
+  .single-member {
+    display: block;
+    margin-bottom: 20px;
+    border: 1px solid $grey-light;
+    border-radius: 2px;
+    color: $black;
+    &:hover {
+      border-color: $grey-medium;
+    }
+    .photo {
       height: 75px;
-      margin-right: 5px;
-      background-color: #ccc;
+      width: 50px;
+      border-radius: 2px 0 0 2px;
+      img {
+        width: 100%;
+      }
     }
-
     .name {
-      margin-top: 0px;
+      margin-top: 15px;
     }
-
-    .party,
-    .province {
-      display: block;
+    .party, .province {
+      color: $grey-dark;
     }
   }
 }
@@ -753,10 +763,14 @@ mark {
   border-radius: 5px;
   background-color: $grey-light;
   text-align: center;
-
   button {
     white-space: normal;
     height: auto;
+  }
+  &.cte-signup-box {
+    label {
+      line-height: 24px;
+    }
   }
 }
 
@@ -869,7 +883,7 @@ body.email_alerts {
     margin-left:0;
   }
 
-  .adhoc {
+  .adhoc, .prov {
     h3 {
       margin-top:0;
       margin-left:15px;
@@ -881,6 +895,13 @@ body.email_alerts {
       border-top: 1px solid #ccc;
       margin-top: 10px;
       padding-top: 5px;
+    }
+    .prov-row {
+      display: flex;
+      flex-wrap: wrap;
+      .single-prov {
+        margin-bottom: 40px;
+      }
     }
   }
 }
@@ -1012,6 +1033,21 @@ header.detail-page-header {
   max-height: 150px;
 }
 
+.provincial-box {
+  margin: 10px 0px;
+  padding: 20px;
+  border-radius: 5px;
+  border: 1px solid $green-light;
+  text-align: center;
+  img {
+    width: 100%;
+    padding: 5px 35% 20px 35%;
+  }
+  .btn {
+    margin-top: 10px;
+  }
+}
+
 .attendance-rate {
   .panel-heading {
     .panel-title {
@@ -1028,7 +1064,7 @@ header.detail-page-header {
     }
     .rate-text {
       padding-right: 8px;
-    } 
+    }
   }
     .progress {
       height: 8px;
@@ -1039,6 +1075,21 @@ header.detail-page-header {
   .yearly-rate:last-child {
     .progress {
       margin: 5px 0 0 0;
+    }
+  }
+}
+
+.members-of-parliament {
+  margin-bottom: 20px;
+  .pa-button {
+    margin-top: 20px;
+    border: 1px solid $grey-medium;
+    background-color: #fbfbfb;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    img {
+      margin-bottom: 10px;
     }
   }
 }
@@ -1266,7 +1317,7 @@ header.detail-page-header {
   }
 
   .cte-list {
-    .adhoc {
+    .adhoc, .prov {
       h3 {
         margin-left:0;
       }
@@ -1534,7 +1585,7 @@ ul.menu {
   padding: 3px;
 }
 
-.free-pre-2016 {
+.free-banner {
   background-color: $green-dark;
   padding: 10px;
   font-size: 16px;
@@ -1639,7 +1690,7 @@ ul.menu {
     color: #fff;
     text-decoration: underline;
   }
-} 
+}
 
 .blog-page, .single-blog {
   .single-post {

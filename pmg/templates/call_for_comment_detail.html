@@ -6,6 +6,7 @@
 <ol class="breadcrumb">
   {% if call_for_comment.committee %}
   <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="/committees#{% if call_for_comment.committee.house.sphere == 'provincial' %}prov{% elif call_for_comment.committee.ad_hoc %}adhoc{% else %}{{ call_for_comment.committee.house.short_name }}{% endif %}">{{ call_for_comment.committee.house.name }}</a></li>
   <li><a href="{{ url_for('committee_detail', committee_id=call_for_comment.committee.id) }}">{{ call_for_comment.committee.name }}</a></li>
   <li>Calls for Comments</li>
   {% else %}
@@ -22,7 +23,7 @@
         Call for comments opened {{ call_for_comment.start_date|pretty_date("long") }}
       {% endif %}
       {% include '_social_sharing.html' %}
-      
+
       {% if call_for_comment.end_date %}
         {% if call_for_comment.closed %}
           <h3 class="deadline">Submissions are now closed <small>(since {{ call_for_comment.end_date|pretty_date("long") }})</small></h3>

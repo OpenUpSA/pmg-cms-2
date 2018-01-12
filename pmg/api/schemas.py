@@ -43,7 +43,7 @@ class CommitteeSchema(ma.ModelSchema):
 class HouseSchema(ma.ModelSchema):
     class Meta:
         model = House
-        fields = ('id', 'name', 'short_name')
+        fields = ('id', 'name', 'short_name', 'sphere',)
     short_name = fields.String(attribute='name_short')
 
 

@@ -6,7 +6,9 @@
 <ol class="breadcrumb">
   {% block committee_breadcrumb %}
   <li><a href="{{ url_for('committees') }}">Committees</a></li>
+  <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
   <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+
   {% endblock %}
 </ol>
 {% endblock %}

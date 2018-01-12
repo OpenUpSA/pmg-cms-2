@@ -16,7 +16,7 @@ from pmg import app, mail
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File, House
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -155,7 +155,7 @@ def inject_via():
 
 @app.route('/')
 def index():
-    committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name'], params={'per_page': 11})['results']
+    committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name', 'committee.house'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
     questions = load_from_api('v2/minister-questions/', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
@@ -334,7 +334,11 @@ def attendance_overview():
     """
     Display overview of attendance for meetings.
     """
+    month = datetime.today().month
     this_year = datetime.today().year
+    # in jan and feb only, show previous year's attendance data. months are 1-12
+    if month < 3:
+        this_year = this_year - 1
     last_year = this_year - 1
     attendance = CommitteeMeetingAttendance.annual_attendance_trends(last_year, this_year)
     # index by year and cte id
@@ -354,6 +358,8 @@ def attendance_overview():
         curr = years[this_year].get(cte.id)
         prev = years[last_year].get(cte.id)
 
+        if cte.house.sphere != 'national':
+            continue
         if not curr or cte.ad_hoc or cte.house.name_short == 'Joint':
             continue
 
@@ -420,12 +426,21 @@ def committees():
     }
 
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
-
     reg_committees = deepcopy(adhoc_committees)
+    prov_committees = OrderedDict(())
+
     committees_type = None
 
     for committee in committees:
-        if committee['ad_hoc'] is True:
+        if committee['house']['sphere'] == 'provincial':
+            house = committee['house']
+            if house['short_name'] not in prov_committees:
+                prov_committees[house['short_name']] = {
+                    'name': house['name'],
+                    'committees': [],
+                }
+            committees_type = prov_committees
+        elif committee['ad_hoc'] is True:
             committees_type = adhoc_committees
         else:
             committees_type = reg_committees
@@ -438,21 +453,40 @@ def committees():
                 committee['followed'] = True
 
         if committee['house']:
-            if committee['house']['id'] is Committee.NATIONAL_ASSEMBLY:
+            if committee['house']['id'] is House.NATIONAL_ASSEMBLY:
                 committees_type['nat']['committees'].append(committee)
-            elif committee['house']['id'] is Committee.NAT_COUNCIL_OF_PROV:
+            elif committee['house']['id'] is House.NAT_COUNCIL_OF_PROV:
                 committees_type['ncp']['committees'].append(committee)
-            elif committee['house']['id'] is Committee.JOINT_COMMITTEE:
+            elif committee['house']['id'] is House.JOINT_COMMITTEE:
                 committees_type['jnt']['committees'].append(committee)
+            elif committee['house']['sphere'] == 'provincial':
+                committees_type[house['short_name']]['committees'].append(committee)
 
     for typ in adhoc_committees.itervalues():
+        typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
+
+    for typ in prov_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
-        adhoc_committees=adhoc_committees
+        adhoc_committees=adhoc_committees,
+        prov_committees=prov_committees
     )
+
+
+def sort_houses(houses):
+    sorted_houses = []
+    houses_dict = OrderedDict()
+    for house in houses:
+        houses_dict[house.id] = house
+    sorted_houses.append(houses_dict.pop(House.NATIONAL_ASSEMBLY))
+    sorted_houses.append(houses_dict.pop(House.NAT_COUNCIL_OF_PROV))
+    sorted_houses.append(houses_dict.pop(House.JOINT_COMMITTEE))
+    for house in houses_dict.values():
+        sorted_houses.append(house)
+    return sorted_houses
 
 
 @app.route('/committee-meetings/')
@@ -462,6 +496,7 @@ def committee_meetings(page=0):
     Page through all available committee meetings.
     """
     committees = load_from_api('committee', return_everything=True)['results']
+    houses = sort_houses(House.query.all())
     filters = {'committee': None}
     params = {}
 
@@ -485,6 +520,7 @@ def committee_meetings(page=0):
         content_type="committee-meeting",
         icon="comment",
         committees=committees,
+        houses=houses,
         filters=filters)
 
 
@@ -744,9 +780,8 @@ def members():
     for member in members:
         if member.get('house') and member['current']:
             members_by_house.setdefault(member['house']['name'], []).append(member)
-    colsize = 12 / len(members_by_house)
 
-    return render_template('member_list.html', members_by_house=members_by_house, colsize=colsize)
+    return render_template('member_list.html', members_by_house=members_by_house)
 
 
 @app.route('/member/<int:member_id>')
@@ -988,6 +1023,7 @@ def search(page=0):
         search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], None)
 
     committees = load_from_api('committee', return_everything=True)['results']
+    houses = sort_houses(House.query.all())
 
     def search_url(**kwargs):
         args = dict(filters)
@@ -1034,6 +1070,7 @@ def search(page=0):
         bincount=bincount,
         yearcount=yearcount,
         committees=committees,
+        houses=houses,
         search_types=Search.friendly_data_types.items(),
         saved_search=saved_search,
         suggest_phrase=suggest_phrase,

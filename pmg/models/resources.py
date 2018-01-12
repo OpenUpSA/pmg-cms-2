@@ -45,6 +45,11 @@ class House(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     name_short = db.Column(db.String(20), nullable=False)
+    sphere = db.Column(db.String(20), nullable=False)
+
+    NATIONAL_ASSEMBLY = 3
+    NAT_COUNCIL_OF_PROV = 2
+    JOINT_COMMITTEE = 1
 
     def __unicode__(self):
         return unicode(self.name)
@@ -637,10 +642,6 @@ class Committee(ApiResource, db.Model):
     memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
     minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
     minister = db.relationship('Minister', backref=backref('committee', uselist=False), lazy=True)
-
-    NATIONAL_ASSEMBLY = 3
-    NAT_COUNCIL_OF_PROV = 2
-    JOINT_COMMITTEE = 1
 
     # Time after last meeting after which ad-hoc committees are considered inactive
     AD_HOC_INACTIVE_DAYS = 365

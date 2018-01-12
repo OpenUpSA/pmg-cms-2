@@ -55,6 +55,7 @@
               <a href="{{ url_for('committee_meeting', event_id=item.id, via='homepage-feature-card') }}">
                 <div class="card feature-card committee-meeting">
                   <h4>{{ item.committee.name }}</h4>
+                  <h4 class="text-muted">{{ item.committee.house }}</h4>
                   <h5>{{ item.title|truncate(100) }}</h5>
                   <h6 class="date">{{ item.date|pretty_date|nbsp|safe }}</h6>
                 </div>
@@ -112,6 +113,7 @@
                     <a href="{{ url_for('committee_meeting', event_id=committee_meeting.id, via='homepage-card') }}">
                       <div class="card">
                         <h4>{{ committee_meeting.committee.name }}</h4>
+                        <h4 class="text-muted">{{ committee_meeting.committee.house.name }}</h4>
                         <h5>{{ committee_meeting.title|truncate(100) }}</h5>
                         <h6>{{ committee_meeting.date|pretty_date|nbsp|safe }}</h6>
                       </div>

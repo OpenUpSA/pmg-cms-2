@@ -1,6 +1,6 @@
 import logging
 from ga import ga_event
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 from flask import render_template, request, redirect, abort, flash, jsonify
 from flask.ext.security import current_user, login_required
@@ -41,6 +41,15 @@ def email_alerts():
     else:
         subscriptions = set()
 
+    provincial_committees = OrderedDict()
+    for committee in committees:
+        house = committee['house']
+        house_name = house['name']
+        if house['sphere'] == 'provincial':
+            if house_name not in provincial_committees:
+                provincial_committees[house_name] = []
+            provincial_committees[house_name].append(committee)
+
     saved_searches = defaultdict(list)
     if current_user.is_authenticated():
         for ss in current_user.saved_searches:
@@ -52,7 +61,9 @@ def email_alerts():
         after_signup=bool(next_url),
         subscriptions=subscriptions,
         next_url=next_url,
-        saved_searches=saved_searches)
+        saved_searches=saved_searches,
+        provincial_committees=provincial_committees
+    )
 
 
 @app.route('/user/committee/alerts/add/<int:committee_id>', methods=['POST'])

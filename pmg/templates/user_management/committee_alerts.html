@@ -105,20 +105,23 @@
     </div>
   </div>
 
+
+  {% if provincial_committees %}
   <h2>Provincial Legislatures Committees</h2>
   <div class="row">
     <div class="col-md-4">
-      <h3>Western Cape</h3>
+      {% for legislature in provincial_committees.keys() %}
+      <h3>{{ legislature }}</h3>
       <ul class="list-unstyled">
         {{ render_select_all() }}
-        {% for committee in committees %}
-          {% if committee.house.id == 5 %}
-            {{ render_committee_checkbox(committee) }}
-          {% endif %}
+        {% for committee in provincial_committees[legislature] %}
+        {{ render_committee_checkbox(committee) }}
         {% endfor %}
       </ul>
+      {% endfor %}
     </div>
   </div>
+  {% endif %}
 
 
 </form>

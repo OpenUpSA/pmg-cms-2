@@ -171,7 +171,7 @@
 {% endblock %}
 
 {% block committee_page_sidebar %}
-  {% if committee.house.id == 5 %}
+  {% if committee.house.sphere == 'provincial' %}
   <div class="provincial-box">
     <img src="/static/resources/images/provinces/{{ committee.house.short_name }}.svg">
     <p>This is one of the <b>provincial legislature committees</b> we've recently added.</p>

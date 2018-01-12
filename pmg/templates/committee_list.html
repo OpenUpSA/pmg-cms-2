@@ -19,9 +19,11 @@
       <li>
         <a class="tab-switch-adhoc" href="#adhoc" data-toggle="tab">Ad-hoc</a>
       </li>
+      {% if prov_committees %}
       <li>
         <a class="tab-switch-prov" href="#prov" data-toggle="tab">Provincial Legislatures</a>
       </li>
+      {% endif %}
       {% if current_user.is_authenticated() %}
       <li class="following">
         <a href="#user-following" data-toggle="tab"><span class="hidden-sm">Committees you follow</span><span class="visible-sm">Following</span></a>
@@ -36,7 +38,9 @@
       <option data-toggle="tab" data-target="#ncp" value="#ncp">National Council of Provinces committees</option>
       <option data-toggle="tab" data-target="#jnt" value="#jnt">Joint committees</option>
       <option data-toggle="tab" data-target="#adhoc" value="#adhoc">Ad-hoc committees</option>
+      {% if prov_committees %}
       <option data-toggle="tab" data-target="#prov" value="#prov">Provincial Legislature committees</option>
+      {% endif %}
       {% if current_user.is_authenticated() %}
       <option data-toggle="tab" data-target="#user-following" value="#user-following">Committees you follow</option>
       {% endif %}

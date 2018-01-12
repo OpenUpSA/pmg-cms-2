@@ -1,7 +1,7 @@
 {% if result._source %}
   {% if result.highlight.title %}
     {% set title = result.highlight.title|search_snippet %}
-  {% else %}  
+  {% else %}
     {% set title = result._source.title %}
   {% endif %}
   {% if  result._source.committee_id %}
@@ -12,7 +12,7 @@
   {% endif %}
   {% set date = result._source.date %}
   {% set id = result._id %}
-  {% set house = result._source.house %}
+  {% set house = result._source.house_name %}
 {% else %}
   {% set title = result.title %}
   {% set date = result.date %}
@@ -26,8 +26,8 @@
   <div class="date">{{ date|pretty_date }}</div>
   <h4><a href="{{ url_for('committee_meeting', event_id=id) }}">{{ title|safe }}</a></h4>
   <h5>
-    <span class="type">Committee Meeting -</span>
-    {{ committee_name }}
+    <span class="type">Committee Meeting | </span>
+    {{ committee_name }} | {{ house }}
   </h5>
 
   {% if result.highlight %}

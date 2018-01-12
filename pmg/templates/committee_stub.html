@@ -1,22 +1,21 @@
 {% if result._source %}
   {% if result.highlight.title %}
     {% set title = result.highlight.title|search_snippet %}
-  {% else %}  
+  {% else %}
     {% set title = result._source.title %}
   {% endif %}
   {% set date = result._source.date %}
   {% set id = result._id %}
-  {% set house = result._source.house %}
+  {% set house = result._source.house_name %}
 {% else %}
 {% set title = result.name %}
 {% set date = result.start_date %}
 {% set id = result.id %}
-{% set house = result.house.name %}
 {% endif %}
 <div class="committee-stub">
   <h4><a href="/committee/{{ id }}">{{ title|safe }}</a></h4>
   <h5>
-    <span class="type">Committee</span>
+    <span class="type">Committee</span> |
     <span class="committee-house">{{ house }}</span>
-  </h4>
+  </h5>
 </div>

@@ -1,7 +1,7 @@
 {% if result._source %}
   {% if result.highlight.title %}
     {% set title = result.highlight.title|search_snippet %}
-  {% else %}  
+  {% else %}
     {% set title = result._source.title %}
   {% endif %}
   {% set code = result._source.code %}
@@ -16,14 +16,13 @@
   <div class="row">
     <div class="col-xs-6 col-md-8">
       <h4><a href="{{ url_for('bill', bill_id=id) }}">{{ title|safe }}</a></h4>
-      <span class="type">Bill</span>
+      <h5>
+        <span class="type">Bill</span>
+        {% if code %}
+        <span class="code">| {{ code }}</span>
+        {% endif %}
+      </h5>
     </div>
-    <div class="col-xs-3 col-md-2">
-      {% if code %}
-      {{ code }}
-      {% endif %}
-    </div>
-
     <div class="col-xs-3 col-md-2">
       {% if result.status %}
         {% if status_dict[result.status.name] %}

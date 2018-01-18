@@ -54,7 +54,7 @@ $(".show-all").click(function(e) {
 });
 
 $(".mp-list").each(function(){
-  if ( $(this).height() < 250 ) {
+  if ( $(this).height() < 249 ) {
     $(this).next(".show-all").remove();
   }
 });

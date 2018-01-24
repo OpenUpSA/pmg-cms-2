@@ -26,7 +26,8 @@ RESULTS_PER_PAGE = 50
 RESULTS_PER_PAGE_V2 = 500
 
 # Premium content before this date is free
-PREMIUM_FREE_BEFORE = datetime.datetime(2017, 1, 1, tzinfo=pytz.utc)
+# Calculated as 1 of last year
+PREMIUM_FREE_BEFORE = datetime.datetime(datetime.datetime.today().year - 1, 1, 1, tzinfo=pytz.utc)
 
 ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
 SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models

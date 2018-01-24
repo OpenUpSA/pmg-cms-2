@@ -4,6 +4,8 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 
 from pmg.models import db, House, Committee, CommitteeMeeting  # noqa
 
+THIS_YEAR = datetime.datetime.today().year
+
 
 class HouseData(DataSet):
     class joint:
@@ -45,12 +47,12 @@ class CommitteeMeetingData(DataSet):
         committee = CommitteeData.arts
 
     class premium_recent:
-        date = datetime.datetime(2016, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
+        date = datetime.datetime(THIS_YEAR, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Premium meeting recent'
         committee = CommitteeData.communications
 
     class premium_old:
-        date = datetime.datetime(2015, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
+        date = datetime.datetime(THIS_YEAR - 2, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Premium meeting old'
         committee = CommitteeData.communications
 

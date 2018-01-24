@@ -59,6 +59,8 @@ class Report(object):
     def process(self, results):
         if self.transform:
             return self.transform(self, results)
+        else:
+            return results
 
     def run(self):
         return self.process(db.engine.execute(self.sql))

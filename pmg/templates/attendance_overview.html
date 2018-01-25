@@ -69,7 +69,7 @@
       <td class="rank">#{{ loop.index }}</td>
       <td class="cte-name"><a href="{{ url_for('committee_detail', committee_id=item.committee_id) }}">{{ item.committee }}</a></td>
       <td class="number-meetings hidden-xs">{{ item.n_meetings }}</td>
-      <td class="attendance">
+      <td class="attendance" data-value="{{ item.avg_attendance }}">
         <div class="progress">
           <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{ item.avg_attendance }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ item.avg_attendance }}%;">
             {{ item.avg_attendance|round|int }}%

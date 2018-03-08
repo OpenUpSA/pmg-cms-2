@@ -775,10 +775,29 @@ def members():
     # partition by house
     members_by_house = {}
     for member in members:
-        if member.get('house') and member['current']:
+        if member.get('house') and member['current'] and member['house']['sphere'] == 'national':
             members_by_house.setdefault(member['house']['name'], []).append(member)
 
-    return render_template('member_list.html', members_by_house=members_by_house)
+    return render_template(
+        'member_list.html',
+        members_by_house=members_by_house)
+
+
+@app.route('/members/western-cape/')
+def western_cape_members():
+    """ All MPs.
+    """
+    western_cape_members = load_from_api('v2/members', return_everything=True)['results']
+
+    # partition by house
+    members_by_house = {}
+    for member in western_cape_members:
+        if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
+            members_by_house.setdefault(member['house']['name'], []).append(member)
+
+    return render_template(
+        'member_list.html',
+        members_by_house=members_by_house)
 
 
 @app.route('/member/<int:member_id>')

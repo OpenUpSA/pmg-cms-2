@@ -36,25 +36,3 @@ $(function() {
     memberSearch($q.val());
   });
 });
-
-$("#member-search-form input.form-control").bind("change keyup mouseout", function () {
-  if ( $("#member-search-form input.form-control").val().length > 0 ) {
-    $(".show-all").hide();
-    $(".mp-list").addClass("searching");
-  } else {
-    $(".show-all").show();
-    $(".mp-list").removeClass("searching");
-  }
-})
-
-$(".show-all").click(function(e) {
-  e.preventDefault();
-  $(this).prev(".mp-list").removeClass("collapsed");
-  $(this).remove();
-});
-
-$(".mp-list").each(function(){
-  if ( $(this).height() < 249 ) {
-    $(this).next(".show-all").remove();
-  }
-});

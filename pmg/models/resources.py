@@ -578,14 +578,14 @@ class Member(ApiResource, db.Model):
     def pa_url(self):
         if self.pa_link:
             url = self.pa_link
-            if not url.startswith('http://'):
-                url = 'http://www.pa.org.za' + url
+            if not url.startswith('http'):
+                url = 'https://www.pa.org.za' + url
             return url
 
     @validates('pa_link')
     def validate_pa_link(self, key, value):
-        if value and not value.startswith('http://'):
-            value = 'http://www.pa.org.za' + value
+        if value and not value.startswith('http'):
+            value = 'https://www.pa.org.za' + value
         return value
 
     @property

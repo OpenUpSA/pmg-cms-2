@@ -1,7 +1,7 @@
 {% if result._source %}
   {% if result.highlight.title %}
     {% set title = result.highlight.title|search_snippet %}
-  {% else %}  
+  {% else %}
     {% set title = result._source.title %}
   {% endif %}
   {% set date = result._source.date %}

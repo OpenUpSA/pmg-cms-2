@@ -636,7 +636,7 @@ def calls_for_comments(page=0):
     count = call_for_comment_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    calls_for_comments = call_for_comment_list['results']
+    calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
     url = "/calls-for-comments"
     return render_template(
         'list.html',

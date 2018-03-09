@@ -674,7 +674,7 @@ mark {
   }
 }
 
-// search results
+// search results in a list
 .item-list {
   .date {
     float: right;
@@ -705,8 +705,85 @@ mark {
     font-size: 14px;
     color: #777;
   }
+  .call
 }
 
+// search results in cards
+.item-cards {
+  display: flex;
+  flex-wrap: wrap;
+  .col-card {
+    display: flex;
+    .card {
+      background-color: white;
+      box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+      color: #4a4a4a;
+      width: 100%;
+      position: relative;
+      margin-bottom: 30px;
+      .card-content {
+        padding: 1.5rem;
+      }
+      .card-footer {
+        border-top: 1px solid #dbdbdb;
+        align-items: stretch;
+        display: flex;
+        bottom: 0;
+        height: 40px;
+        .card-footer-item {
+          align-items: center;
+          display: flex;
+          flex-basis: 0;
+          flex-grow: 1;
+          flex-shrink: 0;
+          justify-content: center;
+          padding: 0.75rem;
+          &:not(:last-child) {
+            border-right: 1px solid #dbdbdb;
+          }
+          &:hover {
+            text-decoration: none;
+            color: $blue-darkest;
+          }
+        }
+      }
+    }
+  }
+}
+
+// calls for comments
+.call-for-comment-stub {
+  .card-content {
+    padding-bottom: calc(1.5rem + 40px) !important;
+    .card-title {
+      margin-top: 10px;
+    }
+    .date {
+      margin-bottom: 10px;
+    }
+    .house {
+      color: $grey-dark;
+    }
+  }
+  .card-footer {
+    position: absolute;
+    bottom: 0;
+    height: 60px;
+    width: 100%;
+    .card-footer-item {
+      width: 50%;
+      &.open {
+        background-color: $green-medium;
+        color: #fff;
+        font-weight: bold;
+        &:hover {
+          background-color: $green-dark;
+          color: #fff !important;
+        }
+      }
+    }
+  }
+}
 
 // bill history
 

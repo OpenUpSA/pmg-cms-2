@@ -717,7 +717,7 @@ mark {
     .card {
       background-color: white;
       box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-      color: #4a4a4a;
+      color: $grey-darkest;
       width: 100%;
       position: relative;
       margin-bottom: 30px;
@@ -779,6 +779,11 @@ mark {
         &:hover {
           background-color: $green-dark;
           color: #fff !important;
+        }
+      }
+      &.closed {
+        &:hover {
+          color: $grey-darkest !important;
         }
       }
     }

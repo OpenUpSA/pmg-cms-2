@@ -20,6 +20,7 @@
   {% if result.committee %}
     {% set committee_name = result.committee.name %}
     {% set committee_id = result.committee.id %}
+    {% set house = result.committee.house.name %}
   {% endif %}
 {% endif %}
 <div class="committee-stub">

@@ -6,10 +6,10 @@
   {% endif %}
   {% set date = result._source.date %}
   {% set id = result._id %}
-  {% if  result._source.committee_id %}
+  {% if result._source.committee_id %}
     {% set committee_id = result._source.committee_id %}
   {% endif %}
-  {% if  result._source.committee_name %}
+  {% if result._source.committee_name %}
     {% set committee_name = result._source.committee_name %}
   {% endif %}
   {% set house = result._source.house_name %}
@@ -20,6 +20,7 @@
   {% if result.committee %}
     {% set committee_name = result.committee.name %}
     {% set committee_id = result.committee.id %}
+    {% set house = result.committee.house.name %}
   {% endif %}
 {% endif %}
 <div class="tabled-committee-report-stub">

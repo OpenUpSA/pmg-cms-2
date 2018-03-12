@@ -55,33 +55,21 @@
     {% endif %}
   </div>
 {% else %}
-<div class="call-for-comment-stub {% if enddate %}{% if closed %}closed{% else %}open{% endif %}{% endif %}">
-  <div class="card-content">
-    <h3 class="card-title">{{ title|safe }}</h3>
-    <h4 class="date">{{ date|pretty_date }} - {% if enddate %}<strong>{{ enddate|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h4>
-    {% if committee_name %}
-    <div class="committee-name">{{ committee_name }}</div>
-    <div class="house">{{ house }}</div>
-    {% endif %}
-  </div>
-  <div class="card-footer">
-    {% if enddate %}
-        {% if closed %}
-        <span class="card-footer-item closed">Closed</span>
-        {% else %}
-        <a class="card-footer-item open" href="/call-for-comment/{{ id }}">Open</a>
+<a href="/call-for-comment/{{ id }}" class="card-link call-for-comment-stub {% if enddate %}{% if closed %}closed{% else %}open{% endif %}{% endif %}">
+  <div class="card">
+    <div class="card-content">
+      <h3 class="card-title">{{ title|safe }}</h3>
+      <h4 class="date">{{ date|pretty_date }} - {% if enddate %}<strong class="enddate">{{ enddate|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h4>
+      {% if committee_name %}
+      <div class="committee-name">{{ committee_name }}</div>
+      <div class="house">{{ house }}</div>
+      {% endif %}
+      {% if enddate %}
+        {% if not closed %}
+        <div class="footer-open">Open for comments</div>
         {% endif %}
-    {% endif %}
-    <a class="card-footer-item" href="/call-for-comment/{{ id }}">More</a>
+      {% endif %}
+    </div>
   </div>
-  {% if result.highlight %}
-  <p>
-  {% if result.highlight.description %}
-    {{ result.highlight.description|search_snippet|ellipse|safe }}
-  {% elif result.highlight.fulltext %}
-    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
-  {% endif %}
-  </p>
-  {% endif %}
-</div>
+</a>
 {% endif %}

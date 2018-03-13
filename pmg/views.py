@@ -857,10 +857,10 @@ def western_cape_overview():
     members = load_from_api('v2/members', return_everything=True)['results']
 
     # partition by house
-    mpls = {}
+    mpls = []
     for member in members:
         if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
-            mpls.setdefault(member['house']['name'], []).append(member)
+            mpls.append(member)
 
     committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house', 'last_active_year'])['results']
 
@@ -872,7 +872,7 @@ def western_cape_overview():
 
     return render_template(
         'provincial_overview.html',
-        mpls=mpls,
+        mpls=mpls[0:4],
         province="Western Cape",
         province_code="WC",
         provincial_committees=provincial_committees,

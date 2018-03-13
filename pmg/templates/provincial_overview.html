@@ -33,9 +33,8 @@
   <section class="members">
     <h2>Members of Parliament</h2>
     <div class="row mp-list">
-      {% for house, members in mpls | dictsort %}
+      {% for member in mpls %}
         <div class="col-sm-6 col-lg-4 col-house">
-          {% for member in members %}
           <a class="single-member" href="{{ member | member_url }}">
             <div class="row">
               <div class="col-xs-2">
@@ -56,7 +55,6 @@
               </div>
             </div>
           </a>
-          {% endfor %}
         </div>
       {% endfor %}
     </div>

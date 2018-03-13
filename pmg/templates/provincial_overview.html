@@ -5,7 +5,7 @@
 {% block page %}
 <div class="provincial-overview-page">
 
-  <h1 class="province-title"><i class="fa fa-icon fa-group"></i> {{ province }} Parliament</h1>
+  <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province }} Parliament</h1>
   <div class="row">
     <div class="col-sm-6 col-lg-3">
       <div class="provincial-box">
@@ -18,7 +18,7 @@
   </div>
 
   <section class="committees">
-    <h2><i class="fa fa-icon fa-group"></i> Committees</h2>
+    <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
     <ul>
     {% for committee in provincial_committees %}
     <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
@@ -27,11 +27,16 @@
   </section>
 
   <section class="calls-for-comment">
-
+    <h2><i class="fa fa-icon fa-fw fa-comments"></i> Calls for comment</h2>
+    <ul>
+    {% for call_for_comment in provincial_calls_for_comment %}
+    <li><a href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}">{{ call_for_comment.title }}</a></li>
+    {% endfor %}
+    </ul>
   </section>
 
   <section class="members">
-    <h2>Members of Parliament</h2>
+    <h2><i class="fa fa-icon fa-fw fa-user"></i> Members of Parliament</h2>
     <div class="row mp-list">
       {% for member in mpls %}
         <div class="col-sm-6 col-lg-4 col-house">

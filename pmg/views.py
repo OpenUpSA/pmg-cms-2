@@ -876,11 +876,12 @@ def western_cape_overview():
 
     return render_template(
         'provincial_overview.html',
-        mpls=mpls[0:4],
         province="Western Cape",
         province_code="WC",
-        provincial_committees=provincial_committees[0:3],
-        provincial_calls_for_comment=provincial_calls_for_comment[0:3],
+        province_slug="western-cape",
+        mpls=mpls[0:6],
+        provincial_committees=provincial_committees[0:6],
+        provincial_calls_for_comment=provincial_calls_for_comment[0:6],
         )
 
 

@@ -5,9 +5,63 @@
 {% block page %}
 <div class="provincial-overview-page">
 
-  <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province }} Parliament</h1>
   <div class="row">
-    <div class="col-sm-6 col-lg-3">
+    <div class="col-lg-9">
+      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province }} Parliament</h1>
+
+      <section class="committees">
+        <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
+        <div class="row">
+          {% for committee in provincial_committees %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="card" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <div >
+                  <h4 class="card-title">{{ committee.name }}</h4>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="">All {{ province }} committees</a>
+      </section>
+
+      <section class="calls-for-comment">
+        <h2><i class="fa fa-icon fa-fw fa-comments"></i> Calls for comment</h2>
+        <div class="row">
+          {% for call_for_comment in provincial_calls_for_comment %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="card" href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}">
+                <h4 class="card-title">{{ call_for_comment.title }}</h4>
+              </a>
+              </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="">All {{ province }} calls for comment</a>
+      </section>
+
+      <section class="members">
+        <h2><i class="fa fa-icon fa-fw fa-user"></i> Members of Parliament</h2>
+        <div class="row">
+          {% for member in mpls %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="card" href="{{ member | member_url }}">
+                <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+                <div>
+                  <h4 class="card-title">{{ member.name }}</h4>
+                  <h5>{{ member.party.name }}</h5>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="/members/{{ province_slug }}/">All members of {{ province }} parliament</a>
+      </section>
+
+      <section class="schedules">
+
+      </section>
+    </div>
+    <div class="col-lg-3 col-md-6">
       <div class="provincial-box">
         <img src="/static/resources/images/provinces/{{ province_code }}.svg">
         <p>This is one of the <b>provincial legislatures</b> we've recently added.</p>
@@ -16,58 +70,6 @@
       </div>
     </div>
   </div>
-
-  <section class="committees">
-    <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
-    <ul>
-    {% for committee in provincial_committees %}
-    <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
-    {% endfor %}
-    </ul>
-  </section>
-
-  <section class="calls-for-comment">
-    <h2><i class="fa fa-icon fa-fw fa-comments"></i> Calls for comment</h2>
-    <ul>
-    {% for call_for_comment in provincial_calls_for_comment %}
-    <li><a href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}">{{ call_for_comment.title }}</a></li>
-    {% endfor %}
-    </ul>
-  </section>
-
-  <section class="members">
-    <h2><i class="fa fa-icon fa-fw fa-user"></i> Members of Parliament</h2>
-    <div class="row mp-list">
-      {% for member in mpls %}
-        <div class="col-sm-6 col-lg-4 col-house">
-          <a class="single-member" href="{{ member | member_url }}">
-            <div class="row">
-              <div class="col-xs-2">
-                <div class="photo">
-                  <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
-                </div>
-              </div>
-              <div class="col-xs-10">
-                <h3 class="name">{{ member.name }}</h3>
-
-                {% if member.party %}
-                <span class="party">{{ member.party.name }}</span>
-                {% endif %}
-
-                {% if member.province %}
-                <span class="province">{{ member.province.name }}</span>
-                {% endif %}
-              </div>
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="schedules">
-
-  </section>
 
 </div>
 {% endblock %}

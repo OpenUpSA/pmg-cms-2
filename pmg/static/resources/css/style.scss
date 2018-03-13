@@ -709,7 +709,6 @@ mark {
 
 
 // bill history
-
 .bill-events {
   .stage-icon {
     width: 64px;
@@ -1286,6 +1285,14 @@ header.detail-page-header {
     // Account for multiple tbody instances
     > tbody + tbody {
       border-top: 2px solid #ddd;
+    }
+  }
+}
+
+.provincial-overview-page {
+  .province-title {
+    img {
+      height: 26px;
     }
   }
 }

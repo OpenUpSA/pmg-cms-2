@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ province }} Parliament | PMG{% endblock %}
+
+{% block page %}
+<div class="provincial-overview-page">
+
+  <h1 class="province-title"><i class="fa fa-icon fa-group"></i> {{ province }} Parliament</h1>
+
+  <section class="committees">
+    <h2><i class="fa fa-icon fa-group"></i> Committees</h2>
+
+  </section>
+
+  <section class="calls-for-comment">
+
+  </section>
+
+  <section class="members">
+    <h2>Members of Parliament</h2>
+    <div class="row mp-list">
+      {% for house, members in mpls | dictsort %}
+        <div class="col-sm-6 col-lg-4 col-house">
+          {% for member in members %}
+          <a class="single-member" href="{{ member | member_url }}">
+            <div class="row">
+              <div class="col-xs-2">
+                <div class="photo">
+                  <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+                </div>
+              </div>
+              <div class="col-xs-10">
+                <h3 class="name">{{ member.name }}</h3>
+
+                {% if member.party %}
+                <span class="party">{{ member.party.name }}</span>
+                {% endif %}
+
+                {% if member.province %}
+                <span class="province">{{ member.province.name }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="schedules">
+
+  </section>
+
+</div>
+{% endblock %}

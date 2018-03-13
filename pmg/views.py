@@ -636,7 +636,7 @@ def calls_for_comments(page=0):
     count = call_for_comment_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    calls_for_comments = call_for_comment_list['results']
+    calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
     url = "/calls-for-comments"
     return render_template(
         'list.html',
@@ -850,6 +850,24 @@ def hansards(page=0):
         icon="archive",
         title="Hansards",
         content_type="hansard")
+
+@app.route('/provincial-parliaments/western-cape/')
+def western_cape_overview():
+
+    members = load_from_api('v2/members', return_everything=True)['results']
+
+    # partition by house
+    mpls = {}
+    for member in members:
+        if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
+            mpls.setdefault(member['house']['name'], []).append(member)
+
+    return render_template(
+        'provincial_overview.html',
+        mpls=mpls,
+        province="Western Cape",
+        province_code="WC",
+        )
 
 
 @app.route('/briefing/<int:event_id>')

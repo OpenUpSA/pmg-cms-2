@@ -862,11 +862,20 @@ def western_cape_overview():
         if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
             mpls.setdefault(member['house']['name'], []).append(member)
 
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house', 'last_active_year'])['results']
+
+    provincial_committees = []
+
+    for committee in committees:
+        if committee['house']['short_name'] == 'WC':
+            provincial_committees.append(committee)
+
     return render_template(
         'provincial_overview.html',
         mpls=mpls,
         province="Western Cape",
         province_code="WC",
+        provincial_committees=provincial_committees,
         )
 
 

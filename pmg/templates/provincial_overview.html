@@ -6,10 +6,24 @@
 <div class="provincial-overview-page">
 
   <h1 class="province-title"><i class="fa fa-icon fa-group"></i> {{ province }} Parliament</h1>
+  <div class="row">
+    <div class="col-sm-6 col-lg-3">
+      <div class="provincial-box">
+        <img src="/static/resources/images/provinces/{{ province_code }}.svg">
+        <p>This is one of the <b>provincial legislatures</b> we've recently added.</p>
+        <p>Does this content interest you?<br>Please let us know!</p>
+        <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+      </div>
+    </div>
+  </div>
 
   <section class="committees">
     <h2><i class="fa fa-icon fa-group"></i> Committees</h2>
-
+    <ul>
+    {% for committee in provincial_committees %}
+    <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+    {% endfor %}
+    </ul>
   </section>
 
   <section class="calls-for-comment">

@@ -873,8 +873,12 @@ def western_cape_overview():
         if committee['house']['short_name'] == 'WC':
             provincial_committees.append(committee)
 
-    # provincial calls for comments
-    provincial_calls_for_comment = load_from_api('v2/calls-for-comments', return_everything=True, fields=['id', 'title'])['results']
+    # provincial calls for comments that are currently open
+    provincial_calls_for_comment = load_from_api('v2/calls-for-comments',
+            return_everything=True,
+            fields=['id', 'title', 'closed'],
+            params={'filter[house]': 'WCPP'})['results']
+    provincial_calls_for_comment = [c for c in provincial_calls_for_comment if not c['closed']]
 
     return render_template(
         'provincial_overview.html',

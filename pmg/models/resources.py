@@ -1110,7 +1110,9 @@ class CallForComment(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(desc(cls.start_date))
+        return cls.query\
+            .options(joinedload('committee.minister'))\
+            .order_by(desc(cls.start_date))
 
 
 # === Policy document === #

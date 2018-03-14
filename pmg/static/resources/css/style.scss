@@ -1411,6 +1411,15 @@ header.detail-page-header {
   .provincial-box {
     margin-top: 20px;
   }
+  .calls-for-comment {
+    .card-content {
+      padding-bottom: 60px;
+      .date {
+        position: absolute;
+        bottom: 25px;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 991px) {

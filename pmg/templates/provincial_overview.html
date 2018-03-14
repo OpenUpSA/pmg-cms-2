@@ -31,18 +31,15 @@
         <div class="row">
           {% for call_for_comment in provincial_calls_for_comment %}
             <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
-
               <a href="/call-for-comment/{{ call_for_comment.id }}" class="content-card flex card-link call-for-comment-stub open">
                 <div class="card">
                   <div class="card-content">
-                    <h3 class="card-title">{{ call_for_comment.title }}</h3>
-                    <h4 class="date">{{ call_for_comment.start_date|pretty_date }} - {% if call_for_comment.end_date %}<strong class="enddate">{{ call_for_comment.end_date|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h4>
+                    <h4 class="card-title">{{ call_for_comment.title }}</h4>
+                    <h5 class="date">{{ call_for_comment.start_date|pretty_date }} - {% if call_for_comment.end_date %}<strong class="enddate">{{ call_for_comment.end_date|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h5>
                     <div class="footer-open">Open for comments</div>
                   </div>
                 </div>
               </a>
-
-
             </div>
           {% endfor %}
         </div>
@@ -73,7 +70,7 @@
     <div class="col-lg-3 col-md-6">
       <div class="provincial-box">
         <img src="/static/resources/images/provinces/{{ province_code }}.svg">
-        <p>This is one of the <b>provincial legislatures</b> we've recently added.</p>
+        <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
         <p>Does this content interest you?<br>Please let us know!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
       </div>

@@ -1175,15 +1175,6 @@ def docs(path, dir=''):
     return redirect(app.config['STATIC_HOST'] + dir + path)
 
 
-@app.route('/files/tmp/pmg_upload/<path:path>')  # development
-def dev_docs(path):
-    file = File.query.filter(File.file_path == '/tmp/pmg_upload/' + path).first()
-    if not file:
-        abort(404)
-
-    return send_file(file.open(), mimetype=file.file_mime)
-
-
 @app.route('/correct-this-page', methods=['POST'])
 def correct_this_page():
     form = forms.CorrectThisPageForm(request.form)

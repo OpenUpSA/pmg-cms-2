@@ -43,11 +43,12 @@
 {% endif %}
 
 {% if content_type == 'call_for_comment' %}
-<div class="open-calls-count hidden">
+
+<span class="no-open-hidden">
   <h2>Open calls for comments <small class="open-calls-count">Currently open: <span id="count"></span></small></h2>
-</div>
+</span>
 <div class="row item-cards {{content_type}}-row">
-  {% for result in results %}
+  {% for result in open_calls %}
     <div class="col-xs-12 col-sm-6 col-lg-4 col-card">
       <div class="card-wrap">
         {% include content_type | replace("-", "_") + '_stub.html' %}
@@ -55,6 +56,20 @@
     </div>
   {% endfor %}
 </div>
+
+<hr class="no-open-hidden">
+
+<h2>Closed calls for comments</h2>
+<div class="row item-cards {{content_type}}-row">
+  {% for result in closed_calls %}
+    <div class="col-xs-12 col-sm-6 col-lg-4 col-card">
+      <div class="card-wrap">
+        {% include content_type | replace("-", "_") + '_stub.html' %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
 {% endif %}
 
 {% include 'pagination.html' %}

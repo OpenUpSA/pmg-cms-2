@@ -638,6 +638,10 @@ def calls_for_comments(page=0):
     count = call_for_comment_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
+
+    open_calls = [c for c in calls_for_comments if not c['closed'] and c['end_date']]
+    closed_calls = [c for c in calls_for_comments if c['closed'] or not c['end_date']]
+
     url = "/calls-for-comments"
     return render_template(
         'list.html',
@@ -649,7 +653,9 @@ def calls_for_comments(page=0):
         content_type="call_for_comment",
         title="Calls for Comments",
         committees=committees,
-        filters=filters)
+        filters=filters,
+        open_calls=open_calls,
+        closed_calls=closed_calls)
 
 
 @app.route('/call-for-comment/<int:call_for_comment_id>')
@@ -881,6 +887,10 @@ def western_cape_overview():
             params={'filter[house]': 'WC'})['results']
     provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
 
+    provincial_daily_schedules = load_from_api('v2/daily-schedules',
+            return_everything=True,
+            params={'filter[house]': 'WC'})['results']
+
     return render_template(
         'provincial_overview.html',
         province="Western Cape",
@@ -889,6 +899,7 @@ def western_cape_overview():
         mpls=mpls[0:6],
         provincial_committees=provincial_committees[0:6],
         provincial_calls_for_comment=provincial_calls_for_comment,
+        provincial_daily_schedules=provincial_daily_schedules[0:6],
         )
 
 

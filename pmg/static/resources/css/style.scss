@@ -1420,6 +1420,15 @@ header.detail-page-header {
       }
     }
   }
+  .schedules {
+    a {
+      color: $grey-darkest;
+      font-weight: bold;
+      &:hover {
+        color: $grey-darkest;
+      }
+    }
+  }
 }
 
 @media screen and (max-width: 991px) {

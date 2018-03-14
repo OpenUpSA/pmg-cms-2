@@ -742,32 +742,6 @@ class Membership(db.Model):
         return unicode(tmp)
 
 
-# === Schedule === #
-
-class Schedule(ApiResource, db.Model):
-
-    __tablename__ = "schedule"
-
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Text)
-    meeting_date = db.Column(db.Date())
-    meeting_time = db.Column(db.Text())
-    houses = db.relationship("House", secondary='schedule_house_join')
-
-    @classmethod
-    def list(cls):
-        current_time = datetime.datetime.utcnow()
-        return cls.query\
-            .order_by(desc(cls.meeting_date))\
-            .filter(Schedule.meeting_date >= current_time)
-
-schedule_house_table = db.Table(
-    'schedule_house_join', db.Model.metadata,
-    db.Column('schedule_id', db.Integer, db.ForeignKey('schedule.id')),
-    db.Column('house_id', db.Integer, db.ForeignKey('house.id'))
-)
-
-
 # === Committee Questions === #
 #
 # Questions asked by an MP of a Committe chairperson
@@ -1194,10 +1168,11 @@ class DailySchedule(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Text())
-    start_date = db.Column(db.Date())
-    schedule_date = db.Column(db.Date())
+    start_date = db.Column(db.Date(), nullable=False)
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
+    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False, index=True)
+    house = db.relationship('House', lazy='joined')
 
     files = db.relationship("DailyScheduleFile", lazy='joined', cascade="all, delete, delete-orphan")
 
@@ -1463,6 +1438,5 @@ ApiResource.register(Member)
 ApiResource.register(Minister)
 ApiResource.register(PolicyDocument)
 ApiResource.register(QuestionReply)
-ApiResource.register(Schedule)
 ApiResource.register(TabledCommitteeReport)
 ApiResource.register(CommitteeMeetingAttendance)

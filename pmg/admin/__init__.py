@@ -859,14 +859,14 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
     column_list = (
         'title',
         'start_date',
-        'schedule_date',
+        'house',
     )
     column_default_sort = ('start_date', True)
     column_searchable_list = ('title', )
     form_columns = (
         'title',
         'start_date',
-        'schedule_date',
+        'house',
         'body',
         'files',
     )

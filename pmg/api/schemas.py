@@ -204,6 +204,7 @@ class DailyScheduleSchema(ma.ModelSchema):
         model = DailySchedule
         fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
                   'house', 'house_id', 'files', '_links',)
+    house = fields.Nested('HouseSchema')
     files = fields.Nested('FileSchema', attribute='api_files', many=True)
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.daily_schedules', id="<id>"),

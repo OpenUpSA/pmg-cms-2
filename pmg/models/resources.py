@@ -1181,7 +1181,7 @@ class DailySchedule(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.order_by(desc(cls.start_date))
+        return cls.query.join(House).order_by(desc(cls.start_date))
 
 
 class DailyScheduleFile(FileLinkMixin, db.Model):

@@ -47,7 +47,7 @@ class ApiException(HTTPException):
         return render_template('500.html', error=self)
 
 
-def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, fields=None, params=None):
+def load_from_api(resource_name, resource_id=None, page=None, return_everything=False, fields=None, params=None, pagesize=None):
     """ Load data from the PMG API.
 
     :param str resource_name: resource to load (used as the start of the URL), or a full URL
@@ -56,6 +56,7 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     :param bool return_everything: fetch all pages? (default: False)
     :param list fields: list of field names to ask for (V2 only).
     :param dict params: additional query params
+    :param int pagesize: items per page
     """
     params = {} if (params is None) else params
     # check for full URL?
@@ -76,6 +77,8 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
         params["page"] = str(page)
     if fields:
         params["fields"] = ','.join(fields)
+    if pagesize:
+        params["per_page"] = pagesize
 
     headers = {}
     # add auth header

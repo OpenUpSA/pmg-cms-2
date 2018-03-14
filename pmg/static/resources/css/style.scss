@@ -687,7 +687,7 @@ mark {
   }
 }
 
-// search results
+// search results in a list
 .item-list {
   .date {
     float: right;
@@ -720,6 +720,67 @@ mark {
   }
 }
 
+// search results in cards
+.item-cards {
+  display: flex;
+  flex-wrap: wrap;
+  .card-wrap {
+    height: 100%;
+    .card-link {
+      text-decoration: none;
+      &:hover {
+        text-decoration: none;
+      }
+      .card {
+        display: flex;
+        position: relative;
+        height: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border-bottom: 1px solid $grey-medium;
+        background-color: $grey-light;
+        color: $grey-dark;
+        &:hover {
+          background-color: $grey-medium;
+        }
+        .card-content {
+          width: 100%;
+          position: relative;
+          .card-title {
+            margin-top: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            color: $grey-darkest;
+          }
+        }
+      }
+    }
+  }
+}
+
+// calls for comments
+.call-for-comment-stub {
+  &.open {
+    .card-content {
+      padding-bottom: 40px;
+      .footer-open {
+        width: 100%;
+        background-color: $green-medium;
+        color: #fff;
+        padding: 3px 6px;
+        border-radius: 2px;
+        border-bottom: 1px solid $green-dark;
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+      }
+    }
+  }
+  .enddate {
+    color: $grey-darkest;
+  }
+}
 
 // bill history
 .bill-events {

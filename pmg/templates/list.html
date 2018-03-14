@@ -34,11 +34,28 @@
   </div>
 </div>
 
+{% if content_type != 'call_for_comment' %}
 <ul class="list-unstyled item-list content-list {{content_type}}-list">
   {% for result in results %}
     <li>{% include content_type | replace("-", "_") + '_stub.html' %}</li>
   {% endfor %}
 </ul>
+{% endif %}
+
+{% if content_type == 'call_for_comment' %}
+<div class="open-calls-count hidden">
+  <h2>Open calls for comments <small class="open-calls-count">Currently open: <span id="count"></span></small></h2>
+</div>
+<div class="row item-cards {{content_type}}-row">
+  {% for result in results %}
+    <div class="col-xs-12 col-sm-6 col-lg-4 col-card">
+      <div class="card-wrap">
+        {% include content_type | replace("-", "_") + '_stub.html' %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 {% include 'pagination.html' %}
 

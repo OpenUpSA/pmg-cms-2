@@ -111,6 +111,7 @@ assets.register('js', Bundle(
     'resources/javascript/users.js',
     'resources/javascript/members.js',
     'resources/javascript/provincial-overview.js',
+    'resources/javascript/calls-for-comments.js',
     'resources/javascript/pmg.js',
     'resources/javascript/moment.min.js',
     'resources/javascript/bootstrap-sortable.js',

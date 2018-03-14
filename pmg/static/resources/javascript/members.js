@@ -2,7 +2,7 @@ $(function() {
   var $form = $('#member-search-form'),
       $q = $form.find('[name=q]'),
       lastSearch = '',
-      $members = $('.mp-list .single-member');
+      $members = $('.mp-list .single-mp');
 
   var memberSearch = function(q) {
     q = q.trim().toLowerCase();
@@ -13,7 +13,7 @@ $(function() {
     if (!q) {
       $members.show();
     } else {
-      var $matches = $('.mp-list .single-member').filter(function() {
+      var $matches = $('.mp-list .single-mp').filter(function() {
         var $li = $(this);
         return (
           ($li.find('.name').text().toLowerCase().indexOf(q) >= 0) ||

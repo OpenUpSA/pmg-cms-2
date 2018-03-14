@@ -653,6 +653,19 @@ article.page {
       color: $grey-dark;
     }
   }
+  // in flex cards
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  a {
+    text-decoration: none;
+  }
+  .single-mp {
+    img {
+      margin-right: 10px;
+    }
+  }
 }
 
 .bill-versions {

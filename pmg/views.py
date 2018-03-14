@@ -797,7 +797,9 @@ def western_cape_members():
 
     return render_template(
         'member_list.html',
-        members_by_house=members_by_house)
+        members_by_house=members_by_house,
+        sphere="provincial",
+        )
 
 
 @app.route('/member/<int:member_id>')

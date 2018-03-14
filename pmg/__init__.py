@@ -110,6 +110,7 @@ assets.register('js', Bundle(
     'resources/javascript/committees.js',
     'resources/javascript/users.js',
     'resources/javascript/members.js',
+    'resources/javascript/calls-for-comments.js',
     'resources/javascript/pmg.js',
     'resources/javascript/moment.min.js',
     'resources/javascript/bootstrap-sortable.js',

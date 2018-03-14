@@ -21,7 +21,20 @@ def get_api_fields():
 
 def apply_filters(query):
     for f in get_filters():
-        query = query.filter_by(**f)
+        key = f.keys()[0]
+
+        # support filtering by house, via committee if necessary
+        if key == 'house':
+            model = query._entity_zero().entity_zero.entity
+            if not hasattr(model, 'house'):
+                if hasattr(model, 'committee'):
+                    query = query.join(Committee)
+                query = query.join(House)
+
+            query = query.filter(House.name_short == f[key])
+        else:
+            query = query.filter_by(**f)
+
     return query
 
 

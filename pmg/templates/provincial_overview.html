@@ -26,17 +26,17 @@
       </section>
 
       <section class="calls-for-comment">
-        <h2><i class="fa fa-icon fa-fw fa-comments"></i> Calls for comment</h2>
+        <h2><i class="fa fa-icon fa-fw fa-comments"></i> Open calls for comment <small class="open-calls-count hidden">Currently open: <span id="open-calls"></span></small></h2>
+        <h3 class="no-open-calls">There are currently no open calls for comment</h3>
         <div class="row">
           {% for call_for_comment in provincial_calls_for_comment %}
-            <div class="col-xs-12 col-sm-6 col-lg-4">
+            <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
               <a class="content-card flex" href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}">
                 <h4 class="card-title">{{ call_for_comment.title }}</h4>
               </a>
-              </div>
+            </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="">All {{ province }} calls for comment</a>
       </section>
 
       <section class="members">

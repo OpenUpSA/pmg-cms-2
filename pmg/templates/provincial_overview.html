@@ -31,9 +31,18 @@
         <div class="row">
           {% for call_for_comment in provincial_calls_for_comment %}
             <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
-              <a class="content-card flex" href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}">
-                <h4 class="card-title">{{ call_for_comment.title }}</h4>
+
+              <a href="/call-for-comment/{{ call_for_comment.id }}" class="content-card flex card-link call-for-comment-stub open">
+                <div class="card">
+                  <div class="card-content">
+                    <h3 class="card-title">{{ call_for_comment.title }}</h3>
+                    <h4 class="date">{{ call_for_comment.start_date|pretty_date }} - {% if call_for_comment.end_date %}<strong class="enddate">{{ call_for_comment.end_date|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h4>
+                    <div class="footer-open">Open for comments</div>
+                  </div>
+                </div>
               </a>
+
+
             </div>
           {% endfor %}
         </div>

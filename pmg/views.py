@@ -876,7 +876,7 @@ def western_cape_overview():
     # provincial calls for comments that are currently open
     provincial_calls_for_comment = load_from_api('v2/calls-for-comments',
             return_everything=True,
-            fields=['id', 'title', 'closed', 'end_date'],
+            fields=['id', 'title', 'closed', 'end_date', 'start_date'],
             params={'filter[house]': 'WC'})['results']
     provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
 

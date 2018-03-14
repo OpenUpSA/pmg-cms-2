@@ -937,8 +937,7 @@ def briefings(page=0):
 @app.route('/daily-schedule/<int:daily_schedule_id>')
 @app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
-    logger.debug("daily_schedule page called")
-    daily_schedule = load_from_api('daily-schedule', daily_schedule_id)
+    daily_schedule = load_from_api('v2/daily-schedules', daily_schedule_id)['result']
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
@@ -952,10 +951,9 @@ def daily_schedules(page=0):
     Page through all available daily_schedules.
     """
 
-    logger.debug("daily_schedules page called")
-    daily_schedules_list = load_from_api('daily-schedule', page=page)
-    count = daily_schedules_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
+    daily_schedules_list = load_from_api('v2/daily-schedules', page=page, pagesize=per_page)
+    count = daily_schedules_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']
     url = "/daily-schedules"
@@ -1175,15 +1173,6 @@ def docs(path, dir=''):
         logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     return redirect(app.config['STATIC_HOST'] + dir + path)
-
-
-@app.route('/files/tmp/pmg_upload/<path:path>') # development
-def dev_docs(path):
-    file = File.query.filter(File.file_path == '/tmp/pmg_upload/' + path).first()
-    if not file:
-        abort(404)
-
-    return send_file(file.open(), mimetype=file.file_mime)
 
 
 @app.route('/correct-this-page', methods=['POST'])

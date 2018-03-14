@@ -193,3 +193,12 @@ def bills(id=None):
         return api_get_item(id, Bill, BillSchema)
     else:
         return api_list_items(Bill.list(), BillSchema)
+
+
+@api.route('/daily-schedules/')
+@api.route('/daily-schedules/<int:id>')
+def daily_schedules(id=None):
+    if id:
+        return api_get_item(id, DailySchedule, DailyScheduleSchema)
+    else:
+        return api_list_items(DailySchedule.list(), DailyScheduleSchema)

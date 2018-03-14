@@ -627,14 +627,15 @@ def calls_for_comments(page=0):
     committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
+    per_page = app.config['RESULTS_PER_PAGE']
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
+
     call_for_comment_list = load_from_api(
         'v2/calls-for-comments',
-        page=page,
-        params=params)
+        page=page, params=params, pagesize=per_page)
+
     count = call_for_comment_list["count"]
-    per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
     url = "/calls-for-comments"

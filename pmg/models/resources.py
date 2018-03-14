@@ -1176,6 +1176,9 @@ class DailySchedule(ApiResource, db.Model):
 
     files = db.relationship("DailyScheduleFile", lazy='joined', cascade="all, delete, delete-orphan")
 
+    def api_files(self):
+        return [f.file for f in self.files]
+
     @classmethod
     def list(cls):
         return cls.query.order_by(desc(cls.start_date))

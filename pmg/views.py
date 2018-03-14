@@ -937,8 +937,7 @@ def briefings(page=0):
 @app.route('/daily-schedule/<int:daily_schedule_id>')
 @app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
-    logger.debug("daily_schedule page called")
-    daily_schedule = load_from_api('daily-schedule', daily_schedule_id)
+    daily_schedule = load_from_api('v2/daily-schedules', daily_schedule_id)['result']
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
@@ -953,7 +952,7 @@ def daily_schedules(page=0):
     """
 
     logger.debug("daily_schedules page called")
-    daily_schedules_list = load_from_api('daily-schedule', page=page)
+    daily_schedules_list = load_from_api('v2/daily-schedules', page=page)
     count = daily_schedules_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))

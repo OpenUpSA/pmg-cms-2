@@ -38,6 +38,7 @@ class CommitteeSchema(ma.ModelSchema):
         'calls_for_comment': AbsoluteUrlFor('api2.committee_calls_for_comment', id="<id>"),
         'tabled_reports': AbsoluteUrlFor('api2.committee_tabled_reports', id="<id>"),
         'members': AbsoluteUrlFor('api2.committee_members', id="<id>"),
+        'bills': AbsoluteUrlFor('api2.committee_bills', id="<id>"),
     })
 
 

@@ -38,10 +38,10 @@ def apply_filters(query):
     return query
 
 
-def api_list_items(query, schema):
+def api_list_items(query, schema, exclude=()):
     query = apply_filters(query)
     queryset, count, next = paginate_request_query(query)
-    results, errors = schema(many=True, only=get_api_fields()).dump(queryset)
+    results, errors = schema(many=True, only=get_api_fields(), exclude=exclude).dump(queryset)
     out = {
         'count': count,
         'next': next,
@@ -119,6 +119,20 @@ def committee_members(id):
 
     query = Membership.query.filter(Membership.committee == cte)
     return api_list_items(query, MembershipSchema)
+
+
+@api.route('/committees/<int:id>/bills')
+def committee_bills(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    # find bills link to meetings of this committee
+    query = Bill.query.join(Bill.events)\
+        .filter(CommitteeMeeting.committee == cte)\
+        .distinct()
+
+    return api_list_items(query, BillSchema, exclude=['events', 'versions'])
 
 
 @api.route('/committee-meetings/')

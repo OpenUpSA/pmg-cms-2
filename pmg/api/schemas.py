@@ -3,7 +3,8 @@ from marshmallow_polyfield import PolyField
 
 from pmg import ma
 from pmg.models import (Committee, House, CommitteeMeeting, CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event, QuestionReply)
+                        Membership, Party, CommitteeQuestion, File, Minister, Bill, BillType, BillVersion, BillStatus, Event, QuestionReply,
+                        DailySchedule)
 from pmg.utils import externalise_url
 
 
@@ -195,6 +196,18 @@ class QuestionReplySchema(ma.ModelSchema):
     minister = fields.Nested('MinisterSchema')
     _links = ma.Hyperlinks({
         'self': AbsoluteUrlFor('api2.minister_questions_legacy', id="<id>"),
+    })
+
+
+class DailyScheduleSchema(ma.ModelSchema):
+    class Meta:
+        model = DailySchedule
+        fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
+                  'house', 'house_id', 'files', '_links',)
+    house = fields.Nested('HouseSchema')
+    files = fields.Nested('FileSchema', attribute='api_files', many=True)
+    _links = ma.Hyperlinks({
+        'self': AbsoluteUrlFor('api2.daily_schedules', id="<id>"),
     })
 
 

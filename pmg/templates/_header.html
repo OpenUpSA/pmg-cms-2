@@ -10,7 +10,7 @@
   <div class="container">
     <div class="row">
 
-      <div class="col-xs-9 col-sm-6 col-md-4 clearfix">
+      <div class="col-xs-9 col-sm-6 col-md-4 col-lg-3 clearfix">
         <a class="navbar-brand" href="/">
           <img id="logo" src="/static/resources/images/logo-small.png" alt="Parliamentary Monitoring Group" class="img-responsive">
           </a>
@@ -41,6 +41,7 @@
               <li class="visible-xs"><a href="/calls-for-comments">Calls for Comments</a></li>
               <li><a href="/attendance-overview">Attendance</a></li>
               <li><a href="/blog">Blog</a></li>
+              <li><a href="/provincial-parliaments/western-cape/">Provincial Legislatures</a></li>
             </ul>
           </div>
           <hr>
@@ -74,7 +75,7 @@
         </div>
       </div>
 
-      <div class="col-sm-6 col-md-4 col-lg-3 hidden-xs pull-right">
+      <div class="col-sm-6 col-md-4 hidden-xs pull-right">
         <ul class="nav navbar-nav pull-right">
           {% if current_user.is_authenticated() %}
             {% if admin_edit_url %}
@@ -93,12 +94,16 @@
               {% include "_user_links.html" %}
             </ul>
           {% else %}
-            <a href="{{ url_for('security.register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
-              Create an account
-            </a>
-            <a href="{{ url_for('security.login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
-              Log In
-            </a>
+          <div class="btn-group" role="group">
+            <a class="btn btn-sm btn-default" href="http://www.facebook.com/pmgsouthafrica"><i class="fa fa-fw fa-facebook"></i></a>
+            <a class="btn btn-sm btn-default" href="https://twitter.com/PMG_SA"><i class="fa fa-fw fa-twitter"></i></a>
+          </div>
+          <a href="{{ url_for('security.register', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
+            Create an account
+          </a>
+          <a href="{{ url_for('security.login', next=request.path) }}" class="btn btn-primary navbar-btn btn-sm">
+            Log In
+          </a>
           {% endif %}
         </ul>
       </div>

@@ -21,7 +21,20 @@ def get_api_fields():
 
 def apply_filters(query):
     for f in get_filters():
-        query = query.filter_by(**f)
+        key = f.keys()[0]
+
+        # support filtering by house, via committee if necessary
+        if key == 'house':
+            model = query._entity_zero().entity_zero.entity
+            if not hasattr(model, 'house'):
+                if hasattr(model, 'committee'):
+                    query = query.join(Committee)
+                query = query.join(House)
+
+            query = query.filter(House.name_short == f[key])
+        else:
+            query = query.filter_by(**f)
+
     return query
 
 
@@ -180,3 +193,12 @@ def bills(id=None):
         return api_get_item(id, Bill, BillSchema)
     else:
         return api_list_items(Bill.list(), BillSchema)
+
+
+@api.route('/daily-schedules/')
+@api.route('/daily-schedules/<int:id>')
+def daily_schedules(id=None):
+    if id:
+        return api_get_item(id, DailySchedule, DailyScheduleSchema)
+    else:
+        return api_list_items(DailySchedule.list(), DailyScheduleSchema)

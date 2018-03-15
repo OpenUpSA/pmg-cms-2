@@ -630,16 +630,21 @@ def calls_for_comments(page=0):
     houses = sort_houses(House.query.all())
     filters = {}
     params = {}
+    per_page = app.config['RESULTS_PER_PAGE']
     filters["committee"] = params[
         'filter[committee_id]'] = request.args.get('filter[committee]')
+
     call_for_comment_list = load_from_api(
         'v2/calls-for-comments',
-        page=page,
-        params=params)
+        page=page, params=params, pagesize=per_page)
+
     count = call_for_comment_list["count"]
-    per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
+
+    open_calls = [c for c in calls_for_comments if not c['closed'] and c['end_date']]
+    closed_calls = [c for c in calls_for_comments if c['closed'] or not c['end_date']]
+
     url = "/calls-for-comments"
     return render_template(
         'list.html',
@@ -652,7 +657,9 @@ def calls_for_comments(page=0):
         content_type="call_for_comment",
         title="Calls for Comments",
         committees=committees,
-        filters=filters)
+        filters=filters,
+        open_calls=open_calls,
+        closed_calls=closed_calls)
 
 
 @app.route('/call-for-comment/<int:call_for_comment_id>')
@@ -801,7 +808,9 @@ def western_cape_members():
 
     return render_template(
         'member_list.html',
-        members_by_house=members_by_house)
+        members_by_house=members_by_house,
+        sphere="provincial",
+        )
 
 
 @app.route('/member/<int:member_id>')
@@ -855,6 +864,48 @@ def hansards(page=0):
         title="Hansards",
         content_type="hansard")
 
+@app.route('/provincial-parliaments/western-cape/')
+def western_cape_overview():
+
+    members = load_from_api('v2/members', return_everything=True)['results']
+
+    # members of provincial parliament
+    mpls = []
+    for member in members:
+        if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
+            mpls.append(member)
+
+    # provincial committees
+    committees = load_from_api('v2/committees', return_everything=True)['results']
+
+    provincial_committees = []
+
+    for committee in committees:
+        if committee['house']['short_name'] == 'WC':
+            provincial_committees.append(committee)
+
+    # provincial calls for comments that are currently open
+    provincial_calls_for_comment = load_from_api('v2/calls-for-comments',
+            return_everything=True,
+            fields=['id', 'title', 'closed', 'end_date', 'start_date'],
+            params={'filter[house]': 'WC'})['results']
+    provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
+
+    provincial_daily_schedules = load_from_api('v2/daily-schedules',
+            return_everything=True,
+            params={'filter[house]': 'WC'})['results']
+
+    return render_template(
+        'provincial_overview.html',
+        province="Western Cape",
+        province_code="WC",
+        province_slug="western-cape",
+        mpls=mpls[0:6],
+        provincial_committees=provincial_committees[0:6],
+        provincial_calls_for_comment=provincial_calls_for_comment,
+        provincial_daily_schedules=provincial_daily_schedules[0:6],
+        )
+
 
 @app.route('/briefing/<int:event_id>')
 @app.route('/briefing/<int:event_id>/')
@@ -902,8 +953,7 @@ def briefings(page=0):
 @app.route('/daily-schedule/<int:daily_schedule_id>')
 @app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
-    logger.debug("daily_schedule page called")
-    daily_schedule = load_from_api('daily-schedule', daily_schedule_id)
+    daily_schedule = load_from_api('v2/daily-schedules', daily_schedule_id)['result']
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
@@ -917,10 +967,9 @@ def daily_schedules(page=0):
     Page through all available daily_schedules.
     """
 
-    logger.debug("daily_schedules page called")
-    daily_schedules_list = load_from_api('daily-schedule', page=page)
-    count = daily_schedules_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
+    daily_schedules_list = load_from_api('v2/daily-schedules', page=page, pagesize=per_page)
+    count = daily_schedules_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']
     url = "/daily-schedules"
@@ -1140,15 +1189,6 @@ def docs(path, dir=''):
         logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     return redirect(app.config['STATIC_HOST'] + dir + path)
-
-
-@app.route('/files/tmp/pmg_upload/<path:path>') # development
-def dev_docs(path):
-    file = File.query.filter(File.file_path == '/tmp/pmg_upload/' + path).first()
-    if not file:
-        abort(404)
-
-    return send_file(file.open(), mimetype=file.file_mime)
 
 
 @app.route('/correct-this-page', methods=['POST'])

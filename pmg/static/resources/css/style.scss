@@ -653,6 +653,19 @@ article.page {
       color: $grey-dark;
     }
   }
+  // in flex cards
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  a {
+    text-decoration: none;
+  }
+  .single-mp {
+    img {
+      margin-right: 10px;
+    }
+  }
 }
 
 .bill-versions {
@@ -748,9 +761,15 @@ mark {
 
 // calls for comments
 .call-for-comment-stub {
+  .card {
+    width: 100%;
+  }
   &.open {
     .card-content {
+      position: relative;
       padding-bottom: 40px;
+      height: 100%;
+      width: 100%;
       .footer-open {
         width: 100%;
         background-color: $green-medium;
@@ -770,7 +789,6 @@ mark {
 }
 
 // bill history
-
 .bill-events {
   .stage-icon {
     width: 64px;
@@ -1347,6 +1365,68 @@ header.detail-page-header {
     // Account for multiple tbody instances
     > tbody + tbody {
       border-top: 2px solid #ddd;
+    }
+  }
+}
+
+.content-card.flex {
+  background-color: $grey-light;
+  color: $grey-dark;
+  padding: 10px;
+  border-radius: 5px;
+  border-bottom: 1px solid $grey-medium;
+  margin-bottom: 15px;
+  display: flex;
+  height: calc(100% - 15px);
+  width: 100%;
+  &:hover {
+    background-color: $grey-medium;
+    color: $grey-dark;
+  }
+  .card-title {
+    font-weight: bold;
+    margin-top: 0;
+    color: $grey-darkest;
+  }
+}
+
+.provincial-overview-page {
+  section {
+    margin-bottom: 60px;
+  }
+  .committees, .calls-for-comment, .members, .schedules {
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    a {
+      text-decoration: none;
+    }
+  }
+  .members {
+    img {
+      margin-right: 10px;
+    }
+  }
+  .provincial-box {
+    margin-top: 20px;
+  }
+  .calls-for-comment {
+    .card-content {
+      padding-bottom: 60px;
+      .date {
+        position: absolute;
+        bottom: 25px;
+      }
+    }
+  }
+  .schedules {
+    a {
+      color: $grey-darkest;
+      font-weight: bold;
+      &:hover {
+        color: $grey-darkest;
+      }
     }
   }
 }

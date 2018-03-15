@@ -571,6 +571,7 @@ def tabled_committee_reports(page=0):
     """
 
     logger.debug("tabled-committee-reports page called")
+    houses = sort_houses(House.query.all())
     committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
@@ -593,6 +594,7 @@ def tabled_committee_reports(page=0):
         num_pages=num_pages,
         page=page,
         url=url,
+        houses=houses,
         icon="briefcase",
         committees=committees,
         filters=filters)
@@ -625,6 +627,7 @@ def calls_for_comments(page=0):
 
     logger.debug("calls-for-comments page called")
     committees = load_from_api('committee', return_everything=True)['results']
+    houses = sort_houses(House.query.all())
     filters = {}
     params = {}
     filters["committee"] = params[
@@ -644,6 +647,7 @@ def calls_for_comments(page=0):
         num_pages=num_pages,
         page=page,
         url=url,
+        houses=houses,
         icon="comments",
         content_type="call_for_comment",
         title="Calls for Comments",

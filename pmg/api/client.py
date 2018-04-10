@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 urllib3.disable_warnings()
 
 # thread-safe connection pool
-http = urllib3.PoolManager(timeout=TIMEOUTS)
+http = urllib3.PoolManager(timeout=TIMEOUTS, maxsize=3)
 
 
 class ApiException(HTTPException):

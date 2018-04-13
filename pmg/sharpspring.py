@@ -25,7 +25,8 @@ class Sharpspring(object):
 
         resp = self.call('createLeads', {'objects': [details]})
         # 301 means already exists
-        if not resp['error'] and resp['result'] and (resp['result']['creates'][0]['success'] or resp['result']['creates'][0]['error']['code'] == 301):
+        # eg: {u'error': [{u'data': [], u'message': u'Entry already exists', u'code': 301}], u'result': {u'creates': [{u'success': False, u'error': {u'data': [], u'message': u'Entry already exists', u'code': 301}}]}, u'id': u'c81a4845d649427381e61f07269c7bbc'} ()
+        if resp['result'] and (resp['result']['creates'][0]['success'] or resp['result']['creates'][0]['error']['code'] == 301):
             # all good
             log.info("Lead created.")
         else:

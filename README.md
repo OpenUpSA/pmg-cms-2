@@ -65,7 +65,7 @@ Install requirements:
 Add the following lines to your `.hosts` file:
 
     127.0.0.1 api.pmg.dev
-    127.0.0.1 pmg.dev
+    127.0.0.1 pmg.test
 
 Create the pmg user with password `pmg`, and an empty database:
 
@@ -80,7 +80,7 @@ Start the server:
 
     python app.py runserver
 
-You should now see it running at [http://pmg.dev:5000/](http://pmg.dev:5000/) and [http://api.pmg.dev:5000/](http://api.pmg.dev:5000/).
+You should now see it running at [http://pmg.test:5000/](http://pmg.test:5000/) and [http://api.pmg.dev:5000/](http://api.pmg.dev:5000/).
 
 ### Developing email features
 

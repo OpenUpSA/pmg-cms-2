@@ -314,7 +314,7 @@ def committee_detail(committee_id):
     else:
         attendance_rank = None
 
-    bills = load_from_api('v2/committees/%s/bills', committee_id)['result']
+    bills = load_from_api('v2/committees/%s/bills' % committee_id)['results']
 
     return render_template('committee_detail.html',
                            current_year=now.year,

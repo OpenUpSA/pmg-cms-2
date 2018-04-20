@@ -141,8 +141,10 @@ def create_next_page_url(count, page, per_page):
     return None
 
 
-def api_resource_list(base_query):
-    for f in get_filters():
+def api_resource_list(base_query, filters=None):
+    if filters is None:
+        filters = get_filters()
+    for f in filters:
         base_query = base_query.filter_by(**f)
 
     queryset, count, next = paginate_request_query(base_query)
@@ -310,6 +312,21 @@ def current_bill_list(scope=None, bill_id=None):
 def committee_list():
     query = Committee.list().filter(Committee.premium == True)  # noqa
     return api_resource_list(query)
+
+
+@api.route('/hansard/', )
+def hansard_list():
+    query = Hansard.query
+
+    filters = get_filters()
+    hansard_filters = []
+    for f in filters:
+        if 'year' in f:
+            query = query.filter(func.extract('year', Hansard.date)==int(f['year']))
+        else:
+            hansard_filters.append(f)
+
+    return api_resource_list(query, filters=hansard_filters)
 
 
 @api.route('/<string:resource>/', )

@@ -9,7 +9,7 @@
   {% endif %}
 
   <div class="cte-dtl-meetings">
-    <nav class="cte-dtl-meetings-nav visible-md-block visible-lg-block">
+    <nav class="cte-dtl-meetings-nav visible-lg-block">
       <ul class="nav nav-tabs cte-tab-nav">
         <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
         <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
@@ -19,7 +19,7 @@
       </ul>
     </nav>
     <div class="tab-content">
-      <nav class="cte-dtl-meetings-nav-mobile visible-xs-block visible-sm-block">
+      <nav class="cte-dtl-meetings-nav-mobile visible-xs-block visible-sm-block visible-md-block">
         <div class="form-group">
           <select class="form-control cte-select-tab-nav">
             <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
@@ -170,25 +170,33 @@
       <div class="tab-pane fade in" id="bills">
         {% if bills %}
           <table class="table table-striped">
-            <tr>
-              <th>Bill name</th>
-              <th class="date">Date introduced</th>
-              <th>Status</th>
-            </tr>
-            {% for bill in bills %}
-              <tr class="item">
-                <td class="name">
-                  <a href="{{ url_for('bill', bill_id=bill.id) }}">{{ bill.title }}</a>
-                </td>
-                <td class="date">
-                  {{ bill.date_of_introduction|pretty_date }}
-                </td>
-                <td class="status">
-                  {{ bill.status.description }}
-                </td>
+            <thead>
+              <tr>
+                <th>Bill name</th>
+                <th class="date">Date introduced</th>
+                <th>Status</th>
               </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+              {% for bill in bills %}
+                <tr class="item">
+                  <td class="name">
+                    <a href="{{ url_for('bill', bill_id=bill.id) }}">{{ bill.title }}</a>
+                  </td>
+                  <td class="date">
+                    {{ bill.date_of_introduction|pretty_date }}
+                  </td>
+                  <td class="status">
+                    {{ bill.status.description }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
           </table>
+        {% else %}
+          <p>
+            There are no bills related to this committee.
+          </p>
         {% endif %}
       </div>
     </div>

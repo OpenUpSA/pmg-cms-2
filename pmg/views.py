@@ -881,7 +881,7 @@ def hansards(page=0):
         selected_house=house_id,
         selected_year=year,
         houses=houses,
-        year_list)
+        year_list=year_list)
 
 
 @app.route('/provincial-parliaments/western-cape/')

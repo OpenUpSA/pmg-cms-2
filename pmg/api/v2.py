@@ -99,7 +99,7 @@ def committee_bills(id):
         Event.committee == cte,
         Event.id == event_bills.c.event_id,
         Bill.id == event_bills.c.bill_id,
-    ).order_by(Bill.id, Bill.number, desc(Bill.year), Bill.title)
+    ).order_by(Bill.title, desc(Bill.year), Bill.number, Bill.id)
     query = query.distinct(Bill.id, Bill.number, Bill.year, Bill.title)
 
 

@@ -316,7 +316,7 @@ def committee_detail(committee_id):
 
     bills = load_from_api(
         'v2/committees/%s/bills' % committee_id,
-        fields=['id', 'title', 'status', 'date_of_introduction'],
+        fields=['id', 'title', 'status', 'date_of_introduction', 'code'],
     )['results']
 
     return render_template('committee_detail.html',

@@ -858,6 +858,9 @@ def hansards(page=0):
     if year is not None:
         params['filter[year]'] = year
 
+    year_list = range(MIN_YEAR, date.today().year + 1)
+    year_list.reverse()
+
     hansards_list = load_from_api('hansard', page=page, params=params)
     houses = sort_houses(House.query.filter(House.sphere=='national'))
 
@@ -877,7 +880,8 @@ def hansards(page=0):
         content_type="hansard",
         selected_house=house_id,
         selected_year=year,
-        houses=houses)
+        houses=houses,
+        year_list)
 
 
 @app.route('/provincial-parliaments/western-cape/')

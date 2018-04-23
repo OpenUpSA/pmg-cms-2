@@ -25,14 +25,19 @@ with open('config/logging-%s.yaml' % env) as f:
 
 # Setup Caching
 
+if app.config['DEBUG']:
+    cache_type = 'null'
+else:
+    cache_type = 'filesystem'
+
 cache = Cache(app, config={
-    'CACHE_TYPE': 'filesystem',
+    'CACHE_TYPE': cache_type,
     'CACHE_DIR': '/tmp/pmg-cache',
     'CACHE_DEFAULT_TIMEOUT': 60*60,
 })
 
 
-def no_cache(request):
+def should_skip_cache(request):
     if 'authentication-token' in request.headers:
         return True
     else:

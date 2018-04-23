@@ -22,10 +22,11 @@ with open('config/logging-%s.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
+logger = logging.getLogger(__name__)
 
 # Setup Caching
 
-if app.config['DEBUG']:
+if app.config['DEBUG'] and not app.config['DEBUG_CACHE']:
     cache_type = 'null'
 else:
     cache_type = 'filesystem'
@@ -39,8 +40,12 @@ cache = Cache(app, config={
 
 def should_skip_cache(request):
     if 'authentication-token' in request.headers:
+        if app.config['DEBUG_CACHE']:
+            logger.debug("cached value NOT ALLOWED for %r", request.path)
         return True
     else:
+        if app.config['DEBUG_CACHE']:
+            logger.debug("cached value ALLOWED for %r", request.path)
         return False
 
 

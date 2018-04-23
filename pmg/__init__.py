@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate
+from flask_caching import Cache
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
@@ -20,6 +21,22 @@ app.config.from_pyfile('../config/config.py')
 with open('config/logging-%s.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
+
+
+# Setup Caching
+
+cache = Cache(app, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': '/tmp/pmg-cache',
+    'CACHE_DEFAULT_TIMEOUT': 60*60,
+})
+
+
+def no_cache(request):
+    if 'authentication-token' in request.headers:
+        return True
+    else:
+        return False
 
 
 db = SQLAlchemy(app, session_options={"autoflush": False})

@@ -49,6 +49,11 @@ def should_skip_cache(request):
         return False
 
 
+def cache_key(request):
+    if app.config['DEBUG_CACHE']:
+        logger.debug("cached key %r", request.url)
+    return request.url
+
 db = SQLAlchemy(app, session_options={"autoflush": False})
 # Define naming constraints so that Alembic just works
 # See http://docs.sqlalchemy.org/en/rel_0_9/core/constraints.html#constraint-naming-conventions

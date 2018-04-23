@@ -12,7 +12,7 @@ from flask.ext.security import current_user
 from flask.ext.mail import Message
 from flask import make_response
 
-from pmg import app, mail
+from pmg import app, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
@@ -530,6 +530,8 @@ def committee_meetings(page=0):
 
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request))
 def committee_meeting(event_id):
     """
     Display committee meeting details, including report and any other related content.

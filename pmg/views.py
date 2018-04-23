@@ -314,6 +314,11 @@ def committee_detail(committee_id):
     else:
         attendance_rank = None
 
+    bills = load_from_api(
+        'v2/committees/%s/bills' % committee_id,
+        fields=['id', 'title', 'status', 'date_of_introduction', 'code'],
+    )['results']
+
     return render_template('committee_detail.html',
                            current_year=now.year,
                            earliest_year=earliest_year,
@@ -326,7 +331,9 @@ def committee_detail(committee_id):
                            social_summary=social_summary,
                            attendance_summary=attendance_summary,
                            attendance_rank=attendance_rank,
-                           admin_edit_url=admin_url('committee', committee_id))
+                           admin_edit_url=admin_url('committee', committee_id),
+                           bills=bills,
+    )
 
 
 @app.route('/attendance-overview')

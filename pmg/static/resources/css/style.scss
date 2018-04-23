@@ -1103,8 +1103,18 @@ header.detail-page-header {
   }
   .table {
     &.table-striped {
-      th, td {
+      td {
         border:none;
+      }
+    }
+  }
+  #bills {
+    .table {
+      .date {
+        min-width: 130px;
+      }
+      .number {
+        min-width: 90px;
       }
     }
   }

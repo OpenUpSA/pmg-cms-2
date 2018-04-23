@@ -6,7 +6,7 @@ from sqlalchemy.sql.expression import nullslast
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response, load_user
 from pmg.api.schemas import *  # noqa
-
+from pmg.models.resources import event_bills
 
 api = Blueprint('api2', __name__)
 
@@ -87,6 +87,23 @@ def committee_meeting_list(id):
             query = query.options(noload('committee'))
 
     return api_list_items(query, CommitteeMeetingSchema)
+
+
+@api.route('/committees/<int:id>/bills')
+def committee_bills(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    query = Bill.query.join(event_bills).join(Event).filter(
+        Event.committee == cte,
+        Event.id == event_bills.c.event_id,
+        Bill.id == event_bills.c.bill_id,
+    ).order_by(Bill.title, desc(Bill.year), Bill.number, Bill.id)
+    query = query.distinct(Bill.id, Bill.number, Bill.year, Bill.title)
+
+
+    return api_list_items(query, BillSchema)
 
 
 @api.route('/committees/<int:id>/calls-for-comment')

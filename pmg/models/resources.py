@@ -102,6 +102,9 @@ class BillType(db.Model):
     def private_member_bill(cls):
         return cls.query.filter(cls.name == "Private Member Bill").one()
 
+    def is_private_member_bill(self):
+        return self.name == "Private Member Bill"
+
     def __unicode__(self):
         return unicode(self.description)
 
@@ -146,7 +149,10 @@ class Bill(ApiResource, db.Model):
 
     @property
     def code(self):
-        out = self.type.prefix if self.type else "X"
+        if self.type.is_private_member_bill() and self.year >= 2018:
+            out = 'B'
+        else:
+            out = self.type.prefix if self.type else "X"
         out += str(self.number) if self.number else ""
         out += "-" + str(self.year)
         return unicode(out)

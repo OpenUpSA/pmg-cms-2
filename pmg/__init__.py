@@ -28,7 +28,7 @@ with open('config/logging-%s.yaml' % env) as f:
 if app.config['DEBUG']:
     cache_type = 'null'
 else:
-    cache_type = 'filesystem'
+    cache_type = 'null'
 
 cache = Cache(app, config={
     'CACHE_TYPE': cache_type,

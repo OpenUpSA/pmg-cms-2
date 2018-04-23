@@ -30,12 +30,17 @@
     <div class="col-md-6">
       <a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
     </div>
-    <select onchange="window.location.href = '/hansards?filter[house_id]=' + this.value">
-      <option>House</option>
-      {% for house in houses %}
-      <option value="{{ house.id }}">{{ house.name }}</option>
-      {% endfor %}
-    </select>
+  </div>
+  <div class="row filter">
+    <div class="col-md-6">
+      Filter by house
+      <select class="select-house" onchange="window.location.href = '/hansards?filter[house_id]=' + this.value">
+        <option value="#">All</option>
+        {% for house in houses %}
+        <option value="{{ house.id }}">{{ house.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
     {% endif %}
   </div>
 </div>

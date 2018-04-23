@@ -14,7 +14,7 @@ from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
 
-from pmg import db, app, cache, should_skip_cache
+from pmg import db, app, cache, cache_key, should_skip_cache
 from pmg.search import Search
 from pmg.models import *  # noqa
 from pmg.models.base import resource_slugs
@@ -315,7 +315,7 @@ def committee_list():
 @api.route('/<string:resource>/', )
 @api.route('/<string:resource>/<int:resource_id>/', )
 @load_user()
-@cache.memoize(make_name=lambda fname: request.full_path,
+@cache.memoize(make_name=lambda fname: cache_key(request),
                unless=lambda: should_skip_cache(request))
 def resource_list(resource, resource_id=None):
     """

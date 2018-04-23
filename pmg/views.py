@@ -530,6 +530,8 @@ def committee_meetings(page=0):
 
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meeting(event_id):
     """
     Display committee meeting details, including report and any other related content.

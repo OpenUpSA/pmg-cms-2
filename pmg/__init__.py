@@ -38,20 +38,20 @@ cache = Cache(app, config={
 })
 
 
-def should_skip_cache(request):
-    if 'authentication-token' in request.headers:
+def should_skip_cache(request, current_user):
+    if current_user.is_anonymous():
         if app.config['DEBUG_CACHE']:
-            logger.debug("cached value NOT ALLOWED for %r", request.path)
-        return True
+            logger.debug("cached value ALLOWED for %r", request.url)
+        return False
     else:
         if app.config['DEBUG_CACHE']:
-            logger.debug("cached value ALLOWED for %r", request.path)
-        return False
+            logger.debug("cached value NOT ALLOWED for %r", request.url)
+        return True
 
 
 def cache_key(request):
     if app.config['DEBUG_CACHE']:
-        logger.debug("cached key %r", request.url)
+        logger.debug("cache key %r", request.url)
     return request.url
 
 db = SQLAlchemy(app, session_options={"autoflush": False})

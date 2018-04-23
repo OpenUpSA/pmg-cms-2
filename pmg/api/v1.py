@@ -315,7 +315,8 @@ def committee_list():
 @api.route('/<string:resource>/', )
 @api.route('/<string:resource>/<int:resource_id>/', )
 @load_user()
-@cache.memoize(unless=lambda: should_skip_cache(request))
+@cache.memoize(make_name=lambda fname: request.full_path,
+               unless=lambda: should_skip_cache(request))
 def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.

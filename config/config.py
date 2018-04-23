@@ -6,6 +6,8 @@ import pytz
 DEBUG = env.get('FLASK_ENV', 'development') != 'production'
 TEST = env.get('FLASK_ENV') == 'test'
 
+DEBUG_CACHE = env.get('FLASK_DEBUG_CACHE', "false") == 'true'
+
 RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
 
 WTF_CSRF_ENABLED = True

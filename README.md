@@ -166,7 +166,7 @@ Application-level caching is used for certain views, initially based on which vi
 To add caching to a view, add the following decorator - it must be the decorator closest to the view method so that it caches the view result, and not the result from other decorators:
 
 ```python
-from pmg import app, mail, cache, cache_key, should_skip_cache
+from pmg import cache, cache_key, should_skip_cache
 ...
 @cache.memoize(make_name=lambda fname: cache_key(request),
                unless=lambda: should_skip_cache(request, current_user))

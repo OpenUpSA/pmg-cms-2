@@ -219,7 +219,6 @@ def user():
 
 
 @api.route('/search/')
-@load_user()
 @cache.memoize(make_name=lambda fname: cache_key(request))
 def search():
     """

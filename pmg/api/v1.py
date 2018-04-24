@@ -219,6 +219,8 @@ def user():
 
 
 @api.route('/search/')
+@load_user()
+@cache.memoize(make_name=lambda fname: cache_key(request))
 def search():
     """
     Search through ElasticSearch
@@ -346,6 +348,8 @@ def member_questions(member_id):
 
 
 @api.route('/member/<int:member_id>/attendance/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def member_attendance(member_id):
     """
     MP attendance of committee meetings.

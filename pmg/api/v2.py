@@ -1,8 +1,10 @@
 from flask import request, Blueprint, abort
+from flask.ext.security import current_user
 from sqlalchemy import desc
 from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast
 
+from pmg import cache, cache_key, should_skip_cache
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response, load_user
 from pmg.api.schemas import *  # noqa
@@ -141,6 +143,8 @@ def committee_members(id):
 @api.route('/committee-meetings/')
 @api.route('/committee-meetings/<int:id>')
 @load_user()
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meetings(id=None):
     if id:
         return api_get_item(id, CommitteeMeeting, CommitteeMeetingSchema)
@@ -149,6 +153,7 @@ def committee_meetings(id=None):
 
 
 @api.route('/committee-meetings/<int:id>/attendance')
+@cache.memoize(make_name=lambda fname: cache_key(request))
 def committee_meeting_attendance(id):
     item = CommitteeMeeting.query.filter(CommitteeMeeting.id == id).first()
     if not item:

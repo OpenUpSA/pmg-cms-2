@@ -154,6 +154,8 @@ def inject_via():
 
 
 @app.route('/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def index():
     committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name', 'committee.house'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
@@ -226,6 +228,8 @@ def bills(bill_type, year=None):
 
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def bill(bill_id):
     bill = load_from_api('v2/bills', bill_id)['result']
     stages = {
@@ -253,6 +257,8 @@ def bill(bill_id):
 
 @app.route('/committee/<int:committee_id>')
 @app.route('/committee/<int:committee_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_detail(committee_id):
     """
     Display all available detail for the committee.
@@ -337,6 +343,8 @@ def committee_detail(committee_id):
 
 
 @app.route('/attendance-overview')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def attendance_overview():
     """
     Display overview of attendance for meetings.
@@ -495,6 +503,8 @@ def sort_houses(houses):
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meetings(page=0):
     """
     Page through all available committee meetings.
@@ -1049,6 +1059,8 @@ def question_replies(page=0):
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def search(page=0):
     """
     Display search page

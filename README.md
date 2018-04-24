@@ -158,3 +158,21 @@ Updating this information is a two-step process:
 2. Run `python bin/load_parliamentary_days --pm-days data/parliament-sitting-days.xlsx` to update `data/parliament-sitting-days.txt`
 3. Run `git diff` to sanity check the changes
 3. Commit the changes
+
+### Caching
+
+Application-level caching is used for certain views, initially based on which views the server spends most time on as seen in NewRelic Transaction overview.
+
+To add caching to a view, add the following decorator - it must be the decorator closest to the view method so that it caches the view result, and not the result from other decorators:
+
+```python
+from pmg import cache, cache_key, should_skip_cache
+...
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
+```
+
+Arguments:
+
+- `unless` must be true when the cache should ***not*** be used. Frontend (views.py) views must always use this because the view shows them as logged in, even on pages where the rest of the data is the same. API views that don't serve subscription data or have any user-specific data don't need it.
+- `make_name` must be the cache key for the view. It's very important that query strings are taken into consideration for the cache key.

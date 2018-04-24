@@ -1262,3 +1262,10 @@ def blog_post(slug):
                            admin_edit_url=admin_url('posts', post.id),
                            social_summary=social_summary,
                            social_image=social_image)
+
+
+@app.route('/robots.txt', methods=['GET'])
+def robots_txt():
+  response = make_response(open('robots.txt').read())
+  response.headers["Content-type"] = "text/plain"
+  return response

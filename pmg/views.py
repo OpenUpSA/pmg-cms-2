@@ -855,8 +855,10 @@ def hansards(page=0):
 
     if house_id is not None:
         params['filter[house_id]'] = house_id
+        house_id = int(house_id)
     if year is not None:
         params['filter[year]'] = year
+        year = int(year)
 
     year_list = range(MIN_YEAR, date.today().year + 1)
     year_list.reverse()

@@ -31,16 +31,37 @@
       <a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
     </div>
   </div>
-  <div class="row filter">
-    <div class="col-md-6">
-      Filter by house
-      <select class="select-house" onchange="window.location.href = '/hansards?filter[house_id]=' + this.value">
-        <option value="#">All</option>
-        {% for house in houses %}
-        <option value="{{ house.id }}">{{ house.name }}</option>
-        {% endfor %}
-      </select>
-    </div>
+  <div class="filter">
+      <div class="row select-house" selected-house="{{ selected_house }}">
+        <div class="col-md-3 col-lg-2 col-label">
+          Filter by house
+        </div>
+        <div class="col-md-9 col-lg-10">
+          <select>
+            <option value="">All</option>
+            {% for house in houses %}
+            <option {% if house.id == selected_house %}selected{% endif %} value="{{ house.id }}">{{ house.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    {% if year_list %}
+      <div class="row select-year" selected-year="{{ selected_year }}">
+        <div class="col-md-3 col-lg-2 col-label">
+          Filter by year
+        </div>
+        <div class="col-md-9 col-lg-10">
+          <form>
+            <input year="all" {% if not selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-all">
+            <label class="btn btn-default {% if not selected_year %}active{% endif %}" value="All" for="select-all">All</label>
+          {% for i in year_list %}
+            <input year="{{ i }}" {% if i == selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-{{ i }}">
+            <label class="btn btn-default {% if i == selected_year %}active{% endif %}" value="{{ i }}" for="select-{{ i }}">{{ i }}</label>
+          {% endfor %}
+          </form>
+        </div>
+      </div>
+    {% endif %}
     {% endif %}
   </div>
 </div>

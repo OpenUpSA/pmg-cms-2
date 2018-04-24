@@ -612,8 +612,21 @@ article.page {
 
 // hansards page
 .hansards {
-  .select-house {
+  .select-house, .select-year {
     margin-top: 20px;
+    .col-label {
+      padding-top: 5px;
+    }
+  }
+  .select-year {
+    input {
+      display: none;
+    }
+    label {
+      &.btn {
+        margin-bottom: 5px;
+      }
+    }
   }
 }
 

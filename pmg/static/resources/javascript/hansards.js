@@ -1,11 +1,19 @@
-var url = window.location.href;
-var hansardFilter = "house_id";
-
-if(url.indexOf(hansardFilter) != -1 )
-  var lastChar = url.slice(-1);
-  if($.isNumeric(lastChar));
-    var lastChar = parseInt(lastChar, 10);
-    $(".hansards .select-house option[value=" + lastChar + "]").prop("selected",true);
-
+// message if no hansards in filter
 if($(".hansards ul.hansard-list > li").length == 0)
-  $(".hansards ul.hansard-list").append("<li>No hansards for this house</li>");
+  $(".hansards ul.hansard-list").append("<li>No hansards found. Please expand your search.</li>");
+
+// select correct URL when selecting house or year
+$(".select-house select, .select-year form input").change(function() {
+  var filterHouse = "";
+  var filterYear = "";
+  var selectedHouse = $(".select-house select").val();
+  var selectedYear = $(".select-year input:checked").attr("year");
+  var ampersand = ""
+  if(selectedHouse) {
+    var filterHouse = "filter[house_id]=";
+        ampersand = "&";
+  }
+  if(selectedYear != "all")
+    var filterYear = "filter[year]=";
+  window.location.href = "/hansards/?" + filterHouse + selectedHouse + ampersand + filterYear + selectedYear;
+});

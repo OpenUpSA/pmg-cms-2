@@ -14,7 +14,7 @@ from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
 
-from pmg import db, app
+from pmg import db, app, cache, cache_key, should_skip_cache
 from pmg.search import Search
 from pmg.models import *  # noqa
 from pmg.models.base import resource_slugs
@@ -221,6 +221,7 @@ def user():
 
 
 @api.route('/search/')
+@cache.memoize(make_name=lambda fname: cache_key(request))
 def search():
     """
     Search through ElasticSearch
@@ -332,6 +333,8 @@ def hansard_list():
 @api.route('/<string:resource>/', )
 @api.route('/<string:resource>/<int:resource_id>/', )
 @load_user()
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def resource_list(resource, resource_id=None):
     """
     Generic resource endpoints.
@@ -361,6 +364,8 @@ def member_questions(member_id):
 
 
 @api.route('/member/<int:member_id>/attendance/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def member_attendance(member_id):
     """
     MP attendance of committee meetings.

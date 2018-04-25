@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate
+from flask_caching import Cache
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
@@ -21,6 +22,37 @@ with open('config/logging-%s.yaml' % env) as f:
     import yaml
     logging.config.dictConfig(yaml.load(f))
 
+logger = logging.getLogger(__name__)
+
+# Setup Caching
+
+if app.config['DEBUG'] and not app.config['DEBUG_CACHE']:
+    cache_type = 'null'
+else:
+    cache_type = 'filesystem'
+
+cache = Cache(app, config={
+    'CACHE_TYPE': cache_type,
+    'CACHE_DIR': '/tmp/pmg-cache',
+    'CACHE_DEFAULT_TIMEOUT': 60*60,
+})
+
+
+def should_skip_cache(request, current_user):
+    if current_user.is_anonymous():
+        if app.config['DEBUG_CACHE']:
+            logger.debug("cached value ALLOWED for %r", request.url)
+        return False
+    else:
+        if app.config['DEBUG_CACHE']:
+            logger.debug("cached value NOT ALLOWED for %r", request.url)
+        return True
+
+
+def cache_key(request):
+    if app.config['DEBUG_CACHE']:
+        logger.debug("cache key %r", request.url)
+    return request.url
 
 db = SQLAlchemy(app, session_options={"autoflush": False})
 # Define naming constraints so that Alembic just works

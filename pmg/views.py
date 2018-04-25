@@ -12,7 +12,7 @@ from flask.ext.security import current_user
 from flask.ext.mail import Message
 from flask import make_response
 
-from pmg import app, mail
+from pmg import app, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
@@ -154,6 +154,8 @@ def inject_via():
 
 
 @app.route('/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def index():
     committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name', 'committee.house'], params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
@@ -226,6 +228,8 @@ def bills(bill_type, year=None):
 
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def bill(bill_id):
     bill = load_from_api('v2/bills', bill_id)['result']
     stages = {
@@ -253,6 +257,8 @@ def bill(bill_id):
 
 @app.route('/committee/<int:committee_id>')
 @app.route('/committee/<int:committee_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_detail(committee_id):
     """
     Display all available detail for the committee.
@@ -314,6 +320,11 @@ def committee_detail(committee_id):
     else:
         attendance_rank = None
 
+    bills = load_from_api(
+        'v2/committees/%s/bills' % committee_id,
+        fields=['id', 'title', 'status', 'date_of_introduction', 'code'],
+    )['results']
+
     return render_template('committee_detail.html',
                            current_year=now.year,
                            earliest_year=earliest_year,
@@ -326,10 +337,14 @@ def committee_detail(committee_id):
                            social_summary=social_summary,
                            attendance_summary=attendance_summary,
                            attendance_rank=attendance_rank,
-                           admin_edit_url=admin_url('committee', committee_id))
+                           admin_edit_url=admin_url('committee', committee_id),
+                           bills=bills,
+    )
 
 
 @app.route('/attendance-overview')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def attendance_overview():
     """
     Display overview of attendance for meetings.
@@ -488,6 +503,8 @@ def sort_houses(houses):
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meetings(page=0):
     """
     Page through all available committee meetings.
@@ -523,6 +540,8 @@ def committee_meetings(page=0):
 
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meeting(event_id):
     """
     Display committee meeting details, including report and any other related content.
@@ -1062,6 +1081,8 @@ def question_replies(page=0):
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def search(page=0):
     """
     Display search page
@@ -1263,3 +1284,10 @@ def blog_post(slug):
                            admin_edit_url=admin_url('posts', post.id),
                            social_summary=social_summary,
                            social_image=social_image)
+
+
+@app.route('/robots.txt', methods=['GET'])
+def robots_txt():
+  response = make_response(open('robots.txt').read())
+  response.headers["Content-type"] = "text/plain"
+  return response

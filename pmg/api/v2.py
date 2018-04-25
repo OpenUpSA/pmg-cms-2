@@ -1,12 +1,14 @@
 from flask import request, Blueprint, abort
+from flask.ext.security import current_user
 from sqlalchemy import desc
 from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast
 
+from pmg import cache, cache_key, should_skip_cache
 from pmg.models import Committee, CommitteeMeeting, CommitteeMeetingAttendance, CallForComment, Bill
 from pmg.api.v1 import get_filters, paginate_request_query, send_api_response, load_user
 from pmg.api.schemas import *  # noqa
-
+from pmg.models.resources import event_bills
 
 api = Blueprint('api2', __name__)
 
@@ -89,6 +91,23 @@ def committee_meeting_list(id):
     return api_list_items(query, CommitteeMeetingSchema)
 
 
+@api.route('/committees/<int:id>/bills')
+def committee_bills(id):
+    cte = Committee.query.get(id)
+    if not cte:
+        abort(404)
+
+    query = Bill.query.join(event_bills).join(Event).filter(
+        Event.committee == cte,
+        Event.id == event_bills.c.event_id,
+        Bill.id == event_bills.c.bill_id,
+    ).order_by(Bill.title, desc(Bill.year), Bill.number, Bill.id)
+    query = query.distinct(Bill.id, Bill.number, Bill.year, Bill.title)
+
+
+    return api_list_items(query, BillSchema)
+
+
 @api.route('/committees/<int:id>/calls-for-comment')
 def committee_calls_for_comment(id):
     cte = Committee.query.get(id)
@@ -124,6 +143,8 @@ def committee_members(id):
 @api.route('/committee-meetings/')
 @api.route('/committee-meetings/<int:id>')
 @load_user()
+@cache.memoize(make_name=lambda fname: cache_key(request),
+               unless=lambda: should_skip_cache(request, current_user))
 def committee_meetings(id=None):
     if id:
         return api_get_item(id, CommitteeMeeting, CommitteeMeetingSchema)
@@ -132,6 +153,7 @@ def committee_meetings(id=None):
 
 
 @api.route('/committee-meetings/<int:id>/attendance')
+@cache.memoize(make_name=lambda fname: cache_key(request))
 def committee_meeting_attendance(id):
     item = CommitteeMeeting.query.filter(CommitteeMeeting.id == id).first()
     if not item:

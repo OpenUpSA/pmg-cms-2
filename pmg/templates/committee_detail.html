@@ -9,22 +9,24 @@
   {% endif %}
 
   <div class="cte-dtl-meetings">
-    <nav class="cte-dtl-meetings-nav visible-md-block visible-lg-block">
+    <nav class="cte-dtl-meetings-nav visible-lg-block">
       <ul class="nav nav-tabs cte-tab-nav">
         <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
         <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
         <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
         <li><a href="#qr" data-toggle="tab">Questions and replies</a></li>
+        <li><a href="#bills" data-toggle="tab">Bills</a></li>
       </ul>
     </nav>
     <div class="tab-content">
-      <nav class="cte-dtl-meetings-nav-mobile visible-xs-block visible-sm-block">
+      <nav class="cte-dtl-meetings-nav-mobile visible-xs-block visible-sm-block visible-md-block">
         <div class="form-group">
           <select class="form-control cte-select-tab-nav">
             <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
             <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
             <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
             <option data-target="#qr" data-toggle="tab" value="#qr">Questions and replies</option>
+            <option data-target="#bills" data-toggle="tab" value="#bills">Bills</option>
           </select>
         </div>
       </nav>
@@ -107,66 +109,104 @@
         </p>
         {% endif %}
       </div>
-    <div class="tab-pane fade in cte-dtl-meetings-tab-rep" id="tr">
-      {% if committee.tabled_committee_reports %}
-        <table class="table table-striped">
-          {% for item in committee.tabled_committee_reports %}
-          <tr class="item">
-            <td class="date"><nobr>{{ item.start_date|pretty_date }}</nobr></td>
-            <td class="name"><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
-          </tr>
-          {% endfor %}
-        </table>
-      {% else %}
-      <p>
-        There are no committee reports at this time.
-      </p>
-      {% endif %}
-    </div>
-    <div class="tab-pane fade in cte-dtl-meetings-call-com" id="cc">
-      {% if committee.calls_for_comments %}
-        <table class="table table-striped">
-          {% for item in committee.calls_for_comments %}
+      <div class="tab-pane fade in cte-dtl-meetings-tab-rep" id="tr">
+        {% if committee.tabled_committee_reports %}
+          <table class="table table-striped">
+            {% for item in committee.tabled_committee_reports %}
             <tr class="item">
               <td class="date"><nobr>{{ item.start_date|pretty_date }}</nobr></td>
-              <td class="name"><a href="{{ url_for('call_for_comment', call_for_comment_id=item.id) }}">{{ item.title }}</a></td>
+              <td class="name"><a href="{{ url_for('tabled_committee_report', tabled_committee_report_id=item.id) }}">{{ item.title }}</a></td>
             </tr>
-          {% endfor %}
-        </table>
-      {% else %}
-      <p>
-        There are no calls for comments at this time.
-      </p>
-      {% endif %}
-    </div>
-    <div class="tab-pane fade in cte-dtl-meetings-qst-rep" id="qr">
-    {% if recent_questions %}
-      <table class="table table-striped">
-        {% for item in recent_questions %}
-          <tr class="item">
-            <td class="date"><nobr>{{ (item.start_date or item.date)|pretty_date }}</nobr></td>
-            <td class="name">
-              {# handle QuestionReply and CommitteeQuestion objects differently #}
-              {% if item.date %}
-              <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.code }} by {{ item.asked_by_name }}</a> - {{ item.question | striptags | truncate(50) }}</a>
-              {% else %}
-              <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-      <p>
-        <a href="{{ url_for('question_replies') }}?filter%5Bcommittee%5D={{ committee.id }}" class="btn btn-default">All questions to the Minister</a>
-      </p>
-      {% else %}
-      <p>
-        There are no questions at this time.
-      </p>
-      {% endif %}
+            {% endfor %}
+          </table>
+        {% else %}
+        <p>
+          There are no committee reports at this time.
+        </p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade in cte-dtl-meetings-call-com" id="cc">
+        {% if committee.calls_for_comments %}
+          <table class="table table-striped">
+            {% for item in committee.calls_for_comments %}
+              <tr class="item">
+                <td class="date"><nobr>{{ item.start_date|pretty_date }}</nobr></td>
+                <td class="name"><a href="{{ url_for('call_for_comment', call_for_comment_id=item.id) }}">{{ item.title }}</a></td>
+              </tr>
+            {% endfor %}
+          </table>
+        {% else %}
+        <p>
+          There are no calls for comments at this time.
+        </p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade in cte-dtl-meetings-qst-rep" id="qr">
+        {% if recent_questions %}
+          <table class="table table-striped">
+            {% for item in recent_questions %}
+              <tr class="item">
+                <td class="date"><nobr>{{ (item.start_date or item.date)|pretty_date }}</nobr></td>
+                <td class="name">
+                  {# handle QuestionReply and CommitteeQuestion objects differently #}
+                  {% if item.date %}
+                  <a href="{{ url_for('committee_question', question_id=item.id) }}">{{ item.code }} by {{ item.asked_by_name }}</a> - {{ item.question | striptags | truncate(50) }}</a>
+                  {% else %}
+                  <a href="{{ url_for('question_reply', question_reply_id=item.id) }}">{{ item.title }}</a>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </table>
+          <p>
+            <a href="{{ url_for('question_replies') }}?filter%5Bcommittee%5D={{ committee.id }}" class="btn btn-default">All questions to the Minister</a>
+          </p>
+          {% else %}
+          <p>
+            There are no questions at this time.
+          </p>
+        {% endif %}
+      </div>
+      <div class="tab-pane fade in" id="bills">
+        {% if bills %}
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Bill name</th>
+                <th class="date">Date introduced</th>
+                <th class="number">Number</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for bill in bills %}
+                <tr class="item">
+                  <td class="name">
+                    <a href="{{ url_for('bill', bill_id=bill.id) }}">{{ bill.title }}</a>
+                  </td>
+                  <td class="date">
+                    {{ bill.date_of_introduction|pretty_date }}
+                  </td>
+                  <td class="number">
+                    {{ bill.code }}
+                  </td>
+                  <td class="status">
+                    {{ bill.status.description }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>
+            There are no bills related to this committee.
+          </p>
+        {% endif %}
       </div>
     </div>
   </div> <!-- /Reports -->
+
+
 
 {% endblock %}
 

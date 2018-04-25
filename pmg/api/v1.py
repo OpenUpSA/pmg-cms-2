@@ -317,7 +317,7 @@ def committee_list():
 
 @api.route('/hansard/', )
 def hansard_list():
-    query = Hansard.query
+    query = Hansard.list()
 
     filters = get_filters()
     hansard_filters = []

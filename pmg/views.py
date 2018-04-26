@@ -890,6 +890,7 @@ def hansards(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     hansards = hansards_list['results']
     url = "/hansards"
+
     return render_template(
         'list.html',
         results=hansards,

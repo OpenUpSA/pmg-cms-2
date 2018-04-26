@@ -74,6 +74,12 @@
 </ul>
 {% endif %}
 
+{% if content_type == 'hansard' %}
+  {% if not results %}
+    <p>No hansards found. Please expand your search.</p>
+  {% endif %}
+{% endif %}
+
 {% if content_type == 'call_for_comment' %}
 
 <span class="no-open-hidden">

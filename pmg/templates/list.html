@@ -38,7 +38,7 @@
         </div>
         <div class="col-md-9 col-lg-10">
           <select>
-            <option value="">All</option>
+            <option value="all">All</option>
             {% for house in houses %}
             <option {% if house.id == selected_house %}selected{% endif %} value="{{ house.id }}">{{ house.name }}</option>
             {% endfor %}
@@ -53,7 +53,7 @@
         <div class="col-md-9 col-lg-10">
           <form>
             <input year="all" {% if not selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-all">
-            <label class="btn btn-default {% if not selected_year %}active{% endif %}" value="All" for="select-all">All</label>
+            <label class="btn btn-default {% if not selected_year %}active{% endif %}" value="all" for="select-all">All</label>
           {% for i in year_list %}
             <input year="{{ i }}" {% if i == selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-{{ i }}">
             <label class="btn btn-default {% if i == selected_year %}active{% endif %}" value="{{ i }}" for="select-{{ i }}">{{ i }}</label>

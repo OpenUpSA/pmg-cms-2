@@ -9,7 +9,7 @@ $(function() {
     $(wrapper).empty();
 
     // Asynchronous download of PDF
-    PDFJS.getDocument(url).then(function(pdf) {
+    PDFJS.getDocument(url + '?direct=1').then(function(pdf) {
       wrapper.setAttribute('data-loaded', true);
 
       function renderPage(page) {

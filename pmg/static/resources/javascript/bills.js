@@ -30,7 +30,7 @@ $(function() {
     var scale, viewport, canvas;
 
     if (wrapper.clientWidth > 800) {
-      scale = 1.2;
+      scale = 1.25;
     } else {
       scale = (wrapper.clientWidth - 40) / pdfPage.getViewport(1).width;
     }

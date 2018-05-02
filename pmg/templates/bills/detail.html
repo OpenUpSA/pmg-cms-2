@@ -143,9 +143,10 @@
   <div class="tab-content">
     {% for version in bill.versions %}
     <div role="tabpanel" class="tab-pane {% if loop.first %}active{% endif %}" id="bill-version-{{ version.id }}" data-url="{{ version.file.url }}">
-      <p class="text-right">
-        <a href="{{ version.file.url }}" class="btn btn-default"><i class="fa fa-file-text"></i> Download ({{ version.file.file_bytes | filesizeformat }})</a>
-      </p>
+      <div class="clearfix">
+        <a href="{{ version.file.url }}" class="btn btn-default pull-right"><i class="fa fa-file-text"></i> Download ({{ version.file.file_bytes | filesizeformat }})</a>
+        <h4>{{ version.title }}</h4>
+      </div>
 
       {% if version.file.file_mime == "application/pdf" %}
         <div class="bill-version-wrapper">

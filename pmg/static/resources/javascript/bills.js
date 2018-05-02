@@ -1,31 +1,17 @@
 $(function() {
-  // show bill version pdfs
-  $('.bill-version-content a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-    var url = e.target.getAttribute('data-url'),
-        pane = document.getElementById(e.target.getAttribute('href').slice(1));
+  function showBillPdf(version_id) {
+    var pane = document.getElementById(version_id),
+        url = pane.getAttribute('data-url'),
+        wrapper = pane.querySelector('.bill-version-wrapper');
 
-    showBillPdf(pane, url);
-  });
+    if (wrapper.getAttribute('data-loaded')) return;
 
-  // show the first tab when the page loads
-  var firstTab = $('.bill-version-content a[data-toggle="tab"]')[0],
-      pane = document.getElementById(firstTab.getAttribute('href').slice(1)),
-      url = firstTab.getAttribute('data-url');
-
-  showBillPdf(pane, url);
-
-  function showBillPdf(pane, url) {
-    var wrapper = $(pane).find('.bill-version-wrapper')[0];
-    if (wrapper.children.length > 0) return;
-
-    // Loaded via <script> tag, create shortcut to access PDF.js exports.
-    var PDFJS = window['pdfjs-dist/build/pdf'];
-
-    // The workerSrc property shall be specified.
-    PDFJS.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+    $(wrapper).empty();
 
     // Asynchronous download of PDF
     PDFJS.getDocument(url).then(function(pdf) {
+      wrapper.setAttribute('data-loaded', true);
+
       function renderPage(page) {
         renderPdfPage(pdf, page, wrapper);
       }
@@ -65,4 +51,24 @@ $(function() {
       viewport: viewport
     });
   }
+
+  function autoShowBillPdf(version_id) {
+    // assume small clients want to opt-in to showing the pdf
+    if (window.outerWidth > 800) showBillPdf(version_id);
+  }
+
+  // show when button clicked
+  $('.bill-version-content .load-pdf').on('click', function(e) {
+    showBillPdf($(e.target).closest('.tab-pane').attr('id'));
+  });
+
+  // show bill version pdfs when tab changes
+  $('.bill-version-content a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+    var id = e.target.getAttribute('href').slice(1);
+    autoShowBillPdf(id);
+  });
+
+  // show the first tab when the page loads
+  var firstTab = $('.bill-version-content a[data-toggle="tab"]')[0];
+  autoShowBillPdf(firstTab.getAttribute('href').slice(1));
 });

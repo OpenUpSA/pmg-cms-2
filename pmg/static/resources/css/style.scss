@@ -1880,3 +1880,24 @@ ul.menu {
     }
   }
 }
+
+.bill-version-content {
+  .tab-pane {
+    padding-top: 10px;
+  }
+}
+
+.bill-version-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: $grey-medium;
+  box-shadow: inset 2px 2px 4px rgba(1, 1, 1, 0.25);
+  padding: 20px;
+  margin-top: 10px;
+
+  canvas {
+    margin: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+}

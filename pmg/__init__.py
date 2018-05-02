@@ -147,6 +147,7 @@ assets.register('js', Bundle(
     'resources/javascript/pmg.js',
     'resources/javascript/moment.min.js',
     'resources/javascript/bootstrap-sortable.js',
+    'resources/javascript/bills.js',
     output='javascript/app.%(version)s.js'))
 
 assets.register('admin-js', Bundle(

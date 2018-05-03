@@ -867,12 +867,30 @@ def hansards(page=0):
     """
 
     logger.debug("hansards page called")
-    hansards_list = load_from_api('hansard', page=page)
+
+    params = {}
+    house_id = request.args.get('filter[house_id]', None)
+    year = request.args.get('filter[year]', None)
+
+    if house_id is not None:
+        params['filter[house_id]'] = house_id
+        house_id = int(house_id)
+    if year is not None:
+        params['filter[year]'] = year
+        year = int(year)
+
+    year_list = range(MIN_YEAR, date.today().year + 1)
+    year_list.reverse()
+
+    hansards_list = load_from_api('hansard', page=page, params=params)
+    houses = sort_houses(House.query.filter(House.sphere=='national'))
+
     count = hansards_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
     hansards = hansards_list['results']
     url = "/hansards"
+
     return render_template(
         'list.html',
         results=hansards,
@@ -881,7 +899,12 @@ def hansards(page=0):
         url=url,
         icon="archive",
         title="Hansards",
-        content_type="hansard")
+        content_type="hansard",
+        selected_house=house_id,
+        selected_year=year,
+        houses=houses,
+        year_list=year_list)
+
 
 @app.route('/provincial-parliaments/western-cape/')
 def western_cape_overview():

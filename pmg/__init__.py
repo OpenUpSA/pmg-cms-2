@@ -142,6 +142,7 @@ assets.register('js', Bundle(
     'resources/javascript/committees.js',
     'resources/javascript/users.js',
     'resources/javascript/members.js',
+    'resources/javascript/hansards.js',
     'resources/javascript/provincial-overview.js',
     'resources/javascript/calls-for-comments.js',
     'resources/javascript/pmg.js',

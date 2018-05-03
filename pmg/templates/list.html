@@ -30,8 +30,43 @@
     <div class="col-md-6">
       <a href="{{ url_for('page', pagename='previous-years-programmes') }}">Previous years' parliamentary programmes</a>
     </div>
+  </div> <!-- row -->
+  <div class="row">
+    <div class="col-md-9">
+      <div class="filter">
+        <div class="row select-house" selected-house="{{ selected_house }}">
+          <div class="col-md-3 col-lg-2 col-label">
+            Filter by house
+          </div>
+          <div class="col-md-9 col-lg-10">
+            <select>
+              <option value="all">All</option>
+              {% for house in houses %}
+              <option {% if house.id == selected_house %}selected{% endif %} value="{{ house.id }}">{{ house.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div> <!-- row select-house -->
+
+        <div class="row select-year" selected-year="{{ selected_year }}">
+          <div class="col-md-3 col-lg-2 col-label">
+            Filter by year
+          </div>
+          <div class="col-md-9 col-lg-10">
+            <form>
+              <input year="all" {% if not selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-all">
+              <label class="btn btn-default {% if not selected_year %}active{% endif %}" value="all" for="select-all">All</label>
+            {% for i in year_list %}
+              <input year="{{ i }}" {% if i == selected_year %}checked='true'{% endif %}" name="year" type="radio" id="select-{{ i }}">
+              <label class="btn btn-default {% if i == selected_year %}active{% endif %}" value="{{ i }}" for="select-{{ i }}">{{ i }}</label>
+            {% endfor %}
+            </form>
+          </div> <!-- column -->
+        </div> <!-- row select-year -->
+      </div> <!-- filter -->
+    </div> <!-- column -->
     {% endif %}
-  </div>
+  </div> <!-- row -->
 </div>
 
 {% if content_type != 'call_for_comment' %}
@@ -40,6 +75,12 @@
     <li>{% include content_type | replace("-", "_") + '_stub.html' %}</li>
   {% endfor %}
 </ul>
+{% endif %}
+
+{% if content_type == 'hansard' %}
+  {% if not results %}
+    <p>No hansards found. Please expand your search.</p>
+  {% endif %}
 {% endif %}
 
 {% if content_type == 'call_for_comment' %}

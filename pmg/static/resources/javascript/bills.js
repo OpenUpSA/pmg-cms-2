@@ -37,7 +37,6 @@ $(function() {
 
     viewport = pdfPage.getViewport(scale);
     canvas = document.createElement('canvas');
-
     wrapper.appendChild(canvas);
 
     // Prepare canvas using PDF page dimensions
@@ -64,8 +63,7 @@ $(function() {
 
   // show bill version pdfs when tab changes
   $('.bill-version-content a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
-    var id = e.target.getAttribute('href').slice(1);
-    autoShowBillPdf(id);
+    autoShowBillPdf(e.target.getAttribute('href').slice(1));
   });
 
   // show the first tab when the page loads

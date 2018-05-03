@@ -1216,7 +1216,7 @@ def docs(path, dir=''):
         resp = requests.get(remote, stream=True)
         return Response(resp.iter_content(chunk_size=10 * 1024), content_type=resp.headers['Content-Type'])
 
-    return redirect(app.config['STATIC_HOST'] + dir + path)
+    return redirect(remote)
 
 
 @app.route('/correct-this-page', methods=['POST'])

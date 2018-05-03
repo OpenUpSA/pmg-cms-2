@@ -6,8 +6,9 @@ from bs4 import BeautifulSoup
 from sqlalchemy import desc
 from itertools import groupby
 from unidecode import unidecode
+import requests
 
-from flask import request, flash, url_for, session, render_template, abort, redirect, send_file
+from flask import request, flash, url_for, session, render_template, abort, redirect, Response
 from flask.ext.security import current_user
 from flask.ext.mail import Message
 from flask import make_response
@@ -16,7 +17,7 @@ from pmg import app, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.search import Search
-from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, File, House
+from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, House
 from pmg.models.resources import Committee
 
 from copy import deepcopy
@@ -1232,7 +1233,13 @@ def docs(path, dir=''):
     except StandardError as e:
         logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
-    return redirect(app.config['STATIC_HOST'] + dir + path)
+    remote = app.config['STATIC_HOST'] + dir + path
+
+    if request.args.get('direct') == '1':
+        resp = requests.get(remote, stream=True)
+        return Response(resp.iter_content(chunk_size=10 * 1024), content_type=resp.headers['Content-Type'])
+
+    return redirect(remote)
 
 
 @app.route('/correct-this-page', methods=['POST'])

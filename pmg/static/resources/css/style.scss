@@ -1900,3 +1900,44 @@ ul.menu {
     }
   }
 }
+
+.bill-version-content {
+  margin-top: 40px;
+
+  .tab-pane {
+    padding-top: 10px;
+  }
+}
+
+.bill-version-wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+  background-color: $grey-medium;
+  box-shadow: inset 2px 2px 4px rgba(1, 1, 1, 0.25);
+  padding: 20px;
+  margin-top: 10px;
+
+  canvas {
+    margin: auto;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .load-pdf {
+    margin: auto;
+  }
+
+  &:empty::after {
+    content: " ";
+    position: relative;
+    display: block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid $grey-darkest;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    animation: fa-spin 1s infinite steps(16);
+  }
+}

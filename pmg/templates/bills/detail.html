@@ -130,5 +130,41 @@
   <p class="lead">So far, no events have been associated with this bill.</p>
 {% endif %}
 
+{% if bill.versions %}
+<div class="bill-version-content">
+  <h2>Bill Text</h2>
+
+  <ul class="nav nav-tabs">
+    {% for version in bill.versions %}
+    <li role="presentation" class="{% if loop.first %}active{% endif %}"><a href="#bill-version-{{ version.id }}" data-toggle="tab" role="tab">{{ version.date }} - {{ version.title }}</a></li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content">
+    {% for version in bill.versions %}
+    <div role="tabpanel" class="tab-pane {% if loop.first %}active{% endif %}" id="bill-version-{{ version.id }}" data-url="{{ version.file.url }}">
+      <div class="clearfix">
+        <a href="{{ version.file.url }}" class="btn btn-default pull-right"><i class="fa fa-file-text"></i> Download ({{ version.file.file_bytes | filesizeformat }})</a>
+        <h4>{{ version.title }}</h4>
+      </div>
+
+      {% if version.file.file_mime == "application/pdf" %}
+        <div class="bill-version-wrapper">
+          <button class="btn btn-primary load-pdf">Show PDF ({{ version.file.file_bytes | filesizeformat }})</button>
+        </div>
+      {% else %}
+        <p class="alert alert-info"><i>A preview of this file is not available. Please download it instead.</i></p>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 {% endblock %}
 
+{% block javascript %}
+  {{ super() }}
+  <script type="text/javascript" src="/static/resources/javascript/vendor/pdfjs/pdf.js"></script>
+  <script>PDFJS.workerSrc = '/static/resources/javascript/vendor/pdfjs/pdf.worker.js';</script>
+{% endblock %}

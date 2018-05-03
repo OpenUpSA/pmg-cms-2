@@ -234,7 +234,10 @@ class File(db.Model):
             path = self.file_path[1:]
         else:
             path = self.file_path
-        return url_for('docs', path=path)
+        # XXX hack - use ProxyFix instead?
+        # https://stackoverflow.com/questions/34802316/make-flasks-url-for-use-the-https-scheme-in-an-aws-load-balancer-without-mess
+        scheme = 'http' if app.config['DEBUG'] else 'https'
+        return url_for('docs', path=path, _scheme=scheme, _external=True)
 
     def from_upload(self, file_data):
         """ Handle a POST-based file upload and use it as the content for this file. """

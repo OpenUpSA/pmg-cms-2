@@ -136,7 +136,11 @@
 
   <ul class="nav nav-tabs">
     {% for version in bill.versions %}
-    <li role="presentation" class="{% if loop.first %}active{% endif %}"><a href="#bill-version-{{ version.id }}" data-toggle="tab" role="tab">{{ version.date }} - {{ version.title }}</a></li>
+    <li role="presentation" class="{% if loop.first %}active{% endif %}">
+      <a href="#bill-version-{{ version.id }}" data-toggle="tab" role="tab">
+        <strong>{{ version.title }}</strong> | {{ version.date | pretty_date }}
+      </a>
+    </li>
     {% endfor %}
   </ul>
 

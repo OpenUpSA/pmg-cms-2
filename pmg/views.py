@@ -319,6 +319,8 @@ def committee_detail(committee_id):
         fields=['id', 'title', 'status', 'date_of_introduction', 'code'],
     )['results']
 
+    bills.sort(key=lambda b: b['date_of_introduction'], reverse=True)
+
     return render_template('committee_detail.html',
                            current_year=now.year,
                            earliest_year=earliest_year,

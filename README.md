@@ -47,9 +47,16 @@ If you want to contribute to the code, please fork the repository, make your cha
 
 ### Local setup
 
-Install the [PostgreSQL](https://www.postgresql.org/) database server. It's a useful idea to setup [passwordless authentication for local connections][https://www.postgresql.org/docs/current/static/auth-methods.html#AUTH-TRUST].
+Install the [PostgreSQL](https://www.postgresql.org/) database server. It's a useful idea to setup [passwordless authentication for local connections](https://www.postgresql.org/docs/current/static/auth-methods.html#AUTH-TRUST).
 
-You'll also need the psql and libxml development libraries. On Ubuntu, use `sudo apt-get install libpq-devel libxml2-dev libxslt1-dev python-dev`. On Mac OS X, use `brew install libxml2`.
+You'll also need the psql and libxml development libraries. 
+
+```sh
+# Ubuntu/debian
+sudo apt-get install libpq-devel libxml2-dev libxslt1-dev python-dev
+# macOS
+brew install libxml2
+```
 
 You'll need python 2.7 and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/).
 

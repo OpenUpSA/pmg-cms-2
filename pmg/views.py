@@ -884,7 +884,7 @@ def hansards(page=0):
     year_list.reverse()
 
     hansards_list = load_from_api('hansard', page=page, params=params)
-    houses = sort_houses(House.query.filter(House.sphere=='national'))
+    houses = sort_houses(House.query.filter(House.sphere=='national', House.name_short!='President'))
 
     count = hansards_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']

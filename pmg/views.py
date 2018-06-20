@@ -26,6 +26,7 @@ from collections import OrderedDict
 import forms
 import utils
 from helpers import _jinja2_filter_datetime as pretty_date
+from user_management import follow_cte_post_registration_or_login
 
 LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
 
@@ -343,6 +344,18 @@ def committee_detail(committee_id):
                            admin_edit_url=admin_url('committee', committee_id),
                            bills=bills,
     )
+
+
+@app.route('/committee/<int:committee_id>/follow-cte')
+@app.route('/committee/<int:committee_id>/follow-cte/')
+def committee_detail_follow_cte(committee_id):
+    follow_cte_post_registration_or_login(committee_id)
+    
+    # Remove confirmation email flash
+    session['_flashes'] = []
+    flash('You have successfully followed this committee to receive email alerts.', 'success')
+    
+    return redirect(url_for('committee_detail', committee_id=committee_id))
 
 
 @app.route('/attendance-overview')

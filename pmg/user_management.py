@@ -196,3 +196,19 @@ def get_megamenu():
         'user_following': user_following,
         'recent_meetings': recent_meetings,
     }
+
+
+def follow_cte_post_registration_or_login(committee_id):
+    committee = Committee.query.get(committee_id)
+    
+    if committee not in current_user.following:
+        current_user.follow_committee(committee)
+
+    if committee not in current_user.committee_alerts:
+        current_user.committee_alerts.append(committee)
+    
+    db.session.commit()
+
+    ga_event('user', 'follow-committee', 'cte-follow-committee')
+
+    return

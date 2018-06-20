@@ -91,16 +91,7 @@ def user_remove_committee_alert(committee_id):
 @app.route('/user/follow/committee/<int:committee_id>', methods=['POST'])
 def user_follow_committee(committee_id):
     if current_user.is_authenticated() and request.method == 'POST':
-        committee = Committee.query.get(committee_id)
-
-        if committee not in current_user.following:
-            current_user.follow_committee(committee)
-
-        if committee not in current_user.committee_alerts:
-            current_user.committee_alerts.append(committee)
-
-        db.session.commit()
-        ga_event('user', 'follow-committee', 'cte-follow-committee')
+        follow_committee(committee_id)
 
     return redirect(request.headers.get('referer', '/'))
 
@@ -198,7 +189,7 @@ def get_megamenu():
     }
 
 
-def follow_cte_post_registration_or_login(committee_id):
+def follow_committee(committee_id):
     committee = Committee.query.get(committee_id)
     
     if committee not in current_user.following:

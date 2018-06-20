@@ -61,11 +61,14 @@
 
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <p class="lead">
+          <h3>
             <a href="{{ url_for('security.forgot_password') }}">I forgot my password.</a>
-            <br>
-            <a href="{{ url_for('security.register') }}{% if login_user_form.next %}?next={{ login_user_form.next.data }}{% endif %}">Don't have an account? Sign up.</a>
-          </p>
+          </h3>
+          <form action="{{ url_for('security.register') }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="hidden" name="next" value="{{ login_user_form.next.data }}">
+              <input class="link-btn" name="login" type="submit" value="Don't have an account? Sign up.">   
+          </form>
         </div>
       </div>
     </div>

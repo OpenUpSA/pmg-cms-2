@@ -47,14 +47,14 @@
         </form>
 
         <br>
-
+        
         <div class="row">
           <div class="col-sm-9 col-sm-offset-3">
-            <p class="lead">
-              <a href="{{ url_for('security.login')}}{% if register_user_form.next %}?next={{ register_user_form.next.data }}{% endif %}">
-                Already have an account? Log in.
-              </a>
-            </p>
+            <form action="{{ url_for('security.login') }}" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="next" value="{{ register_user_form.next.data }}">
+                <input class="link-btn" name="login" type="submit" value="Already have an account? Log in.">   
+            </form>
           </div>
         </div>
 

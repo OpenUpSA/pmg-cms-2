@@ -242,6 +242,7 @@ function committeeFollowChange(e) {
       $listItemForm.attr('action','/user/follow/committee/' + id)
         .find('input[type=checkbox]')
         .prop('checked', false);
+      
     } else {
       // Attach to megamenu
       var name = $listItem.find('.name').html();
@@ -346,6 +347,9 @@ $('.cte-signup-box').on('change','.cte-follow-committee input[type=checkbox]', f
 
     $cteGetAlerts.find('input[type=checkbox]')
       .prop('checked', false);
+
+    $form.find('label').text('Follow this committee');
+
   } else {
     var name = $('.committee-name').html();
     var isPremium = $('.premium').length;
@@ -354,8 +358,10 @@ $('.cte-signup-box').on('change','.cte-follow-committee input[type=checkbox]', f
       .find('input[type=checkbox]')
       .prop('checked', true);
 
-      $cteGetAlerts.find('input[type=checkbox]')
-        .prop('checked', true);
+    $cteGetAlerts.find('input[type=checkbox]')
+      .prop('checked', true);
+      
+    $form.find('label').text('Following committee');
   }
 
   $.post(actionUrl, data, mmUpdate);

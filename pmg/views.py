@@ -353,7 +353,7 @@ def committee_detail_follow_cte(committee_id):
     
     # Remove confirmation email flash
     session['_flashes'] = []
-    flash('You have successfully followed this committee to receive email alerts.', 'success')
+    flash("You're now following this committee and we'll send you email alerts when new content is posted.", 'success')
     
     return redirect(url_for('committee_detail', committee_id=committee_id))
 

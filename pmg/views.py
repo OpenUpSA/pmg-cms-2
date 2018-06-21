@@ -350,9 +350,6 @@ def committee_detail(committee_id):
 @app.route('/committee/<int:committee_id>/follow-cte/')
 def committee_detail_follow_cte(committee_id):
     follow_committee(committee_id)
-    
-    # Remove confirmation email flash
-    # session['_flashes'] = []
     flash("You're now following this committee and we'll send you email alerts when new content is posted.", 'success')
     
     return redirect(url_for('committee_detail', committee_id=committee_id))

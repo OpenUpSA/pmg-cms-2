@@ -202,4 +202,3 @@ def follow_committee(committee_id):
 
     ga_event('user', 'follow-committee', 'cte-follow-committee')
 
-    return

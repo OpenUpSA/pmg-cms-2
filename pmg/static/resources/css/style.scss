@@ -1941,18 +1941,3 @@ ul.menu {
     animation: fa-spin 1s infinite steps(16);
   }
 }
-
-.link-btn {
-    background: none;
-    border: none;
-    color :$link-color;
-    text-decoration: none;
-    cursor: pointer;
-    padding: 0;
-    font-size: $font-size-h3;
- 
-    &:hover {
-      text-decoration: underline;
-      color: darken($link-color, 15%);
-    }
-}

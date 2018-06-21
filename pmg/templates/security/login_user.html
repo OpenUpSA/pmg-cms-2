@@ -51,7 +51,8 @@
       <br>
 
       <form class="form-horizontal" role="form" action="{{ url_for('security.login') }}" method="POST" name="login_user_form">
-        {{ login_user_form.hidden_tag() }}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ login_user_form.next.data or request.args.next }}">
         {{ render_field(login_user_form.email) }}
         {{ render_field(login_user_form.password) }}
         {{ render_field(login_user_form.submit) }}
@@ -61,14 +62,11 @@
 
       <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-          <h3>
+          <p class="lead">
             <a href="{{ url_for('security.forgot_password') }}">I forgot my password.</a>
-          </h3>
-          <form action="{{ url_for('security.register') }}" method="POST">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <input type="hidden" name="next" value="{{ login_user_form.next.data }}">
-              <input class="link-btn" name="login" type="submit" value="Don't have an account? Sign up.">   
-          </form>
+            <br>
+            <a href="{{ url_for('security.register') }}{% if login_user_form.next or request.args.next %}?next={{ login_user_form.next.data or request.args.next }}{% endif %}">Don't have an account? Sign up.</a>
+          </p>
         </div>
       </div>
     </div>

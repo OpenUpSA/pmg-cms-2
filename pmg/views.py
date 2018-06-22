@@ -602,7 +602,7 @@ def committee_meeting(event_id):
 def committee_meeting_follow_cte(event_id):
     event = load_from_api('v2/committee-meetings', event_id)['result']
     follow_committee(event['committee_id'])
-    
+
     flash("You're now following this committee and " 
     "we'll send you email alerts when new content is posted.", 'success')
     
@@ -738,6 +738,20 @@ def call_for_comment(call_for_comment_id):
         content_date=call_for_comment['start_date'],
         social_summary=social_summary,
         admin_edit_url=admin_url('call-for-comment', call_for_comment_id))
+
+
+@app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte')
+@app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte/')
+def call_for_comment_follow_cte(call_for_comment_id):
+    call_for_comment = load_from_api(
+        'v2/calls-for-comments',
+        call_for_comment_id)['result']
+    follow_committee(call_for_comment['committee_id'])
+    
+    flash("You're now following this committee and " 
+    "we'll send you email alerts when new content is posted.", 'success')
+
+    return redirect(url_for('call_for_comment', call_for_comment_id=call_for_comment_id))
 
 
 @app.route('/policy-documents/')

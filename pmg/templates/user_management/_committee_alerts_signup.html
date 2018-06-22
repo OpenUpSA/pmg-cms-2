@@ -10,7 +10,7 @@
         <input type="hidden" name="next" value="{{ request.url }}">
         {% if current_user.follows(committee.id) %}
         <input class="checkbox" type="checkbox" checked />
-        <label>Unfollow this committee</label>
+        <label>Following committee</label>
         {% else %}
         <input class="checkbox" type="checkbox" />
         <label>Follow this committee</label>
@@ -20,7 +20,7 @@
   {% else %}
     <div class="email-alert-box">
       <p>
-        <a class="btn btn-success btn-block" href="{{ url_for('security.register', next=request.path, via='cte-alert-box') }}">Follow this committee</a>
+        <a class="btn btn-success btn-block" href="{{ url_for('security.register', next=request.path + 'follow-cte', via='cte-alert-box') }}">Follow this committee</a>
       </p>
       Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
     </div>

@@ -598,7 +598,7 @@ def committee_meeting(event_id):
 
 
 @app.route('/committee-meeting/<int:event_id>/follow-cte')
-@app.route('/committee-meeting/<int:event_id>//follow-cte/')
+@app.route('/committee-meeting/<int:event_id>/follow-cte/')
 def committee_meeting_follow_cte(event_id):
     event = load_from_api('v2/committee-meetings', event_id)['result']
     follow_committee(event['committee_id'])

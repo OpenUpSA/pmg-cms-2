@@ -350,7 +350,8 @@ def committee_detail(committee_id):
 @app.route('/committee/<int:committee_id>/follow-cte/')
 def committee_detail_follow_cte(committee_id):
     follow_committee(committee_id)
-    flash("You're now following this committee and we'll send you email alerts when new content is posted.", 'success')
+    flash("You're now following this committee and " 
+    "we'll send you email alerts when new content is posted.", 'success')
     
     return redirect(url_for('committee_detail', committee_id=committee_id))
 
@@ -595,6 +596,18 @@ def committee_meeting(event_id):
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
 
 
+
+@app.route('/committee-meeting/<int:event_id>/follow-cte')
+@app.route('/committee-meeting/<int:event_id>/follow-cte/')
+def committee_meeting_follow_cte(event_id):
+    event = load_from_api('v2/committee-meetings', event_id)['result']
+    follow_committee(event['committee_id'])
+
+    flash("You're now following this committee and " 
+    "we'll send you email alerts when new content is posted.", 'success')
+    
+    return redirect(url_for('committee_meeting', event_id=event_id))
+
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')
 def tabled_committee_reports(page=0):
@@ -725,6 +738,20 @@ def call_for_comment(call_for_comment_id):
         content_date=call_for_comment['start_date'],
         social_summary=social_summary,
         admin_edit_url=admin_url('call-for-comment', call_for_comment_id))
+
+
+@app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte')
+@app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte/')
+def call_for_comment_follow_cte(call_for_comment_id):
+    call_for_comment = load_from_api(
+        'v2/calls-for-comments',
+        call_for_comment_id)['result']
+    follow_committee(call_for_comment['committee_id'])
+    
+    flash("You're now following this committee and " 
+    "we'll send you email alerts when new content is posted.", 'success')
+
+    return redirect(url_for('call_for_comment', call_for_comment_id=call_for_comment_id))
 
 
 @app.route('/policy-documents/')

@@ -24,6 +24,7 @@ class Search:
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
     search_fields = ["title^2", "description", "fulltext", "attachments"]
+    exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments.exact"]
     search_type = "cross_fields"
     es = ElasticSearch(esserver)
     per_batch = 200
@@ -55,7 +56,7 @@ class Search:
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
 
-        self.mapping(data_type)
+        self.mapping(data_type, ignore_conflicts=True)
 
         models = [m for m in resource_slugs.itervalues() if m.resource_content_type == data_type]
         for model in models:
@@ -126,18 +127,36 @@ class Search:
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                        },
+                    },
                 },
                 "fulltext": {
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                        },
+                    },
                 },
                 "description": {
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                        },
+                    },
                 },
                 "number": {
                     "type": "integer",
@@ -154,11 +173,15 @@ class Search:
                             "term_vector": "with_positions_offsets",
                             "store": "yes",
                         },
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                        },
                     },
                 },
             }
         }
-        self.es.put_mapping(self.index_name, data_type, mapping)
+        self.es.put_mapping(self.index_name, data_type, mapping, ignore_conflicts=True)
 
     def build_filters(self, start_date, end_date, document_type, committee, updated_since, exclude_document_types):
         filters = {}
@@ -220,7 +243,7 @@ class Search:
             q["bool"]["must"].extend({
                 "multi_match": {
                     "query": p,
-                    "fields": self.search_fields,
+                    "fields": self.exact_search_fields,
                     "type": "phrase",
                 },
             } for p in phrases)

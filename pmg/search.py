@@ -25,7 +25,6 @@ class Search:
     index_name = "pmg"
     search_fields = ["title^2", "description", "fulltext", "attachments"]
     exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments.exact"]
-    search_type = "cross_fields"
     es = ElasticSearch(esserver)
     per_batch = 200
     logger = logging.getLogger(__name__)

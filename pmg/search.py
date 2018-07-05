@@ -15,8 +15,6 @@ from . import db, app
 from pmg.models.resources import *  # noqa
 from pmg.models.base import resource_slugs
 
-import pprint
-
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 
 
@@ -378,9 +376,7 @@ class Search:
         }
 
         self.logger.debug("query_statement: %s" % json.dumps(q, indent=2))
-        response = self.es.search(q, index=self.index_name)
-        self.logger.debug("response: %s", pprint.pformat(response))
-        return response
+        return self.es.search(q, index=self.index_name)
 
     def reindex_everything(self):
         data_types = Transforms.data_types()

@@ -15,6 +15,7 @@ from . import db, app
 from pmg.models.resources import *  # noqa
 from pmg.models.base import resource_slugs
 
+import pprint
 
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 
@@ -24,7 +25,7 @@ class Search:
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
     search_fields = ["title^2", "description", "fulltext", "attachments"]
-    exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments.exact"]
+    exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments_exact"]
     es = ElasticSearch(esserver)
     per_batch = 200
     logger = logging.getLogger(__name__)
@@ -171,12 +172,15 @@ class Search:
                             "analyzer": "english",
                             "term_vector": "with_positions_offsets",
                             "store": "yes",
-                        },
-                        "exact": {
-                            "type": "string",
-                            "analyzer": "english_exact",
+                            "copy_to": "attachments_exact",
                         },
                     },
+                },
+                "attachments_exact": {
+                    "type": "string",
+                    "analyzer": "english_exact",
+                            "store": "yes",
+                    "term_vector": "with_positions_offsets",
                 },
             }
         }
@@ -224,7 +228,7 @@ class Search:
         return filters
 
     def build_query(self, query):
-        """ Build an return the query and highlight query portions of an ES call.
+        """ Build and return the query and highlight query portions of an ES call.
         This splits handles both phrases and simple terms.
         """
 
@@ -360,7 +364,7 @@ class Search:
                     "fulltext.exact": {
                         "number_of_fragments": 2,
                     },
-                    "attachments.exact": {
+                    "attachments_exact": {
                         "number_of_fragments": 2,
                     },
                 }
@@ -368,7 +372,9 @@ class Search:
         }
 
         self.logger.debug("query_statement: %s" % json.dumps(q, indent=2))
-        return self.es.search(q, index=self.index_name)
+        response = self.es.search(q, index=self.index_name)
+        self.logger.debug("response: %s", pprint.pformat(response))
+        return response
 
     def reindex_everything(self):
         data_types = Transforms.data_types()

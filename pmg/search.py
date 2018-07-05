@@ -127,10 +127,13 @@ class Search:
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
+                    "term_vector": "with_positions_offsets",
+                    "store": "yes",
                     "fields": {
                         "exact": {
                             "type": "string",
                             "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
                         },
                     },
                 },
@@ -352,6 +355,7 @@ class Search:
                 "fields": {
                     "title": {
                         "number_of_fragments": 0,
+                        "matched_fields": ["title", "title.exact"],
                     },
                     "description": {
                         "number_of_fragments": 2,

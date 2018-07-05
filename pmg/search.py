@@ -55,7 +55,7 @@ class Search:
         except:
             self.logger.warn("Couldn't find %s index" % data_type)
 
-        self.mapping(data_type, ignore_conflicts=True)
+        self.mapping(data_type)
 
         models = [m for m in resource_slugs.itervalues() if m.resource_content_type == data_type]
         for model in models:
@@ -353,7 +353,16 @@ class Search:
                     },
                     "attachments": {
                         "number_of_fragments": 2,
-                    }
+                    },
+                    "description.exact": {
+                        "number_of_fragments": 2,
+                    },
+                    "fulltext.exact": {
+                        "number_of_fragments": 2,
+                    },
+                    "attachments.exact": {
+                        "number_of_fragments": 2,
+                    },
                 }
             }
         }

@@ -139,10 +139,12 @@ class Search:
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "store": "yes",
                     "fields": {
                         "exact": {
                             "type": "string",
                             "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
                         },
                     },
                 },
@@ -151,10 +153,12 @@ class Search:
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "store": "yes",
                     "fields": {
                         "exact": {
                             "type": "string",
                             "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
                         },
                     },
                 },
@@ -179,7 +183,7 @@ class Search:
                 "attachments_exact": {
                     "type": "string",
                     "analyzer": "english_exact",
-                            "store": "yes",
+                    "store": "yes",
                     "term_vector": "with_positions_offsets",
                 },
             }
@@ -351,17 +355,15 @@ class Search:
                     },
                     "description": {
                         "number_of_fragments": 2,
+                        "matched_fields": ["description", "description.exact"],
+                        "type": "fvh",
                     },
                     "fulltext": {
                         "number_of_fragments": 2,
+                        "matched_fields": ["fulltext", "fulltext.exact"],
+                        "type": "fvh",
                     },
                     "attachments": {
-                        "number_of_fragments": 2,
-                    },
-                    "description.exact": {
-                        "number_of_fragments": 2,
-                    },
-                    "fulltext.exact": {
                         "number_of_fragments": 2,
                     },
                     "attachments_exact": {

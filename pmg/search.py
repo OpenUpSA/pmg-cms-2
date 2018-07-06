@@ -189,7 +189,7 @@ class Search:
                 },
             }
         }
-        self.es.put_mapping(self.index_name, data_type, mapping, ignore_conflicts=True)
+        self.es.put_mapping(self.index_name, data_type, mapping)
 
     def build_filters(self, start_date, end_date, document_type, committee, updated_since, exclude_document_types):
         filters = {}

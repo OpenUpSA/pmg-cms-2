@@ -95,7 +95,7 @@ class Search:
             if size < MAX_INDEXABLE_BYTES:
                 ok_items.append(item)
             else:
-                self.logger.info("Not indexing %s id=%d bigger than max (%d > %d)",
+                self.logger.warn("Not indexing %s id=%d bigger than max (%d > %d)",
                                  item['slug_prefix'],
                                  item['model_id'],
                                  size,

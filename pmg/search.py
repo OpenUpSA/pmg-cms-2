@@ -65,7 +65,7 @@ class Search:
         ids = [r[0] for r in db.session.query(model.id).all()]
 
         if model.__name__ == 'Bill':
-            per_batch = 10
+            per_batch = 1
         else:
             per_batch = self.per_batch
 

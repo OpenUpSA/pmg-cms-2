@@ -5,6 +5,9 @@
 {% block page %}
 
 <div class="row search-box">
+  <div class="alert alert-warning" role="alert">
+    <strong>Search Maintenance:</strong> We are currently improving search functionality. While this warning is showing, we might return fewer results than there should be. Please try your search again later today when this warning is not showing any more.
+  </div>
   <div class="col-sm-6 col-sm-offset-3">
     {% if not q %}
       <h2>Search PMG</h2>
@@ -80,7 +83,10 @@
             <h5>{{ search.hits }} matches</h5>
 
             {% if suggest_phrase %}
-            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> instead.</p>
+            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> for more specific results.</p>
+            {% endif %}
+            {% if suggest_broader %}
+            <p class="tip"><strong>Tip:</strong> Try using other words related to what you are searching for.</p>
             {% endif %}
           </div>
         </div>

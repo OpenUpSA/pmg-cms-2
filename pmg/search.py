@@ -15,7 +15,6 @@ from . import db, app
 from pmg.models.resources import *  # noqa
 from pmg.models.base import resource_slugs
 
-
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 
 
@@ -24,7 +23,7 @@ class Search:
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
     search_fields = ["title^2", "description", "fulltext", "attachments"]
-    search_type = "cross_fields"
+    exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments_exact"]
     es = ElasticSearch(esserver)
     per_batch = 200
     logger = logging.getLogger(__name__)
@@ -126,18 +125,43 @@ class Search:
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
+                    "term_vector": "with_positions_offsets",
+                    "store": "yes",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
+                        },
+                    },
                 },
                 "fulltext": {
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "store": "yes",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
+                        },
+                    },
                 },
                 "description": {
                     "type": "string",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
+                    "store": "yes",
+                    "fields": {
+                        "exact": {
+                            "type": "string",
+                            "analyzer": "english_exact",
+                            "term_vector": "with_positions_offsets",
+                        },
+                    },
                 },
                 "number": {
                     "type": "integer",
@@ -153,8 +177,15 @@ class Search:
                             "analyzer": "english",
                             "term_vector": "with_positions_offsets",
                             "store": "yes",
+                            "copy_to": "attachments_exact",
                         },
                     },
+                },
+                "attachments_exact": {
+                    "type": "string",
+                    "analyzer": "english_exact",
+                    "store": "yes",
+                    "term_vector": "with_positions_offsets",
                 },
             }
         }
@@ -202,7 +233,7 @@ class Search:
         return filters
 
     def build_query(self, query):
-        """ Build an return the query and highlight query portions of an ES call.
+        """ Build and return the query and highlight query portions of an ES call.
         This splits handles both phrases and simple terms.
         """
 
@@ -220,7 +251,7 @@ class Search:
             q["bool"]["must"].extend({
                 "multi_match": {
                     "query": p,
-                    "fields": self.search_fields,
+                    "fields": self.exact_search_fields,
                     "type": "phrase",
                 },
             } for p in phrases)
@@ -322,16 +353,24 @@ class Search:
                 "fields": {
                     "title": {
                         "number_of_fragments": 0,
+                        "matched_fields": ["title", "title.exact"],
                     },
                     "description": {
                         "number_of_fragments": 2,
+                        "matched_fields": ["description", "description.exact"],
+                        "type": "fvh",
                     },
                     "fulltext": {
                         "number_of_fragments": 2,
+                        "matched_fields": ["fulltext", "fulltext.exact"],
+                        "type": "fvh",
                     },
                     "attachments": {
                         "number_of_fragments": 2,
-                    }
+                    },
+                    "attachments_exact": {
+                        "number_of_fragments": 2,
+                    },
                 }
             }
         }
@@ -353,7 +392,17 @@ class Search:
         self.es.delete_index(self.index_name)
 
     def create_index(self):
-        self.es.create_index(self.index_name)
+        settings = {
+            "analysis": {
+                "analyzer": {
+                    "english_exact": {
+                        "tokenizer": "standard",
+                        "filter": ["lowercase"]
+                    }
+                }
+            }
+        }
+        self.es.create_index(self.index_name, settings=settings)
 
 
 class Transforms:

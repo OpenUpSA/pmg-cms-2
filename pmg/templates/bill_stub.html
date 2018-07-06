@@ -42,7 +42,9 @@
 
   {% if result.highlight %}
   <p>
-  {% if result.highlight.attachments %}
+  {% if result.highlight.attachments_exact %}
+    {{ result.highlight.attachments_exact|search_snippet|ellipse|safe }}
+  {% elif result.highlight.attachments %}
     {{ result.highlight.attachments|search_snippet|ellipse|safe }}
   {% endif %}
   </p>

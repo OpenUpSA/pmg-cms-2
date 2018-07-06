@@ -350,9 +350,9 @@ def committee_detail(committee_id):
 @app.route('/committee/<int:committee_id>/follow-cte/')
 def committee_detail_follow_cte(committee_id):
     follow_committee(committee_id)
-    flash("You're now following this committee and " 
+    flash("You're now following this committee and "
     "we'll send you email alerts when new content is posted.", 'success')
-    
+
     return redirect(url_for('committee_detail', committee_id=committee_id))
 
 
@@ -603,9 +603,9 @@ def committee_meeting_follow_cte(event_id):
     event = load_from_api('v2/committee-meetings', event_id)['result']
     follow_committee(event['committee_id'])
 
-    flash("You're now following this committee and " 
+    flash("You're now following this committee and "
     "we'll send you email alerts when new content is posted.", 'success')
-    
+
     return redirect(url_for('committee_meeting', event_id=event_id))
 
 @app.route('/tabled-committee-reports/')
@@ -747,8 +747,8 @@ def call_for_comment_follow_cte(call_for_comment_id):
         'v2/calls-for-comments',
         call_for_comment_id)['result']
     follow_committee(call_for_comment['committee_id'])
-    
-    flash("You're now following this committee and " 
+
+    flash("You're now following this committee and "
     "we'll send you email alerts when new content is posted.", 'success')
 
     return redirect(url_for('call_for_comment', call_for_comment_id=call_for_comment_id))
@@ -1199,7 +1199,7 @@ def search(page=0):
                 break
 
     # suggest a phrase search?
-    if q and ' ' in q and '"' not in q:
+    if q and '"' not in q and search['hits'] > 0:
         suggest_phrase = '"%s"' % q
         kwargs = {('filter[%s]' % k): v for k, v in filters.iteritems() if v}
         kwargs['q'] = suggest_phrase
@@ -1207,6 +1207,15 @@ def search(page=0):
     else:
         suggest_phrase = False
         suggest_phrase_url = None
+
+    # suggest a broader search?
+    if not suggest_phrase and q:
+        if search['hits'] == 0:
+            suggest_broader = True
+        else:
+            suggest_broader = False
+    else:
+        suggest_broader = False
 
     return render_template(
         'search.html',
@@ -1227,7 +1236,8 @@ def search(page=0):
         search_types=Search.friendly_data_types.items(),
         saved_search=saved_search,
         suggest_phrase=suggest_phrase,
-        suggest_phrase_url=suggest_phrase_url)
+        suggest_phrase_url=suggest_phrase_url,
+        suggest_broader=suggest_broader)
 
 
 @app.route('/page/<path:pagename>')

@@ -83,20 +83,24 @@ class Search:
                     id_subsection.append(ids.pop())
 
             rows = db.session.query(model).filter(model.id.in_(id_subsection)).all()
-            items = self.serialise(rows)
-            self.add_many(model.resource_content_type, items)
+            items = [Transforms.serialise(r) for r in rows]
+            items = self.filter_too_large(items)
+            if items:
+                self.add_many(model.resource_content_type, items)
 
-    def serialise(self, rows):
-        items = []
-        for row in rows:
-            item = Transforms.serialise(row)
+    def filter_too_large(self, items):
+        ok_items = []
+        for item in items:
             size = len(cPickle.dumps(item))
             if size < MAX_INDEXABLE_BYTES:
-                items.append(item)
+                ok_items.append(item)
             else:
-                self.logger.info("Not indexing object %r bigger than max (%d > %d)",
-                                 row, size, MAX_INDEXABLE_BYTES)
-        return items
+                self.logger.info("Not indexing %s id=%d bigger than max (%d > %d)",
+                                 item['slug_prefix'],
+                                 item['model_id'],
+                                 size,
+                                 MAX_INDEXABLE_BYTES)
+        return ok_items
 
     def drop_index(self, data_type):
         self.logger.info("Dropping %s index" % data_type)

@@ -392,7 +392,17 @@ class Search:
         self.es.delete_index(self.index_name)
 
     def create_index(self):
-        self.es.create_index(self.index_name)
+        settings = {
+            "analysis": {
+                "analyzer": {
+                    "english_exact": {
+                        "tokenizer": "standard",
+                        "filter": ["lowercase"]
+                    }
+                }
+            }
+        }
+        self.es.create_index(self.index_name, settings=settings)
 
 
 class Transforms:

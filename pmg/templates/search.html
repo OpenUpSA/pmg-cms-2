@@ -83,7 +83,10 @@
             <h5>{{ search.hits }} matches</h5>
 
             {% if suggest_phrase %}
-            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> instead.</p>
+            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> for more specific results.</p>
+            {% endif %}
+            {% if suggest_broader %}
+            <p class="tip"><strong>Tip:</strong> Try using other words related to what you are searching for.</p>
             {% endif %}
           </div>
         </div>

@@ -4,6 +4,7 @@ import json
 from collections import OrderedDict
 import re
 import copy
+import cPickle
 
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
@@ -16,7 +17,7 @@ from pmg.models.resources import *  # noqa
 from pmg.models.base import resource_slugs
 
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
-
+MAX_INDEXABLE_BYTES = 104857600 # Limit ElasticSearch/Netty has by default
 
 class Search:
 
@@ -82,8 +83,20 @@ class Search:
                     id_subsection.append(ids.pop())
 
             rows = db.session.query(model).filter(model.id.in_(id_subsection)).all()
-            items = [Transforms.serialise(r) for r in rows]
+            items = self.serialise(rows)
             self.add_many(model.resource_content_type, items)
+
+    def serialise(self, rows):
+        items = []
+        for row in rows:
+            item = Transforms.serialise(row)
+            size = len(cPickle.dumps(item))
+            if size < MAX_INDEXABLE_BYTES:
+                items.append(item)
+            else:
+                self.logger.info("Not indexing object %r bigger than max (%d > %d)",
+                                 row, size, MAX_INDEXABLE_BYTES)
+        return items
 
     def drop_index(self, data_type):
         self.logger.info("Dropping %s index" % data_type)

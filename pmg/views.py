@@ -208,7 +208,14 @@ def bills(bill_type, year=None):
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']
 
+    # Sort bills by date_of_introduction, then other attributes.
+    # date_of_introduction == None defaults to the latest
     bills.sort(key=lambda b: [-b['year'], b['type']['prefix'], b.get('number', 0), b['title']])
+    bills.sort(
+        key=lambda b: [
+            datetime.strptime(b['date_of_introduction'], '%Y-%m-%d').date()
+            if b['date_of_introduction'] else date.max],
+        reverse=True)
 
     status_dict = {
         "na": ("in progress", "label-primary"),

@@ -167,7 +167,7 @@ def get_megamenu():
     recent_meetings = None
     user_follows_committees = False
 
-    if current_user.is_authenticated():
+    if current_user and current_user.is_authenticated():
         user_following = sorted(current_user.following, key=lambda cte: cte.name)[:20]
         if user_following:
             user_follows_committees = True
@@ -191,14 +191,13 @@ def get_megamenu():
 
 def follow_committee(committee_id):
     committee = Committee.query.get(committee_id)
-    
+
     if committee not in current_user.following:
         current_user.follow_committee(committee)
 
     if committee not in current_user.committee_alerts:
         current_user.committee_alerts.append(committee)
-    
+
     db.session.commit()
 
     ga_event('user', 'follow-committee', 'cte-follow-committee')
-

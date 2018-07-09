@@ -124,7 +124,11 @@ def get_ga_events_helper():
 
 @app.context_processor
 def feedback_form():
-    return {'correct_this_page_form': CorrectThisPageForm()}
+    if request:
+        form = CorrectThisPageForm()
+    else:
+        form = None
+    return {'correct_this_page_form': form}
 
 
 @app.context_processor

@@ -149,7 +149,7 @@ class Bill(ApiResource, db.Model):
 
     @property
     def code(self):
-        if self.type.is_private_member_bill() and self.year >= 2018:
+        if self.type.is_private_member_bill() and self.year >= 2016:
             out = 'B'
         else:
             out = self.type.prefix if self.type else "X"

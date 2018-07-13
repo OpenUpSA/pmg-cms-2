@@ -324,10 +324,10 @@ def committee_detail(committee_id):
 
     bills = load_from_api(
         'v2/committees/%s/bills' % committee_id,
-        fields=['id', 'title', 'status', 'date_of_introduction', 'code', 'number'],
+        fields=['id', 'title', 'status', 'date_of_introduction', 'code'],
     )['results']
 
-    bills.sort(key=lambda b: [b['date_of_introduction'], b.get('number', 0)], reverse=True)
+    bills.sort(key=lambda b: b['date_of_introduction'], reverse=True)
 
     return render_template('committee_detail.html',
                            current_year=now.year,

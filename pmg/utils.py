@@ -71,3 +71,75 @@ def externalise_url(url):
 
     scheme = 'http' if app.config['DEBUG'] else 'https'
     return '%s://%s/%s' % (scheme, request.host, url)
+
+
+def get_provincial_legislatures():
+    """
+    Returns a list of provinces with the info required
+    to build the provincial legislature pages.
+    """
+    return [
+        {
+            'name': 'Eastern Cape',
+            'slug': 'eastern-cape',
+            'code': 'EC',
+            'programme_url': 'http://www.eclegislature.gov.za/parliamentary_programme/weekly_programme',
+            'schedule_url': 'http://www.eclegislature.gov.za/events'
+        },
+        {
+            'name': 'Free State',
+            'slug': 'free-state',
+            'code': 'FS',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'Gauteng',
+            'slug': 'gauteng',
+            'code': 'GT',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'KwaZulu-Natal',
+            'slug': 'kwazulu-natal',
+            'code': 'KZN',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'Limpopo',
+            'slug': 'limpopo',
+            'code': 'LIM',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'Mpumalanga',
+            'slug': 'mpumalanga',
+            'code': 'MP',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'North West',
+            'slug': 'north-west',
+            'code': 'NW',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'Northern Cape',
+            'slug': 'northern-cape',
+            'code': 'NC',
+            'programme_url': '',
+            'schedule_url': ''
+        },
+        {
+            'name': 'Western Cape',
+            'slug': 'western-cape',
+            'code': 'WC',
+            'programme_url': '',
+            'schedule_url': ''
+        }
+    ]

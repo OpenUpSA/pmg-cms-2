@@ -1420,7 +1420,7 @@ header.detail-page-header {
   }
 }
 
-.provincial-overview-page {
+.provincial-detail-page {
   section {
     margin-bottom: 60px;
   }
@@ -1453,7 +1453,6 @@ header.detail-page-header {
   .schedules {
     a {
       color: $grey-darkest;
-      font-weight: bold;
       &:hover {
         color: $grey-darkest;
       }

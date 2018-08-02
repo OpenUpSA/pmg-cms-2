@@ -946,8 +946,34 @@ def hansards(page=0):
         year_list=year_list)
 
 
+@app.route('/provincial-parliaments/')
+def provincial_parliaments_list():
+    """
+    A page with links to the provincial parliaments
+    """
+    provinces = utils.get_provincial_legislatures()
+    return render_template(
+        'provincial/list.html',
+        provinces=provinces
+    )
+
+@app.route('/provincial-parliaments/<slug>/')
+def provincial_parliaments_detail(slug):
+    """
+    A page showing the information on the selected provincial parliament
+    """
+    try:
+        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
+    except IndexError:
+        abort(404)
+
+    return render_template(
+        'provincial/detail.html',
+        province=province
+    )
+
 @app.route('/provincial-parliaments/western-cape/')
-def western_cape_overview():
+def provincial_parliaments_western_cape():
 
     members = load_from_api('v2/members', return_everything=True)['results']
 
@@ -978,7 +1004,7 @@ def western_cape_overview():
             params={'filter[house]': 'WC'})['results']
 
     return render_template(
-        'provincial_overview.html',
+        'provincial/western_cape.html',
         province="Western Cape",
         province_code="WC",
         province_slug="western-cape",

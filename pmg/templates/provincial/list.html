@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ province }} Parliament | PMG{% endblock %}
+
+{% block page %}
+<div class="provincial-detail-page">
+  <div class="row">
+    <div class="col-lg-9">
+        <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> Provincial Parliaments</h1>
+        <section class="provinces">
+            <div class="row">
+              {% for prov in provinces %}
+                <div class="col-xs-12 col-sm-6 col-lg-4">
+                  <a class="content-card flex" href="/provincial-parliaments/{{ prov.slug }}">
+                    <div >
+                      <h4 class="card-title">{{ prov.name }}</h4>
+                    </div>
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </section>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="provincial-box">
+          <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
+          <p>Does this content interest you?<br>Please let us know!</p>
+          <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+        </div>
+      </div>
+  </div>
+  
+
+</div>
+{% endblock %}

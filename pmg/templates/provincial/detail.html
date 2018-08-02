@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ province.name }} Parliament | PMG{% endblock %}
+
+{% block page %}
+<div class="provincial-detail-page">
+
+  <div class="row">
+    <div class="col-lg-9">
+      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Parliament</h1>
+      Find more information on the {{ province.name }} Parliament website by following the links below.
+      <section class="schedules programmes">
+          <h3><i class="fa fa-icon fa-fw fa-calendar"><a href="{{ province.programme_url }}" target="_blank"></i>Programme</a></h3>
+          <h3><i class="fa fa-icon fa-fw fa-calendar"><a href="{{ province.schedule_url }}" target="_blank"></i>Schedule</a></h3>
+        </section>  
+    </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="provincial-box">
+        <img src="/static/resources/images/provinces/{{ province.code }}.svg">
+        <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
+        <p>Does this content interest you?<br>Please let us know!</p>
+        <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

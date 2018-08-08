@@ -27,7 +27,7 @@
 
       <section class="calls-for-comment">
         <h2><i class="fa fa-icon fa-fw fa-comments"></i> Open calls for comment <small class="open-calls-count hidden">Currently open: <span id="open-calls"></span></small></h2>
-        <h3 class="no-open-calls">There are currently no open calls for comment</h3>
+        {% if provincial_calls_for_comment %}
         <div class="row">
           {% for call_for_comment in provincial_calls_for_comment %}
             <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
@@ -43,6 +43,9 @@
             </div>
           {% endfor %}
         </div>
+        {% else %}
+        There are currently no open calls for comment
+        {% endif %}
       </section>
 
       <section class="members">
@@ -65,6 +68,7 @@
 
       <section class="schedules">
         <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Daily Schedules</h2>
+        {% if provincial_daily_schedules %}
         <div class="row">
           {% for schedule in provincial_daily_schedules %}
             <div class="col-xs-6 col-lg-4">
@@ -74,6 +78,9 @@
             </div>
           {% endfor %}
         </div>
+        {% else %}
+        There are currently no daily schedules available for this legislature.
+        {% endif %}
       </section>
 
     </div>
@@ -84,6 +91,16 @@
         <p>Does this content interest you?<br>Please let us know!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
       </div>
+      {% if contact_details %}
+      <div class="panel panel-default contact">
+        <div class="panel-heading">
+          <h4 class="panel-title">Legislature contact details</h4>
+        </div>
+        <div class="panel-body">
+          {{ contact_details|safe }}
+        </div>
+      </div>
+      {% endif %}
     </div>
   </div>
 

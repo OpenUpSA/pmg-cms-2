@@ -981,7 +981,7 @@ def provincial_parliaments_detail(slug):
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
 
-    # TODO: Get house contact details
+    contact_details = House.query.filter(House.name_short==province['code']).first().contact_details
 
     return render_template(
         'provincial/detail.html',
@@ -989,7 +989,8 @@ def provincial_parliaments_detail(slug):
         latest_programme=latest_programme,
         provincial_committees=provincial_committees,
         pa_members_url=pa_members_url,
-        pa_offices_url=pa_offices_url)
+        pa_offices_url=pa_offices_url,
+        contact_details=contact_details)
 
 
 @app.route('/provincial-parliaments/western-cape/')
@@ -1023,6 +1024,8 @@ def provincial_parliaments_western_cape():
             return_everything=True,
             params={'filter[house]': 'WC'})['results']
 
+    contact_details = House.query.filter(House.name_short=='WC').first().contact_details
+
     return render_template(
         'provincial/western_cape.html',
         province="Western Cape",
@@ -1032,7 +1035,7 @@ def provincial_parliaments_western_cape():
         provincial_committees=provincial_committees[0:6],
         provincial_calls_for_comment=provincial_calls_for_comment,
         provincial_daily_schedules=provincial_daily_schedules[0:6],
-        )
+        contact_details=contact_details)
 
 
 @app.route('/briefing/<int:event_id>')

@@ -63,7 +63,19 @@
         <p>Does this content interest you?<br>Please let us know!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
       </div>
+      {% if contact_details %}
+      <div class="panel panel-default contact">
+        <div class="panel-heading">
+          <h4 class="panel-title">Legislature contact details</h4>
+        </div>
+        <div class="panel-body">
+          {{ contact_details|safe }}
+        </div>
+      </div>
+      {% endif %}
     </div>
+    
+    
   </div>
 
 </div>

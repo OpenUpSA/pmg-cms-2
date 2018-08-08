@@ -7,12 +7,54 @@
 
   <div class="row">
     <div class="col-lg-9">
-      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Parliament</h1>
-      Find more information on the {{ province.name }} Parliament website by following the links below.
-      <section class="schedules programmes">
-          <h3><i class="fa fa-icon fa-fw fa-calendar"><a href="{{ province.programme_url }}" target="_blank"></i>Programme</a></h3>
-          <h3><i class="fa fa-icon fa-fw fa-calendar"><a href="{{ province.schedule_url }}" target="_blank"></i>Schedule</a></h3>
-        </section>  
+      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Legislature</h1>
+      
+      <section class="programmes">
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programmes</h2>
+        {% if latest_programme %}
+        <div class="row">
+          <div class="col-xs-6 col-lg-4">
+            <a href="/daily-schedule/{{ latest_programme.id }}/" class="content-card flex card-link">
+              {{ latest_programme.start_date | pretty_date }}
+            </a>
+          </div>
+          <a class="btn btn-success" href="/members/{{ province_slug }}/">See previous {{ province.name }} programmes</a>
+        </div>
+        {% else %}
+        There are currently no programmes available for this legislature.
+        {% endif %}
+      </section>
+
+      <section class="members">
+        <h2><i class="fa fa-icon fa-fw fa-user"></i>Members</h2>
+        You can find members of this legislature on <a href="{{ pa_members_url }}" target="_blank">People's Assembly</a>.
+      </section>
+
+      <section class="committees">
+        <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
+        {%  if provincial_committees %}
+        <div class="row">
+          {% for committee in provincial_committees %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <div >
+                  <h4 class="card-title">{{ committee.name }}</h4>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="/committees#prov">All {{ province.name }} committees</a>
+        {% else %}
+        There are currently no committees available for this legislature.
+        {% endif %}
+      </section>
+      
+      <section class="offices">
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i>Constituency Offices</h2>
+        You can find constituency offices for this legislature on <a href="{{ pa_offices_url }}" target="_blank">People's Assembly</a>.
+      </section>
+
     </div>
     <div class="col-lg-3 col-md-6">
       <div class="provincial-box">

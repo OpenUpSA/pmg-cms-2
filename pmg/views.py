@@ -855,7 +855,7 @@ def members():
 
 @app.route('/members/western-cape/')
 def western_cape_members():
-    """ All MPs.
+    """ Western Cape MPs.
     """
     western_cape_members = load_from_api('v2/members', return_everything=True)['results']
 
@@ -954,23 +954,43 @@ def provincial_parliaments_list():
     provinces = utils.get_provincial_legislatures()
     return render_template(
         'provincial/list.html',
-        provinces=provinces
-    )
+        provinces=provinces)
+
 
 @app.route('/provincial-parliaments/<slug>/')
 def provincial_parliaments_detail(slug):
     """
     A page showing the information on the selected provincial parliament
+    Except: WC
     """
     try:
         province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
     except IndexError:
         abort(404)
 
+    # Provincial programmes are stored as daily schedules
+    # We only show the latest
+    provincial_programmes = load_from_api('v2/daily-schedules',
+        return_everything=True,
+        params={'filter[house]': province['code']})['results']
+    latest_programme = provincial_programmes[0] if provincial_programmes else None
+
+    committees = load_from_api('v2/committees', return_everything=True)['results']
+    provincial_committees = [c for c in committees if c['house']['short_name'] == province['code']][0:6]
+
+    pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
+    pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
+
+    # TODO: Get house contact details
+
     return render_template(
         'provincial/detail.html',
-        province=province
-    )
+        province=province,
+        latest_programme=latest_programme,
+        provincial_committees=provincial_committees,
+        pa_members_url=pa_members_url,
+        pa_offices_url=pa_offices_url)
+
 
 @app.route('/provincial-parliaments/western-cape/')
 def provincial_parliaments_western_cape():

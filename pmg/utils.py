@@ -82,64 +82,46 @@ def get_provincial_legislatures():
         {
             'name': 'Eastern Cape',
             'slug': 'eastern-cape',
-            'code': 'EC',
-            'programme_url': 'http://www.eclegislature.gov.za/parliamentary_programme/weekly_programme',
-            'schedule_url': 'http://www.eclegislature.gov.za/events'
+            'code': 'EC'
         },
         {
             'name': 'Free State',
             'slug': 'free-state',
-            'code': 'FS',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'FS'
         },
         {
             'name': 'Gauteng',
             'slug': 'gauteng',
-            'code': 'GT',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'GT'
         },
         {
             'name': 'KwaZulu-Natal',
             'slug': 'kwazulu-natal',
-            'code': 'KZN',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'KZN'
         },
         {
             'name': 'Limpopo',
             'slug': 'limpopo',
-            'code': 'LIM',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'LIM'
         },
         {
             'name': 'Mpumalanga',
             'slug': 'mpumalanga',
-            'code': 'MP',
-            'programme_url': '',
-            'schedule_url': ''
-        },
-        {
-            'name': 'North West',
-            'slug': 'north-west',
-            'code': 'NW',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'MP'
         },
         {
             'name': 'Northern Cape',
             'slug': 'northern-cape',
-            'code': 'NC',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'NC'
+        },
+        {
+            'name': 'North West',
+            'slug': 'north-west',
+            'code': 'NW'
         },
         {
             'name': 'Western Cape',
             'slug': 'western-cape',
-            'code': 'WC',
-            'programme_url': '',
-            'schedule_url': ''
+            'code': 'WC'
         }
     ]

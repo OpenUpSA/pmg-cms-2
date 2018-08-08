@@ -46,6 +46,7 @@ class House(db.Model):
     name = db.Column(db.String(255), nullable=False)
     name_short = db.Column(db.String(20), nullable=False)
     sphere = db.Column(db.String(20), nullable=False)
+    contact_details = db.Column(db.Text())
 
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2

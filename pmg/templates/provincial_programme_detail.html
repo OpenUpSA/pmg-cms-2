@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from 'macros/attachments.html' import attachments_panel %}
+
+{% block title %}Programmes | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('provincial_parliaments_list') }}">Provincial Legislatures</a></li>
+  <li><a href="/provincial-parliaments/{{ province.slug }}/">{{ province.name }}</a></li>
+  
+  <li><a href="/provincial-parliaments/{{ province.slug }}/programmes/">Programmes</a></li>
+</ol>
+{% endblock %}
+
+{% block page %}
+<h1>
+  <i class="fa fa-calendar"></i> {{ provincial_programme.title }}
+  {% if provincial_programme.start_date %}
+  for {{ provincial_programme.start_date }}
+  {% endif %}
+</h1>
+
+
+<div class="row">
+  <div class="col-sm-8">
+    {% if provincial_programme.body %}
+    {{ provincial_programme.body|safe }}
+    {% endif %}
+  </div>
+  <div class="col-sm-4">
+    {% if provincial_programme.files %}
+    {{ attachments_panel("Documents", provincial_programme.files, 'fa-file-pdf-o') }}
+    {% endif %}
+  </div>
+</div>
+
+
+{% include "_correct_this_page.html" %}
+{% endblock %}

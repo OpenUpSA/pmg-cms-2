@@ -1123,6 +1123,54 @@ def daily_schedules(page=0):
         content_type="daily_schedule")
 
 
+@app.route('/provincial-parliaments/<slug>/programme/<int:programme_id>')
+@app.route('/provincial-parliaments/<slug>/programme/<int:programme_id>/')
+def provincial_programme(slug, programme_id):
+    """
+    Provincial programmes are stored as daily schedules
+    """
+    provincial_programme = load_from_api('v2/daily-schedules', programme_id)['result']
+    try:
+        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
+    except IndexError:
+        abort(404)
+    return render_template(
+        'provincial_programme_detail.html',
+        provincial_programme=provincial_programme,
+        province=province,
+        admin_edit_url=admin_url('schedule', programme_id))
+
+
+@app.route('/provincial-parliaments/<slug>/programmes/')
+@app.route('/provincial-parliaments/<slug>/programmes/<int:page>/')
+def provincial_programmes(slug, page=0):
+    """
+    List of all programmes for a PL
+    """
+    try:
+        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
+    except IndexError:
+        abort(404)
+
+    per_page = app.config['RESULTS_PER_PAGE']
+    programmes_list = load_from_api(
+        'v2/daily-schedules', page=page, pagesize=per_page,
+        params={'filter[house]': province['code']})
+    count = programmes_list["count"]
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    programmes = programmes_list['results']
+
+    return render_template(
+        'list.html',
+        results=programmes,
+        num_pages=num_pages,
+        page=page,
+        icon="calendar",
+        title="Programmes",
+        province=province,
+        content_type="provincial_programme")
+
+
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):

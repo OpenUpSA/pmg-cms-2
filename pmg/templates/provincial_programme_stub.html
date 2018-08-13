@@ -1,0 +1,23 @@
+{% if result._source %}
+  {% set title = result._source.title %}
+  {% set date = result._source.date %}
+  {% set id = result._id %}
+{% else %}
+  {% set title = result.title %}
+  {% set date = result.start_date %}
+  {% set id = result.id %}
+{% endif %}
+<div class="programme-stub space-bottom-sm">
+  <div class="date">{{ date|pretty_date }}</div>
+  <h4><a href="{{ url_for('provincial_programme', slug=province.slug, programme_id=id) }}">{{ title|safe }}</a></h4>
+
+  {% if result.highlight %}
+  <p>
+  {% if result.highlight.description %}
+    {{ result.highlight.description|search_snippet|ellipse|safe }}
+  {% elif result.highlight.fulltext %}
+    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
+  {% endif %}
+  </p>
+  {% endif %}
+</div>

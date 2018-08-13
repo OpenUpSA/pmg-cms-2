@@ -14,12 +14,12 @@
         {% if latest_programme %}
         <div class="row">
           <div class="col-xs-6 col-lg-4">
-            <a href="/daily-schedule/{{ latest_programme.id }}/" class="content-card flex card-link">
+            <a href="{{ url_for('provincial_programme', slug=province.slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
               {{ latest_programme.start_date | pretty_date }}
             </a>
           </div>
-          <a class="btn btn-success" href="/members/{{ province_slug }}/">See previous {{ province.name }} programmes</a>
         </div>
+        <a class="btn btn-success" href="{{ url_for('provincial_programmes', slug=province.slug) }}">See previous {{ province.name }} programmes</a>
         {% else %}
         There are currently no programmes available for this legislature.
         {% endif %}
@@ -46,7 +46,7 @@
         </div>
         <a class="btn btn-success" href="/committees#prov">All {{ province.name }} committees</a>
         {% else %}
-        There are currently no committees available for this legislature.
+        There are currently no committees monitored for this legislature.
         {% endif %}
       </section>
       

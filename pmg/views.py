@@ -672,6 +672,12 @@ def calls_for_comments(page=0):
 
     logger.debug("calls-for-comments page called")
     committees = load_from_api('committee', return_everything=True)['results']
+    # For PLs, only show WC:
+    committees[:] = [c for c in committees if not (
+        c['house']['sphere'] == 'provincial' and
+        c['house']['name_short'] != 'WC'
+    )]
+
     houses = sort_houses(House.query.all())
     filters = {}
     params = {}

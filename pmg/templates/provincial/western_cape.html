@@ -9,42 +9,20 @@
     <div class="col-lg-9">
       <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province }} Parliament</h1>
 
-      <section class="committees">
-        <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
+      <section class="schedules">
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programmes</h2>
+        {% if provincial_daily_schedules %}
         <div class="row">
-          {% for committee in provincial_committees %}
-            <div class="col-xs-12 col-sm-6 col-lg-4">
-              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
-                <div >
-                  <h4 class="card-title">{{ committee.name }}</h4>
-                </div>
-              </a>
-            </div>
-          {% endfor %}
-        </div>
-        <a class="btn btn-success" href="/committees#prov">All {{ province }} committees</a>
-      </section>
-
-      <section class="calls-for-comment">
-        <h2><i class="fa fa-icon fa-fw fa-comments"></i> Open calls for comment <small class="open-calls-count hidden">Currently open: <span id="open-calls"></span></small></h2>
-        {% if provincial_calls_for_comment %}
-        <div class="row">
-          {% for call_for_comment in provincial_calls_for_comment %}
-            <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
-              <a href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}" class="content-card flex card-link call-for-comment-stub open">
-                <div class="card">
-                  <div class="card-content">
-                    <h4 class="card-title">{{ call_for_comment.title }}</h4>
-                    <h5 class="date">{{ call_for_comment.start_date|pretty_date }} - {% if call_for_comment.end_date %}<strong class="enddate">{{ call_for_comment.end_date|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h5>
-                    <div class="footer-open">Open for comments</div>
-                  </div>
-                </div>
+          {% for schedule in provincial_daily_schedules %}
+            <div class="col-xs-6 col-lg-4">
+              <a href="/daily-schedule/{{ schedule.id }}/" class="content-card flex card-link">
+                {{ schedule.start_date | pretty_date }}
               </a>
             </div>
           {% endfor %}
         </div>
         {% else %}
-        There are currently no open calls for comment
+        There are currently no programmes available for this legislature.
         {% endif %}
       </section>
 
@@ -66,20 +44,47 @@
         <a class="btn btn-success" href="/members/{{ province_slug }}/">All members of {{ province }} parliament</a>
       </section>
 
-      <section class="schedules">
-        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Daily Schedules</h2>
-        {% if provincial_daily_schedules %}
+      <section class="committees">
+        <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
         <div class="row">
-          {% for schedule in provincial_daily_schedules %}
-            <div class="col-xs-6 col-lg-4">
-              <a href="/daily-schedule/{{ schedule.id }}/" class="content-card flex card-link">
-                {{ schedule.start_date | pretty_date }}
+          {% for committee in provincial_committees %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <div >
+                  <h4 class="card-title">{{ committee.name }}</h4>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="/committees#prov">All {{ province }} committees</a>
+      </section>
+
+      <section class="offices">
+          <h2><i class="fa fa-icon fa-fw fa-calendar"></i>Constituency Offices</h2>
+          You can find constituency offices for this legislature on <a href="{{ pa_offices_url }}" target="_blank">People's Assembly</a>.
+        </section>
+
+      <section class="calls-for-comment">
+        <h2><i class="fa fa-icon fa-fw fa-comments"></i> Open calls for comment <small class="open-calls-count hidden">Currently open: <span id="open-calls"></span></small></h2>
+        {% if provincial_calls_for_comment %}
+        <div class="row">
+          {% for call_for_comment in provincial_calls_for_comment %}
+            <div class="col-xs-12 col-sm-6 col-lg-4 open-call">
+              <a href="{{ url_for('call_for_comment', call_for_comment_id=call_for_comment.id) }}" class="content-card flex card-link call-for-comment-stub open">
+                <div class="card">
+                  <div class="card-content">
+                    <h4 class="card-title">{{ call_for_comment.title }}</h4>
+                    <h5 class="date">{{ call_for_comment.start_date|pretty_date }} - {% if call_for_comment.end_date %}<strong class="enddate">{{ call_for_comment.end_date|pretty_date }}</strong>{% else %}Closing date unknown{% endif %}</h5>
+                    <div class="footer-open">Open for comments</div>
+                  </div>
+                </div>
               </a>
             </div>
           {% endfor %}
         </div>
         {% else %}
-        There are currently no daily schedules available for this legislature.
+        There are currently no open calls for comment
         {% endif %}
       </section>
 

@@ -34,6 +34,12 @@ def apply_filters(query):
                 query = query.join(House)
 
             query = query.filter(House.name_short == f[key])
+        # support excluding a specific sphere
+        elif key == 'exclude_sphere':
+            model = query._entity_zero().entity_zero.entity
+            if not hasattr(model, 'house'):
+                query = query.join(House)
+            query = query.filter(House.sphere != f[key])
         else:
             query = query.filter_by(**f)
 

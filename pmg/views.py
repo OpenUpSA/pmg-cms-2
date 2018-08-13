@@ -1105,7 +1105,9 @@ def daily_schedules(page=0):
     """
 
     per_page = app.config['RESULTS_PER_PAGE']
-    daily_schedules_list = load_from_api('v2/daily-schedules', page=page, pagesize=per_page)
+    daily_schedules_list = load_from_api(
+        'v2/daily-schedules', page=page, pagesize=per_page,
+        params={'filter[exclude_sphere]': 'provincial'})
     count = daily_schedules_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']

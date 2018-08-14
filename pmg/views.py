@@ -1001,7 +1001,8 @@ def provincial_parliaments_detail(slug):
 
 @app.route('/provincial-parliaments/western-cape/')
 def provincial_parliaments_western_cape():
-
+    
+    province = [p for p in utils.get_provincial_legislatures() if p['code'] == 'WC'][0]
     members = load_from_api('v2/members', return_everything=True)['results']
 
     # members of provincial parliament
@@ -1026,21 +1027,20 @@ def provincial_parliaments_western_cape():
             params={'filter[house]': 'WC'})['results']
     provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
 
-    provincial_daily_schedules = load_from_api('v2/daily-schedules',
+    provincial_programmes = load_from_api('v2/daily-schedules',
             return_everything=True,
             params={'filter[house]': 'WC'})['results']
+    latest_programme = provincial_programmes[0] if provincial_programmes else None
 
     contact_details = House.query.filter(House.name_short=='WC').first().contact_details
 
     return render_template(
         'provincial/western_cape.html',
-        province="Western Cape",
-        province_code="WC",
-        province_slug="western-cape",
+        province=province,
         mpls=mpls[0:6],
         provincial_committees=provincial_committees,
         provincial_calls_for_comment=provincial_calls_for_comment,
-        provincial_daily_schedules=provincial_daily_schedules[0:6],
+        latest_programme=latest_programme,
         contact_details=contact_details)
 
 

@@ -1,30 +1,29 @@
 {% extends "base.html" %}
 
-{% block title %}{{ province }} Parliament | PMG{% endblock %}
+{% block title %}{{ province.name }} Parliament | PMG{% endblock %}
 
 {% block page %}
 <div class="provincial-detail-page">
 
   <div class="row">
     <div class="col-lg-9">
-      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province }} Parliament</h1>
+      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Parliament</h1>
 
-      <section class="schedules">
-        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programmes</h2>
-        {% if provincial_daily_schedules %}
-        <div class="row">
-          {% for schedule in provincial_daily_schedules %}
+      <section class="programmes">
+          <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programmes</h2>
+          {% if latest_programme %}
+          <div class="row">
             <div class="col-xs-6 col-lg-4">
-              <a href="/daily-schedule/{{ schedule.id }}/" class="content-card flex card-link">
-                {{ schedule.start_date | pretty_date }}
+              <a href="{{ url_for('provincial_programme', slug=province.slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
+                {{ latest_programme.start_date | pretty_date }}
               </a>
             </div>
-          {% endfor %}
-        </div>
-        {% else %}
-        There are currently no programmes available for this legislature.
-        {% endif %}
-      </section>
+          </div>
+          <a class="btn btn-success" href="{{ url_for('provincial_programmes', slug=province.slug) }}">See previous {{ province.name }} programmes</a>
+          {% else %}
+          There are currently no programmes available for this legislature.
+          {% endif %}
+        </section>
 
       <section class="members">
         <h2><i class="fa fa-icon fa-fw fa-user"></i> Members of Parliament</h2>
@@ -41,7 +40,7 @@
             </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="/members/{{ province_slug }}/">All members of {{ province }} parliament</a>
+        <a class="btn btn-success" href="/members/{{ province.slug }}/">All members of {{ province.name }} parliament</a>
       </section>
 
       <section class="committees">
@@ -90,7 +89,7 @@
     </div>
     <div class="col-lg-3 col-md-6">
       <div class="provincial-box">
-        <img src="/static/resources/images/provinces/{{ province_code }}.svg">
+        <img src="/static/resources/images/provinces/{{ province.code }}.svg">
         <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
         <p>Does this content interest you?<br>Please let us know!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>

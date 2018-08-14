@@ -10,8 +10,8 @@
     <div class="col-md-6">
       {% if content_type == 'provincial_programme' %}
       <ol class="breadcrumb">
-        <li><a href="{{ url_for('provincial_parliaments_list') }}">Provincial Legislatures</a></li>
-        <li><a href="/provincial-parliaments/{{ province.slug }}/">{{ province.name }}</a></li>
+        <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+        <li><a href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">{{ province.name }}</a></li>
       </ol>
       {% else %}
       <form action="/search">

@@ -9,11 +9,11 @@
         <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> Provincial Legislatures</h1>
         <section class="provinces">
             <div class="row">
-              {% for prov in provinces %}
+              {% for province in provinces %}
                 <div class="col-xs-12 col-sm-6 col-lg-4">
-                  <a class="content-card flex" href="/provincial-parliaments/{{ prov.slug }}">
+                  <a class="content-card flex" href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">
                     <div >
-                      <h4 class="card-title">{{ prov.name }}</h4>
+                      <h4 class="card-title">{{ province.name }}</h4>
                     </div>
                   </a>
                 </div>

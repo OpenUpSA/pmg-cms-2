@@ -952,10 +952,10 @@ def hansards(page=0):
         year_list=year_list)
 
 
-@app.route('/provincial-parliaments/')
-def provincial_parliaments_list():
+@app.route('/provincial-legislatures/')
+def provincial_legislatures_list():
     """
-    A page with links to the provincial parliaments
+    A page with links to the provincial legislatures
     """
     provinces = utils.get_provincial_legislatures()
     return render_template(
@@ -963,12 +963,14 @@ def provincial_parliaments_list():
         provinces=provinces)
 
 
-@app.route('/provincial-parliaments/<slug>/')
-def provincial_parliaments_detail(slug):
+@app.route('/provincial-legislatures/<slug>/')
+def provincial_legislatures_detail(slug):
     """
     A page showing the information on the selected provincial parliament
     Except: WC
     """
+    if slug == 'western-cape':
+        return provincial_legislatures_western_cape(slug)
     try:
         province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
     except IndexError:
@@ -999,10 +1001,8 @@ def provincial_parliaments_detail(slug):
         contact_details=contact_details)
 
 
-@app.route('/provincial-parliaments/western-cape/')
-def provincial_parliaments_western_cape():
-    
-    province = [p for p in utils.get_provincial_legislatures() if p['code'] == 'WC'][0]
+def provincial_legislatures_western_cape(slug):
+    province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
     members = load_from_api('v2/members', return_everything=True)['results']
 
     # members of provincial parliament
@@ -1123,8 +1123,8 @@ def daily_schedules(page=0):
         content_type="daily_schedule")
 
 
-@app.route('/provincial-parliaments/<slug>/programme/<int:programme_id>')
-@app.route('/provincial-parliaments/<slug>/programme/<int:programme_id>/')
+@app.route('/provincial-legislatures/<slug>/programme/<int:programme_id>')
+@app.route('/provincial-legislatures/<slug>/programme/<int:programme_id>/')
 def provincial_programme(slug, programme_id):
     """
     Provincial programmes are stored as daily schedules
@@ -1141,8 +1141,8 @@ def provincial_programme(slug, programme_id):
         admin_edit_url=admin_url('schedule', programme_id))
 
 
-@app.route('/provincial-parliaments/<slug>/programmes/')
-@app.route('/provincial-parliaments/<slug>/programmes/<int:page>/')
+@app.route('/provincial-legislatures/<slug>/programmes/')
+@app.route('/provincial-legislatures/<slug>/programmes/<int:page>/')
 def provincial_programmes(slug, page=0):
     """
     List of all programmes for a PL

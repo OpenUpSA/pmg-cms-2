@@ -1009,6 +1009,12 @@ body.email_alerts {
         margin-bottom: 40px;
       }
     }
+    .note {
+      margin-left: 15px;
+      p {
+        color: $orange;
+      }
+    }
   }
 }
 

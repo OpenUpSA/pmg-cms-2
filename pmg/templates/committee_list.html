@@ -162,6 +162,9 @@
     </div>
 
     <div class="tab-pane prov cte-items" id="prov">
+      <div class="note">
+          <p>PMG does not monitor all Provincial Legislature Committees.</p>
+      </div>
       <div class="row prov-row">
         {% for key, ctype in prov_committees.iteritems() %}
         <div class="col-xs-12 col-md-6 single-prov">
@@ -195,6 +198,13 @@
               </li>
             {% endfor %}
           </ul>
+          {% if key == 'WC' %}
+          <div class="note">
+            More committee information for this legislature can be found here:<br>
+            <a href="http://www.wcpp.gov.za/node/212" target="_blank">Contact details</a><br>
+            <a href="http://www.wcpp.gov.za/committee-membership" target="_blank"> Membership</a>
+          </div>
+          {% endif %}
         </div>
         {% endfor %}
       </div>

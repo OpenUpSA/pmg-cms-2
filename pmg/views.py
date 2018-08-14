@@ -982,7 +982,7 @@ def provincial_parliaments_detail(slug):
     latest_programme = provincial_programmes[0] if provincial_programmes else None
 
     committees = load_from_api('v2/committees', return_everything=True)['results']
-    provincial_committees = [c for c in committees if c['house']['short_name'] == province['code']][0:6]
+    provincial_committees = [c for c in committees if c['house']['short_name'] == province['code']]
 
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
@@ -1038,7 +1038,7 @@ def provincial_parliaments_western_cape():
         province_code="WC",
         province_slug="western-cape",
         mpls=mpls[0:6],
-        provincial_committees=provincial_committees[0:6],
+        provincial_committees=provincial_committees,
         provincial_calls_for_comment=provincial_calls_for_comment,
         provincial_daily_schedules=provincial_daily_schedules[0:6],
         contact_details=contact_details)

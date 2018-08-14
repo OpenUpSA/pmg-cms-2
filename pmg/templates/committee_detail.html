@@ -7,15 +7,19 @@
       {{ committee.about|safe }}
     </div>
   {% endif %}
-
+  {% if committee.house.sphere == 'provincial' and committee.house.short_name != 'WC'%}
+  <p>PMG does not monitor the Committees of this Provincial Legislature</p>
+  {% else %}
   <div class="cte-dtl-meetings">
     <nav class="cte-dtl-meetings-nav visible-lg-block">
       <ul class="nav nav-tabs cte-tab-nav">
         <li class="active"><a href="#cm" data-toggle="tab">Committee meetings</a></li>
         <li><a href="#cc" data-toggle="tab">Calls for comment</a></li>
+        {% if committee.house.short_name != 'WC' %}
         <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
         <li><a href="#qr" data-toggle="tab">Questions and replies</a></li>
         <li><a href="#bills" data-toggle="tab">Bills</a></li>
+        {% endif %}
       </ul>
     </nav>
     <div class="tab-content">
@@ -24,9 +28,11 @@
           <select class="form-control cte-select-tab-nav">
             <option data-target="#cm" data-toggle="tab" value="#cm">Committee meetings</option>
             <option data-target="#cc" data-toggle="tab" value="#cc">Calls for comment</option>
+            {% if committee.house.short_name != 'WC' %}
             <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
             <option data-target="#qr" data-toggle="tab" value="#qr">Questions and replies</option>
             <option data-target="#bills" data-toggle="tab" value="#bills">Bills</option>
+            {% endif %}
           </select>
         </div>
       </nav>
@@ -205,8 +211,7 @@
       </div>
     </div>
   </div> <!-- /Reports -->
-
-
+  {% endif %}
 
 {% endblock %}
 

@@ -25,7 +25,7 @@
             </a>
           </div>
         </div>
-        <a class="btn btn-success" href="{{ url_for('provincial_programmes', slug=province.slug) }}">See previous {{ province.name }} programmes</a>
+        <a href="{{ url_for('provincial_programmes', slug=province.slug) }}">Previous {{ province.name }} programmes</a>
         {% else %}
         There are currently no programmes available for this legislature.
         {% endif %}

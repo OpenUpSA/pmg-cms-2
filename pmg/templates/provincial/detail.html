@@ -2,6 +2,12 @@
 
 {% block title %}{{ province.name }} Parliament | PMG{% endblock %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+</ol>
+{% endblock %}
+
 {% block page %}
 <div class="provincial-detail-page">
 
@@ -10,7 +16,7 @@
       <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Legislature</h1>
       
       <section class="programmes">
-        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programmes</h2>
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programme</h2>
         {% if latest_programme %}
         <div class="row">
           <div class="col-xs-6 col-lg-4">

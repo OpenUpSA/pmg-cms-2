@@ -1044,6 +1044,14 @@ def provincial_legislatures_western_cape(slug):
         contact_details=contact_details)
 
 
+@app.route('/provincial-parliaments/<slug>/')
+def provincial_parliaments_old(slug):
+    """
+    Redirect to new URL: `provincial-parliaments` -> `provincial-legislatures`
+    """
+    return redirect(url_for('provincial_legislatures_detail', slug=slug))
+
+
 @app.route('/briefing/<int:event_id>')
 @app.route('/briefing/<int:event_id>/')
 def briefing(event_id):

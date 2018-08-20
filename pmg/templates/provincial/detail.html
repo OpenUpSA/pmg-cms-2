@@ -31,11 +31,6 @@
         {% endif %}
       </section>
 
-      <section class="members">
-        <h2><i class="fa fa-icon fa-fw fa-user"></i>Members</h2>
-        You can find members of this legislature on <a href="{{ pa_members_url }}" target="_blank">People's Assembly</a>.
-      </section>
-
       <section class="committees">
         <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
         {%  if provincial_committees %}
@@ -54,13 +49,18 @@
         There are currently no committees monitored for this legislature.
         {% endif %}
       </section>
+
+      <section class="members">
+        <h2><i class="fa fa-icon fa-fw fa-user"></i>Members</h2>
+        You can find members of this legislature on <a href="{{ pa_members_url }}" target="_blank">People's Assembly</a>.
+      </section>
       
       <section class="offices">
         <h2><i class="fa fa-icon fa-fw fa-calendar"></i>Constituency Offices</h2>
         You can find constituency offices for this legislature on <a href="{{ pa_offices_url }}" target="_blank">People's Assembly</a>.
       </section>
-
     </div>
+
     <div class="col-lg-3 col-md-6">
       <div class="provincial-box">
         <img src="/static/resources/images/provinces/{{ province.code }}.svg">
@@ -79,7 +79,6 @@
       </div>
       {% endif %}
     </div>
-    
     
   </div>
 

@@ -73,55 +73,18 @@ def externalise_url(url):
     return '%s://%s/%s' % (scheme, request.host, url)
 
 
-def get_provincial_legislatures():
+def slugify_province(prov):
     """
-    Returns a list of provinces with the info required
-    to build the provincial legislature pages.
+    Province name to slug i.e. lowercase, and spaces to dashes.
     """
-    return [
-        {
-            'name': 'Eastern Cape',
-            'slug': 'eastern-cape',
-            'code': 'EC'
-        },
-        {
-            'name': 'Free State',
-            'slug': 'free-state',
-            'code': 'FS'
-        },
-        {
-            'name': 'Gauteng',
-            'slug': 'gauteng',
-            'code': 'GT'
-        },
-        {
-            'name': 'KwaZulu-Natal',
-            'slug': 'kwazulu-natal',
-            'code': 'KZN'
-        },
-        {
-            'name': 'Limpopo',
-            'slug': 'limpopo',
-            'code': 'LIM'
-        },
-        {
-            'name': 'Mpumalanga',
-            'slug': 'mpumalanga',
-            'code': 'MP'
-        },
-        {
-            'name': 'Northern Cape',
-            'slug': 'northern-cape',
-            'code': 'NC'
-        },
-        {
-            'name': 'North West',
-            'slug': 'north-west',
-            'code': 'NW'
-        },
-        {
-            'name': 'Western Cape',
-            'slug': 'western-cape',
-            'code': 'WC'
-        }
-    ]
+    return prov.replace(' ', '-').lower()
+
+
+def deslugify_province(prov):
+    """
+    Province slug to name, i.e. dashes to spaces and title case.
+    KZN is a special case.
+    """
+    if prov == 'kwazulu-natal':
+        return 'KwaZulu-Natal'
+    return prov.replace('-', ' ').title()

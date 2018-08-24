@@ -6,8 +6,8 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
-  <li><a href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">{{ province.name }}</a></li>
-  <li><a href="{{ url_for('provincial_programmes', slug=province.slug) }}">Programmes</a></li>
+  <li><a href="{{ url_for('provincial_legislatures_detail', slug=slug) }}">{{ province.name }}</a></li>
+  <li><a href="{{ url_for('provincial_programmes', slug=slug) }}">Programmes</a></li>
 </ol>
 {% endblock %}
 

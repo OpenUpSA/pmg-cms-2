@@ -165,7 +165,7 @@
       <div class="row prov-row">
         {% for key, ctype in wc_committees.iteritems() %}
         <div class="col-xs-12 col-md-6 single-prov">
-          <h3>{{ ctype.name }}</h3>
+          <h3>{{ ctype.name }} Parliament</h3>
           <ul>
             {% for committee in ctype.committees %}
               <li class="committee item {% if not committee.active %}in{% endif %}active" data-id="{{ committee.id }}" {% if committee.followed %} data-following="true" {% endif %}>

@@ -962,7 +962,11 @@ def provincial_legislatures_list():
     """
     A page with links to the provincial legislatures
     """
-    provinces = utils.get_provincial_legislatures()
+    prov_legislatures = House.query.filter(House.sphere == 'provincial').order_by(House.name).all()
+    provinces = [
+        {'name': p.name, 'slug': utils.slugify_province(p.name)}
+        for p in prov_legislatures]
+
     return render_template(
         'provincial/list.html',
         provinces=provinces)
@@ -974,40 +978,37 @@ def provincial_legislatures_detail(slug):
     A page showing the information on the selected provincial parliament
     Except: WC
     """
-    if slug == 'western-cape':
-        return provincial_legislatures_western_cape(slug)
-    try:
-        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
-    except IndexError:
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
         abort(404)
+
+    if slug == 'western-cape':
+        return provincial_legislatures_western_cape(slug, province)
 
     # Provincial programmes are stored as daily schedules
     # We only show the latest
     provincial_programmes = load_from_api('v2/daily-schedules',
         return_everything=True,
-        params={'filter[house]': province['code']})['results']
+        params={'filter[house]': province.name_short})['results']
     latest_programme = provincial_programmes[0] if provincial_programmes else None
 
     committees = load_from_api('v2/committees', return_everything=True)['results']
-    provincial_committees = [c for c in committees if c['house']['short_name'] == province['code']]
+    provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
 
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
 
-    contact_details = House.query.filter(House.name_short==province['code']).first().contact_details
-
     return render_template(
         'provincial/detail.html',
         province=province,
+        slug=slug,
         latest_programme=latest_programme,
         provincial_committees=provincial_committees,
         pa_members_url=pa_members_url,
-        pa_offices_url=pa_offices_url,
-        contact_details=contact_details)
+        pa_offices_url=pa_offices_url)
 
 
-def provincial_legislatures_western_cape(slug):
-    province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
+def provincial_legislatures_western_cape(slug, province):
     members = load_from_api('v2/members', return_everything=True)['results']
 
     # members of provincial parliament
@@ -1037,16 +1038,14 @@ def provincial_legislatures_western_cape(slug):
             params={'filter[house]': 'WC'})['results']
     latest_programme = provincial_programmes[0] if provincial_programmes else None
 
-    contact_details = House.query.filter(House.name_short=='WC').first().contact_details
-
     return render_template(
         'provincial/western_cape.html',
         province=province,
+        slug=slug,
         mpls=mpls[0:6],
         provincial_committees=provincial_committees,
         provincial_calls_for_comment=provincial_calls_for_comment,
-        latest_programme=latest_programme,
-        contact_details=contact_details)
+        latest_programme=latest_programme)
 
 
 @app.route('/provincial-parliaments/<slug>/')
@@ -1142,15 +1141,16 @@ def provincial_programme(slug, programme_id):
     """
     Provincial programmes are stored as daily schedules
     """
-    provincial_programme = load_from_api('v2/daily-schedules', programme_id)['result']
-    try:
-        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
-    except IndexError:
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
         abort(404)
+
+    provincial_programme = load_from_api('v2/daily-schedules', programme_id)['result']
     return render_template(
         'provincial_programme_detail.html',
-        provincial_programme=provincial_programme,
         province=province,
+        slug=slug,
+        provincial_programme=provincial_programme,
         admin_edit_url=admin_url('schedule', programme_id))
 
 
@@ -1160,15 +1160,14 @@ def provincial_programmes(slug, page=0):
     """
     List of all programmes for a PL
     """
-    try:
-        province = [p for p in utils.get_provincial_legislatures() if p['slug'] == slug][0]
-    except IndexError:
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
         abort(404)
 
     per_page = app.config['RESULTS_PER_PAGE']
     programmes_list = load_from_api(
         'v2/daily-schedules', page=page, pagesize=per_page,
-        params={'filter[house]': province['code']})
+        params={'filter[house]': province.name_short})
     count = programmes_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     programmes = programmes_list['results']
@@ -1181,6 +1180,7 @@ def provincial_programmes(slug, page=0):
         icon="calendar",
         title="Programmes",
         province=province,
+        slug=slug,
         content_type="provincial_programme")
 
 

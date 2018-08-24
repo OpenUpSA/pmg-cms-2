@@ -19,43 +19,42 @@ def upgrade():
     Ensure all provinces exist as Provincial Legislatures
     """
     from pmg.models import House, db
-    from pmg.utils import get_provincial_legislatures
 
     pls = [
         {
-            'name': 'Eastern Cape Legislature',
+            'name': 'Eastern Cape',
             'name_short': 'EC'
         },
         {
-            'name': 'Free State Legislature',
+            'name': 'Free State',
             'name_short': 'FS'
         },
         {
-            'name': 'Gauteng Legislature',
+            'name': 'Gauteng',
             'name_short': 'GT'
         },
         {
-            'name': 'KwaZulu-Natal Legislature',
+            'name': 'KwaZulu-Natal',
             'name_short': 'KZN'
         },
         {
-            'name': 'Limpopo Legislature',
+            'name': 'Limpopo',
             'name_short': 'LIM'
         },
         {
-            'name': 'Mpumalanga Legislature',
+            'name': 'Mpumalanga',
             'name_short': 'MP'
         },
         {
-            'name': 'Northern Cape Legislature',
+            'name': 'Northern Cape',
             'name_short': 'NC'
         },
         {
-            'name': 'North West Legislature',
+            'name': 'North West',
             'name_short': 'NW'
         },
         {
-            'name': 'Western Cape Parliament',
+            'name': 'Western Cape',
             'name_short': 'WC'
         }
     ]

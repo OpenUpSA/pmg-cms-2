@@ -19,12 +19,12 @@
         {% if latest_programme %}
         <div class="row">
           <div class="col-xs-6 col-lg-4">
-            <a href="{{ url_for('provincial_programme', slug=province.slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
+            <a href="{{ url_for('provincial_programme', slug=slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
               {{ latest_programme.start_date | pretty_date }}
             </a>
           </div>
         </div>
-        <a href="{{ url_for('provincial_programmes', slug=province.slug) }}">Previous {{ province.name }} programmes</a>
+        <a href="{{ url_for('provincial_programmes', slug=slug) }}">Previous {{ province.name }} programmes</a>
         {% else %}
         There are currently no programmes available for this legislature.
         {% endif %}
@@ -60,7 +60,7 @@
             </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="/members/{{ province.slug }}/">All members of {{ province.name }} parliament</a>
+        <a class="btn btn-success" href="/members/{{ slug }}/">All members of {{ province.name }} parliament</a>
       </section>
 
       <section class="offices">
@@ -94,18 +94,18 @@
 
     <div class="col-lg-3 col-md-6">
       <div class="provincial-box">
-        <img src="/static/resources/images/provinces/{{ province.code }}.svg">
+        <img src="/static/resources/images/provinces/{{ province.name_short }}.svg">
         <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
         <p>Does this content interest you?<br>Please let us know!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
       </div>
-      {% if contact_details %}
+      {% if province.contact_details %}
       <div class="panel panel-default contact">
         <div class="panel-heading">
           <h4 class="panel-title">Legislature contact details</h4>
         </div>
         <div class="panel-body">
-          {{ contact_details|safe }}
+          {{ province.contact_details|safe }}
         </div>
       </div>
       {% endif %}

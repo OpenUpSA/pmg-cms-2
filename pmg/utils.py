@@ -71,3 +71,20 @@ def externalise_url(url):
 
     scheme = 'http' if app.config['DEBUG'] else 'https'
     return '%s://%s/%s' % (scheme, request.host, url)
+
+
+def slugify_province(prov):
+    """
+    Province name to slug i.e. lowercase, and spaces to dashes.
+    """
+    return prov.replace(' ', '-').lower()
+
+
+def deslugify_province(prov):
+    """
+    Province slug to name, i.e. dashes to spaces and title case.
+    KZN is a special case.
+    """
+    if prov == 'kwazulu-natal':
+        return 'KwaZulu-Natal'
+    return prov.replace('-', ' ').title()

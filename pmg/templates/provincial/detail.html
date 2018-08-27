@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ province.name }} Legislature | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+</ol>
+{% endblock %}
+
+{% block page %}
+<div class="provincial-detail-page">
+
+  <div class="row">
+    <div class="col-lg-9">
+      <h1 class="province-title"><i class="fa fa-fw fa-icon fa-university"></i> {{ province.name }} Legislature</h1>
+      
+      <section class="programmes">
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i> Programme</h2>
+        {% if latest_programme %}
+        <div class="row">
+          <div class="col-xs-6 col-lg-4">
+            <a href="{{ url_for('provincial_programme', slug=slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
+              {{ latest_programme.start_date | pretty_date }}
+            </a>
+          </div>
+        </div>
+        <a href="{{ url_for('provincial_programmes', slug=slug) }}">Previous {{ province.name }} programmes</a>
+        {% else %}
+        There are currently no programmes available for this legislature.
+        {% endif %}
+      </section>
+
+      <section class="committees">
+        <h2><i class="fa fa-icon fa-fw fa-group"></i> Committees</h2>
+        {%  if provincial_committees %}
+        <div class="row">
+          {% for committee in provincial_committees %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <div >
+                  <h4 class="card-title">{{ committee.name }}</h4>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        There are currently no committees monitored for this legislature.
+        {% endif %}
+      </section>
+
+      <section class="members">
+        <h2><i class="fa fa-icon fa-fw fa-user"></i>Members</h2>
+        You can find members of this legislature on <a href="{{ pa_members_url }}" target="_blank">People's Assembly</a>.
+      </section>
+      
+      <section class="offices">
+        <h2><i class="fa fa-icon fa-fw fa-calendar"></i>Constituency Offices</h2>
+        You can find constituency offices for this legislature on <a href="{{ pa_offices_url }}" target="_blank">People's Assembly</a>.
+      </section>
+    </div>
+
+    <div class="col-lg-3 col-md-6">
+      <div class="provincial-box">
+        <img src="/static/resources/images/provinces/{{ province.name_short }}.svg">
+        <p>This is content of a <b>provincial legislature</b> we've recently added.</p>
+        <p>Does this content interest you?<br>Please let us know!</p>
+        <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+      </div>
+      {% if province.contact_details %}
+      <div class="panel panel-default contact">
+        <div class="panel-heading">
+          <h4 class="panel-title">Legislature contact details</h4>
+        </div>
+        <div class="panel-body">
+          {{ province.contact_details|safe }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+  </div>
+
+</div>
+{% endblock %}

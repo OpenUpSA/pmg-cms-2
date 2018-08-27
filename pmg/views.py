@@ -453,19 +453,24 @@ def committees():
 
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
-    prov_committees = OrderedDict(())
+    wc_committees = OrderedDict(())
 
     committees_type = None
 
     for committee in committees:
         if committee['house']['sphere'] == 'provincial':
-            house = committee['house']
-            if house['short_name'] not in prov_committees:
-                prov_committees[house['short_name']] = {
-                    'name': house['name'],
-                    'committees': [],
-                }
-            committees_type = prov_committees
+            # For Provincial Legislatures, we only show Western Cape committees
+            if committee['house']['short_name'] == 'WC':
+                house = committee['house']
+                if house['short_name'] not in wc_committees:
+                    wc_committees[house['short_name']] = {
+                        'name': house['name'],
+                        'committees': [],
+                    }
+                committees_type = wc_committees
+            else:
+                continue
+
         elif committee['ad_hoc'] is True:
             committees_type = adhoc_committees
         else:
@@ -491,14 +496,14 @@ def committees():
     for typ in adhoc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
-    for typ in prov_committees.itervalues():
+    for typ in wc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
     return render_template(
         'committee_list.html',
         reg_committees=reg_committees,
         adhoc_committees=adhoc_committees,
-        prov_committees=prov_committees
+        wc_committees=wc_committees
     )
 
 
@@ -672,6 +677,12 @@ def calls_for_comments(page=0):
 
     logger.debug("calls-for-comments page called")
     committees = load_from_api('committee', return_everything=True)['results']
+    # For PLs, only show WC:
+    committees[:] = [c for c in committees if not (
+        c['house']['sphere'] == 'provincial' and
+        c['house']['name_short'] != 'WC'
+    )]
+
     houses = sort_houses(House.query.all())
     filters = {}
     params = {}
@@ -855,7 +866,7 @@ def members():
 
 @app.route('/members/western-cape/')
 def western_cape_members():
-    """ All MPs.
+    """ Western Cape MPs.
     """
     western_cape_members = load_from_api('v2/members', return_everything=True)['results']
 
@@ -946,9 +957,58 @@ def hansards(page=0):
         year_list=year_list)
 
 
-@app.route('/provincial-parliaments/western-cape/')
-def western_cape_overview():
+@app.route('/provincial-legislatures/')
+def provincial_legislatures_list():
+    """
+    A page with links to the provincial legislatures
+    """
+    prov_legislatures = House.query.filter(House.sphere == 'provincial').order_by(House.name).all()
+    provinces = [
+        {'name': p.name, 'slug': utils.slugify_province(p.name)}
+        for p in prov_legislatures]
 
+    return render_template(
+        'provincial/list.html',
+        provinces=provinces)
+
+
+@app.route('/provincial-legislatures/<slug>/')
+def provincial_legislatures_detail(slug):
+    """
+    A page showing the information on the selected provincial parliament
+    Except: WC
+    """
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
+        abort(404)
+
+    if slug == 'western-cape':
+        return provincial_legislatures_western_cape(slug, province)
+
+    # Provincial programmes are stored as daily schedules
+    # We only show the latest
+    provincial_programmes = load_from_api('v2/daily-schedules',
+        return_everything=True,
+        params={'filter[house]': province.name_short})['results']
+    latest_programme = provincial_programmes[0] if provincial_programmes else None
+
+    committees = load_from_api('v2/committees', return_everything=True)['results']
+    provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
+
+    pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
+    pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
+
+    return render_template(
+        'provincial/detail.html',
+        province=province,
+        slug=slug,
+        latest_programme=latest_programme,
+        provincial_committees=provincial_committees,
+        pa_members_url=pa_members_url,
+        pa_offices_url=pa_offices_url)
+
+
+def provincial_legislatures_western_cape(slug, province):
     members = load_from_api('v2/members', return_everything=True)['results']
 
     # members of provincial parliament
@@ -973,20 +1033,27 @@ def western_cape_overview():
             params={'filter[house]': 'WC'})['results']
     provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
 
-    provincial_daily_schedules = load_from_api('v2/daily-schedules',
+    provincial_programmes = load_from_api('v2/daily-schedules',
             return_everything=True,
             params={'filter[house]': 'WC'})['results']
+    latest_programme = provincial_programmes[0] if provincial_programmes else None
 
     return render_template(
-        'provincial_overview.html',
-        province="Western Cape",
-        province_code="WC",
-        province_slug="western-cape",
+        'provincial/western_cape.html',
+        province=province,
+        slug=slug,
         mpls=mpls[0:6],
-        provincial_committees=provincial_committees[0:6],
+        provincial_committees=provincial_committees,
         provincial_calls_for_comment=provincial_calls_for_comment,
-        provincial_daily_schedules=provincial_daily_schedules[0:6],
-        )
+        latest_programme=latest_programme)
+
+
+@app.route('/provincial-parliaments/<slug>/')
+def provincial_parliaments_old(slug):
+    """
+    Redirect to new URL: `provincial-parliaments` -> `provincial-legislatures`
+    """
+    return redirect(url_for('provincial_legislatures_detail', slug=slug))
 
 
 @app.route('/briefing/<int:event_id>')
@@ -1050,7 +1117,9 @@ def daily_schedules(page=0):
     """
 
     per_page = app.config['RESULTS_PER_PAGE']
-    daily_schedules_list = load_from_api('v2/daily-schedules', page=page, pagesize=per_page)
+    daily_schedules_list = load_from_api(
+        'v2/daily-schedules', page=page, pagesize=per_page,
+        params={'filter[exclude_sphere]': 'provincial'})
     count = daily_schedules_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     daily_schedules = daily_schedules_list['results']
@@ -1064,6 +1133,55 @@ def daily_schedules(page=0):
         icon="calendar",
         title="Daily Schedules",
         content_type="daily_schedule")
+
+
+@app.route('/provincial-legislatures/<slug>/programme/<int:programme_id>')
+@app.route('/provincial-legislatures/<slug>/programme/<int:programme_id>/')
+def provincial_programme(slug, programme_id):
+    """
+    Provincial programmes are stored as daily schedules
+    """
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
+        abort(404)
+
+    provincial_programme = load_from_api('v2/daily-schedules', programme_id)['result']
+    return render_template(
+        'provincial_programme_detail.html',
+        province=province,
+        slug=slug,
+        provincial_programme=provincial_programme,
+        admin_edit_url=admin_url('schedule', programme_id))
+
+
+@app.route('/provincial-legislatures/<slug>/programmes/')
+@app.route('/provincial-legislatures/<slug>/programmes/<int:page>/')
+def provincial_programmes(slug, page=0):
+    """
+    List of all programmes for a PL
+    """
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    if not province:
+        abort(404)
+
+    per_page = app.config['RESULTS_PER_PAGE']
+    programmes_list = load_from_api(
+        'v2/daily-schedules', page=page, pagesize=per_page,
+        params={'filter[house]': province.name_short})
+    count = programmes_list["count"]
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    programmes = programmes_list['results']
+
+    return render_template(
+        'list.html',
+        results=programmes,
+        num_pages=num_pages,
+        page=page,
+        icon="calendar",
+        title="Programmes",
+        province=province,
+        slug=slug,
+        content_type="provincial_programme")
 
 
 @app.route('/question_reply/<int:question_reply_id>')

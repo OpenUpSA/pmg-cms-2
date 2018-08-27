@@ -1009,6 +1009,13 @@ body.email_alerts {
         margin-bottom: 40px;
       }
     }
+    .note {
+      margin-left: 15px;
+      padding-top: 15px;
+      p {
+        color: $orange;
+      }
+    }
   }
 }
 
@@ -1420,7 +1427,7 @@ header.detail-page-header {
   }
 }
 
-.provincial-overview-page {
+.provincial-detail-page {
   section {
     margin-bottom: 60px;
   }
@@ -1453,7 +1460,6 @@ header.detail-page-header {
   .schedules {
     a {
       color: $grey-darkest;
-      font-weight: bold;
       &:hover {
         color: $grey-darkest;
       }

@@ -19,9 +19,9 @@
       <li>
         <a class="tab-switch-adhoc" href="#adhoc" data-toggle="tab">Ad-hoc</a>
       </li>
-      {% if prov_committees %}
+      {% if wc_committees %}
       <li>
-        <a class="tab-switch-prov" href="#prov" data-toggle="tab">Provincial Legislatures</a>
+        <a class="tab-switch-prov" href="#prov" data-toggle="tab">Western Cape Parliament</a>
       </li>
       {% endif %}
       {% if current_user.is_authenticated() %}
@@ -38,8 +38,8 @@
       <option data-toggle="tab" data-target="#ncp" value="#ncp">National Council of Provinces committees</option>
       <option data-toggle="tab" data-target="#jnt" value="#jnt">Joint committees</option>
       <option data-toggle="tab" data-target="#adhoc" value="#adhoc">Ad-hoc committees</option>
-      {% if prov_committees %}
-      <option data-toggle="tab" data-target="#prov" value="#prov">Provincial Legislature committees</option>
+      {% if wc_committees %}
+      <option data-toggle="tab" data-target="#prov" value="#prov">Western Cape Parliament committees</option>
       {% endif %}
       {% if current_user.is_authenticated() %}
       <option data-toggle="tab" data-target="#user-following" value="#user-following">Committees you follow</option>
@@ -163,9 +163,9 @@
 
     <div class="tab-pane prov cte-items" id="prov">
       <div class="row prov-row">
-        {% for key, ctype in prov_committees.iteritems() %}
+        {% for key, ctype in wc_committees.iteritems() %}
         <div class="col-xs-12 col-md-6 single-prov">
-          <h3>{{ ctype.name }}</h3>
+          <h3>{{ ctype.name }} Parliament</h3>
           <ul>
             {% for committee in ctype.committees %}
               <li class="committee item {% if not committee.active %}in{% endif %}active" data-id="{{ committee.id }}" {% if committee.followed %} data-following="true" {% endif %}>
@@ -195,6 +195,11 @@
               </li>
             {% endfor %}
           </ul>
+          <div class="note">
+              <p>PMG does not monitor all Provincial Parliament Committees. Information for other committees can be found here:</p>
+            <a href="http://www.wcpp.gov.za/node/212" target="_blank">Contact details</a><br>
+            <a href="http://www.wcpp.gov.za/committee-membership" target="_blank"> Membership</a>
+          </div>
         </div>
         {% endfor %}
       </div>

@@ -634,6 +634,34 @@ class HansardView(EventView):
     inline_models = [InlineFile(EventFile)]
 
 
+class ProvincialLegislatureView(MyModelView):
+    can_delete = False
+    can_create = False
+
+    column_list = (
+        'name',
+    )
+    column_sortable_list = (
+        'name',
+    )
+    form_columns = (
+        'name',
+        'contact_details',
+    )
+    form_widget_args = {
+        'contact_details': {'class': 'ckeditor'},
+        'name': {'readonly': True},
+    }
+
+    def get_query(self):
+        """
+        Add filter to return only provincial legislatures
+        """
+
+        return self.session.query(self.model) \
+            .filter(self.model.sphere == 'provincial')
+
+
 class BriefingView(EventView):
     column_list = (
         'title',
@@ -1228,6 +1256,7 @@ admin.add_view(DailyScheduleView(DailySchedule, db.session, name="Daily Schedule
 admin.add_view(FeaturedContentView(Featured, db.session, name="Featured Content", endpoint='featured', category="Other Content"))
 admin.add_view(GazetteView(Gazette, db.session, name="Gazettes", endpoint='gazette', category="Other Content"))
 admin.add_view(HansardView(Hansard, db.session, type="plenary", name="Hansards", endpoint='hansard', category="Other Content"))
+admin.add_view(ProvincialLegislatureView(House, db.session, name="Provincial Legislatures", endpoint='provincial-legislatures', category="Other Content"))
 admin.add_view(BriefingView(Briefing, db.session, type="media-briefing", name="Media Briefings", endpoint='briefing', category="Other Content"))
 admin.add_view(RedirectView(Redirect, db.session, category='Other Content', name="Legacy Redirects", endpoint='redirects'))
 admin.add_view(PolicyDocumentView(PolicyDocument, db.session, name="Policy Document", endpoint='policy', category="Other Content"))

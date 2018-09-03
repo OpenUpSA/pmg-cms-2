@@ -436,7 +436,7 @@ def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'house', 'last_active_year'])['results']
+    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'monitored', 'house', 'last_active_year'])['results']
 
     nat = {
         'name': 'National Assembly',
@@ -491,7 +491,9 @@ def committees():
             elif committee['house']['id'] is House.JOINT_COMMITTEE:
                 committees_type['jnt']['committees'].append(committee)
             elif committee['house']['sphere'] == 'provincial':
-                committees_type[house['short_name']]['committees'].append(committee)
+                # Only show monitored committees
+                if committee['monitored'] == True:
+                    committees_type[house['short_name']]['committees'].append(committee)
 
     for typ in adhoc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
@@ -1019,6 +1021,8 @@ def provincial_legislatures_western_cape(slug, province):
 
     # provincial committees
     committees = load_from_api('v2/committees', return_everything=True)['results']
+    # Only show monitored committees:
+    committees[:] = [c for c in committees if c['monitored'] == True]
 
     provincial_committees = []
 
@@ -1043,7 +1047,7 @@ def provincial_legislatures_western_cape(slug, province):
         province=province,
         slug=slug,
         mpls=mpls[0:6],
-        provincial_committees=provincial_committees,
+        provincial_committees=provincial_committees[0:6],
         provincial_calls_for_comment=provincial_calls_for_comment,
         latest_programme=latest_programme)
 

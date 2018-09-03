@@ -996,6 +996,8 @@ def provincial_legislatures_detail(slug):
 
     committees = load_from_api('v2/committees', return_everything=True)['results']
     provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
+    # Show monitored committees first
+    provincial_committees.sort(key=lambda c: [-c['monitored'], c['name']])
 
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
@@ -1005,7 +1007,7 @@ def provincial_legislatures_detail(slug):
         province=province,
         slug=slug,
         latest_programme=latest_programme,
-        provincial_committees=provincial_committees,
+        provincial_committees=provincial_committees[0:6],
         pa_members_url=pa_members_url,
         pa_offices_url=pa_offices_url)
 
@@ -1058,6 +1060,24 @@ def provincial_parliaments_old(slug):
     Redirect to new URL: `provincial-parliaments` -> `provincial-legislatures`
     """
     return redirect(url_for('provincial_legislatures_detail', slug=slug))
+
+
+@app.route('/provincial-legislatures/<slug>/committees/')
+def provincial_committees(slug):
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    # TODO Filtering is not working as expected.
+    # House is not joined.
+    committees = load_from_api('v2/committees',
+        return_everything=True,
+        params={'filter[house]': province.name_short})['results']
+
+    provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
+
+    return render_template(
+        'provincial/committee_list.html',
+        province=province,
+        slug=slug,
+        provincial_committees=provincial_committees)
 
 
 @app.route('/briefing/<int:event_id>')

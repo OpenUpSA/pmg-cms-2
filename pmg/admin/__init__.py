@@ -400,6 +400,7 @@ class CommitteeView(MyModelView):
         'ad_hoc',
         'active',
         'premium',
+        'monitored',
         'house',
         'minister',
         'about',

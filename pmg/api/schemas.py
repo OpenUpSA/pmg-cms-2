@@ -29,7 +29,7 @@ class CommitteeSchema(ma.ModelSchema):
     class Meta:
         model = Committee
         fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'active', 'premium',
-                  'minister', 'last_active_year', '_links')
+                  'monitored', 'minister', 'last_active_year', '_links')
     house = fields.Nested('HouseSchema')
     minister = fields.Nested('MinisterSchema', exclude=['committee'])
     _links = ma.Hyperlinks({

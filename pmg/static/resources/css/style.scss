@@ -1020,10 +1020,11 @@ body.email_alerts {
   .not-monitored {
     color: $orange;
   }
-  .note {
-    font-size: 0.9em;
-    margin-top: 15px;
-  }
+}
+
+.note {
+  font-size: 0.9em;
+  margin-top: 15px;
 }
 
 .committee-header {

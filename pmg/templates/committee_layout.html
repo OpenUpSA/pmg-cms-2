@@ -38,7 +38,9 @@
       </div>
     </div>
     <div class="col-sm-4">
-      {% include 'user_management/_committee_alerts_signup.html' %}
+      {% if committee.monitored %}
+        {% include 'user_management/_committee_alerts_signup.html' %}
+      {% endif %}
       {% block committee_page_sidebar %}
       {% endblock %}
     </div>

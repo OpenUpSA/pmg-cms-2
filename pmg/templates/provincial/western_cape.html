@@ -19,12 +19,9 @@
         {% if latest_programme %}
         <div class="row">
           <div class="col-xs-6 col-lg-4">
-            <a href="{{ url_for('provincial_programme', slug=slug, programme_id=latest_programme.id) }}" class="content-card flex card-link">
-              {{ latest_programme.start_date | pretty_date }}
-            </a>
+            {{ latest_programme.body|safe }}
           </div>
         </div>
-        <a href="{{ url_for('provincial_programmes', slug=slug) }}">Previous {{ province.name }} programmes</a>
         {% else %}
         There are currently no programmes available for this legislature.
         {% endif %}

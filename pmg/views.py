@@ -329,6 +329,10 @@ def committee_detail(committee_id):
 
     bills.sort(key=lambda b: b['date_of_introduction'], reverse=True)
 
+    # If the request came from a Provincial Committee page,
+    # pass the slug to the template to build the correct breadcrumbs
+    from_page = request.args.get('from_page')
+
     return render_template('committee_detail.html',
                            current_year=now.year,
                            earliest_year=earliest_year,
@@ -343,7 +347,7 @@ def committee_detail(committee_id):
                            attendance_rank=attendance_rank,
                            admin_edit_url=admin_url('committee', committee_id),
                            bills=bills,
-    )
+                           from_page=from_page)
 
 
 @app.route('/committee/<int:committee_id>/follow-cte')

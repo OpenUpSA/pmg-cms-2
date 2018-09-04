@@ -37,7 +37,7 @@
         <div class="row">
           {% for committee in provincial_committees %}
             <div class="col-xs-12 col-sm-6 col-lg-4">
-              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+              <a class="content-card flex" href="{{ url_for('committee_detail', committee_id=committee.id, from_page=slug) }}">
                 <div >
                   <h4 class="card-title">{{ committee.name }}</h4>
                 </div>

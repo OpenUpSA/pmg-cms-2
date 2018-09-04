@@ -40,11 +40,11 @@
             </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="{{ url_for('provincial_committees', slug=slug) }}">All {{ province }} committees</a>
+        <a class="btn btn-success" href="{{ url_for('provincial_committees', slug=slug) }}">All {{ province }} Committees</a>
       </section>
 
       <section class="members">
-        <h2><i class="fa fa-icon fa-fw fa-user"></i> Members of Parliament</h2>
+        <h2><i class="fa fa-icon fa-fw fa-user"></i> Members</h2>
         <div class="row">
           {% for member in mpls %}
             <div class="col-xs-12 col-sm-6 col-lg-4">
@@ -58,7 +58,7 @@
             </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="/members/{{ slug }}/">All members of {{ province.name }} parliament</a>
+        <a class="btn btn-success" href="{{ url_for('provincial_members', slug=slug) }}">All {{ province.name }} Members</a>
       </section>
 
       <section class="offices">

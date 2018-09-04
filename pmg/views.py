@@ -21,7 +21,7 @@ from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMee
 from pmg.models.resources import Committee
 
 from copy import deepcopy
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 
 import forms
 import utils
@@ -866,25 +866,6 @@ def members():
         members_by_house=members_by_house)
 
 
-@app.route('/members/western-cape/')
-def western_cape_members():
-    """ Western Cape MPs.
-    """
-    western_cape_members = load_from_api('v2/members', return_everything=True)['results']
-
-    # partition by house
-    members_by_house = {}
-    for member in western_cape_members:
-        if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
-            members_by_house.setdefault(member['house']['name'], []).append(member)
-
-    return render_template(
-        'member_list.html',
-        members_by_house=members_by_house,
-        sphere="provincial",
-        )
-
-
 @app.route('/member/<int:member_id>')
 @app.route('/member/<int:member_id>/')
 def member(member_id):
@@ -999,6 +980,14 @@ def provincial_legislatures_detail(slug):
     # Show monitored committees first
     provincial_committees.sort(key=lambda c: [-c['monitored'], c['name']])
 
+    # Members
+    members = load_from_api('v2/members', return_everything=True,
+        params={'filter[house]': province.name_short})['results']
+    mpls = []
+    for member in members:
+        if member.get('house') and member['current'] and member['house']['short_name'] == province.name_short:
+            mpls.append(member)
+
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
 
@@ -1008,6 +997,7 @@ def provincial_legislatures_detail(slug):
         slug=slug,
         latest_programme=latest_programme,
         provincial_committees=provincial_committees[0:6],
+        mpls=mpls[0:6],
         pa_members_url=pa_members_url,
         pa_offices_url=pa_offices_url)
 
@@ -1078,6 +1068,33 @@ def provincial_committees(slug):
         province=province,
         slug=slug,
         provincial_committees=provincial_committees)
+
+
+@app.route('/provincial-legislatures/<slug>/members/')
+def provincial_members(slug):
+    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    members = load_from_api('v2/members', return_everything=True)['results']
+
+    provincial_members = [m for m in members if
+        m.get('house') and
+        m['current'] and
+        m['house']['short_name'] == province.name_short]
+
+    return render_template(
+        'member_list.html',
+        province=province,
+        slug=slug,
+        provincial_members=provincial_members)
+
+
+@app.route('/members/western-cape/')
+def western_cape_members():
+    """
+    Redirect to new URL:
+    `/members/western-cape/` -> `provincial-legislatures/western-cape/members/`
+    """
+    slug = 'western-cape'
+    return redirect(url_for('provincial_members', slug=slug))
 
 
 @app.route('/briefing/<int:event_id>')

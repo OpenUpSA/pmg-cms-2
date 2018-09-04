@@ -45,7 +45,7 @@
             </div>
           {% endfor %}
         </div>
-        <a class="btn btn-success" href="{{ url_for('provincial_committees', slug=slug) }}">All {{ province }} committees</a>
+        <a class="btn btn-success" href="{{ url_for('provincial_committees', slug=slug) }}">All {{ province }} Committees</a>
         {% else %}
         There are currently no committees available for this legislature.
         {% endif %}
@@ -53,7 +53,24 @@
 
       <section class="members">
         <h2><i class="fa fa-icon fa-fw fa-user"></i>Members</h2>
+        {% if mpls %}
+        <div class="row">
+          {% for member in mpls %}
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+              <a class="content-card flex" href="{{ member | member_url }}">
+                <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+                <div>
+                  <h4 class="card-title">{{ member.name }}</h4>
+                  <h5>{{ member.party.name }}</h5>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+        <a class="btn btn-success" href="{{ url_for('provincial_members', slug=slug) }}">All {{ province.name }} Members</a>
+        {% else %}
         You can find members of this legislature on <a href="{{ pa_members_url }}" target="_blank">People's Assembly</a>.
+        {% endif %}
       </section>
       
       <section class="offices">

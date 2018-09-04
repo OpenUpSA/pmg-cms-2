@@ -13,14 +13,15 @@
   <h1><i class="fa fa-icon fa-group"></i> {{ province.name }} Committees</h1>
 
   <div class="cte-list">
-    <ul class="col-xs-12 col-sm-6">
+    <ul class="col-xs-12">
       {% for committee in provincial_committees %}
         <li class="committee item" data-id="{{ committee.id }}">
            <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if not committee.monitored %}<span class="not-monitored"> *</span>{% endif %}
         </li>
       {% endfor %}
-        <li class="not-monitored note">* Committee not monitored by PMG</li>
+      <div class="not-monitored note">* Committee not monitored by PMG</div>
     </ul>
+
   </div>
 
 {% endblock page %}

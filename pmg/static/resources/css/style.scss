@@ -1427,7 +1427,12 @@ header.detail-page-header {
     color: $grey-darkest;
   }
   &.wc {
-    border-bottom: 1px solid $green-light;
+    h4 {
+      color: $green-dark;
+    }
+    &:hover {
+      color: $green-dark;
+    }
   }
 }
 

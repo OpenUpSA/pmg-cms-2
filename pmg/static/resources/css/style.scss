@@ -1009,13 +1009,6 @@ body.email_alerts {
         margin-bottom: 40px;
       }
     }
-    .note {
-      margin-left: 15px;
-      padding-top: 15px;
-      p {
-        color: $orange;
-      }
-    }
   }
   .not-monitored {
     color: $orange;
@@ -1024,7 +1017,7 @@ body.email_alerts {
 
 .note {
   font-size: 0.9em;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .committee-header {

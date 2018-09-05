@@ -1426,6 +1426,9 @@ header.detail-page-header {
     margin-top: 0;
     color: $grey-darkest;
   }
+  &.wc {
+    border-bottom: 1px solid $green-light;
+  }
 }
 
 .provincial-detail-page {

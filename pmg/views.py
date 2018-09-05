@@ -949,7 +949,7 @@ def provincial_legislatures_list():
     """
     A page with links to the provincial legislatures
     """
-    prov_legislatures = House.query.filter(House.sphere == 'provincial').order_by(House.name).all()
+    prov_legislatures = House.query.filter(House.sphere == 'provincial').order_by(desc(House.name)).all()
     provinces = [
         {'name': p.name, 'slug': utils.slugify_province(p.name)}
         for p in prov_legislatures]

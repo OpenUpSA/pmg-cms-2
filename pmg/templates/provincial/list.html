@@ -11,7 +11,7 @@
             <div class="row">
               {% for province in provinces %}
                 <div class="col-xs-12 col-sm-6 col-lg-4">
-                  <a class="content-card flex" href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">
+                  <a class="content-card flex {% if province.name == 'Western Cape' %}wc{% endif %}" href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">
                     <div >
                       <h4 class="card-title">{{ province.name }}</h4>
                     </div>

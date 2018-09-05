@@ -5,7 +5,7 @@
 
 {% block committee_breadcrumb %}
   {{ super() }}
-  <li><a href="{{ url_for('committee_meetings') }}">Committee Meetings</a></li>
+  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
 {% endblock %}
 
 {% block javascript %}

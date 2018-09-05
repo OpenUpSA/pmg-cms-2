@@ -515,6 +515,20 @@ class AttendanceMemberAjaxModelLoader(QueryAjaxModelLoader):
         return (getattr(model, self.pk), model_unicode)
 
 
+    def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
+        query = self.session.query(self.model)
+        # Only show currently active members
+        query = query.filter(Member.current == True)
+
+        filters = (field.ilike(u'%%%s%%' % term) for field in self._cached_fields)
+        query = query.filter(or_(*filters))
+
+        if self.order_by:
+            query = query.order_by(self.order_by)
+
+        return query.offset(offset).limit(limit).all()
+
+
 class InlineCommitteeMeetingAttendance(InlineFormAdmin):
     form_columns = (
         'id',

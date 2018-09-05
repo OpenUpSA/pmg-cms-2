@@ -645,6 +645,8 @@ class Committee(ApiResource, db.Model):
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
     # year when this committee was last active (only for ad-hoc committees)
     last_active_year = db.Column(db.Integer)
+    # Is this commmittee monitored by PMG? Some provincial committees aren't.
+    monitored = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
 
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
     house = db.relationship('House', lazy='joined')

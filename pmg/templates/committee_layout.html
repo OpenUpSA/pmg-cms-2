@@ -5,8 +5,14 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
   {% block committee_breadcrumb %}
+  {% if not from_page %}
   <li><a href="{{ url_for('committees') }}">Committees</a></li>
   <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
+  {% else %}
+  <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+  <li><a href="{{ url_for('provincial_legislatures_detail', slug=from_page) }}">{{ committee.house.name }}</a></li>
+  <li><a href="{{ url_for('provincial_committees', slug=from_page) }}">Committees</a></li>
+  {% endif %}
   {% endblock %}
 </ol>
 {% endblock %}
@@ -38,7 +44,9 @@
       </div>
     </div>
     <div class="col-sm-4">
-      {% include 'user_management/_committee_alerts_signup.html' %}
+      {% if committee.monitored %}
+        {% include 'user_management/_committee_alerts_signup.html' %}
+      {% endif %}
       {% block committee_page_sidebar %}
       {% endblock %}
     </div>

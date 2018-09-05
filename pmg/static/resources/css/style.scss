@@ -1009,14 +1009,15 @@ body.email_alerts {
         margin-bottom: 40px;
       }
     }
-    .note {
-      margin-left: 15px;
-      padding-top: 15px;
-      p {
-        color: $orange;
-      }
-    }
   }
+  .not-monitored {
+    color: $orange;
+  }
+}
+
+.note {
+  font-size: 0.9em;
+  margin-top: 20px;
 }
 
 .committee-header {
@@ -1424,6 +1425,14 @@ header.detail-page-header {
     font-weight: bold;
     margin-top: 0;
     color: $grey-darkest;
+  }
+  &.wc {
+    h4 {
+      color: $green-dark;
+    }
+    &:hover {
+      color: $green-dark;
+    }
   }
 }
 

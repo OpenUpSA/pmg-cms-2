@@ -11,7 +11,7 @@
             <div class="row">
               {% for province in provinces %}
                 <div class="col-xs-12 col-sm-6 col-lg-4">
-                  <a class="content-card flex" href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">
+                  <a class="content-card flex {% if province.name == 'Western Cape' %}wc{% endif %}" href="{{ url_for('provincial_legislatures_detail', slug=province.slug) }}">
                     <div >
                       <h4 class="card-title">{{ province.name }}</h4>
                     </div>
@@ -24,8 +24,8 @@
     <div class="col-lg-3 col-md-6">
         <div class="provincial-box">
           <p>This is content of <b>provincial legislatures</b> we've recently added.</p>
-          <p>Does this content interest you?<br>Please let us know!</p>
-          <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+          <p>Help keep this updated by sending changes to us!</p>
+          <a class="btn btn-success" href="mailto:info@pmg.org.za">Submit a change</a>
         </div>
       </div>
   </div>

@@ -2,11 +2,23 @@
 
 {% block title %}Members of Parliament | PMG{% endblock %}
 
+{% block breadcrumb %}
+{% if province %}
+<ol class="breadcrumb">
+    <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+    <li><a href="{{ url_for('provincial_legislatures_detail', slug=slug) }}">{{ province.name }}</a></li>
+</ol>
+{% endif %}
+{% endblock %}
+
 {% block page %}
 <div class="row members-of-parliament">
   <div class="col-sm-6 col-lg-4">
+    {% if not province %}
     <h1><i class="fa fa-icon fa-user"></i> Members of Parliament</h1>
-
+    {% else %}
+    <h1><i class="fa fa-icon fa-user"></i> {{ province.name }} Members</h1>
+    {% endif %}
     <form id="member-search-form" action="/search" method="GET">
       <input type="hidden" name="filter[type]" value="member">
 
@@ -29,25 +41,22 @@
   </div>
 </div>
 
-{% if sphere == "provincial" %}
-  {% for house, members in members_by_house | dictsort %}
-    <h2>{{ house }}</h2>
-    <div class="row mp-list">
-      {% for member in members %}
-        <div class="single-mp col-xs-12 col-sm-6 col-md-4 col-lg-3">
-          <a class="content-card flex" href="{{ member | member_url }}">
-            <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
-            <div>
-              <h4 class="card-title name">{{ member.name }}</h4>
-              {% if member.party %}
-              <h5>{{ member.party.name }}</h5>
-              {% endif %}
-            </div>
-          </a>
-        </div>
-      {% endfor %}
-    </div>
-  {% endfor %}
+{% if province %}
+  <div class="row mp-list">
+    {% for member in provincial_members %}
+      <div class="single-mp col-xs-12 col-sm-6 col-md-4 col-lg-3">
+        <a class="content-card flex" href="{{ member | member_url }}">
+          <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+          <div>
+            <h4 class="card-title name">{{ member.name }}</h4>
+            {% if member.party %}
+            <h5>{{ member.party.name }}</h5>
+            {% endif %}
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
 {% else %}
   <div class="row mp-list">
     {% for house, members in members_by_house | dictsort %}

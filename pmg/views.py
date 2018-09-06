@@ -16,6 +16,7 @@ from flask import make_response
 from pmg import app, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
+from pmg.api.v1 import create_next_page_url
 from pmg.search import Search
 from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMeeting, CommitteeMeetingAttendance, House
 from pmg.models.resources import Committee
@@ -1472,14 +1473,28 @@ def correct_this_page():
 
 
 @app.route('/blog')
-def blog():
-    posts = Post.query\
+@app.route('/blog/')
+@app.route('/blog/<int:page>/')
+def blog(page=0):
+    per_page = 10
+
+    count = Post.query.count()
+    posts =  Post.query\
                 .order_by(desc(Post.date))\
-                .limit(10)\
+                .limit(per_page)\
+                .offset(page*per_page)\
                 .all()
 
-    return render_template('/blog.html',
-                           posts=posts)
+    next = create_next_page_url(count, page, per_page)
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    url = "/blog"
+    return render_template(
+        '/blog.html',
+        posts=posts,
+        num_pages=num_pages,
+        page=page,
+        per_page=per_page,
+        url=url)
 
 
 @app.route('/blog/<path:slug>')

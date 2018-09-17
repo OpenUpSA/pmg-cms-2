@@ -166,14 +166,30 @@ def send_api_response(data, status_code=200):
 # faulty passed records for alternate members
 MAJOR_PARTIES = ['ANC', 'DA', 'EFF']
 
+def get_attendance_members(sphere):
 
-def get_attendance_members():
-    return Member.query\
+    return  Member.query\
         .options(joinedload('house'),
                  lazyload('memberships'))\
         .join(Member.party)\
+        .join(Member.house)\
         .filter(Party.name.in_(MAJOR_PARTIES))\
+        .filter(House.sphere==sphere)\
         .all()
+
+
+def get_attendance_sphere(request):
+    """
+    If the spehere is specified, check if it's valid.
+    Default to national if not provided.
+    """
+    sphere = request.args.get('sphere', 'national')
+    valid_spheres = set(h.sphere for h in House.query.all())
+    if sphere not in valid_spheres:
+        raise ApiException(422,
+        "Please specify a valid 'sphere'. Options are: %s" % [s for s in valid_spheres])
+
+    return sphere
 
 
 def build_attendance_member_dict(member):
@@ -492,12 +508,10 @@ def committee_meeting_attendance_summary():
     """
     Summary of MP attendance of committee meetings.
     """
-    # This is a temporary fix to only show attendance for members
-    # of the three major parties until we determine how to present
-    # faulty passed records for alternate members
+    sphere = get_attendance_sphere(request)
 
     rows = CommitteeMeetingAttendance.summary()
-    members = {m.id: m for m in get_attendance_members()}
+    members = {m.id: m for m in get_attendance_members(sphere)}
 
     data = []
     for year, year_rows in groupby(rows, lambda r: int(r.year)):
@@ -527,8 +541,10 @@ def committee_meeting_attendance_meetings_by_member():
     """
     Attendance per meeting, by member.
     """
+    sphere = get_attendance_sphere(request)
+
     rows = CommitteeMeetingAttendance.meetings_by_member()
-    members = {m.id: m for m in get_attendance_members()}
+    members = {m.id: m for m in get_attendance_members(sphere)}
 
     data = []
     for year, year_rows in groupby(rows, lambda r: int(r.year)):
@@ -563,11 +579,8 @@ def committee_meeting_attendance_download():
     output, wb = builder.new_workbook()
 
     # attendance summary, by MP
-
-    # This is a temporary fix to only show attendance for members
-    # of the three major parties until we determine how to present
-    # faulty passed records for alternate members
-    members = {m.id: m for m in Member.query.join(Member.party).filter(Party.name.in_(MAJOR_PARTIES)).all()}
+    sphere = get_attendance_sphere(request)
+    members = {m.id: m for m in get_attendance_members(sphere)}
     ctes = {c.id: c for c in Committee.list().all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
     rows = [["year", "member", "party", "committee", "house", "ad-hoc"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]

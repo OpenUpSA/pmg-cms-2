@@ -571,7 +571,6 @@ def committee_meeting_attendance_meetings_by_member():
 
 
 @api.route('/committee-meeting-attendance/data.xlsx')
-@api.route('/committee-meeting-attendance/data.xlsx/')
 def committee_meeting_attendance_download():
     """
     Download committee meeting attendance data in raw form.

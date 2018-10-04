@@ -9,9 +9,6 @@
   {% endif %}
 
   {% if committee.house.sphere == 'provincial' and not committee.monitored %}
-    <div class="note light-red">
-      <p>PMG does not currently monitor the this committee</p>
-    </div>
     {% include '_committee_membership.html' %}
   {% else %}
     <div class="cte-dtl-meetings">
@@ -223,9 +220,13 @@
   {% if committee.house.sphere == 'provincial' %}
   <div class="provincial-box">
     <img src="/static/resources/images/provinces/{{ committee.house.short_name }}.svg">
+    {% if committee.monitored %}
     <p>This is one of the <b>provincial legislature committees</b> we've recently added.</p>
-    <p>Does this content interest you?<br>Please let us know!</p>
-    <a class="btn btn-success" href="mailto:info@pmg.org.za">Tell us what you think</a>
+    {% else %}
+    <p>This is content of a <b>provincial legislature</b> we've recently added - although no meeting reports.</p>
+    {% endif %}
+    <p>Help keep this updated by sending changes to us!</p>
+    <a class="btn btn-success" href="mailto:info@pmg.org.za">Submit a change</a>
   </div>
   {% endif %}
 

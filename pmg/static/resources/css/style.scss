@@ -389,6 +389,11 @@ article.page {
         content: "\f128";
      }
     }
+    &.blogs {
+	&:after{
+	    content: "\f044";
+	}
+    }
   }
 }
 

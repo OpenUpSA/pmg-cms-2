@@ -134,7 +134,7 @@
           </div>
 
           <div class="subsection bills">
-            <h3>Current Bills</h4>
+            <h3>Current Bills</h3>
             <div class="content-cards moreable">
               <div class="row">
                 {% for bill in bills %}
@@ -158,10 +158,11 @@
               </div>
             </div>
             <div class="show-more">Show more</div>
-          </div>
+		  </div>
+	  
 
           <div class="subsection questions">
-            <h3>Recent Questions and Replies</h4>
+            <h3>Recent Questions and Replies</h3>
             <div class="content-cards moreable">
               <div class="row">
                 {% for question in questions %}
@@ -186,7 +187,26 @@
               </div>
             </div>
             <div class="show-more">Show more</div>
-          </div>
+	  </div>
+	  <div class="subsection blogs">
+	      <h3>Recent Blogs</h3>
+	      <div class="content-cards moreable">
+		  <div class="row">
+		      {% for blog in blogs %}
+		      <div class="col-xs-12 col-sm-6 col-md-4">
+			  <a href="/blog/{{ blog.slug }}">
+			      <div class="card">
+				  <h4>{{blog.title}}</h4>
+				  <h5>{{blog.body|truncate(100)|safe}}</h5>
+				  <h6>{{blog.date|pretty_date|nbsp|safe}}</h6>
+			      </div>
+			  </a>
+		      </div>
+		      {% endfor %}
+		  </div>
+	      </div>
+	      <div class="show-more">Show More</div>
+	  </div>
 
         </div>
         <div class="col-md-3">

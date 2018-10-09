@@ -14,3 +14,7 @@ fieldset {
 .form-group .form-inline .checkbox {
   display: block;
 }
+
+input[type="checkbox"] {
+    width: 0;
+}

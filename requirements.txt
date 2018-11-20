@@ -68,7 +68,7 @@ six==1.10.0
 smtpapi==0.3.1
 soundcloud==0.5.0
 SQLAlchemy==1.0.8
-tablib==0.11.2
+tablib==0.11.5
 tzlocal==1.2
 Unidecode==0.4.21
 universal-analytics-python==0.2.4

@@ -157,13 +157,27 @@ def inject_via():
 
 
 @app.route('/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def index():
-    committee_meetings = load_from_api('v2/committee-meetings/', fields=['id', 'date', 'title', 'committee.name', 'committee.house'], params={'per_page': 11})['results']
+    committee_meetings = load_from_api(
+        'v2/committee-meetings/',
+        fields=['id', 'date', 'title', 'committee.name', 'committee.house'],
+        params={
+            'per_page': 11
+        })['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
-    questions = load_from_api('v2/minister-questions/', fields=['id', 'question_to_name', 'question', 'date'], params={'per_page': 11})['results']
+    questions = load_from_api(
+        'v2/minister-questions/',
+        fields=['id', 'question_to_name', 'question', 'date'],
+        params={
+            'per_page': 11
+        })['results']
+    blogs = Post.query\
+                 .order_by(desc(Post.date))\
+                 .limit(6)
 
     return render_template(
         'index.html',
@@ -172,6 +186,7 @@ def index():
         questions=questions,
         stock_pic="sa-parliament.jpg",
         featured_content=get_featured_content(),
+        blogs=blogs,
     )
 
 

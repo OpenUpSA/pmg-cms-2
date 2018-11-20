@@ -13,7 +13,7 @@ from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import backref, joinedload, validates
 
 from flask import url_for
-from flask.ext.sqlalchemy import models_committed
+from flask_sqlalchemy import models_committed
 from flask_security import current_user
 
 from werkzeug import secure_filename

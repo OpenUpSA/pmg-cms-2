@@ -9,8 +9,8 @@ from unidecode import unidecode
 import requests
 
 from flask import request, flash, url_for, session, render_template, abort, redirect, Response
-from flask.ext.security import current_user
-from flask.ext.mail import Message
+from flask_security import current_user
+from flask_mail import Message
 from flask import make_response
 
 from pmg import app, mail, cache, cache_key, should_skip_cache
@@ -22,7 +22,7 @@ from pmg.models import Redirect, Page, Post, SavedSearch, Featured, CommitteeMee
 from pmg.models.resources import Committee
 
 from copy import deepcopy
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 
 import forms
 import utils

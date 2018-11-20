@@ -1,6 +1,6 @@
 from flask_wtf import Form as BaseForm
 from wtforms import TextField, validators
-from flask.ext.wtf.recaptcha import RecaptchaField
+from flask_wtf.recaptcha import RecaptchaField
 from flask_security.forms import (
     ConfirmRegisterForm as BaseRegisterForm,
     SendConfirmationForm as BaseSendConfirmationForm,

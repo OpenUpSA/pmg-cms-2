@@ -3,8 +3,8 @@ import logging.config
 import os
 
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
@@ -104,7 +104,7 @@ app.extensions.get('mail').send = send_email_with_sendgrid
 
 
 # setup assets
-from flask.ext.assets import Environment, Bundle
+from flask_assets import Environment, Bundle
 assets = Environment(app)
 assets.url_expire = False
 assets.debug      = app.debug

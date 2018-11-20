@@ -1,7 +1,7 @@
 import urllib
 
 from flask import request, redirect, abort, url_for
-from flask.ext.security import current_user
+from flask_security import current_user
 
 class RBACMixin(object):
     """ Role-based access control for views. """

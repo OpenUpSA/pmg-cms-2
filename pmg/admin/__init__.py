@@ -4,18 +4,18 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from flask import flash, redirect, url_for, request, make_response
-from flask.ext.admin import Admin, expose, BaseView, AdminIndexView
-from flask.ext.admin.babel import gettext
-from flask.ext.admin.contrib.sqla import ModelView
-from flask.ext.admin.contrib.sqla.ajax import QueryAjaxModelLoader, DEFAULT_PAGE_SIZE
-from flask.ext.admin.contrib.sqla.fields import InlineModelFormList
-from flask.ext.admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
-from flask.ext.admin.model.form import InlineFormAdmin
-from flask.ext.admin.model.template import macro
-from flask.ext.admin.form import rules
-from flask.ext.admin.helpers import get_url
-from flask.ext.security.changeable import change_user_password
-from flask.ext.security.confirmable import confirm_user
+from flask_admin import Admin, expose, BaseView, AdminIndexView
+from flask_admin.babel import gettext
+from flask_admin.contrib.sqla import ModelView
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader, DEFAULT_PAGE_SIZE
+from flask_admin.contrib.sqla.fields import InlineModelFormList
+from flask_admin.contrib.sqla.filters import BaseSQLAFilter, DateBetweenFilter
+from flask_admin.model.form import InlineFormAdmin
+from flask_admin.model.template import macro
+from flask_admin.form import rules
+from flask_admin.helpers import get_url
+from flask_security.changeable import change_user_password
+from flask_security.confirmable import confirm_user
 from wtforms import fields
 from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required

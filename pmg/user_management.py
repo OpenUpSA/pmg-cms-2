@@ -3,7 +3,7 @@ from ga import ga_event
 from collections import defaultdict, OrderedDict
 
 from flask import render_template, request, redirect, abort, flash, jsonify
-from flask.ext.security import current_user, login_required
+from flask_security import current_user, login_required
 from sqlalchemy import desc
 
 from pmg import app, db

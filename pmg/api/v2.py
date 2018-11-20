@@ -1,5 +1,5 @@
 from flask import request, Blueprint, abort
-from flask.ext.security import current_user
+from flask_security import current_user
 from sqlalchemy import desc
 from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast

@@ -6,8 +6,8 @@ import math
 
 import flask
 from flask import request, redirect, url_for, Blueprint, make_response
-from flask.ext.security import current_user
-from flask.ext.security.decorators import _check_token, _check_http_auth
+from flask_security import current_user
+from flask_security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
 from sqlalchemy import desc
 from sqlalchemy.orm import lazyload, joinedload

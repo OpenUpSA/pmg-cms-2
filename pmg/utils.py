@@ -4,7 +4,7 @@ import re
 import nltk
 from UniversalAnalytics import Tracker
 from flask import request
-from flask.ext.security import current_user
+from flask_security import current_user
 
 
 # Useragents that are bots

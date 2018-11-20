@@ -2,7 +2,7 @@ from itertools import chain
 import logging
 
 from flask import redirect, request, url_for, flash
-from flask.ext.admin import BaseView, expose
+from flask_admin import BaseView, expose
 from flask_mail import Message
 from flask_wtf import Form
 from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField, SelectMultipleField

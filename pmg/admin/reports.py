@@ -1,5 +1,5 @@
 from flask import abort, request, make_response
-from flask.ext.admin import expose, BaseView
+from flask_admin import expose, BaseView
 from datetime import date
 
 from .rbac import RBACMixin

@@ -1,4 +1,4 @@
-from flask.ext.admin.form import RenderTemplateWidget
+from flask_admin.form import RenderTemplateWidget
 
 from wtforms import widgets, fields
 from wtforms.widgets.core import html_params, HTMLString

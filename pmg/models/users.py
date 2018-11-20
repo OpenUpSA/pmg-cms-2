@@ -5,8 +5,8 @@ from logging import getLogger
 from sqlalchemy import sql, event, func, desc
 from sqlalchemy.orm import validates
 
-from flask.ext.security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
-from flask.ext.security.signals import user_confirmed
+from flask_security import UserMixin, RoleMixin, Security, SQLAlchemyUserDatastore
+from flask_security.signals import user_confirmed
 from flask import render_template
 
 from flask_mail import Message

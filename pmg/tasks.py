@@ -1,5 +1,4 @@
 import logging
-import newrelic.agent
 
 log = logging.getLogger(__name__)
 
@@ -8,29 +7,23 @@ def send_saved_search_alerts():
     from pmg import app
     from pmg.models import SavedSearch
 
-    application = newrelic.agent.application()
-    with newrelic.agent.BackgroundTask(application, name='send_saved_search_alerts', group='Task'):
-        with app.app_context():
-            SavedSearch.send_all_alerts()
+    with app.app_context():
+        SavedSearch.send_all_alerts()
 
 
 def update_active_committees():
     from pmg import app
     from pmg.models import Committee
 
-    application = newrelic.agent.application()
-    with newrelic.agent.BackgroundTask(application, name='update_active_committees', group='Task'):
-        with app.app_context():
-            Committee.update_active_committees()
+    with app.app_context():
+        Committee.update_active_committees()
 
 
 def sync_soundcloud():
     from pmg import app
     from pmg.models.soundcloud_track import SoundcloudTrack
-    application = newrelic.agent.application()
-    with newrelic.agent.BackgroundTask(application, name='sync_soundcloud', group='Task'):
-        with app.app_context():
-            SoundcloudTrack.sync()
+    with app.app_context():
+        SoundcloudTrack.sync()
 
 
 def schedule():

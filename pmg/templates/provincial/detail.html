@@ -86,6 +86,17 @@
         <p>Help keep this updated by sending changes to us!</p>
         <a class="btn btn-success" href="mailto:info@pmg.org.za">Submit a change</a>
       </div>
+
+      {% if speaker %}
+        <a class="content-card flex" href="{{ speaker | member_url }}">
+          <img class="member-profile-pic" src="{{ speaker.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ speaker.name }}">
+          <div>
+            <h4 class="card-title">{{ speaker.name }}</h4>
+            <h5>Speaker</h5>
+          </div>
+        </a>
+      {% endif %}
+
       {% if province.contact_details %}
       <div class="panel panel-default contact">
         <div class="panel-heading">

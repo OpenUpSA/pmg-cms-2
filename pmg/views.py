@@ -1008,6 +1008,11 @@ def provincial_legislatures_detail(slug):
         if member.get('house') and member['current'] and member['house']['short_name'] == province.name_short:
             mpls.append(member)
 
+    if province.speaker_id:
+        speaker = load_from_api('v2/members', province.speaker_id)['result']
+    else:
+        speaker = None
+
     pa_members_url = 'https://www.pa.org.za/place/%s/' % (slug)
     pa_offices_url = 'https://www.pa.org.za/place/%s/places/' % (slug)
 
@@ -1015,11 +1020,13 @@ def provincial_legislatures_detail(slug):
         'provincial/detail.html',
         province=province,
         slug=slug,
+        speaker=speaker,
         latest_programme=latest_programme,
         provincial_committees=provincial_committees[0:6],
         mpls=mpls[0:6],
         pa_members_url=pa_members_url,
-        pa_offices_url=pa_offices_url)
+        pa_offices_url=pa_offices_url,
+        admin_edit_url=admin_url('provincial-legislatures', province.id))
 
 
 def provincial_legislatures_western_cape(slug, province):
@@ -1030,6 +1037,11 @@ def provincial_legislatures_western_cape(slug, province):
     for member in members:
         if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
             mpls.append(member)
+
+    if province.speaker_id:
+        speaker = load_from_api('v2/members', province.speaker_id)['result']
+    else:
+        speaker = None
 
     # provincial committees
     committees = load_from_api('v2/committees', return_everything=True)['results']
@@ -1058,10 +1070,12 @@ def provincial_legislatures_western_cape(slug, province):
         'provincial/western_cape.html',
         province=province,
         slug=slug,
+        speaker=speaker,
         mpls=mpls[0:6],
         provincial_committees=provincial_committees[0:6],
         provincial_calls_for_comment=provincial_calls_for_comment,
-        latest_programme=latest_programme)
+        latest_programme=latest_programme,
+        admin_edit_url=admin_url('provincial-legislatures', province.id))
 
 
 @app.route('/provincial-parliaments/<slug>/')

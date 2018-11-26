@@ -88,7 +88,7 @@
       </div>
 
       {% if speaker %}
-        <a class="content-card flex" href="{{ speaker | member_url }}">
+        <a class="content-card flex members" href="{{ speaker | member_url }}">
           <img class="member-profile-pic" src="{{ speaker.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ speaker.name }}">
           <div>
             <h4 class="card-title">{{ speaker.name }}</h4>

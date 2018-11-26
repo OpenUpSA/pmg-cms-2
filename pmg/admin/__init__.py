@@ -28,6 +28,7 @@ import flask_wtf
 
 from pmg import app, db
 from pmg.models import *  # noqa
+import pmg.utils
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
@@ -662,11 +663,21 @@ class ProvincialLegislatureView(MyModelView):
     form_columns = (
         'name',
         'contact_details',
+        'speaker',
     )
     form_widget_args = {
         'contact_details': {'class': 'ckeditor'},
         'name': {'readonly': True},
+        'speaker': {
+            'fields': ('name',),
+            'page_size': 25
+        },
     }
+
+    def frontend_url(self, model):
+        if model.id:
+            return url_for('provincial_legislatures_detail', slug=pmg.utils.slugify_province(model.name))
+        return None
 
     def get_query(self):
         """

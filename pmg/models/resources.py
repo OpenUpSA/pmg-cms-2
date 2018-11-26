@@ -47,6 +47,8 @@ class House(db.Model):
     name_short = db.Column(db.String(20), nullable=False)
     sphere = db.Column(db.String(20), nullable=False)
     contact_details = db.Column(db.Text())
+    speaker_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    speaker = db.relationship('Member', lazy=True, foreign_keys=[speaker_id])
 
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
@@ -551,7 +553,7 @@ class Member(ApiResource, db.Model):
     profile_pic_url = db.Column(db.String(255))
     bio = db.Column(db.Text())
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
-    house = db.relationship(House)
+    house = db.relationship(House, foreign_keys=[house_id])
     party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
     party = db.relationship(Party, backref="members", lazy='joined')
     province_id = db.Column(db.Integer, db.ForeignKey('province.id'))

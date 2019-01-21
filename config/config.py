@@ -11,12 +11,15 @@ DEBUG_CACHE = env.get('FLASK_DEBUG_CACHE', "false") == 'true'
 RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
 
 WTF_CSRF_ENABLED = True
-SECRET_KEY = env.get('FLASK_SECRET_KEY', "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
+SECRET_KEY = env.get('FLASK_SECRET_KEY',
+                     "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
 SQLALCHEMY_DATABASE_URI = env.get(
     'SQLALCHEMY_DATABASE_URI',
-    'postgresql+psycopg2://pmg:pmg@localhost/pmg_test?client_encoding=utf8' if TEST else 'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
+    'postgresql+psycopg2://pmg:pmg@10.186.210.252/pmg_test?client_encoding=utf8'
+    if TEST else
+    'postgresql+psycopg2://pmg:pmg@10.186.210.252/pmg?client_encoding=utf8')
 SQLALCHEMY_ECHO = False
 # This is required only be pmg.models.resources.delete_file_from_s3 and can de turned off if
 # that is changed to use sqlalchemy events
@@ -29,7 +32,8 @@ RESULTS_PER_PAGE_V2 = 500
 
 # Premium content before this date is free
 # Calculated as 1 of last year
-PREMIUM_FREE_BEFORE = datetime.datetime(datetime.datetime.today().year - 1, 1, 1, tzinfo=pytz.utc)
+PREMIUM_FREE_BEFORE = datetime.datetime(
+    datetime.datetime.today().year - 1, 1, 1, tzinfo=pytz.utc)
 
 ES_SERVER = env.get("ES_SERVER", 'http://localhost:9200')
 SEARCH_REINDEX_CHANGES = not DEBUG  # reindex changes to models
@@ -49,8 +53,10 @@ STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
 UPLOAD_PATH = "/tmp/pmg_upload/"
 
 if DEBUG:
-    RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI')
-    RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY',  '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe')
+    RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY',
+                                   '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI')
+    RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY',
+                                    '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe')
 else:
     RECAPTCHA_PUBLIC_KEY = env.get('RECAPTCHA_PUBLIC_KEY')
     RECAPTCHA_PRIVATE_KEY = env.get('RECAPTCHA_PRIVATE_KEY')
@@ -92,7 +98,8 @@ MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 # Flask-Security config
 SECURITY_URL_PREFIX = "/user"
 SECURITY_PASSWORD_HASH = "pbkdf2_sha512"
-SECURITY_PASSWORD_SALT = env.get('SECURITY_PASSWORD_SALT', "ioaefroijaAMELRK#$(aerieuh984akef#$graerj")
+SECURITY_PASSWORD_SALT = env.get('SECURITY_PASSWORD_SALT',
+                                 "ioaefroijaAMELRK#$(aerieuh984akef#$graerj")
 SECURITY_EMAIL_SENDER = MAIL_DEFAULT_SENDER
 SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 

@@ -195,7 +195,29 @@ function featuresSlide() {
       $features.not(this).hide();
       featuresSlide();
     });
-  }, displayTime)
+  }, displayTime);
 }
 
 featuresSlide();
+
+$(function(){
+    $('#correctPageForm').on('submit', function(event){
+	event.preventDefault();
+	$.ajax({
+	    url: '/correct-this-page',
+	    method: 'POST',
+	    data: $('#correctPageForm').serialize(),
+	    success: function(data){
+		if (data.status == 'Ok'){
+		 console.log('Message has been sent');   
+		}
+		else{
+		    console.log("Unable to send message");
+		}
+	    },
+	    error: function(data){
+		console.log('Unable to sent Message');
+	    }
+	});
+    });
+});

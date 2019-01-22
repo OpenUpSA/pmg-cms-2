@@ -12,7 +12,7 @@
         <h4 class="modal-title">What's wrong with this page?</h4>
       </div>
 
-      <form action="{{ url_for('correct_this_page') }}" method="POST" class="correct-this-page-form">
+      <form id="correctPageForm" action="{{ url_for('correct_this_page') }}" method="POST" class="correct-this-page-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="url" value="{{ request.url }}">
 
@@ -29,7 +29,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Send your feedback</button>
+          <button id="correctSubmit" type="submit" class="btn btn-primary">Send your feedback</button>
         </div>
       </form>
     </div>

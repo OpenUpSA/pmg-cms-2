@@ -155,6 +155,13 @@ def inject_via():
         return {'via_tag': request.args.get('via').strip()}
     return {'via_tag': None}
 
+@app.context_processor
+def inject_free_before_year():
+    # inject the year before which premium content is free
+    if request:
+        return {'free_before_date': app.config['PREMIUM_FREE_BEFORE']}
+    return {'free_before_date': None}
+
 
 @app.route('/')
 @cache.memoize(
@@ -223,7 +230,7 @@ def bills(bill_type, year=None):
 
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
     bills = load_from_api(api_url, return_everything=True, params=params)['results']
- 
+
     bills.sort(key=lambda b: [-b['year'], b['code'][0],  b.get('number', 0), b['title']])
 
     status_dict = {

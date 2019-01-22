@@ -1603,7 +1603,12 @@ def correct_this_page():
 
         #flash('Thanks for your feedback.', 'info')
     else:
-        data = {'status': 'Error'}
+        form_errors = {}
+        for field, errors in form.errors.items():
+            for error in errors:
+                form_errors.update({'field': field, 'error': error})
+        print(form_errors)
+        data = {'status': 'Error', 'errors': form_errors}
         return jsonify(data)
 
     return redirect(request.form.get('url', '/'))

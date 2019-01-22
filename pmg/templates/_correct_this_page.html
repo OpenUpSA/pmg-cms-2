@@ -28,6 +28,12 @@
           {{ correct_this_page_form.recaptcha }}
         </div>
         <div class="modal-footer">
+	    <div id="errorForm" class="alert alert-danger">
+		<strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+	    </div>
+	    <div id="successForm" class="alert alert-success">
+		<strong>Success!</strong> Indicates a successful or positive action.
+	    </div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button id="correctSubmit" type="submit" class="btn btn-primary">Send your feedback</button>
         </div>

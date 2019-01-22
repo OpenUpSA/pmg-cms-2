@@ -209,10 +209,14 @@ $(function(){
 	    data: $('#correctPageForm').serialize(),
 	    success: function(data){
 		if (data.status == 'Ok'){
-		 console.log('Message has been sent');   
+		    console.log('Message has been sent');
+		    $('#successForm').text("Message has been sent");
 		}
 		else{
 		    console.log("Unable to send message");
+		    console.log(data.errors);
+		    $('#errorForm').text(data.errors);
+		    
 		}
 	    },
 	    error: function(data){

@@ -29,6 +29,8 @@ import utils
 from helpers import _jinja2_filter_datetime as pretty_date
 from user_management import follow_committee
 
+import time
+
 LEGACY_DOMAINS = set([
     'new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za',
     'www.legacy.pmg.org.za', 'legacy.pmg.org.za'
@@ -1597,21 +1599,29 @@ def correct_this_page():
                 'details': form.details.data,
                 'email': form.email.data,
             })
-        data = {'status': 'Ok'}
+        try:
+            mail.send(msg)
+            data = {'status': 'Ok'}
+        except Exception as error:
+            logger.error(error)
+            data = {'status': 'emailError'}
         return jsonify(data)
-        #mail.send(msg)
 
-        #flash('Thanks for your feedback.', 'info')
     else:
         form_errors = {}
         for field, errors in form.errors.items():
             for error in errors:
-                form_errors.update({'field': field, 'error': error})
-        print(form_errors)
+                if field == 'recaptcha':
+                    form_errors.update({
+                        'field':
+                        field,
+                        'error':
+                        "Please fill in the Recaptcha field"
+                    })
+                else:
+                    form_errors.update({'field': field, 'error': error})
         data = {'status': 'Error', 'errors': form_errors}
         return jsonify(data)
-
-    return redirect(request.form.get('url', '/'))
 
 
 @app.route('/blog')

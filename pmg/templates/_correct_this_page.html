@@ -1,6 +1,9 @@
 <footer class="correct-this-page-footer">
   <div class="text-right">
-    <button class="btn btn-default block-xs" data-toggle="modal" data-target="#correct-this-page-modal">Correct this page</button>
+      <button class="btn btn-default block-xs btn-primary" data-toggle="modal" data-target="#correct-this-page-modal">
+	  <i class="fa fa-envelope" aria-hidden="true"></i>
+	  Correct this page
+      </button>
   </div>
 </footer>
 
@@ -28,11 +31,13 @@
           {{ correct_this_page_form.recaptcha }}
         </div>
         <div class="modal-footer">
-	    <div id="errorForm" class="alert alert-danger">
-		<strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+	    <div class="spinnerLoader" style="display:none"></div> 
+	    <div id="errorForm" class="alert alert-danger" style="display:none">
+		<p><strong id="fieldName"></strong></p>
+		<span id="errorMessage"></span>
 	    </div>
-	    <div id="successForm" class="alert alert-success">
-		<strong>Success!</strong> Indicates a successful or positive action.
+	    <div id="successForm" class="alert alert-success" style="display:none">
+		<strong>Thank you for your feedback, your message has been sent.</strong>
 	    </div>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button id="correctSubmit" type="submit" class="btn btn-primary">Send your feedback</button>

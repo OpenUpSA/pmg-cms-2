@@ -207,20 +207,37 @@ $(function(){
 	    url: '/correct-this-page',
 	    method: 'POST',
 	    data: $('#correctPageForm').serialize(),
+	    beforeSend: function(xhr,settings){
+		$('.spinnerLoader').css('display', 'block');
+	    },
 	    success: function(data){
 		if (data.status == 'Ok'){
-		    console.log('Message has been sent');
-		    $('#successForm').text("Message has been sent");
+		    $('#successForm').css('display', 'block');
+		    setTimeout(function(){
+			window.location.reload();
+		    }, 3000);
+		    
+		} else if (data.status == 'emailError'){
+		    $('#errorForm').css('display', 'block');
+		    $('#fieldName').text('Error');
+		    $('#errorMessage').text('Unable to send message, try again later');
 		}
 		else{
-		    console.log("Unable to send message");
-		    console.log(data.errors);
-		    $('#errorForm').text(data.errors);
+		    $('#errorForm').css('display', 'block');
+		    $('#fieldName').text(data.errors['field']);
+		    $('#errorMessage').text(data.errors['error']);
 		    
 		}
 	    },
-	    error: function(data){
-		console.log('Unable to sent Message');
+	    error: function(xhr, message, error){
+		console.log(xhr);
+		console.log(message);
+		console.log(error);
+		$('#errorForm').css('display', 'block');
+		$('#errorMessage').text("Unable to send message, please try again later");
+	    },
+	    complete: function(){
+		$('.spinnerLoader').css('display', 'none');
 	    }
 	});
     });

@@ -29,8 +29,6 @@ import utils
 from helpers import _jinja2_filter_datetime as pretty_date
 from user_management import follow_committee
 
-import time
-
 LEGACY_DOMAINS = set([
     'new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za',
     'www.legacy.pmg.org.za', 'legacy.pmg.org.za'
@@ -1603,7 +1601,7 @@ def correct_this_page():
             mail.send(msg)
             data = {'status': 'Ok'}
         except Exception as error:
-            logger.error(error)
+            logger.exception(error)
             data = {'status': 'emailError'}
         return jsonify(data)
 

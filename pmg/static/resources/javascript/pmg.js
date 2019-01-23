@@ -195,7 +195,50 @@ function featuresSlide() {
       $features.not(this).hide();
       featuresSlide();
     });
-  }, displayTime)
+  }, displayTime);
 }
 
 featuresSlide();
+
+$(function(){
+    $('#correctPageForm').on('submit', function(event){
+	event.preventDefault();
+	$.ajax({
+	    url: '/correct-this-page',
+	    method: 'POST',
+	    data: $('#correctPageForm').serialize(),
+	    beforeSend: function(xhr,settings){
+		$('.spinnerLoader').css('display', 'block');
+	    },
+	    success: function(data){
+		if (data.status == 'Ok'){
+		    $('#successForm').css('display', 'block');
+		    setTimeout(function(){
+			window.location.reload();
+		    }, 3000);
+		    
+		} else if (data.status == 'emailError'){
+		    $('#errorForm').css('display', 'block');
+		    $('#fieldName').text('Error');
+		    $('#errorMessage').text('Unable to send message, try again later');
+		}
+		else{
+		    $('#errorForm').css('display', 'block');
+		    $('#fieldName').text(data.errors['field']);
+		    $('#errorMessage').text(data.errors['error']);
+		    
+		}
+	    },
+	    error: function(xhr, message, error){
+		console.log(xhr);
+		console.log(message);
+		console.log(error);
+		$('#errorForm').css('display', 'block');
+		$('#errorMessage').text("Unable to send message, please try again later");
+	    },
+	    complete: function(){
+		$('.spinnerLoader').css('display', 'none');
+	    }
+	});
+    });
+});

@@ -8,7 +8,7 @@ from itertools import groupby
 from unidecode import unidecode
 import requests
 
-from flask import request, flash, url_for, session, render_template, abort, redirect, Response
+from flask import request, flash, url_for, session, render_template, abort, redirect, Response, jsonify
 from flask_security import current_user
 from flask_mail import Message
 from flask import make_response
@@ -29,7 +29,10 @@ import utils
 from helpers import _jinja2_filter_datetime as pretty_date
 from user_management import follow_committee
 
-LEGACY_DOMAINS = set(['new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za', 'www.legacy.pmg.org.za', 'legacy.pmg.org.za'])
+LEGACY_DOMAINS = set([
+    'new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za',
+    'www.legacy.pmg.org.za', 'legacy.pmg.org.za'
+])
 
 app.session = session
 
@@ -130,8 +133,7 @@ def get_featured_content():
         # use the first sentence as an excerpt for the page
         soup = BeautifulSoup(page.body, "html.parser")
         for idx, p in enumerate(soup.findAll('p')):
-            if idx == 0 and (p.findAll('strong')
-                             or p.findAll('h1')
+            if idx == 0 and (p.findAll('strong') or p.findAll('h1')
                              or p.findAll('h2')):
                 # Skip first para if it contains strong - probably a heading
                 continue
@@ -142,7 +144,9 @@ def get_featured_content():
 
     # choose most recent 12 pages and meetings
     info['content'] = info['committee_meetings'] + info['pages']
-    info['content'] = sorted(info['content'], key=lambda x: getattr(x, 'updated_at'), reverse=True)[:12]
+    info['content'] = sorted(
+        info['content'], key=lambda x: getattr(x, 'updated_at'),
+        reverse=True)[:12]
 
     return info
 
@@ -154,6 +158,7 @@ def inject_via():
     if request and request.args.get('via'):
         return {'via_tag': request.args.get('via').strip()}
     return {'via_tag': None}
+
 
 @app.context_processor
 def inject_free_before_year():
@@ -171,17 +176,13 @@ def index():
     committee_meetings = load_from_api(
         'v2/committee-meetings/',
         fields=['id', 'date', 'title', 'committee.name', 'committee.house'],
-        params={
-            'per_page': 11
-        })['results']
+        params={'per_page': 11})['results']
     bills = load_from_api('bill/current', return_everything=True)["results"]
     bills.sort(key=lambda b: b['updated_at'], reverse=True)
     questions = load_from_api(
         'v2/minister-questions/',
         fields=['id', 'question_to_name', 'question', 'date'],
-        params={
-            'per_page': 11
-        })['results']
+        params={'per_page': 11})['results']
     blogs = Post.query\
                  .order_by(desc(Post.date))\
                  .limit(6)
@@ -222,14 +223,16 @@ def bills(bill_type, year=None):
         params = {}
 
         if not year:
-            return redirect(url_for('bills', bill_type=bill_type, year=year_list[0]))
+            return redirect(
+                url_for('bills', bill_type=bill_type, year=year_list[0]))
 
         if year not in year_list:
             abort(404)
         params['filter[year]'] = year
 
     api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
-    bills = load_from_api(api_url, return_everything=True, params=params)['results']
+    bills = load_from_api(
+        api_url, return_everything=True, params=params)['results']
 
     bills.sort(key=lambda b: [-b['year'], b['code'][0],  b.get('number', 0), b['title']])
 
@@ -253,8 +256,9 @@ def bills(bill_type, year=None):
 
 @app.route('/bill/<int:bill_id>')
 @app.route('/bill/<int:bill_id>/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def bill(bill_id):
     bill = load_from_api('v2/bills', bill_id)['result']
     stages = {
@@ -268,9 +272,12 @@ def bill(bill_id):
     history = bill_history(bill)
 
     if bill.get('status'):
-        social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long') + ". " + bill['status']['description']
+        social_summary = bill['code'] + ", introduced " + pretty_date(
+            bill['date_of_introduction'],
+            'long') + ". " + bill['status']['description']
     else:
-        social_summary = bill['code'] + ", introduced " + pretty_date(bill['date_of_introduction'], 'long')
+        social_summary = bill['code'] + ", introduced " + pretty_date(
+            bill['date_of_introduction'], 'long')
     return render_template(
         'bills/detail.html',
         bill=bill,
@@ -282,8 +289,9 @@ def bill(bill_id):
 
 @app.route('/committee/<int:committee_id>')
 @app.route('/committee/<int:committee_id>/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def committee_detail(committee_id):
     """
     Display all available detail for the committee.
@@ -305,7 +313,8 @@ def committee_detail(committee_id):
         return_everything=True)['results']
 
     # memberships
-    membership = load_from_api(links['members'], return_everything=True)['results']
+    membership = load_from_api(
+        links['members'], return_everything=True)['results']
     sorter = lambda x: x['member']['name']
     membership = sorted([m for m in membership if m['chairperson']], key=sorter) + \
                  sorted([m for m in membership if not m['chairperson']], key=sorter)  # noqa
@@ -313,22 +322,32 @@ def committee_detail(committee_id):
     minister = committee.get('minister')
     recent_questions = []
     if minister:
-        recent_questions = load_from_api('minister-questions-combined', params={'filter[minister_id]': minister['id']})['results']
+        recent_questions = load_from_api(
+            'minister-questions-combined',
+            params={'filter[minister_id]': minister['id']})['results']
 
     # meetings
-    all_meetings = load_from_api(links['meetings'], fields=['id', 'title', 'date'], return_everything=True)['results']
+    all_meetings = load_from_api(
+        links['meetings'],
+        fields=['id', 'title', 'date'],
+        return_everything=True)['results']
 
     for meeting in all_meetings:
-        d = meeting['parsed_date'] = datetime.strptime(meeting['date'][:10], "%Y-%m-%d")
+        d = meeting['parsed_date'] = datetime.strptime(meeting['date'][:10],
+                                                       "%Y-%m-%d")
         if d.year not in filtered_meetings:
             filtered_meetings[d.year] = []
         filtered_meetings[d.year].append(meeting)
 
-    latest_year = max(y for y in filtered_meetings) if filtered_meetings else None
-    earliest_year = min(y for y in filtered_meetings) if filtered_meetings else None
+    latest_year = max(
+        y for y in filtered_meetings) if filtered_meetings else None
+    earliest_year = min(
+        y for y in filtered_meetings) if filtered_meetings else None
     now = datetime.now()
     six_months = timedelta(days=30 * 6)  # 6 months
-    filtered_meetings['six-months'] = [m for m in all_meetings if (now - m['parsed_date']) <= six_months]
+    filtered_meetings['six-months'] = [
+        m for m in all_meetings if (now - m['parsed_date']) <= six_months
+    ]
 
     if filtered_meetings['six-months']:
         starting_filter = 'six-months'
@@ -336,12 +355,14 @@ def committee_detail(committee_id):
         starting_filter = latest_year
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
-    attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(committee_id)
+    attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(
+        committee_id)
 
     if attendance_summary and committee['house']['short_name'] != 'Joint':
         year = attendance_summary[-1].year
         cte = Committee.query.get(committee_id)
-        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(cte, int(year))
+        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(
+            cte, int(year))
     else:
         attendance_rank = None
 
@@ -356,36 +377,39 @@ def committee_detail(committee_id):
     # pass the slug to the template to build the correct breadcrumbs
     from_page = request.args.get('from_page')
 
-    return render_template('committee_detail.html',
-                           current_year=now.year,
-                           earliest_year=earliest_year,
-                           filtered_meetings=filtered_meetings,
-                           committee=committee,
-                           membership=membership,
-                           has_meetings=len(all_meetings) > 0,
-                           starting_filter=starting_filter,
-                           recent_questions=recent_questions,
-                           social_summary=social_summary,
-                           attendance_summary=attendance_summary,
-                           attendance_rank=attendance_rank,
-                           admin_edit_url=admin_url('committee', committee_id),
-                           bills=bills,
-                           from_page=from_page)
+    return render_template(
+        'committee_detail.html',
+        current_year=now.year,
+        earliest_year=earliest_year,
+        filtered_meetings=filtered_meetings,
+        committee=committee,
+        membership=membership,
+        has_meetings=len(all_meetings) > 0,
+        starting_filter=starting_filter,
+        recent_questions=recent_questions,
+        social_summary=social_summary,
+        attendance_summary=attendance_summary,
+        attendance_rank=attendance_rank,
+        admin_edit_url=admin_url('committee', committee_id),
+        bills=bills,
+        from_page=from_page)
 
 
 @app.route('/committee/<int:committee_id>/follow-cte')
 @app.route('/committee/<int:committee_id>/follow-cte/')
 def committee_detail_follow_cte(committee_id):
     follow_committee(committee_id)
-    flash("You're now following this committee and "
-    "we'll send you email alerts when new content is posted.", 'success')
+    flash(
+        "You're now following this committee and "
+        "we'll send you email alerts when new content is posted.", 'success')
 
     return redirect(url_for('committee_detail', committee_id=committee_id))
 
 
 @app.route('/attendance-overview')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def attendance_overview():
     """
     Display overview of attendance for meetings.
@@ -393,11 +417,13 @@ def attendance_overview():
     month = datetime.today().month
     this_year = datetime.today().year
     last_year = this_year - 1
-    attendance = CommitteeMeetingAttendance.annual_attendance_trends(last_year, this_year)
+    attendance = CommitteeMeetingAttendance.annual_attendance_trends(
+        last_year, this_year)
     # index by year and cte id
     years = {
         year: {
-            cte_id: list(cte_group)[0] for cte_id, cte_group in groupby(group, lambda r: r.committee_id)
+            cte_id: list(cte_group)[0]
+            for cte_id, cte_group in groupby(group, lambda r: r.committee_id)
         }
         for year, group in groupby(attendance, lambda r: r.year)
     }
@@ -417,11 +443,16 @@ def attendance_overview():
             continue
 
         attendance[cte.house.name_short].append({
-            'committee': cte.name,
-            'committee_id': cte.id,
-            'n_meetings': curr.n_meetings,
-            'avg_attendance': curr.avg_attendance * 100,
-            'change': (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
+            'committee':
+            cte.name,
+            'committee_id':
+            cte.id,
+            'n_meetings':
+            curr.n_meetings,
+            'avg_attendance':
+            curr.avg_attendance * 100,
+            'change': (curr.avg_attendance - (prev.avg_attendance
+                                              if prev else 0)) * 100,
         })
 
     # rank them
@@ -430,10 +461,11 @@ def attendance_overview():
         for i, item in enumerate(att):
             att[i]['rank'] = len(att) - i
 
-    return render_template('attendance_overview.html',
-                           year=this_year,
-                           attendance_na=attendance['NA'],
-                           attendance_ncop=attendance['NCOP'])
+    return render_template(
+        'attendance_overview.html',
+        year=this_year,
+        attendance_na=attendance['NA'],
+        attendance_ncop=attendance['NCOP'])
 
 
 @app.route('/committee-question/<int:question_id>/')
@@ -442,20 +474,19 @@ def committee_question(question_id):
     """
     question = load_from_api('v2/minister-questions', question_id)['result']
     minister = question['minister']
-    committee = minister.get('committee', {
-        'house': {},
-        'id': 0
-    })
-    social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(question['date'], 'long') + " by " + question['asked_by_name']
+    committee = minister.get('committee', {'house': {}, 'id': 0})
+    social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(
+        question['date'], 'long') + " by " + question['asked_by_name']
 
-    return render_template('committee_question.html',
-                           minister=minister,
-                           committee=committee,
-                           question=question,
-                           hide_replies=False,
-                           content_date=question['date'],
-                           social_summary=social_summary,
-                           admin_edit_url=admin_url('committee-question', question_id))
+    return render_template(
+        'committee_question.html',
+        minister=minister,
+        committee=committee,
+        question=question,
+        hide_replies=False,
+        content_date=question['date'],
+        social_summary=social_summary,
+        admin_edit_url=admin_url('committee-question', question_id))
 
 
 @app.route('/committees/')
@@ -463,20 +494,17 @@ def committees():
     """
     Page through all available committees.
     """
-    committees = load_from_api('v2/committees', return_everything=True, fields=['id', 'name', 'premium', 'ad_hoc', 'active', 'monitored', 'house', 'last_active_year'])['results']
+    committees = load_from_api(
+        'v2/committees',
+        return_everything=True,
+        fields=[
+            'id', 'name', 'premium', 'ad_hoc', 'active', 'monitored', 'house',
+            'last_active_year'
+        ])['results']
 
-    nat = {
-        'name': 'National Assembly',
-        'committees': []
-    }
-    ncp = {
-        'name': 'National Council of Provinces',
-        'committees': []
-    }
-    jnt = {
-        'name': 'Joint Committees',
-        'committees': []
-    }
+    nat = {'name': 'National Assembly', 'committees': []}
+    ncp = {'name': 'National Council of Provinces', 'committees': []}
+    jnt = {'name': 'Joint Committees', 'committees': []}
 
     adhoc_committees = OrderedDict((('nat', nat), ('ncp', ncp), ('jnt', jnt)))
     reg_committees = deepcopy(adhoc_committees)
@@ -507,7 +535,9 @@ def committees():
             user_following = current_user.following
 
             # Check if user is following committee
-            if current_user.is_authenticated() and committee['id'] in [ufc.id for ufc in user_following]:
+            if current_user.is_authenticated() and committee['id'] in [
+                    ufc.id for ufc in user_following
+            ]:
                 committee['followed'] = True
 
         if committee['house']:
@@ -520,7 +550,8 @@ def committees():
             elif committee['house']['sphere'] == 'provincial':
                 # Only show monitored committees
                 if committee['monitored'] == True:
-                    committees_type[house['short_name']]['committees'].append(committee)
+                    committees_type[house['short_name']]['committees'].append(
+                        committee)
 
     for typ in adhoc_committees.itervalues():
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
@@ -532,8 +563,7 @@ def committees():
         'committee_list.html',
         reg_committees=reg_committees,
         adhoc_committees=adhoc_committees,
-        wc_committees=wc_committees
-    )
+        wc_committees=wc_committees)
 
 
 def sort_houses(houses):
@@ -551,8 +581,9 @@ def sort_houses(houses):
 
 @app.route('/committee-meetings/')
 @app.route('/committee-meetings/<int:page>/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def committee_meetings(page=0):
     """
     Page through all available committee meetings.
@@ -563,9 +594,11 @@ def committee_meetings(page=0):
     params = {}
 
     if request.args.get('filter[committee]'):
-        filters["committee"] = params['filter[committee_id]'] = request.args.get('filter[committee]')
+        filters["committee"] = params[
+            'filter[committee_id]'] = request.args.get('filter[committee]')
 
-    committee_meetings_list = load_from_api('committee-meeting', page=page, params=params)
+    committee_meetings_list = load_from_api(
+        'committee-meeting', page=page, params=params)
     committee_meetings = committee_meetings_list['results']
     count = committee_meetings_list["count"]
 
@@ -588,8 +621,9 @@ def committee_meetings(page=0):
 
 @app.route('/committee-meeting/<int:event_id>')
 @app.route('/committee-meeting/<int:event_id>/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def committee_meeting(event_id):
     """
     Display committee meeting details, including report and any other related content.
@@ -598,7 +632,8 @@ def committee_meeting(event_id):
     event = load_from_api('v2/committee-meetings', event_id)['result']
 
     if event.get('premium_content_excluded'):
-        premium_committees = load_from_api('committee/premium', return_everything=True)['results']
+        premium_committees = load_from_api(
+            'committee/premium', return_everything=True)['results']
     else:
         premium_committees = None
 
@@ -607,14 +642,19 @@ def committee_meeting(event_id):
     attendance = load_from_api(
         'v2/committee-meetings/%s/attendance' % event_id,
         return_everything=True)['results']
-    attendance = [a for a in attendance if a['attendance'] in CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT]
+    attendance = [
+        a for a in attendance if a['attendance'] in
+        CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
+    ]
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
                  sorted([a for a in attendance if not a['chairperson']], key=sorter)  # noqa
     if event['chairperson']:
-        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + ", lead by " + event['chairperson']
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(
+            event['date'], 'long') + ", lead by " + event['chairperson']
     else:
-        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(event['date'], 'long') + "."
+        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(
+            event['date'], 'long') + "."
 
     return render_template(
         'committee_meeting.html',
@@ -630,17 +670,18 @@ def committee_meeting(event_id):
         SOUNDCLOUD_APP_KEY_ID=app.config['SOUNDCLOUD_APP_KEY_ID']),
 
 
-
 @app.route('/committee-meeting/<int:event_id>/follow-cte')
 @app.route('/committee-meeting/<int:event_id>/follow-cte/')
 def committee_meeting_follow_cte(event_id):
     event = load_from_api('v2/committee-meetings', event_id)['result']
     follow_committee(event['committee_id'])
 
-    flash("You're now following this committee and "
-    "we'll send you email alerts when new content is posted.", 'success')
+    flash(
+        "You're now following this committee and "
+        "we'll send you email alerts when new content is posted.", 'success')
 
     return redirect(url_for('committee_meeting', event_id=event_id))
+
 
 @app.route('/tabled-committee-reports/')
 @app.route('/tabled-committee-reports/<int:page>/')
@@ -654,12 +695,10 @@ def tabled_committee_reports(page=0):
     committees = load_from_api('committee', return_everything=True)['results']
     filters = {}
     params = {}
-    filters["committee"] = params[
-        'filter[committee_id]'] = request.args.get('filter[committee]')
+    filters["committee"] = params['filter[committee_id]'] = request.args.get(
+        'filter[committee]')
     tabled_committee_reports_list = load_from_api(
-        'tabled-committee-report',
-        page=page,
-        params=params)
+        'tabled-committee-report', page=page, params=params)
     count = tabled_committee_reports_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -686,15 +725,15 @@ def tabled_committee_report(tabled_committee_report_id):
     Tabled Committee Report
     """
     logger.debug("tabled-committee-report page called")
-    tabled_committee_report = load_from_api(
-        'tabled-committee-report',
-        tabled_committee_report_id)
+    tabled_committee_report = load_from_api('tabled-committee-report',
+                                            tabled_committee_report_id)
     logger.debug(tabled_committee_report)
     return render_template(
         'tabled_committee_report_detail.html',
         tabled_committee_report=tabled_committee_report,
         content_date=tabled_committee_report['start_date'],
-        admin_edit_url=admin_url('tabled-committee-report', tabled_committee_report_id))
+        admin_edit_url=admin_url('tabled-committee-report',
+                                 tabled_committee_report_id))
 
 
 @app.route('/calls-for-comments/')
@@ -707,28 +746,34 @@ def calls_for_comments(page=0):
     logger.debug("calls-for-comments page called")
     committees = load_from_api('committee', return_everything=True)['results']
     # For PLs, only show WC:
-    committees[:] = [c for c in committees if not (
-        c['house']['sphere'] == 'provincial' and
-        c['house']['name_short'] != 'WC'
-    )]
+    committees[:] = [
+        c for c in committees if not (c['house']['sphere'] == 'provincial'
+                                      and c['house']['name_short'] != 'WC')
+    ]
 
     houses = sort_houses(House.query.all())
     filters = {}
     params = {}
     per_page = app.config['RESULTS_PER_PAGE']
-    filters["committee"] = params[
-        'filter[committee_id]'] = request.args.get('filter[committee]')
+    filters["committee"] = params['filter[committee_id]'] = request.args.get(
+        'filter[committee]')
 
     call_for_comment_list = load_from_api(
-        'v2/calls-for-comments',
-        page=page, params=params, pagesize=per_page)
+        'v2/calls-for-comments', page=page, params=params, pagesize=per_page)
 
     count = call_for_comment_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
-    calls_for_comments = sorted(call_for_comment_list['results'], key=lambda x: x['end_date'], reverse=True)
+    calls_for_comments = sorted(
+        call_for_comment_list['results'],
+        key=lambda x: x['end_date'],
+        reverse=True)
 
-    open_calls = [c for c in calls_for_comments if not c['closed'] and c['end_date']]
-    closed_calls = [c for c in calls_for_comments if c['closed'] or not c['end_date']]
+    open_calls = [
+        c for c in calls_for_comments if not c['closed'] and c['end_date']
+    ]
+    closed_calls = [
+        c for c in calls_for_comments if c['closed'] or not c['end_date']
+    ]
 
     url = "/calls-for-comments"
     return render_template(
@@ -754,9 +799,8 @@ def call_for_comment(call_for_comment_id):
     Tabled Committee Report
     """
     logger.debug("call-for-comment page called")
-    call_for_comment = load_from_api(
-        'v2/calls-for-comments',
-        call_for_comment_id)['result']
+    call_for_comment = load_from_api('v2/calls-for-comments',
+                                     call_for_comment_id)['result']
     logger.debug(call_for_comment)
 
     if call_for_comment['committee']:
@@ -764,9 +808,11 @@ def call_for_comment(call_for_comment_id):
     else:
         cfc_committee = 'A call for comments. '
     if call_for_comment['end_date']:
-        cfc_deadline = 'Submissions must be received by no later than ' + pretty_date(call_for_comment['end_date'], 'long')
+        cfc_deadline = 'Submissions must be received by no later than ' + pretty_date(
+            call_for_comment['end_date'], 'long')
         if call_for_comment['closed']:
-            cfc_deadline = 'Submissions closed ' + pretty_date(call_for_comment['end_date'], 'long')
+            cfc_deadline = 'Submissions closed ' + pretty_date(
+                call_for_comment['end_date'], 'long')
     else:
         cfc_deadline = ''
 
@@ -783,15 +829,16 @@ def call_for_comment(call_for_comment_id):
 @app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte')
 @app.route('/call-for-comment/<int:call_for_comment_id>/follow-cte/')
 def call_for_comment_follow_cte(call_for_comment_id):
-    call_for_comment = load_from_api(
-        'v2/calls-for-comments',
-        call_for_comment_id)['result']
+    call_for_comment = load_from_api('v2/calls-for-comments',
+                                     call_for_comment_id)['result']
     follow_committee(call_for_comment['committee_id'])
 
-    flash("You're now following this committee and "
-    "we'll send you email alerts when new content is posted.", 'success')
+    flash(
+        "You're now following this committee and "
+        "we'll send you email alerts when new content is posted.", 'success')
 
-    return redirect(url_for('call_for_comment', call_for_comment_id=call_for_comment_id))
+    return redirect(
+        url_for('call_for_comment', call_for_comment_id=call_for_comment_id))
 
 
 @app.route('/policy-documents/')
@@ -885,12 +932,14 @@ def members():
     # partition by house
     members_by_house = {}
     for member in members:
-        if member.get('house') and member['current'] and member['house']['sphere'] == 'national':
-            members_by_house.setdefault(member['house']['name'], []).append(member)
+        if member.get(
+                'house'
+        ) and member['current'] and member['house']['sphere'] == 'national':
+            members_by_house.setdefault(member['house']['name'],
+                                        []).append(member)
 
     return render_template(
-        'member_list.html',
-        members_by_house=members_by_house)
+        'member_list.html', members_by_house=members_by_house)
 
 
 @app.route('/member/<int:member_id>')
@@ -944,7 +993,9 @@ def hansards(page=0):
     year_list.reverse()
 
     hansards_list = load_from_api('hansard', page=page, params=params)
-    houses = sort_houses(House.query.filter(House.sphere=='national', House.name_short!='President'))
+    houses = sort_houses(
+        House.query.filter(House.sphere == 'national',
+                           House.name_short != 'President'))
 
     count = hansards_list["count"]
     per_page = app.config['RESULTS_PER_PAGE']
@@ -972,14 +1023,14 @@ def provincial_legislatures_list():
     """
     A page with links to the provincial legislatures
     """
-    prov_legislatures = House.query.filter(House.sphere == 'provincial').order_by(desc(House.name)).all()
-    provinces = [
-        {'name': p.name, 'slug': utils.slugify_province(p.name)}
-        for p in prov_legislatures]
+    prov_legislatures = House.query.filter(
+        House.sphere == 'provincial').order_by(desc(House.name)).all()
+    provinces = [{
+        'name': p.name,
+        'slug': utils.slugify_province(p.name)
+    } for p in prov_legislatures]
 
-    return render_template(
-        'provincial/list.html',
-        provinces=provinces)
+    return render_template('provincial/list.html', provinces=provinces)
 
 
 @app.route('/provincial-legislatures/<slug>/')
@@ -988,7 +1039,8 @@ def provincial_legislatures_detail(slug):
     A page showing the information on the selected provincial parliament
     Except: WC
     """
-    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    province = House.query.filter(
+        House.name == utils.deslugify_province(slug)).first()
     if not province:
         abort(404)
 
@@ -997,22 +1049,32 @@ def provincial_legislatures_detail(slug):
 
     # Provincial programmes are stored as daily schedules
     # We only show the latest
-    provincial_programmes = load_from_api('v2/daily-schedules',
+    provincial_programmes = load_from_api(
+        'v2/daily-schedules',
         return_everything=True,
         params={'filter[house]': province.name_short})['results']
-    latest_programme = provincial_programmes[0] if provincial_programmes else None
+    latest_programme = provincial_programmes[
+        0] if provincial_programmes else None
 
-    committees = load_from_api('v2/committees', return_everything=True)['results']
-    provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
+    committees = load_from_api(
+        'v2/committees', return_everything=True)['results']
+    provincial_committees = [
+        c for c in committees
+        if c['house']['short_name'] == province.name_short
+    ]
     # Show monitored committees first
     provincial_committees.sort(key=lambda c: [-c['monitored'], c['name']])
 
     # Members
-    members = load_from_api('v2/members', return_everything=True,
+    members = load_from_api(
+        'v2/members',
+        return_everything=True,
         params={'filter[house]': province.name_short})['results']
     mpls = []
     for member in members:
-        if member.get('house') and member['current'] and member['house']['short_name'] == province.name_short:
+        if member.get(
+                'house'
+        ) and member['current'] and member['house']['short_name'] == province.name_short:
             mpls.append(member)
 
     if province.speaker_id:
@@ -1042,7 +1104,9 @@ def provincial_legislatures_western_cape(slug, province):
     # members of provincial parliament
     mpls = []
     for member in members:
-        if member.get('house') and member['current'] and member['house']['short_name'] == 'WC':
+        if member.get(
+                'house'
+        ) and member['current'] and member['house']['short_name'] == 'WC':
             mpls.append(member)
 
     if province.speaker_id:
@@ -1051,7 +1115,8 @@ def provincial_legislatures_western_cape(slug, province):
         speaker = None
 
     # provincial committees
-    committees = load_from_api('v2/committees', return_everything=True)['results']
+    committees = load_from_api(
+        'v2/committees', return_everything=True)['results']
     # Only show monitored committees:
     committees[:] = [c for c in committees if c['monitored'] == True]
 
@@ -1062,16 +1127,22 @@ def provincial_legislatures_western_cape(slug, province):
             provincial_committees.append(committee)
 
     # provincial calls for comments that are currently open
-    provincial_calls_for_comment = load_from_api('v2/calls-for-comments',
-            return_everything=True,
-            fields=['id', 'title', 'closed', 'end_date', 'start_date'],
-            params={'filter[house]': 'WC'})['results']
-    provincial_calls_for_comment = [c for c in provincial_calls_for_comment if c['end_date'] and not c['closed']]
+    provincial_calls_for_comment = load_from_api(
+        'v2/calls-for-comments',
+        return_everything=True,
+        fields=['id', 'title', 'closed', 'end_date', 'start_date'],
+        params={'filter[house]': 'WC'})['results']
+    provincial_calls_for_comment = [
+        c for c in provincial_calls_for_comment
+        if c['end_date'] and not c['closed']
+    ]
 
-    provincial_programmes = load_from_api('v2/daily-schedules',
-            return_everything=True,
-            params={'filter[house]': 'WC'})['results']
-    latest_programme = provincial_programmes[0] if provincial_programmes else None
+    provincial_programmes = load_from_api(
+        'v2/daily-schedules',
+        return_everything=True,
+        params={'filter[house]': 'WC'})['results']
+    latest_programme = provincial_programmes[
+        0] if provincial_programmes else None
 
     return render_template(
         'provincial/western_cape.html',
@@ -1095,14 +1166,19 @@ def provincial_parliaments_old(slug):
 
 @app.route('/provincial-legislatures/<slug>/committees/')
 def provincial_committees(slug):
-    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    province = House.query.filter(
+        House.name == utils.deslugify_province(slug)).first()
     # TODO Filtering is not working as expected.
     # House is not joined.
-    committees = load_from_api('v2/committees',
+    committees = load_from_api(
+        'v2/committees',
         return_everything=True,
         params={'filter[house]': province.name_short})['results']
 
-    provincial_committees = [c for c in committees if c['house']['short_name'] == province.name_short]
+    provincial_committees = [
+        c for c in committees
+        if c['house']['short_name'] == province.name_short
+    ]
 
     return render_template(
         'provincial/committee_list.html',
@@ -1113,13 +1189,14 @@ def provincial_committees(slug):
 
 @app.route('/provincial-legislatures/<slug>/members/')
 def provincial_members(slug):
-    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    province = House.query.filter(
+        House.name == utils.deslugify_province(slug)).first()
     members = load_from_api('v2/members', return_everything=True)['results']
 
-    provincial_members = [m for m in members if
-        m.get('house') and
-        m['current'] and
-        m['house']['short_name'] == province.name_short]
+    provincial_members = [
+        m for m in members if m.get('house') and m['current']
+        and m['house']['short_name'] == province.name_short
+    ]
 
     return render_template(
         'member_list.html',
@@ -1184,7 +1261,8 @@ def briefings(page=0):
 @app.route('/daily-schedule/<int:daily_schedule_id>')
 @app.route('/daily-schedule/<int:daily_schedule_id>/')
 def daily_schedule(daily_schedule_id):
-    daily_schedule = load_from_api('v2/daily-schedules', daily_schedule_id)['result']
+    daily_schedule = load_from_api('v2/daily-schedules',
+                                   daily_schedule_id)['result']
     return render_template(
         'daily_schedule_detail.html',
         daily_schedule=daily_schedule,
@@ -1200,7 +1278,9 @@ def daily_schedules(page=0):
 
     per_page = app.config['RESULTS_PER_PAGE']
     daily_schedules_list = load_from_api(
-        'v2/daily-schedules', page=page, pagesize=per_page,
+        'v2/daily-schedules',
+        page=page,
+        pagesize=per_page,
         params={'filter[exclude_sphere]': 'provincial'})
     count = daily_schedules_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -1223,11 +1303,13 @@ def provincial_programme(slug, programme_id):
     """
     Provincial programmes are stored as daily schedules
     """
-    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    province = House.query.filter(
+        House.name == utils.deslugify_province(slug)).first()
     if not province:
         abort(404)
 
-    provincial_programme = load_from_api('v2/daily-schedules', programme_id)['result']
+    provincial_programme = load_from_api('v2/daily-schedules',
+                                         programme_id)['result']
     return render_template(
         'provincial_programme_detail.html',
         province=province,
@@ -1242,13 +1324,16 @@ def provincial_programmes(slug, page=0):
     """
     List of all programmes for a PL
     """
-    province = House.query.filter(House.name == utils.deslugify_province(slug)).first()
+    province = House.query.filter(
+        House.name == utils.deslugify_province(slug)).first()
     if not province:
         abort(404)
 
     per_page = app.config['RESULTS_PER_PAGE']
     programmes_list = load_from_api(
-        'v2/daily-schedules', page=page, pagesize=per_page,
+        'v2/daily-schedules',
+        page=page,
+        pagesize=per_page,
         params={'filter[house]': province.name_short})
     count = programmes_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -1269,7 +1354,8 @@ def provincial_programmes(slug, page=0):
 @app.route('/question_reply/<int:question_reply_id>')
 @app.route('/question_reply/<int:question_reply_id>/')
 def question_reply(question_reply_id):
-    question_reply = load_from_api('v2/minister-questions/legacy', question_reply_id)['result']
+    question_reply = load_from_api('v2/minister-questions/legacy',
+                                   question_reply_id)['result']
     minister = question_reply.get('minister') or {}
     committee = minister.get('committee')
 
@@ -1289,14 +1375,14 @@ def question_replies(page=0):
     Page through all available question_replies + committee_questions.
     """
     logger.debug("question_replies page called")
-    ministers = load_from_api('v2/ministers', return_everything=True)['results']
+    ministers = load_from_api(
+        'v2/ministers', return_everything=True)['results']
     filters = {}
     params = {}
-    filters["minister"] = params['filter[minister_id]'] = request.args.get('filter[minister]')
+    filters["minister"] = params['filter[minister_id]'] = request.args.get(
+        'filter[minister]')
     questions = load_from_api(
-        'minister-questions-combined',
-        page=page,
-        params=params)
+        'minister-questions-combined', page=page, params=params)
     count = questions["count"]
     per_page = app.config['RESULTS_PER_PAGE']
     num_pages = int(math.ceil(float(count) / float(per_page)))
@@ -1322,8 +1408,9 @@ def question_replies(page=0):
 
 @app.route('/search/')
 @app.route('/search/<int:page>/')
-@cache.memoize(make_name=lambda fname: cache_key(request),
-               unless=lambda: should_skip_cache(request, current_user))
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user))
 def search(page=0):
     """
     Display search page
@@ -1373,7 +1460,8 @@ def search(page=0):
         for year in search["bincount"]["years"]:
             yearcount[int(year["key_as_string"][:4])] = year["doc_count"]
 
-        search['friendly_data_type'] = Search.friendly_data_types.get(filters['type'], None)
+        search['friendly_data_type'] = Search.friendly_data_types.get(
+            filters['type'], None)
 
     committees = load_from_api('committee', return_everything=True)['results']
     houses = sort_houses(House.query.all())
@@ -1455,10 +1543,11 @@ def page(pagename):
     files = [f.file for f in (page.files or [])]
     files.sort(key=lambda f: (f.title, f.file_path))
 
-    return render_template('page.html',
-                           page=page,
-                           attachments=files,
-                           admin_edit_url=admin_url('pages', page.id))
+    return render_template(
+        'page.html',
+        page=page,
+        attachments=files,
+        admin_edit_url=admin_url('pages', page.id))
 
 
 # Redirect to content stored in S3.
@@ -1486,7 +1575,9 @@ def docs(path, dir=''):
 
     if request.args.get('direct') == '1':
         resp = requests.get(remote, stream=True)
-        return Response(resp.iter_content(chunk_size=10 * 1024), content_type=resp.headers['Content-Type'])
+        return Response(
+            resp.iter_content(chunk_size=10 * 1024),
+            content_type=resp.headers['Content-Type'])
 
     return redirect(remote)
 
@@ -1495,17 +1586,40 @@ def docs(path, dir=''):
 def correct_this_page():
     form = forms.CorrectThisPageForm(request.form)
     if form.validate_on_submit():
-        msg = Message("Correct This Page feedback", recipients=["correct@pmg.org.za"], sender='info@pmg.org.za')
-        msg.html = render_template('correct_this_page.html', submission={
-            'url': form.url.data,
-            'details': form.details.data,
-            'email': form.email.data,
-        })
-        mail.send(msg)
+        msg = Message(
+            "Correct This Page feedback",
+            recipients=["correct@pmg.org.za"],
+            sender='info@pmg.org.za')
+        msg.html = render_template(
+            'correct_this_page.html',
+            submission={
+                'url': form.url.data,
+                'details': form.details.data,
+                'email': form.email.data,
+            })
+        try:
+            mail.send(msg)
+            data = {'status': 'Ok'}
+        except Exception as error:
+            logger.exception(error)
+            data = {'status': 'emailError'}
+        return jsonify(data)
 
-        flash('Thanks for your feedback.', 'info')
-
-    return redirect(request.form.get('url', '/'))
+    else:
+        form_errors = {}
+        for field, errors in form.errors.items():
+            for error in errors:
+                if field == 'recaptcha':
+                    form_errors.update({
+                        'field':
+                        field,
+                        'error':
+                        "Please fill in the Recaptcha field"
+                    })
+                else:
+                    form_errors.update({'field': field, 'error': error})
+        data = {'status': 'Error', 'errors': form_errors}
+        return jsonify(data)
 
 
 @app.route('/blog')
@@ -1549,16 +1663,17 @@ def blog_post(slug):
     else:
         social_image = None
 
-    return render_template('blog_post.html',
-                           post=post,
-                           attachments=files,
-                           admin_edit_url=admin_url('posts', post.id),
-                           social_summary=social_summary,
-                           social_image=social_image)
+    return render_template(
+        'blog_post.html',
+        post=post,
+        attachments=files,
+        admin_edit_url=admin_url('posts', post.id),
+        social_summary=social_summary,
+        social_image=social_image)
 
 
 @app.route('/robots.txt', methods=['GET'])
 def robots_txt():
-  response = make_response(open('robots.txt').read())
-  response.headers["Content-type"] = "text/plain"
-  return response
+    response = make_response(open('robots.txt').read())
+    response.headers["Content-type"] = "text/plain"
+    return response

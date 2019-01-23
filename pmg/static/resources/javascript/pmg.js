@@ -202,6 +202,8 @@ featuresSlide();
 
 $(function(){
     $('#correctPageForm').on('submit', function(event){
+	$('#errorForm').css('display', 'none');
+	$('#successForm').css('display', 'none');
 	event.preventDefault();
 	$.ajax({
 	    url: '/correct-this-page',

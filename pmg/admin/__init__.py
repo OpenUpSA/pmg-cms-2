@@ -374,7 +374,7 @@ class OrganisationView(MyModelView):
 
 
 class CommitteeView(MyModelView):
-    can_delete = False
+    can_delete = True
 
     column_list = (
         'name',

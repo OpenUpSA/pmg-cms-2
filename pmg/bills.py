@@ -2,6 +2,7 @@ from itertools import groupby
 import datetime
 import os.path
 import bisect
+import iso8601
 
 from flask import url_for
 
@@ -93,7 +94,10 @@ def bill_history(bill):
     history = []
 
     events = bill.get('events', [])
-    events.sort(key=lambda e: [e['date'], get_location(e), get_agent(e, bill)])
+    events.sort(key=lambda e: [
+        iso8601.parse_date(e['date']),
+        get_location(e),
+        get_agent(e, bill)])
 
     for location, location_events in groupby(events, get_location):
         location_history = []

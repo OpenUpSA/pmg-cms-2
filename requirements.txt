@@ -34,6 +34,7 @@ greenlet==0.4.12
 gunicorn==19.9.0
 humanize==0.5.1
 inflection==0.2.1
+iso8601==0.1.12
 itsdangerous==0.24
 Jinja2==2.7.3
 lxml==3.4.1

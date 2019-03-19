@@ -999,6 +999,7 @@ class InlineBillEventsForm(InlineFormAdmin):
     )
     form_choices = {
         'type': [
+            ('plenary', 'Hansard'),
             ('bill-introduced', 'Bill introduced'),
             ('bill-updated', 'Bill updated'),
             ('bill-passed', 'Bill passed'),

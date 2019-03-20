@@ -988,6 +988,28 @@ class EmailTemplateView(MyModelView):
     }
 
 
+class EventTypeSelectField(fields.SelectField):
+    def condition(self):
+        if self.data == 'plenary':
+            return True
+        return False
+
+    def __call__(self, *args, **kwargs):
+        if self.condition():
+            kwargs.setdefault('disabled', "disabled")
+        return super(EventTypeSelectField, self).__call__(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super(EventTypeSelectField, self).__init__(*args, **kwargs)
+        self.choices = [('plenary', 'Hansard'), ('bill-introduced',
+                                                 'Bill introduced'),
+                        ('bill-updated', 'Bill updated'), ('bill-passed',
+                                                           'Bill passed'),
+                        ('bill-signed', 'Bill signed'), ('bill-enacted',
+                                                         'Bill enacted'),
+                        ('bill-act-commenced', 'Act commenced')]
+
+
 class InlineBillEventsForm(InlineFormAdmin):
     form_columns = (
         'id',
@@ -997,20 +1019,11 @@ class InlineBillEventsForm(InlineFormAdmin):
         'house',
         'member',
     )
-    form_choices = {
-        'type': [
-            ('plenary', 'Hansard'),
-            ('bill-introduced', 'Bill introduced'),
-            ('bill-updated', 'Bill updated'),
-            ('bill-passed', 'Bill passed'),
-            ('bill-signed', 'Bill signed'),
-            ('bill-enacted', 'Bill enacted'),
-            ('bill-act-commenced', 'Act commenced'),
-        ]
-    }
+    form_overrides = {'type': EventTypeSelectField}
+
     form_ajax_refs = {
         'member': {
-            'fields': ('name',),
+            'fields': ('name', ),
             'page_size': 25
         },
     }

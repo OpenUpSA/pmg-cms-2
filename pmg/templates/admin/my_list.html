@@ -7,8 +7,19 @@
 {% endblock head_css%}
 
 {% block body %}
-    <h2>{{ admin_view.name }}</h2>
-    {{ super() }}
+  <h2 id="header-page">{{ admin_view.name }}</h2>
+  {{ super() }}
+  <script>
+   $(document).ready(function(){
+       var n = $('#header-page').text();
+       if ( n ==  "Committees"){
+	   $('.list-buttons-column').each(function(){
+	       $(this).children('form').css('display','none');
+	   })
+       }
+       
+   });
+  </script>
 {% endblock %}
 
 {% import '_macros.html' as macros %}

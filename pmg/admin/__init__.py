@@ -416,8 +416,6 @@ class OrganisationView(MyModelView):
 
 
 class CommitteeView(MyModelView):
-    can_delete = True
-
     column_list = ('name', 'house', 'ad_hoc', 'memberships')
     column_labels = {
         'memberships': 'Members',
@@ -456,6 +454,7 @@ class CommitteeView(MyModelView):
             'widget': widgets.InlineMembershipsWidget()
         },
     }
+
     inline_models = (Membership, )
 
     @expose('/delete', methods=['DELETE'])

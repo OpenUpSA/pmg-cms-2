@@ -58,6 +58,29 @@ def server_error(error):
 
 
 @app.before_request
+def shortcircuit_ipaddr():
+    """
+    check if ip is part of the scrapping list
+    """
+    scrappy_ips = ['62.138.0.47']
+    if request.environ.get('HTTP_X_FORWARDED_FOR', '') in scrappy_ips:
+        resp = make_response("""
+        Hi!
+
+        It looks like you're crawling us. We'd love to get in touch and see if
+        there's a better way we can share this content with you.
+
+        Send us a mail at info@openup.org.za
+
+        Best
+        OpenUp (The pmg.org.za developers)
+        """)
+        logger.info("IP from scrapping list found: %s",
+                    request.environ['HTTP_X_FORWARDED_FOR'])
+        return resp, "418 Hi, email us at info@openup.org.za"
+
+
+@app.before_request
 def shortcircuit_wget():
     """
     Respond immediately with a message that would typically be shown in Wget

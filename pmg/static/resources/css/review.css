@@ -1,0 +1,204 @@
+@charset "utf-8";
+/* CSS Document */
+
+.review-title {
+	text-align: center;
+	border-bottom: 1px solid #333;
+	padding-bottom: 10px;
+	margin-bottom: 25px;
+}
+
+.review-tabs {
+	padding-top: 25px;
+}
+
+.tab-switch-review {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+.col-review {
+	height: 280px;
+	display: table;
+}
+
+.thumb-title {
+	display: table-cell;
+	vertical-align:middle;
+	text-align: center;
+	color: #fff;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.thumb-author {
+	font-weight: normal;
+	font-size: 15px;
+	font-style: italic;
+}
+
+.purple {
+	background-image:url(/static/resources/images/review/background01.png);
+}
+
+.blue {
+	background-image:url(/static/resources/images/review/background02.png);
+}
+
+.dblue {
+	background-image:url(/static/resources/images/review/background03.png);
+}
+
+.dgreen {
+	background-image:url(/static/resources/images/review/background04.png);
+}
+
+.green {
+	background-image:url(/static/resources/images/review/background05.png);
+}
+
+.yellow {
+	background-image:url(/static/resources/images/review/background06.png);
+}
+
+.red {
+	background-image:url(/static/resources/images/review/background07.png);
+}
+
+.blog-page .single-post .body img, .single-blog .single-post .body img {
+	height: auto;
+}
+
+.blog-page .single-post .body img, .single-blog .single-post .body img.inline-img {
+	width: auto;
+	padding: 10px;
+}
+
+.review-author-blurb {
+	font-style:italic;
+	padding: 20px;
+	margin-top: 20px;
+	border-top: dotted 1px #333;
+}
+
+.review-sidebar-heading {
+	background: #00b78e;
+	color: #fff;
+	padding: 5px 5px 7px 5px;
+	font-size: 16px;
+	text-transform: uppercase;
+	font-weight: 300;
+	text-align: center;
+	display: inline-block;
+}
+
+.review-sidebar-heading a {color: #fff;}
+
+.lowercase {
+	text-transform: lowercase;
+}
+
+.sb-articles {
+	border-left: solid 4px #85b500;
+	background-color: #efefef;
+}
+
+.sb-interviews {
+	border-left: solid 4px #dbbc07;
+	background-color: #efefef;
+}
+
+.sb-stats {
+	border-left: solid 4px #c47b65;
+	background-color: #efefef;
+}
+
+.sb-category-heading {
+	margin: 0;
+	font-size: 10.5pt;
+	text-transform: uppercase;
+	padding: 3px 10px;
+	color: #fff;
+	font-weight: 300;
+}
+
+.sb-articles .sb-category-heading {
+		background: #85b500;
+}
+
+.sb-interviews .sb-category-heading {
+		background: #dbbc07;
+}
+
+.sb-stats .sb-category-heading {
+		background: #c47b65;
+}
+
+.sb-inner {
+
+}
+
+.sb-inner ul {
+	list-style: none;
+	padding: 5px;
+	font-size: 13px;
+}
+
+.sb-inner ul li {
+	padding-bottom: 5px;
+	padding-bottom: 10px;
+	line-height: 1;
+}
+
+.sb-inner ul li a {
+	color: #808080;
+}
+
+
+
+
+
+/* 5 column bootstrap */
+
+.col-xs-5ths,
+.col-sm-5ths,
+.col-md-5ths,
+.col-lg-5ths {
+    position: relative;
+    min-height: 1px;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.col-xs-5ths {
+    width: 18%;
+    float: left;
+	margin: 5px;
+}
+
+
+@media (max-width: 480px) {
+    .col-xs-6 {
+        width: 100%;
+    }
+	.col-review {
+		height: 200px;
+	}
+}
+
+
+@media (min-width: 992px) {
+    .col-md-5ths {
+        width: 18%;
+        float: left;
+		margin: 5px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-lg-5ths {
+        width: 20%;
+        float: left;
+		margin: 5px;
+    }
+}

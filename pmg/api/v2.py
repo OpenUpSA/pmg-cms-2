@@ -70,9 +70,14 @@ def api_get_item(id, model, schema):
 @api.route('/committees/')
 @api.route('/committees/<int:id>')
 def committees(id=None):
+    monitored = request.args.get('monitored')
     if id:
         return api_get_item(id, Committee, CommitteeSchema)
     else:
+        if monitored:
+            return api_list_items(Committee.list()\
+                                  .filter_by(monitored=True),
+                                  CommitteeSchema)
         return api_list_items(Committee.list(), CommitteeSchema)
 
 

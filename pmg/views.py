@@ -1677,3 +1677,29 @@ def robots_txt():
     response = make_response(open('robots.txt').read())
     response.headers["Content-type"] = "text/plain"
     return response
+
+
+@app.route('/parliament-reviews', methods=['GET'])
+def parliament_review():
+    """
+    Show the review articles about parliament
+    """
+    return render_template('review/review.html')
+
+
+@app.route('/parliment-review/<article>', methods=['GET'])
+def article_review(article):
+    article_group = {'andisiwe': 'review/andisiwe_makinana_2019.html'}
+    return render_template(article_group[article])
+
+
+@app.route('/parliament-interview/<interview>', methods=['GET'])
+def interview_review(interview):
+    interview_group = {}
+    return render_template(interview_group[interview])
+
+
+@app.route('/parliment-stats/<stat>', methods=['GET'])
+def stat_review(stat):
+    stat_group = {}
+    return render_template(stat_group[stat])

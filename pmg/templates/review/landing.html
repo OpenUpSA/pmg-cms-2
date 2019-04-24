@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Parliament Review | PMG{% endblock %}
+
+{% block page %}
+<link rel="stylesheet" href="/static/resources/css/review.css">
+
+<div class="container container-body">
+    
+
+    <article class="page">
+	
+	<h1 class="review-title">Review of the <b>5<sup class="lowercase">th</sup> Parliament</b></a></h1>
+
+	<nav class="cte-list-nav hidden-xs hidden-sm" id="cte-nav">
+	    <ul class="nav nav-tabs cte-tab-nav">
+		<li>
+		    <a class="tab-switch-ncp tab-switch-review" href="#intro" data-toggle="tab">Introduction</a>
+		</li>
+		<li class="active">
+		    <a class="tab-switch-nat tab-switch-review" href="#articles" data-toggle="tab">Articles</a>
+		</li>
+		<li>
+		    <a class="tab-switch-ncp tab-switch-review" href="#interviews" data-toggle="tab">Interviews</a>
+		</li>
+		<li>
+		    <a class="tab-switch-jnt tab-switch-review" href="#stats" data-toggle="tab">Statistics</a>
+		</li>    
+	    </ul>
+	</nav>
+
+	<nav class="cte-list-nav-mobile form-group visible-xs visible-sm">
+	    <select class="form-control cte-select-tab-nav">
+		<option data-toggle="tab" data-target="#intro" value="#intro">Introduction</option>
+		<option data-toggle="tab" data-target="#articles" value="#articles">Articles</option>
+		<option data-toggle="tab" data-target="#interviews" value="#interviews">Interviews</option>
+		<option data-toggle="tab" data-target="#stats" value="#stats">Statistics</option>         
+	    </select>
+	</nav>
+
+	<div class="tab-content cte-list lunr-dict">
+  	    <!-- Intro div - Hannah -->
+	    <div class="tab-pane row nat cte-items review-tabs" id="intro">
+		<h1>Introduction</h1><br>
+		<p align="justify">The Fifth Parliament gave us a lot of “firsts” and was unprecedented in many ways.</p> 
+		
+		<p align="justify">While previous Parliaments were maligned for being dull, perfunctory and peripheral, this Parliament was in the limelight for various controversies and mayhem.</p> 
+		
+		<p align="justify">Putting together a comprehensive review of the Fifth Parliament was always going to be a difficult task and there will be gaps in the coverage of its myriad components.</p>
+		
+		<p align="justify">Combining commentary and data, this review is a guide and analysis to the legislature’s activities, highlights and controversies from this period. In addition, there are perspectives on the functioning of Parliament, with the aim of raising standards. Alongside this are interviews with lawmakers, who share their insights. The result is a varied and, we believe, instructive publication where we aim to be forward-looking and address how Parliament can be strengthened.</p>
+		
+		<p align="justify">PMG is non-partisan and has no stance on the opinion pieces published. Our contributors had complete freedom to express their views.</p>
+		
+		<p align="justify">We would like to thank our contributors for their participation. Without them, this would not be possible. Every effort was made to get input from across the spectrum. While many responded to the invitation, not everyone took up the opportunity.</p>
+		
+		<p align="justify">Parliament is a vital institution. We hope this will contribute to the broader debate about its role, stature and the impact it should have on all South Africans.</p><br><br>
+		
+		<p align="justify" class="review-smaller">Special thanks to: Andisiwe Makinana l Asanda Nika l Ayesha Motala l Boingotlo Nthebe MP l Charel de Beer MP l Dalli Weyers l Deidre Carter MP l Eddie Makue MP l Farhat Essack MP l Gaile Fullard l Gary Pienaar l Hoodah Abrahams-Fayker l John Steenhuisen MP l Judith February l Lawson Naidoo l Lechesa Tsenoli MP l Liezl van der Merwe MP l Luvuyo Ngwayishe l Lynette Maart l Makhosi Khoza | Mandla Rayi MP l Martin Nicol l Mbuyiseni Ndlozi MP l Megan Lessing l Mike Law | Mike Pothier l Moira Levy l Monica de Souza Louw l Monique Doyle l Narend Singh MP l Nazier Paulsen MP l Priscilla Mantashe MP l Pumza Mokorotlo l Rashaad Alli l Richard Calland l Se&aacute;n Muller l Steven Friedman l Thiyane Duda</p><br>
+		
+		<p align="justify" class="review-credit">Graphics, web development and design: <a href="http://www.hannahwilliams.co.za" target="_blank">Hannah Williams</a> and <a href="https://openup.org.za/" target="_blank">Open Up</a><br>
+		    The content is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/za/" target="_blank">Creative Commons Attribution 3.0 South Africa licence.</a>
+		</p>
+	    </div>
+	    
+	    <!-- START GRID - Hannah -->
+	    <div class="active tab-pane row nat cte-items review-tabs" id="articles">
+		
+		<!-- 1st ROW -->
+      		<div class="row">
+		    <a href="{{ url_for('article_review',article='steven_friedman' ) }}">
+        		<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>How does the PR system affect the quality of input in Parliament?<br>
+                		    <span class="thumb-author">Steven Friedman</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='andisiwe_makinana' ) }}">
+		    
+			<div class="col-md-5ths col-xs-6 col-review blue">
+           		    <div class="thumb-title">
+            			<p>Observing Parliament: my reflections<br>
+                					<span class="thumb-author">Andisiwe Makinana</span></p>
+			    </div>
+			</div>
+				    </a>
+
+		    <a href="{{ url_for('article_review',article='law_calland' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review dblue">
+            		    <div class="thumb-title">
+            			<p>A Constitutional Fiction: Parliamentary Oversight of the Executive<br>
+                		    <span class="thumb-author">Mike Law and Richard Calland</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='lawson_naidoo' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review dgreen">
+            		    <div class="thumb-title">
+            			<p>Some thoughts on the Fifth Parliament<br>
+                		    <span class="thumb-author">Lawson Naidoo</span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    <a href="{{ url_for('article_review',article='narend_singh' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review green">
+            		    <div class="thumb-title">
+            			<p>Do small parties work for Parliament?<br>
+                		    <span class="thumb-author">Narend Singh</span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    
+		    <!-- 2nd ROW -->
+		    <a href="{{ url_for('article_review',article='deidre_carter' ) }}">
+        		<div class="col-md-5ths col-xs-6 col-review yellow">
+            		    <div class="thumb-title">
+            			<p>View from the opposition benches<br>
+                		    <span class="thumb-author">Deidre Carter</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='gary_pienaar' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review red">
+            		    <div class="thumb-title">
+            			<p>Improving Parliament's ineffective oversight<br>
+                		    <span class="thumb-author">Gary Pienaar</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='mike_pothier' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>Parliamentary Advocacy: How to have an influence?<br>
+                		    <span class="thumb-author">Mike Pothier</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='duda_motala_louw' ) }}">
+			    <div class="col-md-5ths col-xs-6 col-review blue">
+            			<div class="thumb-title">
+            			    <p>Public Engagement: A Case Study<br>
+                			<span class="thumb-author">LARC</span></p>
+				</div>
+			    </div>
+			</a>
+			
+			<!-- 3rd row -->
+		    <a href="{{ url_for('article_review',article='moira_levy' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review dblue">
+            		    <div class="thumb-title">
+            			<p>Notes from the House<br>
+                		    <span class="thumb-author">Moira Levy</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='martin_nicol' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review dgreen">
+            		    <div class="thumb-title">
+            			<p>Committee System: performance and areas of reform<br>
+                		    <span class="thumb-author">Martin Nicol</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='judith_febuary' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review green">
+            		    <div class="thumb-title">
+            			<p>A step forward<br>
+                		    <span class="thumb-author">Judith February</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='sean_muller' ) }}">
+			    <div class="col-md-5ths col-xs-6 col-review yellow">
+            			<div class="thumb-title">
+            			    <p>Why has Parliament not yet amended the Budget?<br>
+                			<span class="thumb-author">Se&aacute;n Muller</span></p>
+				</div>
+			    </div>
+			</a>
+			
+			
+		    <a href="{{ url_for('article_review',article='gaile_fullard' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review red">
+            		    <div class="thumb-title">
+            			<p>Points of order (by an observer)<br>
+                		    <span class="thumb-author">Gaile Fullard</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('article_review',article='monique_doyle' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>Diary of a Parliamentary Nerd<br>
+                		    <span class="thumb-author">Monique Doyle</span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    
+		    
+		</div>
+		<!--END GRID--> 
+	    </div>
+	    
+	    
+	    <!-- MP Interviews div - Hannah -->
+	    <div class="tab-pane row ncp cte-items" id="interviews">
+		
+     		<!-- 1st ROW -->
+      		<div class="row">
+		    <a href="{{ url_for('interview_review',interview='lechesa_tsenoli' ) }}">
+        		<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>Lechesa Tsenoli<br>
+                		    <span class="thumb-author">Deputy Speaker</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='john_steenhuisen' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review blue">
+           		    <div class="thumb-title">
+            			<p>John Steenhuisen<br>
+                		    <span class="thumb-author">Member of Parliament</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='joanmarie_fubbs' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review dblue">
+            		    <div class="thumb-title">
+            			<p>Joanmariae Fubbs<br>
+                		    <span class="thumb-author">Member of Parliament</span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='mbuyiseni_ndlozi' ) }}">
+			    <div class="col-md-5ths col-xs-6 col-review dgreen">
+            			<div class="thumb-title">
+            			    <p>Mbuyiseni Ndlozi<br>
+                			<span class="thumb-author">Member of Parliament</span></p>
+				</div>
+			    </div>
+			</a>
+			
+			<!-- 2nd ROW -->
+		    <a href="{{ url_for('interview_review',interview='mp_comments' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review green">
+            		    <div class="thumb-title">
+            			<p>MP Comments<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='black_sash' ) }}">
+        		<div class="col-md-5ths col-xs-6 col-review yellow">
+            		    <div class="thumb-title">
+            			<p>Black Sash<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='sjc' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review red">
+            		    <div class="thumb-title">
+            			<p>Social Justice Coalition<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+
+		    <a href="{{ url_for('interview_review',interview='makhosi_khoza' ) }}">
+			<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>Makhosi Khoza<br>
+                		    <span class="thumb-author">Former Member of Parliament</span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    
+		</div>
+	    </div>
+	    
+	    <!-- Statistics div - Hannah -->
+	    <div class="tab-pane row jnt cte-items" id="stats">
+      		<div class="row">
+		    
+     		    <a href="2019Review_Turnover.html">
+			<div class="col-md-5ths col-xs-6 col-review purple">
+            		    <div class="thumb-title">
+            			<p>MP & Committee Turnover<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    <a href="2019Review_Agenda.html">
+			<div class="col-md-5ths col-xs-6 col-review blue">
+            		    <div class="thumb-title">
+            			<p>MP & Committee Agenda<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    <a href="2019Review_Activity.html">
+			<div class="col-md-5ths col-xs-6 col-review dblue">
+            		    <div class="thumb-title">
+            			<p>Committee Activity<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    <a href="2019Review_Performance.html">
+			<div class="col-md-5ths col-xs-6 col-review dgreen">
+            		    <div class="thumb-title">
+            			<p>Legislative Performance<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		    <a href="2019Review_Questions.html">
+			<div class="col-md-5ths col-xs-6 col-review green">
+            		    <div class="thumb-title">
+            			<p>Written Questions for Ministers Reply<br>
+                		    <span class="thumb-author"></span></p>
+			    </div>
+			</div>
+		    </a>
+		    
+		</div> 
+	    </div>
+
+    </article>
+	</div>
+
+</div>
+{% endblock %}

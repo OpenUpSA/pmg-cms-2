@@ -35,7 +35,9 @@ def email_alerts():
 
         return ''
 
-    committees = load_from_api('v2/committees', return_everything=True)['results']
+    committees = load_from_api(
+        'v2/committees', return_everything=True, params={'monitored':
+                                                         True})['results']
     if current_user.is_authenticated():
         subscriptions = set(c.id for c in current_user.committee_alerts)
     else:

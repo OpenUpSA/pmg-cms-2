@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Parliament Review | Statistics  | PMG{% endblock %}
+{% block page %}
+<link rel="stylesheet" href="/static/resources/css/review.css">
+<div class="container container-body">
+
+    <article class="page">
+
+	<section class="single-blog">
+	    <div class="row">
+		<div class="col-sm-9"> <!-- CHANGED COLUMN WIDTH - Hannah -->
+		    <div class="single-post">
+			
+			<!-- START CONTENT - Hannah -->
+			<h2 class="title">Written Questions for Minister's Reply: Fifth Parliament</h2>
+			<div class="date"><i>&nbsp;</i></div>
+			<div class="body">
+			    <hr>
+			    
+			    <h4><strong>CONTENT TO BE ADDED</strong></h4>
+			    
+			    
+        		    <p class="review-author-blurb">DISCLAIMER: This is not official data from Parliament. This information has been obtained via the Parliamentary Monitoring Group. PMG makes every effort to compile reliable and comprehensive information, but does not claim that the data is 100% accurate and complete.</p>
+			    
+			    
+			    <span class="page-sharing">
+				Share this page:
+				<span class="btn-group" role="group">
+	 			    <a type="button" class="btn btn-sm btn-default page-share facebook"><i class="fa fa-fw fa-facebook"></i></a>
+	  			    <a type="button" class="btn btn-sm btn-default page-share twitter"><i class="fa fa-fw fa-twitter"></i></a>
+	  			    <a type="button" class="btn btn-sm btn-default page-share linkedin"><i class="fa fa-fw fa-linkedin"></i></a>
+	  			    <a type="button" class="btn btn-sm btn-default page-share email"><i class="fa fa-fw fa-envelope-o"></i></a>
+				</span>
+			    </span>
+			    
+			</div>
+		    </div>
+		</div>
+		
+		<!-- SIDEBAR -->
+		<div class="col-sm-3">
+		    <h1>&nbsp;</h1>
+		    <span class="page-sharing">
+			Share this page:
+			<span class="btn-group" role="group">
+			    <a type="button" class="btn btn-sm btn-default page-share facebook"><i class="fa fa-fw fa-facebook"></i></a>
+			    <a type="button" class="btn btn-sm btn-default page-share twitter"><i class="fa fa-fw fa-twitter"></i></a>
+			    <a type="button" class="btn btn-sm btn-default page-share linkedin"><i class="fa fa-fw fa-linkedin"></i></a>
+			    <a type="button" class="btn btn-sm btn-default page-share email"><i class="fa fa-fw fa-envelope-o"></i></a>
+			</span>
+		    </span>
+		    
+		    <h1 class="review-sidebar-heading"><a href="2019Review_Landing.html">Review of the <b>5<sup class="lowercase">th</sup> Parliament</b></a></h1>
+     		    <div class="sb-articles">
+			<h2 class="sb-category-heading">Articles</h2>
+			{% include 'review/_articles.html' %}
+        		
+		    </div>
+		    
+		    <div class="sb-interviews">
+			<h2 class="sb-category-heading">Interviews</h2>{% include 'review/_interview.html' %}
+        		
+		    </div>
+		    
+		    <div class="sb-stats">
+			<h2 class="sb-category-heading">Statistics<h2>{% include 'review/_stats.html' %}
+        		
+		    </div>
+		    
+		    
+		</div>
+	    </div>
+</div>
+{% endblock %}

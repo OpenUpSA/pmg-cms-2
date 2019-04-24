@@ -1689,7 +1689,7 @@ def parliament_review():
     return render_template('review/landing.html')
 
 
-@app.route('/parliment-review/<article>', methods=['GET'])
+@app.route('/parliment-review/article/<article>', methods=['GET'])
 def article_review(article):
     article_group = {
         'steven_friedman': 'review/articles/2019Review_Steven_Friedman.html',
@@ -1712,7 +1712,7 @@ def article_review(article):
     return render_template(article_group[article])
 
 
-@app.route('/parliament-interview/<interview>', methods=['GET'])
+@app.route('/parliament-review/interview/<interview>', methods=['GET'])
 def interview_review(interview):
     interview_group = {
         'lechesa_tsenoli': 'review/interviews/2019Review_Lechesa_Tsenoli.html',
@@ -1730,7 +1730,13 @@ def interview_review(interview):
     return render_template(interview_group[interview])
 
 
-@app.route('/parliment-stats/<stat>', methods=['GET'])
-def stat_review(stat):
-    stat_group = {}
+@app.route('/parliament-review/statistics/<stat>', methods=['GET'])
+def stats_review(stat):
+    stat_group = {
+        'turnover': 'review/statistics/2019Review_Turnover.html',
+        'agenda': 'review/statistics/2019Review_Agenda.html',
+        'activity': 'review/statistics/2019Review_Activity.html',
+        'performance': 'review/statistics/2019Review_Performance.html',
+        'question': 'review/statistics/2019Review_Questions.html'
+    }
     return render_template(stat_group[stat])

@@ -1689,7 +1689,7 @@ def parliament_review():
     return render_template('review/landing.html')
 
 
-@app.route('/parliment-review/article/<article>', methods=['GET'])
+@app.route('/parliament-review/article/<article>', methods=['GET'])
 def article_review(article):
     article_group = {
         'steven_friedman': 'review/articles/2019Review_Steven_Friedman.html',

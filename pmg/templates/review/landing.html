@@ -62,8 +62,8 @@
 		    The content is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/za/" target="_blank">Creative Commons Attribution 3.0 South Africa licence.</a>
 		</p>
 	    </div>
-	    
-	    <!-- START GRID - Hannah -->
+
+
 	    <div class="active tab-pane row nat cte-items review-tabs" id="articles">
 		
 		<!-- 1st ROW -->
@@ -78,14 +78,14 @@
 		    </a>
 
 		    <a href="{{ url_for('article_review',article='andisiwe_makinana' ) }}">
-		    
+		        
 			<div class="col-md-5ths col-xs-6 col-review blue">
            		    <div class="thumb-title">
             			<p>Observing Parliament: my reflections<br>
-                					<span class="thumb-author">Andisiwe Makinana</span></p>
+                		    <span class="thumb-author">Andisiwe Makinana</span></p>
 			    </div>
 			</div>
-				    </a>
+		    </a>
 
 		    <a href="{{ url_for('article_review',article='law_calland' ) }}">
 			<div class="col-md-5ths col-xs-6 col-review dblue">
@@ -144,15 +144,15 @@
 		    </a>
 
 		    <a href="{{ url_for('article_review',article='duda_motala_louw' ) }}">
-			    <div class="col-md-5ths col-xs-6 col-review blue">
-            			<div class="thumb-title">
-            			    <p>Public Engagement: A Case Study<br>
-                			<span class="thumb-author">LARC</span></p>
-				</div>
+			<div class="col-md-5ths col-xs-6 col-review blue">
+            		    <div class="thumb-title">
+            			<p>Public Engagement: A Case Study<br>
+                		    <span class="thumb-author">LARC</span></p>
 			    </div>
-			</a>
-			
-			<!-- 3rd row -->
+			</div>
+		    </a>
+		    
+		    <!-- 3rd row -->
 		    <a href="{{ url_for('article_review',article='moira_levy' ) }}">
 			<div class="col-md-5ths col-xs-6 col-review dblue">
             		    <div class="thumb-title">
@@ -181,15 +181,15 @@
 		    </a>
 
 		    <a href="{{ url_for('article_review',article='sean_muller' ) }}">
-			    <div class="col-md-5ths col-xs-6 col-review yellow">
-            			<div class="thumb-title">
-            			    <p>Why has Parliament not yet amended the Budget?<br>
-                			<span class="thumb-author">Se&aacute;n Muller</span></p>
-				</div>
+			<div class="col-md-5ths col-xs-6 col-review yellow">
+            		    <div class="thumb-title">
+            			<p>Why has Parliament not yet amended the Budget?<br>
+                		    <span class="thumb-author">Se&aacute;n Muller</span></p>
 			    </div>
-			</a>
-			
-			
+			</div>
+		    </a>
+		    
+		    
 		    <a href="{{ url_for('article_review',article='gaile_fullard' ) }}">
 			<div class="col-md-5ths col-xs-6 col-review red">
             		    <div class="thumb-title">
@@ -248,15 +248,15 @@
 		    </a>
 
 		    <a href="{{ url_for('interview_review',interview='mbuyiseni_ndlozi' ) }}">
-			    <div class="col-md-5ths col-xs-6 col-review dgreen">
-            			<div class="thumb-title">
-            			    <p>Mbuyiseni Ndlozi<br>
-                			<span class="thumb-author">Member of Parliament</span></p>
-				</div>
+			<div class="col-md-5ths col-xs-6 col-review dgreen">
+            		    <div class="thumb-title">
+            			<p>Mbuyiseni Ndlozi<br>
+                		    <span class="thumb-author">Member of Parliament</span></p>
 			    </div>
-			</a>
-			
-			<!-- 2nd ROW -->
+			</div>
+		    </a>
+		    
+		    <!-- 2nd ROW -->
 		    <a href="{{ url_for('interview_review',interview='mp_comments' ) }}">
 			<div class="col-md-5ths col-xs-6 col-review green">
             		    <div class="thumb-title">
@@ -337,7 +337,7 @@
 			</div>
 		    </a>
 
-		    <a href="{{ url_for('stats_review',stat='performance' ) }}">
+		    <a href="{{ url_for('stats_review',stat='questions' ) }}">
 			<div class="col-md-5ths col-xs-6 col-review green">
             		    <div class="thumb-title">
             			<p>Written Questions for Ministers Reply<br>
@@ -353,4 +353,5 @@
 	</div>
 
 </div>
+
 {% endblock %}

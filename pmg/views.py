@@ -1737,6 +1737,6 @@ def stats_review(stat):
         'agenda': 'review/statistics/2019Review_Agenda.html',
         'activity': 'review/statistics/2019Review_Activity.html',
         'performance': 'review/statistics/2019Review_Performance.html',
-        'question': 'review/statistics/2019Review_Questions.html'
+        'questions': 'review/statistics/2019Review_Questions.html'
     }
     return render_template(stat_group[stat])

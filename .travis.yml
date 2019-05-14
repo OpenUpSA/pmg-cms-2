@@ -1,14 +1,28 @@
+dist: xenial
 language: python
-sudo: false
-python:
-  - "2.7"
+cache: pip
+
 addons:
   postgresql: "9.4"
+
 env:
-  - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:@localhost:5432/pmg_test?client_encoding=utf8
-before_script:
-  - export BOTO_CONFIG=/dev/null
-  - psql -c 'create database pmg_test;' -U postgres
-install: 
-  - "pip install -r requirements.txt"
-script: nosetests tests
+  global:
+    # We don't usually override Tox's SQLALCHEMY_DATABASE_URI, but we want to for Travis.
+    - TOX_TESTENV_PASSENV="SQLALCHEMY_DATABASE_URI"
+    - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:@localhost:5432/postgres?client_encoding=utf8
+
+matrix:
+  include:
+    - { python: "2.7", env: TOXENV=py27 }
+
+before_install:
+  # Work around:
+  # https://github.com/travis-ci/travis-ci/issues/7940
+  # https://github.com/GoogleCloudPlatform/compute-image-packages/issues/262
+  - sudo rm /etc/boto.cfg
+
+install:
+  - pip install tox
+
+script:
+  - tox

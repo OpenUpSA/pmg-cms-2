@@ -7,6 +7,7 @@ verify_ssl = true
 mock = "*"
 nose = "*"
 flask-testing = "~=0.6.0"
+coverage = "*"
 
 [packages]
 apscheduler = "~=3.0.0"

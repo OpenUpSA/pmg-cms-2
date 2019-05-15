@@ -14,6 +14,7 @@ env:
 matrix:
   include:
     - { python: "2.7", env: TOXENV=py27 }
+    # TODO (before the end of 2019!): Python 3
 
 before_install:
   # Work around:

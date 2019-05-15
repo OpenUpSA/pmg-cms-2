@@ -7,6 +7,7 @@ verify_ssl = true
 mock = "*"
 nose = "*"
 flask-testing = "~=0.6.0"
+coverage = "*"
 
 [packages]
 alembic = "==0.8.2"

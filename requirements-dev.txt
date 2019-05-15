@@ -1,5 +1,6 @@
 -i https://pypi.org/simple
 click==7.0
+coverage==4.5.3
 flask-testing==0.6.2
 flask==0.12.4
 funcsigs==1.0.2 ; python_version < '3.3'

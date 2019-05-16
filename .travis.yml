@@ -23,7 +23,8 @@ before_install:
   - sudo rm /etc/boto.cfg
 
 install:
-  - pip install tox
+  - pip install tox codecov
 
 script:
   - tox -v
+  - codecov

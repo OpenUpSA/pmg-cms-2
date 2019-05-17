@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3857e2d31c6e32b19f90a5e3d3c83d774690f17aae5718d507db16a7e5e1c1c9"
+            "sha256": "4da8fb67e3bef15edef2f7356cebcf3b67332c269ea3a81949a0a889e822ee23"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -482,11 +482,8 @@
             "version": "==1.0.23"
         },
         "universal-analytics-python": {
-            "hashes": [
-                "sha256:109ad217c2b9c6c349b240d2e1d3e7f830e3572ddab080460cdc3c6028278f3d"
-            ],
-            "index": "pypi",
-            "version": "==0.2.4"
+            "git": "https://github.com/softformance/universal-analytics-python.git",
+            "ref": "58cc2a4f1ad06e56005f345a7445b2539669e094"
         },
         "urllib3": {
             "hashes": [

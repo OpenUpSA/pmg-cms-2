@@ -39,7 +39,7 @@ requests = "*"
 sendgrid = "~=2.2.0"
 soundcloud = "*"
 unidecode = "*"
-universal-analytics-python = "*"
+universal-analytics-python = {git = "https://github.com/softformance/universal-analytics-python.git",ref = "gryps-python3"}
 urllib3 = "*"
 xlrd = "*"
 xlsxwriter = "==0.6.6"

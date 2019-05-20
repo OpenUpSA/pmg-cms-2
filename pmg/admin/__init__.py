@@ -415,7 +415,8 @@ class OrganisationView(MyModelView):
     column_labels = {'subscriptions': "Premium subscriptions"}
 
 
-class CommitteeView(MyModelView)
+class CommitteeView(MyModelView):
+
     can_delete = True
     column_list = ('name', 'house', 'ad_hoc', 'memberships')
     column_labels = {

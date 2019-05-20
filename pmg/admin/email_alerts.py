@@ -97,7 +97,12 @@ class EmailAlertForm(Form):
 
     def __init__(self, *args, **kwargs):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
-        committee_list = Committee.query.order_by(Committee.house_id.desc()).order_by(Committee.name).all()
+        committee_list = Committee\
+                         .query\
+                         .order_by(Committee.house_id.desc())\
+                         .order_by(Committee.name)\
+                         .filter_by(monitored=True)\
+                         .all()
 
         # count of daily schedule subscribers
         subs = User.query.filter(User.subscribe_daily_schedule == True, User.confirmed_at != None).count()  # noqa

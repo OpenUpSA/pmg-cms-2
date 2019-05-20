@@ -354,7 +354,8 @@ def committee_detail(committee_id):
     else:
         starting_filter = latest_year
 
-    social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee['name'] + " committee."
+    social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee[
+        'name'] + " committee."
     attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(
         committee_id)
 
@@ -451,8 +452,8 @@ def attendance_overview():
             curr.n_meetings,
             'avg_attendance':
             curr.avg_attendance * 100,
-            'change': (curr.avg_attendance - (prev.avg_attendance
-                                              if prev else 0)) * 100,
+            'change':
+            (curr.avg_attendance - (prev.avg_attendance if prev else 0)) * 100,
         })
 
     # rank them
@@ -475,8 +476,9 @@ def committee_question(question_id):
     question = load_from_api('v2/minister-questions', question_id)['result']
     minister = question['minister']
     committee = minister.get('committee', {'house': {}, 'id': 0})
-    social_summary = "A question to the " + question['question_to_name'] + ", asked on " + pretty_date(
-        question['date'], 'long') + " by " + question['asked_by_name']
+    social_summary = "A question to the " + question[
+        'question_to_name'] + ", asked on " + pretty_date(
+            question['date'], 'long') + " by " + question['asked_by_name']
 
     return render_template(
         'committee_question.html',
@@ -643,18 +645,20 @@ def committee_meeting(event_id):
         'v2/committee-meetings/%s/attendance' % event_id,
         return_everything=True)['results']
     attendance = [
-        a for a in attendance if a['attendance'] in
-        CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
+        a for a in attendance if a['attendance'] in CommitteeMeetingAttendance.
+        ATTENDANCE_CODES_PRESENT
     ]
     sorter = lambda x: x['member']['name']
     attendance = sorted([a for a in attendance if a['chairperson']], key=sorter) + \
                  sorted([a for a in attendance if not a['chairperson']], key=sorter)  # noqa
     if event['chairperson']:
-        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(
-            event['date'], 'long') + ", lead by " + event['chairperson']
+        social_summary = "A meeting of the " + event['committee'][
+            'name'] + " committee held on " + pretty_date(
+                event['date'], 'long') + ", lead by " + event['chairperson']
     else:
-        social_summary = "A meeting of the " + event['committee']['name'] + " committee held on " + pretty_date(
-            event['date'], 'long') + "."
+        social_summary = "A meeting of the " + event['committee'][
+            'name'] + " committee held on " + pretty_date(
+                event['date'], 'long') + "."
 
     return render_template(
         'committee_meeting.html',
@@ -804,7 +808,8 @@ def call_for_comment(call_for_comment_id):
     logger.debug(call_for_comment)
 
     if call_for_comment['committee']:
-        cfc_committee = 'A call for comments by the ' + call_for_comment['committee']['name'] + " committee. "
+        cfc_committee = 'A call for comments by the ' + call_for_comment[
+            'committee']['name'] + " committee. "
     else:
         cfc_committee = 'A call for comments. '
     if call_for_comment['end_date']:
@@ -932,9 +937,8 @@ def members():
     # partition by house
     members_by_house = {}
     for member in members:
-        if member.get(
-                'house'
-        ) and member['current'] and member['house']['sphere'] == 'national':
+        if member.get('house') and member['current'] and member['house'][
+                'sphere'] == 'national':
             members_by_house.setdefault(member['house']['name'],
                                         []).append(member)
 
@@ -1072,9 +1076,8 @@ def provincial_legislatures_detail(slug):
         params={'filter[house]': province.name_short})['results']
     mpls = []
     for member in members:
-        if member.get(
-                'house'
-        ) and member['current'] and member['house']['short_name'] == province.name_short:
+        if member.get('house') and member['current'] and member['house'][
+                'short_name'] == province.name_short:
             mpls.append(member)
 
     if province.speaker_id:
@@ -1104,9 +1107,8 @@ def provincial_legislatures_western_cape(slug, province):
     # members of provincial parliament
     mpls = []
     for member in members:
-        if member.get(
-                'house'
-        ) and member['current'] and member['house']['short_name'] == 'WC':
+        if member.get('house') and member['current'] and member['house'][
+                'short_name'] == 'WC':
             mpls.append(member)
 
     if province.speaker_id:
@@ -1677,3 +1679,64 @@ def robots_txt():
     response = make_response(open('robots.txt').read())
     response.headers["Content-type"] = "text/plain"
     return response
+
+
+@app.route('/parliament-reviews', methods=['GET'])
+def parliament_review():
+    """
+    Show the review articles about parliament
+    """
+    return render_template('review/landing.html')
+
+
+@app.route('/parliament-review/article/<article>', methods=['GET'])
+def article_review(article):
+    article_group = {
+        'steven_friedman': 'review/articles/2019Review_Steven_Friedman.html',
+        'andisiwe_makinana':
+        'review/articles/2019Review_Andisiwe_Makinana.html',
+        'law_calland': 'review/articles/2019Review_Law_Calland.html',
+        'lawson_naidoo': 'review/articles/2019Review_Lawson_Naidoo.html',
+        'narend_singh': 'review/articles/2019Review_Narend_Singh.html',
+        'deidre_carter': 'review/articles/2019Review_Deidre_Carter.html',
+        'gary_pienaar': 'review/articles/2019Review_Gary_Pienaar.html',
+        'mike_pothier': 'review/articles/2019Review_Mike_Pothier.html',
+        'duda_motala_louw': 'review/articles/2019Review_Duda_Motala_Louw.html',
+        'moira_levy': 'review/articles/2019Review_Moira_Levy.html',
+        'martin_nicol': 'review/articles/2019Review_Martin_Nicol.html',
+        'judith_febuary': 'review/articles/2019Review_Judith_February.html',
+        'sean_muller': 'review/articles/2019Review_Sean_Muller.html',
+        'gaile_fullard': 'review/articles/2019Review_Gaile_Fullard.html',
+        'monique_doyle': 'review/articles/2019Review_Monique_Doyle.html'
+    }
+    return render_template(article_group[article])
+
+
+@app.route('/parliament-review/interview/<interview>', methods=['GET'])
+def interview_review(interview):
+    interview_group = {
+        'lechesa_tsenoli': 'review/interviews/2019Review_Lechesa_Tsenoli.html',
+        'john_steenhuisen':
+        'review/interviews/2019Review_John_Steenhuisen.html',
+        'joanmarie_fubbs':
+        'review/interviews/2019Review_Joanmariae_Fubbs.html',
+        'mbuyiseni_ndlozi':
+        'review/interviews/2019Review_Mbuyiseni_Ndlozi.html',
+        'mp_comments': 'review/interviews/2019Review_MP_Comments.html',
+        'black_sash': 'review/interviews/2019Review_Black_Sash.html',
+        'sjc': 'review/interviews/2019Review_SJC.html',
+        'makhosi_khoza': 'review/interviews/2019Review_Makhosi_Khoza.html'
+    }
+    return render_template(interview_group[interview])
+
+
+@app.route('/parliament-review/statistics/<stat>', methods=['GET'])
+def stats_review(stat):
+    stat_group = {
+        'turnover': 'review/statistics/2019Review_Turnover.html',
+        'agenda': 'review/statistics/2019Review_Agenda.html',
+        'activity': 'review/statistics/2019Review_Activity.html',
+        'performance': 'review/statistics/2019Review_Performance.html',
+        'questions': 'review/statistics/2019Review_Questions.html'
+    }
+    return render_template(stat_group[stat])

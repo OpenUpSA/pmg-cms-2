@@ -415,7 +415,8 @@ class OrganisationView(MyModelView):
     column_labels = {'subscriptions': "Premium subscriptions"}
 
 
-class CommitteeView(MyModelView):
+class CommitteeView(MyModelView)
+    can_delete = True
     column_list = ('name', 'house', 'ad_hoc', 'memberships')
     column_labels = {
         'memberships': 'Members',
@@ -1087,18 +1088,29 @@ class EventTypeSelectField(fields.SelectField):
 
     def __call__(self, *args, **kwargs):
         if self.condition():
-            kwargs.setdefault('disabled', "disabled")
+            kwargs.setdefault('readonly', True)
         return super(EventTypeSelectField, self).__call__(*args, **kwargs)
 
     def __init__(self, *args, **kwargs):
         super(EventTypeSelectField, self).__init__(*args, **kwargs)
-        self.choices = [('plenary', 'Hansard'), ('bill-introduced',
-                                                 'Bill introduced'),
-                        ('bill-updated', 'Bill updated'), ('bill-passed',
-                                                           'Bill passed'),
-                        ('bill-signed', 'Bill signed'), ('bill-enacted',
-                                                         'Bill enacted'),
+
+        self.choices = [('plenary', 'Hansard'),
+                        ('bill-introduced', 'Bill introduced'),
+                        ('bill-updated', 'Bill updated'),
+                        ('bill-passed', 'Bill passed'),
+                        ('bill-signed', 'Bill signed'),
+                        ('bill-enacted', 'Bill enacted'),
                         ('bill-act-commenced', 'Act commenced')]
+
+    def populate_obj(self, obj, name):
+        """
+        If a type is already on hansard and is changes we resave it as hansard
+        """
+        if obj.type == 'plenary' and self.data != 'plenary':
+            self.data = 'plenary'
+            super(EventTypeSelectField, self).populate_obj(obj, name)
+        else:
+            super(EventTypeSelectField, self).populate_obj(obj, name)
 
 
 class InlineBillEventsForm(InlineFormAdmin):

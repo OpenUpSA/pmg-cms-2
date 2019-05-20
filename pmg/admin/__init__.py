@@ -471,11 +471,9 @@ class CommitteeView(MyModelView):
             db.session.commit()
             flash("{0} deleted".format(model))
             return jsonify({"success": 'ok'}), 200
-        except exc.IntegrityError:
-            return jsonify({
-                'success': False,
-                'reason': 'Unable to delete this model.'
-            })
+        except exc.IntegrityError as error:
+            reason = "unable to delete model: {}".format(error)
+            return jsonify({'success': False, 'reason': reason})
 
 
 class ViewWithFiles(object):

@@ -7,6 +7,63 @@
         {% if alert_url %}
         <a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
         {% endif %}
+	{% if admin_view.can_delete and model %}
+	<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_modal">
+	    Delete {{admin_view.name}}
+	</button>
+	<div class="modal fade" id="delete_modal" tabindex="-1" role="dialog">
+	    <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		    <div class="panel panel-danger">
+			<div class="panel-heading">Delete Record</div>
+			<div class="panel-body">
+			    <p>You are about to delete this record. This action cannot be undone.</p>
+			    <p>Would you like to proceed?</p>
+			    <div id="reason" class="alert alert-warning" role="alert" style="display:none">
+			    </div>
+			</div>
+			<div class="panel-footer text-center">
+			    <button type="button" class="btn btn-secondary" id="cancel_delete">Cancel</button>
+			    <button type="button" class="btn btn-danger" id="confirm_delete">Delete</button>
+			</div>
+		    </div>
+		</div>
+	    </div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+	 $(document).ready(function(){
+	     $("#cancel_delete").click(function() {
+		 $("#delete_modal").modal("toggle")
+	     });
+	     $("#confirm_delete").click(function(event) {
+		 event.preventDefault();
+		 console.log('deleting the model');
+		 $.ajax({ 
+		     url: "../delete?id={{ model.id }}",
+		     type: "DELETE",
+		     success: function(data){
+			 if (data.sucess == 'ok'){
+			     console.log("Deleted");
+			     window.location.replace("{{ return_url }}");   
+			 }else{
+			     $('#reason').css('display','block');
+			     $('#reason').html(data.reason);
+			 }
+		     },
+		     error: function(xhr, data, error){
+			 console.log("unable to delete model");
+			 $('#reason').html(data.reason);
+			 console.log(xhr.statusCode);
+			 console.log(xhr.statusText);
+			 console.log(error);
+		     }
+		 });
+	     });
+	 });
+
+	</script>
+	{% endif %}
 
         <a href="{{ admin_view.frontend_url(model) }}" class="btn btn-primary"><i class="fa fa-eye"></i> View page</a>
     </div>

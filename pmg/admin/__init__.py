@@ -16,11 +16,13 @@ from flask_admin.form import rules
 from flask_admin.helpers import get_url
 from flask_security.changeable import change_user_password
 from flask_security.confirmable import confirm_user
+from flask import jsonify
 from wtforms import fields
 from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_, and_
+from sqlalchemy import exc
 from jinja2 import Markup
 import humanize
 import psycopg2
@@ -191,6 +193,24 @@ class MyModelView(RBACMixin, ModelView):
             only_columns=self.scaffold_list_columns(),
             excluded_columns=self.column_export_exclude_list,
         )
+
+    # @expose('/admin/<model>/delete', methods=('POST', ))
+    # def delete_view(self):
+    #     """
+    #     Delete the model
+    #     """
+    #     print('*******************************')
+    #     print('DELETING THE MODEL')
+    #     id = request.args.get('id')
+    #     print(id)
+    #     print('***********************************')
+    #     if id is None:
+    #         return jsonify({"success": False}), 404
+    #     model = self.get_one(id)
+    #     db.session.delete(model)
+    #     db.session.commit()
+    #     flash("{0} deleted".format(model))
+    #     return jsonify({"success": True}), 200
 
 
 class HasExpiredFilter(BaseSQLAFilter):
@@ -396,8 +416,8 @@ class OrganisationView(MyModelView):
 
 
 class CommitteeView(MyModelView):
-    can_delete = True
 
+    can_delete = True
     column_list = ('name', 'house', 'ad_hoc', 'memberships')
     column_labels = {
         'memberships': 'Members',
@@ -436,7 +456,26 @@ class CommitteeView(MyModelView):
             'widget': widgets.InlineMembershipsWidget()
         },
     }
+
     inline_models = (Membership, )
+
+    @expose('/delete', methods=['DELETE'])
+    def delete_view(self):
+        """
+        Delete the model
+        """
+        id = request.args.get('id')
+        if id is None:
+            return jsonify({"success": False}), 404
+        model = self.get_one(id)
+        try:
+            db.session.delete(model)
+            db.session.commit()
+            flash("{0} deleted".format(model))
+            return jsonify({"success": 'ok'}), 200
+        except exc.IntegrityError as error:
+            reason = "unable to delete model: {}".format(error)
+            return jsonify({'success': False, 'reason': reason})
 
 
 class ViewWithFiles(object):
@@ -1055,6 +1094,7 @@ class EventTypeSelectField(fields.SelectField):
 
     def __init__(self, *args, **kwargs):
         super(EventTypeSelectField, self).__init__(*args, **kwargs)
+
         self.choices = [('plenary', 'Hansard'),
                         ('bill-introduced', 'Bill introduced'),
                         ('bill-updated', 'Bill updated'),

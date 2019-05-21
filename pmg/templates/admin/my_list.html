@@ -1,5 +1,6 @@
 {% extends 'admin/model/list.html' %}
 {% block head_css %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   {{ super() }}
   <style>
 
@@ -9,7 +10,7 @@
 {% block body %}
   <h2 id="header-page">{{ admin_view.name }}</h2>
   {{ super() }}
-  <script>
+  <script defer>
    $(document).ready(function(){
        var n = $('#header-page').text();
        if ( n ==  "Committees"){

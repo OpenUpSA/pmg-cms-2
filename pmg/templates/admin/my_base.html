@@ -1,10 +1,9 @@
 {% extends 'admin/base.html' %}
 {% import 'admin/rules.html' as rules %}
 {% block head_css %}
-{{ super() }}
-{% assets "admin-css" %}
-<link rel="stylesheet" href="{{ ASSET_URL }}">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ {{ super() }}
+ {% assets "admin-css" %}
+ <link rel="stylesheet" href="{{ ASSET_URL }}">
   {% endassets %}
 {% endblock head_css%}
 

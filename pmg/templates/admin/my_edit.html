@@ -1,13 +1,14 @@
 {% extends 'admin/model/edit.html' %}
 
 {% block body %}
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     {% if admin_view.frontend_url(model) %}
     <div class="pull-right">
         {% set alert_url = admin_view.alert_url(model) %}
         {% if alert_url %}
         <a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
         {% endif %}
-	{% if admin_view.can_delete and model %}
+	{% if admin_view.name == "Committees" %}
 	<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_modal">
 	    Delete {{admin_view.name}}
 	</button>
@@ -30,8 +31,7 @@
 		</div>
 	    </div>
 	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script>
+	<script defer>
 	 $(document).ready(function(){
 	     $("#cancel_delete").click(function() {
 		 $("#delete_modal").modal("toggle")

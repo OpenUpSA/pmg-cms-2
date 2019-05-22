@@ -1,5 +1,3 @@
-[![Codecov](https://img.shields.io/codecov/c/github/OpenUpSA/pmg-cms-2.svg)](https://codecov.io/gh/OpenUpSA/pmg-cms-2)
-
 Parliamentary Monitoring Group website
 ======================================
 

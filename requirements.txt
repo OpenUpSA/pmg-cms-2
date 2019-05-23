@@ -23,6 +23,7 @@ flask-principal==0.4.0
 flask-script==2.0.6
 flask-security==1.7.4
 flask-sqlalchemy==2.1
+Flask-Testing==0.6.1
 flask-wtf==0.11
 flask==0.12.4
 fudge==1.1.1

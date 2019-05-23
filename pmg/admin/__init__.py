@@ -1029,6 +1029,10 @@ class GazetteView(ViewWithFiles, MyModelView):
     inline_models = [InlineFile(GazetteFile)]
 
 
+class PoliticalPartyView(ViewWithFiles, MyModelView):
+    column_list = ('name', )
+
+
 class PolicyDocumentView(ViewWithFiles, MyModelView):
     column_list = ('title', 'effective_date', 'start_date')
     column_default_sort = ('effective_date', True)
@@ -1508,6 +1512,13 @@ admin.add_view(
         name="Hansards",
         endpoint='hansard',
         category="Other Content"))
+admin.add_view(
+    PoliticalPartyView(
+        Party,
+        db.session,
+        name='Political Parties',
+        endpoint='party',
+        category='Other Content'))
 admin.add_view(
     ProvincialLegislatureView(
         House,

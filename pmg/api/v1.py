@@ -13,6 +13,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
+from sqlalchemy import or_
 
 from pmg import db, app, cache, cache_key, should_skip_cache
 from pmg.search import Search
@@ -317,7 +318,9 @@ def current_bill_list(scope=None, bill_id=None):
         query = query.filter(Bill.type == BillType.draft())
 
     elif scope == 'pmb':
-        query = query.filter(Bill.type == BillType.private_member_bill())
+        query = query.filter(
+            or_(Bill.type == BillType.private_member_bill(),
+                Bill.introduced_by.like('%Committee%')))
 
     elif scope == 'tabled':
         query = query.filter(Bill.type != BillType.draft())

@@ -1159,8 +1159,7 @@ class InlineBillVersionForm(InlineFormAdmin):
 
     def postprocess_form(self, form_class):
         # TODO: hide this for existing versions
-        form_class.upload = fields.FileField('Upload a new file',
-                                             [data_required()])
+        form_class.upload = fields.FileField('Upload a new file')
         return form_class
 
     def on_model_change(self, form, model):

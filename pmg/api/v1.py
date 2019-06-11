@@ -319,7 +319,9 @@ def current_bill_list(scope=None, bill_id=None):
 
     elif scope == 'pmb':
         query = query.filter(
-            or_(Bill.type == BillType.private_member_bill(),
+            or_(
+                Bill.type_id.in_(
+                    [b.id for b in BillType.private_member_bill()]),
                 Bill.introduced_by.like('%Committee%')))
 
     elif scope == 'tabled':

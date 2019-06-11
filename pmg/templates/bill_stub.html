@@ -27,14 +27,16 @@
         {% endif %}
       </h5>
     </div>
+    {% if ('pmb' in request.path) or ('current' in request.path) or ('tabled' in request.path) %}
     <div class="col-xs-3 col-md-2">
-	{% if result.type.name == 'Private Member Bill' %}
+	{% if 'Private Member Bill' in result.type.name %}
 	<span class="label label-info">{{result.type.name}}</span>
 	{% elif 'Committee' in result.introduced_by %}
 	<span class="label label-default">Committee Bill</span>
 	{% else %}
 	{% endif %}
     </div>
+    {% endif %}
     <div class="col-xs-3 col-md-2">
       {% if result.status %}
         {% if status_dict[result.status.name] %}

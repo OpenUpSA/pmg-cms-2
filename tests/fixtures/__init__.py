@@ -2,7 +2,7 @@ import pytz
 import datetime
 from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 
-from pmg.models import db, House, Committee, CommitteeMeeting  # noqa
+from pmg.models import db, House, Committee, CommitteeMeeting, Bill, BillType  # noqa
 
 THIS_YEAR = datetime.datetime.today().year
 
@@ -52,9 +52,58 @@ class CommitteeMeetingData(DataSet):
         committee = CommitteeData.communications
 
     class premium_old:
-        date = datetime.datetime(THIS_YEAR - 2, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
+        date = datetime.datetime(
+            THIS_YEAR - 2, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Premium meeting old'
         committee = CommitteeData.communications
+
+
+class BillTypeData(DataSet):
+    class section_74:
+        name = "Section 74"
+        prefix = "B"
+        description = "Section 74"
+
+    class section_77:
+        name = "Section 77"
+        prefix = "B"
+        description = "Section 77"
+
+    class private_member_bill_74:
+        name = "Private Member Bill: S74"
+        prefix = 'PMB'
+        description = 'Private Member Bill: Section 74'
+
+    class private_member_bill_77:
+        name = 'Private Member Bill: S77'
+        prefix = 'PMB'
+        description = 'Private Member Bill: Section 77'
+
+
+class BillData(DataSet):
+    """
+    Enter various types of bills
+    """
+
+    class food:
+        year = 2019
+        title = "Food and Health Bill"
+        type = BillTypeData.section_74
+
+    class farm:
+        year = 2019
+        title = 'Farm and Agricultural Bill'
+        type = BillTypeData.section_77
+
+    class public:
+        year = 2019
+        title = 'Public Investment Corporation Amendment Bill'
+        type = BillTypeData.private_member_bill_74
+
+    class child:
+        year = 2019
+        title = "Children's Amendment Bill"
+        type = BillTypeData.private_member_bill_77
 
 
 dbfixture = SQLAlchemyFixture(

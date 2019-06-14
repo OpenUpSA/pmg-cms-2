@@ -103,10 +103,11 @@ class BillType(db.Model):
 
     @classmethod
     def private_member_bill(cls):
-        return cls.query.filter(cls.name == "Private Member Bill").one()
+        return cls.query.filter(
+            cls.name.like('Private Member Bill%')).distinct()
 
     def is_private_member_bill(self):
-        return self.name == "Private Member Bill"
+        return 'Private Member Bill' in self.name
 
     def __unicode__(self):
         return unicode(self.description)

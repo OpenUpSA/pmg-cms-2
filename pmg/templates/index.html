@@ -8,32 +8,36 @@
 
 <article>
 
-  <header class="home-banner" style="background-image: url(/static/resources/images/stock/homepage_banner.png)">
+  <header class="home-banner" style="background-image: url(/static/resources/images/stock/{{stock_pic}})">
     <div class="container">
       <div class="row">
-          <div class="col-lg-9 col-md-8 banner-content">
-	      <div class="single-feature">
-                  <a href="{{url_for('parliament_review')}}">
-                      <div class="call-to-action">
-			  <h2>Review of the Fifth Parliament</h2>
-                      </div>
-                  </a>
+        <div class="col-lg-9 col-md-8 banner-content">
+          {% if featured_content.features %}
+            {% for feature in featured_content.features %}
+              <div class="single-feature">
+                <a href="{{ feature.link }}">
+                  <div class="call-to-action">
+                    <h2>{{ feature.title }}</h2>
+                  </div>
+                </a>
               </div>
-          </div>
+            {% endfor %}
+          {% endif %}
+        </div>
 
-          <div class="col-lg-3 col-md-4 hidden-xs hidden-sm banner-content banner-cards">
-              {% include "_banner_cards.html" %}
-          </div>
+        <div class="col-lg-3 col-md-4 hidden-xs hidden-sm banner-content banner-cards">
+          {% include "_banner_cards.html" %}
+        </div>
       </div>
     </div>
   </header>
 
   <div class="container">
-      <div class="row hidden-md hidden-lg banner-cards">
-	  <div class="col-xs-12">
-              {% include "_banner_cards.html" %}
-	  </div>
+    <div class="row hidden-md hidden-lg banner-cards">
+      <div class="col-xs-12">
+        {% include "_banner_cards.html" %}
       </div>
+    </div>
   </div>
 
   <section class="featured-content">

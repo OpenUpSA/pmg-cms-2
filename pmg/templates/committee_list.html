@@ -147,7 +147,7 @@
 			    {% if not committee.active %}
 				<li class="committee item" data-id="{{ committee.id }}" data-following="true">
 				    <label>
-					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name"><span style="color:grey">{{ committee.name }}</span></a>
+					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name"><span class="text-muted">{{ committee.name }}</span></a>
 				    </label>
 				</li>
 			    {% endif %}

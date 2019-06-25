@@ -1,0 +1,15 @@
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<input type="hidden" name="next" value="{{ request.url }}">
+{% if current_user.is_authenticated() %}
+{% if committee.followed %}
+<input type="checkbox" checked />
+{% else %}
+<input type="checkbox" />
+{% endif %}
+{% endif %}
+<label>
+    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+    {% if committee.premium %}
+    <span class="premium exclude"><i class="fa fa-key"></i></span>
+    {% endif %}
+</label>

@@ -1740,3 +1740,9 @@ def stats_review(stat):
         'questions': 'review/statistics/2019Review_Questions.html'
     }
     return render_template(stat_group[stat])
+
+
+# Test to make sure sentry is working
+@app.route('/debug-sentry')
+def trigger_error():
+    division_by_zero = 1 / 0

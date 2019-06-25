@@ -1353,6 +1353,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
                 .group_by('year', CommitteeMeeting.id)\
                 .filter(CommitteeMeeting.committee_id == committee_id)\
                 .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
+                .filter(CommitteeMeetingAttendance.created_at <= '2019-06-30')\
                 .subquery('attendance')
 
         return db.session.query(

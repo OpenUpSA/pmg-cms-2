@@ -96,41 +96,13 @@
 			{% if committee.followed %}
 			    <li class="committee item" data-id="{{ committee.id }}" data-following="true">
 				<form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">
-				    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-				    <input type="hidden" name="next" value="{{ request.url }}">
-				    {% if current_user.is_authenticated() %}
-					{% if committee.followed %}
-					    <input type="checkbox" checked />
-					{% else %}
-					    <input type="checkbox" />
-					{% endif %}
-				    {% endif %}
-				    <label>
-					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-					{% if committee.premium %}
-					    <span class="premium exclude"><i class="fa fa-key"></i></span>
-					{% endif %}
-				    </label>
+				    {% include '_committee_list_form.html' %}
 				</form>
 			    </li>
 			{% else %}
 			    <li class="committee item" data-id="{{ committee.id }}">
 				<form class="cte-follow-committee" action="{{ url_for('user_follow_committee', committee_id=committee.id) }}" method="POST">
-				    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-				    <input type="hidden" name="next" value="{{ request.url }}">
-				    {% if current_user.is_authenticated() %}
-					{% if committee.followed %}
-					    <input type="checkbox" checked />
-					{% else %}
-					    <input type="checkbox" />
-					{% endif %}
-				    {% endif %}
-				    <label>
-					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
-					{% if committee.premium %}
-					    <span class="premium exclude"><i class="fa fa-key"></i></span>
-					{% endif %}
-				    </label>
+				    {% include '_committee_list_form.html' %}
 				</form>
 			    </li>
 			{% endif %}
@@ -246,7 +218,7 @@
 				    <li>
 					<label>
 					    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">
-						<span style="color:grey">{{ committee.name }}</span>
+						<span class="text-muted">{{ committee.name }}</span>
 					    </a>
 					</label>
 				    </li>

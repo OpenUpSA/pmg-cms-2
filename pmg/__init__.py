@@ -10,9 +10,16 @@ from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 import json
 
 env = os.environ.get('FLASK_ENV', 'development')
+
+SENTRY_DSN = os.environ.get('SENTRY_DSN', None)
+if SENTRY_DSN:
+    sentry_sdk.init(dsn=SENTRY_DSN, integrations=[FlaskIntegration()])
 
 app = Flask(__name__, static_folder="static")
 app.config.from_pyfile('../config/config.py')

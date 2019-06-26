@@ -363,7 +363,7 @@ def committee_detail(committee_id):
 
     if current_attendance_summary and committee['house'][
             'short_name'] != 'Joint':
-        year = historical_attendance_summary[-1].year
+        year = current_attendance_summary[-1].year
         cte = Committee.query.get(committee_id)
         attendance_rank = CommitteeMeetingAttendance\
             .annual_attendance_rank_for_committee(

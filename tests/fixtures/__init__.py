@@ -7,16 +7,6 @@ from pmg.models import db, House, Committee, CommitteeMeeting, Bill, BillType, P
 THIS_YEAR = datetime.datetime.today().year
 
 
-class PartyData(DataSet):
-    class global_party:
-        name = 'Global Party'
-
-
-class ProvinceData(DataSet):
-    class western_cape:
-        name = 'Western Cape'
-
-
 class HouseData(DataSet):
     class joint:
         name = 'Joint (NA + NCOP)'
@@ -39,36 +29,6 @@ class HouseData(DataSet):
         sphere = 'national'
 
 
-class MemberData(DataSet):
-    class jabu:
-        name = 'Jabu Jabu'
-        current = True
-        house = HouseData.na
-        party = PartyData.global_party
-        province = ProvinceData.western_cape
-
-    class mike:
-        name = 'mike mike'
-        current = True
-        house = HouseData.na
-        party = PartyData.global_party
-        province = ProvinceData.western_cape
-
-    class peter:
-        name = 'Peter Pan'
-        current = True
-        house = HouseData.na
-        party = PartyData.global_party
-        province = ProvinceData.western_cape
-
-    class jack:
-        name = 'Jack Sparrow'
-        current = True
-        house = HouseData.na
-        party = PartyData.global_party
-        province = ProvinceData.western_cape
-
-
 class CommitteeData(DataSet):
     class communications:
         name = 'Communications'
@@ -83,17 +43,12 @@ class CommitteeData(DataSet):
 class CommitteeMeetingData(DataSet):
     class arts_meeting_one:
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-        title = 'Public meeting'
+        title = 'Public meeting One'
         committee = CommitteeData.arts
 
     class arts_meeting_two:
-        date = datetime.datetime(2019, 2, 1, 0, 0, 0, tzinfo=pytz.utc)
-        title = 'Public meeting'
-        committee = CommitteeData.arts
-
-    class arts_meeting_three:
-        date = datetime.datetime(2019, 3, 1, 0, 0, 0, tzinfo=pytz.utc)
-        title = 'Public meeting'
+        date = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = 'Public meeting Two'
         committee = CommitteeData.arts
 
     class premium_recent:
@@ -106,64 +61,6 @@ class CommitteeMeetingData(DataSet):
             THIS_YEAR - 2, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Premium meeting old'
         committee = CommitteeData.communications
-
-
-class CommitteeMeetingAttendanceData(DataSet):
-    class first:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_one
-        member = MemberData.jabu
-        attendance = 'P'
-        created_at = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class second:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_one
-        member = MemberData.jack
-        attendance = 'P'
-        created_at = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class third:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_one
-        member = MemberData.mike
-        attendance = 'P'
-        created_at = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class fourth:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_one
-        member = MemberData.peter
-        attendance = 'P'
-        created_at = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class fith:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_two
-        member = MemberData.jabu
-        attendance = 'A'
-        created_at = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class sixth:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_two
-        member = MemberData.jack
-        attendance = 'A'
-        created_at = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class seventh:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_two
-        member = MemberData.mike
-        attendance = 'A'
-        created_at = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
-
-    class eighth:
-        chairperson = False
-        meeting = CommitteeMeetingData.arts_meeting_two
-        member = MemberData.peter
-        attendance = 'A'
-        created_at = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
 
 
 class BillTypeData(DataSet):

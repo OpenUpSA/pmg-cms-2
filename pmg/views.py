@@ -381,7 +381,6 @@ def committee_detail(committee_id):
     # If the request came from a Provincial Committee page,
     # pass the slug to the template to build the correct breadcrumbs
     from_page = request.args.get('from_page')
-
     return render_template(
         'committee_detail.html',
         current_year=now.year,
@@ -393,7 +392,7 @@ def committee_detail(committee_id):
         starting_filter=starting_filter,
         recent_questions=recent_questions,
         social_summary=social_summary,
-        current_attendence_summary=current_attendance_summary,
+        current_attendance_summary=current_attendance_summary,
         historical_attendance_summary=historical_attendance_summary,
         attendance_rank=attendance_rank,
         admin_edit_url=admin_url('committee', committee_id),

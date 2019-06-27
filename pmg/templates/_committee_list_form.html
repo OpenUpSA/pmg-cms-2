@@ -6,10 +6,15 @@
 {% else %}
 <input type="checkbox" />
 {% endif %}
-{% endif %}
 <label>
     <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
     {% if committee.premium %}
     <span class="premium exclude"><i class="fa fa-key"></i></span>
     {% endif %}
 </label>
+{% else %}
+<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>
+{% if committee.premium %}
+<span class="premium exclude"><i class="fa fa-key"></i></span>
+{% endif %}
+{% endif %}

@@ -1344,9 +1344,11 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
                .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)
 
         if period == 'current':
-            query.filter(CommitteeMeetingAttendance.created_at >= '2019-07-01')
+            query = query.filter(
+                CommitteeMeetingAttendance.created_at >= '2019-07-01')
         else:
-            query.filter(CommitteeMeetingAttendance.created_at <= '2019-06-30')
+            query = query.filter(
+                CommitteeMeetingAttendance.created_at <= '2019-06-30')
 
         subquery = query.subquery('attendance')
         return db.session.query(

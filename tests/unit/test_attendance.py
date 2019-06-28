@@ -84,6 +84,10 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         db.session.commit()
 
     def test_committee_attendance_trends(self):
+        """
+        new data will show up on the page requesting "current" and NOT on "historical
+        old data will show up on the page requesting "historical" and NOT on "current"
+        """
         committee = Committee.query.filter_by(name='Arts and Culture').first()
         current_attendance = CommitteeMeetingAttendance.committee_attendence_trends(
             committee.id, 'current')

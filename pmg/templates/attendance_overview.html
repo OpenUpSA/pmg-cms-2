@@ -6,7 +6,7 @@
 <section class="committee-attendance-overview">
     <h1><i class="fa fa-fw fa-table" aria-hidden="true"></i> Committee meeting attendance trends for {{ year }}</h1>
     
-  <p>This page shows the attendance rates of the committees in the <a href="#national-assembly">National Assembly</a> and the <a href="#ncop">National Council of Provinces</a> in {{year}}. The attendance rate is automatically updated as committees meet and attendance is recorded. In the first few weeks of a new year, when no committees have met yet, this page will show data of the previous year.</p>
+  <p>This page shows the attendance rates of the committees in the <a href="#national-assembly">National Assembly</a> and the <a href="#ncop">National Council of Provinces</a> in {{year}}. The attendance rate is automatically updated as committees meet and attendance is recorded.</p>
   <p>You can click on a committee name to get more information; historical attendance rates as well as membership details can be found in the right sidebar of every committee page. It's also possible to download the raw data to do your own calculations and analysis.</p>
   <p>For MP and Minister attendance rates we'd like to refer you to <a href="https://www.pa.org.za/mp-attendance/">People's Assembly</a>.</p>
   <a class="btn btn-sm btn-success" href="https://api.pmg.org.za/committee-meeting-attendance/data.xlsx">Download data</a>
@@ -22,7 +22,7 @@
 	                          <th class="th-cte-name">Committee</th>
 	                          <th class="th-number-meetings hidden-xs" data-firstsort="desc">Meetings</th>
 	                          <th class="th-attendance" data-defaultsort="desc">Attendance</th>
-	                          <th class="th-attendance-change">Since {{ year - 1}}</th>
+	                          <th class="th-attendance-change">Since {{ year }}</th>
       </thead>
                               {% for item in attendance_na %}
                               <tr id="{{ item.committee_id }}">
@@ -71,7 +71,7 @@
 	  <th class="th-cte-name">Committee</th>
 	  <th class="th-number-meetings hidden-xs">Meetings</th>
 	  <th class="th-attendance" data-defaultsort="desc">Attendance</th>
-	  <th class="th-attendance-change">Since {{ year - 1 }}</th>
+	  <th class="th-attendance-change">Since {{ year }}</th>
       </thead>
       {% for item in attendance_ncop %}
       <tr id="{{ item.committee_id }}">

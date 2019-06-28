@@ -1360,7 +1360,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def annual_attendance_rank_for_committee(cls, committee, year):
-        attendance = cls.annual_attendance_trends(from_year=year, to_year=year)
+        attendance = cls.annual_attendance_trends(to_year=year)
 
         # match house
         attendance = [a for a in attendance if a.house == committee.house.name_short]

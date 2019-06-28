@@ -83,9 +83,6 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         db.session.add(attendance_two_mike)
         db.session.commit()
 
-    def test_attendance_rank_for_committee(self):
-        return True
-
     def test_committee_attendance_trends(self):
         committee = Committee.query.filter_by(name='Arts and Culture').first()
         current_attendance = CommitteeMeetingAttendance.committee_attendence_trends(

@@ -2,7 +2,7 @@ import pytz
 import datetime
 from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 
-from pmg.models import db, House, Committee, CommitteeMeeting, Bill, BillType  # noqa
+from pmg.models import db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party, CommitteeMeetingAttendance, Member
 
 THIS_YEAR = datetime.datetime.today().year
 
@@ -41,9 +41,14 @@ class CommitteeData(DataSet):
 
 
 class CommitteeMeetingData(DataSet):
-    class public:
-        date = datetime.datetime(2016, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
-        title = 'Public meeting'
+    class arts_meeting_one:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = 'Public meeting One'
+        committee = CommitteeData.arts
+
+    class arts_meeting_two:
+        date = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = 'Public meeting Two'
         committee = CommitteeData.arts
 
     class premium_recent:

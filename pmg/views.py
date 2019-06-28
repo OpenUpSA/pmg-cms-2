@@ -356,13 +356,17 @@ def committee_detail(committee_id):
 
     social_summary = "Meetings, calls for comment, reports, and questions and replies of the " + committee[
         'name'] + " committee."
-    attendance_summary = CommitteeMeetingAttendance.annual_attendance_trends_for_committee(
-        committee_id)
+    current_attendance_summary = CommitteeMeetingAttendance\
+        .committee_attendence_trends(committee_id, 'current')
+    historical_attendance_summary = CommitteeMeetingAttendance\
+        .committee_attendence_trends(committee_id, 'historical')
 
-    if attendance_summary and committee['house']['short_name'] != 'Joint':
-        year = attendance_summary[-1].year
+    if current_attendance_summary and committee['house'][
+            'short_name'] != 'Joint':
+        year = current_attendance_summary[-1].year
         cte = Committee.query.get(committee_id)
-        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(
+        attendance_rank = CommitteeMeetingAttendance\
+            .annual_attendance_rank_for_committee(
             cte, int(year))
     else:
         attendance_rank = None
@@ -377,7 +381,6 @@ def committee_detail(committee_id):
     # If the request came from a Provincial Committee page,
     # pass the slug to the template to build the correct breadcrumbs
     from_page = request.args.get('from_page')
-
     return render_template(
         'committee_detail.html',
         current_year=now.year,
@@ -389,7 +392,8 @@ def committee_detail(committee_id):
         starting_filter=starting_filter,
         recent_questions=recent_questions,
         social_summary=social_summary,
-        attendance_summary=attendance_summary,
+        current_attendance_summary=current_attendance_summary,
+        historical_attendance_summary=historical_attendance_summary,
         attendance_rank=attendance_rank,
         admin_edit_url=admin_url('committee', committee_id),
         bills=bills,

@@ -1333,17 +1333,24 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             .all()
 
     @classmethod
-    def annual_attendance_trends_for_committee(cls, committee_id):
-        subquery = db.session.query(
-            func.date_part('year', CommitteeMeeting.date).label('year'),
-            func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
-            func.count(CommitteeMeetingAttendance.id).label('n_members')
-        )\
-            .group_by('year', CommitteeMeeting.id)\
-            .filter(CommitteeMeeting.committee_id == committee_id)\
-            .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-            .subquery('attendance')
+    def committee_attendence_trends(cls, committee_id, period):
+        query = db.session.query(
+                func.date_part('year', CommitteeMeeting.date).label('year'),
+                func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
+                func.count(CommitteeMeetingAttendance.id).label('n_members')
+                )\
+               .group_by('year', CommitteeMeeting.id)\
+               .filter(CommitteeMeeting.committee_id == committee_id)\
+               .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)
 
+        if period == 'current':
+            query = query.filter(
+                CommitteeMeetingAttendance.created_at >= '2019-07-01')
+        else:
+            query = query.filter(
+                CommitteeMeetingAttendance.created_at <= '2019-06-30')
+
+        subquery = query.subquery('attendance')
         return db.session.query(
             subquery.c.year,
             func.count(1).label('n_meetings'),

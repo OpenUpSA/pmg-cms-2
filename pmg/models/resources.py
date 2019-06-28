@@ -1297,12 +1297,16 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         return rows
 
     @classmethod
-    def annual_attendance_trends(cls, from_year, to_year):
+    def annual_attendance_trends(cls, to_year=None, period=None):
         """ Attendance summary by year and committee. Excludes ad-hoc committees.
         Returns row tuples: (committe_id, house name, year, n_meetings, avg_attendance, avg_members)
         """
-        start_date = datetime.datetime(from_year, 1, 1)
-        end_date = datetime.datetime(to_year, 12, 31)
+        if period == 'historical':
+            start_date = datetime.datetime(2018, 1, 1)
+            end_date = datetime.datetime(2019, 6, 30)
+        else:
+            start_date = datetime.datetime(2019, 7, 1)
+            end_date = datetime.datetime(to_year, 12, 31)
 
         # attendance
         subquery = db.session.query(
@@ -1363,7 +1367,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def annual_attendance_rank_for_committee(cls, committee, year):
-        attendance = cls.annual_attendance_trends(year, year)
+        attendance = cls.annual_attendance_trends(to_year=year)
 
         # match house
         attendance = [a for a in attendance if a.house == committee.house.name_short]

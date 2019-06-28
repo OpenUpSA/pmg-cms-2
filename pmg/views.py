@@ -411,19 +411,18 @@ def committee_detail_follow_cte(committee_id):
     return redirect(url_for('committee_detail', committee_id=committee_id))
 
 
-@app.route('/attendance-overview')
+@app.route('/archived-attendance-overview')
 @cache.memoize(
     make_name=lambda fname: cache_key(request),
     unless=lambda: should_skip_cache(request, current_user))
-def attendance_overview():
+def archived_attendance_overview():
     """
-    Display overview of attendance for meetings.
+    Show archived attendance view
     """
-    month = datetime.today().month
-    this_year = datetime.today().year
-    last_year = this_year - 1
+    this_year = 2019
+    last_year = 2018
     attendance = CommitteeMeetingAttendance.annual_attendance_trends(
-        last_year, this_year)
+        period='historical')
     # index by year and cte id
     years = {
         year: {
@@ -467,10 +466,27 @@ def attendance_overview():
             att[i]['rank'] = len(att) - i
 
     return render_template(
-        'attendance_overview.html',
+        'archive_attendance_overview.html',
         year=this_year,
         attendance_na=attendance['NA'],
         attendance_ncop=attendance['NCOP'])
+    pass
+
+
+@app.route('/attendance-overview')
+@cache.memoize(
+    unless=lambda: should_skip_cache(request, current_user),
+    make_name=lambda fname: cache_key(request),
+)
+def attendance_overview():
+    """
+    Display overview of attendance for meetings.
+    """
+    this_year = datetime.today().year
+    attendance = CommitteeMeetingAttendance.annual_attendance_trends(
+        to_year=this_year)
+    return render_template(
+        'attendance_overview.html', year=this_year, attendance=attendance)
 
 
 @app.route('/committee-question/<int:question_id>/')

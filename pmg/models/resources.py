@@ -1297,10 +1297,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         return rows
 
     @classmethod
-    def annual_attendance_trends(cls,
-                                 from_year=None,
-                                 to_year=None,
-                                 period=None):
+    def annual_attendance_trends(cls, to_year=None, period=None):
         """ Attendance summary by year and committee. Excludes ad-hoc committees.
         Returns row tuples: (committe_id, house name, year, n_meetings, avg_attendance, avg_members)
         """

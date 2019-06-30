@@ -588,11 +588,15 @@ def committee_meeting_attendance_download():
     members = {m.id: m for m in get_attendance_members(sphere)}
     ctes = {c.id: c for c in Committee.list().all()}
     keys = sorted(CommitteeMeetingAttendance.ATTENDANCE_CODES.keys())
-    rows = [["year", "member", "party", "committee", "house", "ad-hoc"] + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]]
+    rows = [
+        ["year", "member", "party", "committee", "house", "ad-hoc"]
+        + [CommitteeMeetingAttendance.ATTENDANCE_CODES[k] for k in keys]
+    ]
+    raw_data = CommitteeMeetingAttendance.summary(period)
 
-    raw_data = CommitteeMeetingAttendance.summary()
-
-    for grp, group in groupby(raw_data, lambda r: [r.year, r.member_id, r.committee_id]):
+    for grp, group in groupby(
+        raw_data, lambda r: [r.year, r.member_id, r.committee_id]
+    ):
         year, member_id, cte_id = grp
         member = members.get(member_id, None)
         cte = ctes[cte_id]

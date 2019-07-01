@@ -117,7 +117,7 @@
           {% endif %}
         </div>
         <div class="tab-pane fade in cte-dtl-meetings-tab-rep" id="tr">
-          {% if committee.tabled_committee_reports %}
+	   {% if committee.tabled_committee_reports %}
             <table class="table table-striped">
               {% for item in committee.tabled_committee_reports %}
               <tr class="item">
@@ -149,6 +149,7 @@
           {% endif %}
         </div>
         <div class="tab-pane fade in cte-dtl-meetings-qst-rep" id="qr">
+	  {% include '_active_committee_detail.html' %}
           {% if recent_questions %}
             <table class="table table-striped">
               {% for item in recent_questions %}

@@ -1,3 +1,4 @@
+{% if committee.active %}
 {% if committee.id != 0 %}
   {% if current_user.is_authenticated() %}
     <div class="cte-signup-box email-alert-box text-center">
@@ -25,4 +26,5 @@
       Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
     </div>
   {% endif %}
+{% endif %}
 {% endif %}

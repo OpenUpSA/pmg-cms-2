@@ -1256,23 +1256,34 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
     @classmethod
-    def summary(cls):
+    def summary(cls, period=None):
         """ Summary of attendance by year, member and committee.
         """
-        year = func.date_part('year', CommitteeMeeting.date).label('year')
+        year = func.date_part("year", CommitteeMeeting.date).label("year")
 
-        rows = db.session.query(
-            cls.member_id,
-            cls.attendance,
-            year,
-            CommitteeMeeting.committee_id,
-            func.count(1).label('cnt')
-        )\
-            .select_from(cls)\
-            .join(CommitteeMeeting)\
-            .group_by(cls.member_id, cls.attendance, CommitteeMeeting.committee_id, year)\
-            .order_by(year.desc(), cls.member_id, CommitteeMeeting.committee_id)\
-            .all()
+        rows = (
+            db.session.query(
+                cls.member_id,
+                cls.attendance,
+                year,
+                CommitteeMeeting.committee_id,
+                func.count(1).label("cnt"),
+            )
+            .select_from(cls)
+            .join(CommitteeMeeting)
+            .group_by(
+                cls.member_id, cls.attendance, CommitteeMeeting.committee_id, year
+            )
+        )
+
+        if period == "historical":
+            rows = rows.filter(CommitteeMeetingAttendance.created_at <= "2019-06-30")
+        else:
+            rows = rows.filter(CommitteeMeetingAttendance.created_at >= "2019-07-01")
+
+        rows = rows.order_by(
+            year.desc(), cls.member_id, CommitteeMeeting.committee_id
+        ).all()
 
         return rows
 

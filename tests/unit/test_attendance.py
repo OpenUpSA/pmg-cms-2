@@ -96,3 +96,15 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
 
         self.assertEqual([(2019.0, 1L, 0.5, 2.0)], current_attendance)
         self.assertEqual([(2019.0, 2L, 0.5, 2.0)], historical_attendance)
+
+    def test_committee_attendance_summary(self):
+        """
+        checking that the correct number of rows are returned from a attendance summary
+        """
+        current_attendance = CommitteeMeetingAttendance.summary()
+        historical_attendance = CommitteeMeetingAttendance.summary("historical")
+        self.assertEqual([(1, 'P', 2019.0, 1, 1L), (2, 'A', 2019.0, 1, 1L)], current_attendance)
+        self.assertEqual([(1, 'A', 2019.0, 1, 1L),
+                          (1, 'P', 2019.0, 1, 1L),
+                          (2, 'A', 2019.0, 1, 1L),
+                          (2, 'P', 2019.0, 1, 1L)], historical_attendance)

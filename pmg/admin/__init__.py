@@ -459,23 +459,23 @@ class CommitteeView(MyModelView):
 
     inline_models = (Membership, )
 
-    @expose('/delete', methods=['DELETE'])
+    @expose("/delete", methods=["DELETE"])
     def delete_view(self):
         """
         Delete the model
         """
-        id = request.args.get('id')
+        id = request.args.get("id")
         if id is None:
             return jsonify({"success": False}), 404
         model = self.get_one(id)
         try:
             db.session.delete(model)
             db.session.commit()
-            flash("{0} deleted".format(model))
-            return jsonify({"success": 'ok'}), 200
+            flash("{0} deleted".format(model.name))
+            return jsonify({"success": "ok"}), 200
         except exc.IntegrityError as error:
             reason = "unable to delete model: {}".format(error)
-            return jsonify({'success': False, 'reason': reason})
+            return jsonify({"success": False, "reason": reason})
 
 
 class ViewWithFiles(object):

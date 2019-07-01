@@ -580,6 +580,7 @@ def committee_meeting_attendance_download():
     """
     Download committee meeting attendance data in raw form.
     """
+    period = request.args.get("period", None)
     builder = XLSXBuilder()
     output, wb = builder.new_workbook()
 

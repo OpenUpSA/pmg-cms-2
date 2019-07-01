@@ -1,5 +1,5 @@
-{% if not committee.active %}
-<div class="alert alert-warning">
-    <strong>Warning!</strong> This ministry is now inactive. Find new questions under the ministry housing this function now
+{% if not committee.active and committee.minister %}
+<div class="alert alert-info">
+    <strong>Notice:</strong> This ministry is now inactive. Find new questions under the ministry housing this function now.
 </div>
 {% endif %}

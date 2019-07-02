@@ -31,7 +31,7 @@
 	    </div>
 	</div>
 	<script>
-	 window.onload = function(){
+	 window.addEventListener('load', function(event){
 	     $("#cancel_delete").click(function() {
 		 $("#delete_modal").modal("toggle");
 	     });
@@ -59,8 +59,7 @@
 		     }
 		 });
 	     });
-	 }
-
+	 });
 	</script>
 	{% endif %}
 

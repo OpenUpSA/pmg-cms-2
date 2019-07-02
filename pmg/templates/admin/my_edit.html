@@ -8,7 +8,6 @@
         <a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
         {% endif %}
 	{% if admin_view.name == "Committees" %}
-	<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_modal">
 	    Delete {{admin_view.name}}
 	</button>
@@ -31,10 +30,10 @@
 		</div>
 	    </div>
 	</div>
-	<script defer>
-	 $(document).ready(function(){
+	<script>
+	 window.addEventListener('load', function(event){
 	     $("#cancel_delete").click(function() {
-		 $("#delete_modal").modal("toggle")
+		 $("#delete_modal").modal("toggle");
 	     });
 	     $("#confirm_delete").click(function(event) {
 		 event.preventDefault();
@@ -43,7 +42,7 @@
 		     url: "../delete?id={{ model.id }}",
 		     type: "DELETE",
 		     success: function(data){
-			 if (data.sucess == 'ok'){
+			 if (data.success == 'ok'){
 			     console.log("Deleted");
 			     window.location.replace("{{ return_url }}");   
 			 }else{
@@ -61,7 +60,6 @@
 		 });
 	     });
 	 });
-
 	</script>
 	{% endif %}
 

@@ -90,38 +90,38 @@
               {% for event in agent.events %}
                 <li>
                     <div class="row {% if event.public_participation %}public-participation{% endif %}">
-			{% if event.type != 'plenary' %}
-			<div class="col-xs-4 col-md-2 text-muted">{{ event.date|pretty_date("long") }}</div>
-			<div class="col-xs-8 col-md-10">
-			    {% if 'Bill passed by National Assembly'  in event.title or 'Bill passed by both Houses' in event.title %}
-			      {% for e in agent.events %}
-			        {% if e.type == 'plenary' and 'NA' in e.title %}
-			          <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>
-			        {% elif e.type == 'plenary' and 'NCOP' in e.title %}
-			          <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>
-			        {% endif %}
-		              {% endfor %}
-			    {% elif event.type == "committee-meeting"%}
-			      <a href="{{ url_for('committee_meeting', event_id=event.id) }}">
-				      {{ event.title }}
-			      </a>
-			    {% else %}
-			      {{event.title}}
-			    {% endif %}
+                        {% if event.type != 'plenary' %}
+                        <div class="col-xs-4 col-md-2 text-muted">{{ event.date|pretty_date("long") }}</div>
+                        <div class="col-xs-8 col-md-10">
+                            {% if 'Bill passed by National Assembly'  in event.title or 'Bill passed by both Houses' in event.title %}
+                              {% for e in agent.events %}
+                                {% if e.type == 'plenary' and 'NA' in e.title %}
+                                  <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>
+                                {% elif e.type == 'plenary' and 'NCOP' in e.title %}
+                                  <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>
+                                {% endif %}
+                              {% endfor %}
+                            {% elif event.type == "committee-meeting"%}
+                              <a href="{{ url_for('committee_meeting', event_id=event.id) }}">
+                                      {{ event.title }}
+                              </a>
+                            {% else %}
+                              {{event.title}}
+                            {% endif %}
 
-			    {% if event.public_participation %}
-			      <span class="label label-success">public participation</span>
-			    {% endif %}
+                            {% if event.public_participation %}
+                              <span class="label label-success">public participation</span>
+                            {% endif %}
 
-			    {% if event.type == 'bill-signed' and bill.versions %}
+                            {% if event.type == 'bill-signed' and bill.versions %}
                             {% for version in bill.versions %}
                             {% if version.enacted %}
                             — <a href="{{ version.file.url }}" target="_blank"><i class="fa fa-file-text"></i> {{ version.title }}</a>
                             {% endif %}
                             {% endfor %}
-			    {% endif %}
-			</div>
-			{% endif %}
+                            {% endif %}
+                        </div>
+                        {% endif %}
                   </div>
                 </li>
               {% endfor %}

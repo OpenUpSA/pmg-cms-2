@@ -31,8 +31,10 @@
     <div class="col-xs-3 col-md-2">
 	{% if 'Private Member Bill' in result.type.name %}
 	<span class="label label-info">{{result.type.name}}</span>
-	{% elif 'Committee' in result.introduced_by %}
+	{% elif result.introduced_by %}
+	{% if 'Committee' in result.introduced_by %}
 	<span class="label label-default">Committee Bill</span>
+	{% endif %}
 	{% else %}
 	{% endif %}
     </div>

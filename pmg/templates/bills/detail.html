@@ -94,8 +94,8 @@
                         <div class="col-xs-4 col-md-2 text-muted">{{ event.date|pretty_date("long") }}</div>
                         <div class="col-xs-8 col-md-10">
                             {% if 'Bill passed by National Assembly'  in event.title or 'Bill passed by both Houses' in event.title %}
-                              {% for e in agent.events %}
-                                {% if e.type == 'plenary' and 'NA' in e.title %}
+                            {% for e in agent.events %}
+                              {% if e.type == 'plenary' and ('NA' in e.title or 'NCOP' in e.title)  %}
                                   <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>
                                 {% elif e.type == 'plenary' and 'NCOP' in e.title %}
                                   <a href="{{ url_for('hansard', event_id=e.id) }}">{{ event.title }}</a>

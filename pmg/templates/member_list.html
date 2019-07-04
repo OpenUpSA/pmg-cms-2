@@ -55,37 +55,38 @@
           </div>
         </a>
       </div>
-    {% endfor %}
+      {% endfor %}
   </div>
-{% else %}
-  <div class="row mp-list">
-    {% for house, members in members_by_house | dictsort %}
-      <div class="col-sm-6 col-lg-4 col-house">
-        <h2>{{ house }}</h2>
-        {% for member in members %}
-        <a class="single-mp single-member" href="{{ member | member_url }}">
-          <div class="row">
-            <div class="col-xs-2">
-              <div class="photo">
-                <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
-              </div>
-            </div>
-            <div class="col-xs-10">
-              <h3 class="name">{{ member.name }}</h3>
+  {% else %}
+  <div class="row">
+      <ul class="nav nav-tabs">
+	  <li class="active"><a data-toggle="tab" href="#National Assembly">National Assembly</a></li>
+	  <li><a data-toggle="tab" href="#National Council of Provinces">National Council of Provinces</a></li>
+      </ul>
 
-              {% if member.party %}
-              <span class="party">{{ member.party.name }}</span>
-              {% endif %}
+      <div class="tab-content">
+	  {% for house, members in members_by_house| dictsort %}
+	  <div id="{{house}}" class="tab-pane fade in active mp-list">
+	      {% for member in members %}
+	      <div class="single-mp col-xs-12 col-sm-6 col-md-4 col-lg-3">
+		  <a class="content-card flex" href="{{ member | member_url }}">
+		      <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+		      <div>
+			  <h4 class="card-title name">{{ member.name }}</h3>
+			      {% if member.party %}
+			      <span class="party">{{ member.party.name }}</span>
+			      {% endif %}
 
-              {% if member.province %}
-              <span class="province">{{ member.province.name }}</span>
-              {% endif %}
-            </div>
-          </div>
-        </a>
-        {% endfor %}
+			      {% if member.province %}
+			      <span class="province">{{ member.province.name }}</span>
+			      {% endif %}
+		      </div>
+		  </a>
+	      </div>
+	      {% endfor %}
+	  </div>
+	  {% endfor %}
       </div>
-    {% endfor %}
   </div>
 {% endif %}
 

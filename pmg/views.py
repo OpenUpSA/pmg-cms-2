@@ -240,11 +240,9 @@ def bills(bill_type, year=None):
         committee = load_from_api(api_url, return_everything=True, params=params)[
             "results"
         ]
-        combined_bills = bills + committee
+        bills = bills + committee
 
-    combined_bills.sort(
-        key=lambda b: [-b["year"], b["code"][0], b.get("number", 0), b["title"]]
-    )
+    bills.sort(key=lambda b: [-b["year"], b["code"][0], b.get("number", 0), b["title"]])
 
     status_dict = {
         "na": ("in progress", "label-primary"),
@@ -257,7 +255,7 @@ def bills(bill_type, year=None):
 
     return render_template(
         "bills/list.html",
-        results=combined_bills,
+        results=bills,
         status_dict=status_dict,
         year=year,
         year_list=year_list,

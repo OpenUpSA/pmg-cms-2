@@ -4,29 +4,29 @@
   </div>
   <div class="panel-body">
       {% if membership %}
-      {% for item in membership %}
+      <ul class="media-list">
+          {% for item in membership %}
           <div class="cte-member-box {% if item.chairperson %}cte-chairperson-box{% endif %}">
-          <ul class="media-list">
               <li class="media">
-              <div class="media-left">
-                  <a href="{{ item.member.pa_url }}">
-                  <img class="member-profile-pic media-object" src="{{ item.member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="Profile picture: {{ item.member.name }}">
-                  </a>
-              </div>
-              <div class="media-body">
-                  <a href="{{ item.member.pa_url }}">{{ item.member.name }}</a>
-                  <div class="text-muted">{{ item.member.party.name }}</div>
-                  {% if item.chairperson %}
-                  <span class="label label-success">Chairperson</span>
-                  {% endif %}
-              </div>
+                  <div class="media-left">
+                      <a href="{{ item.member.pa_url }}">
+                          <img class="member-profile-pic media-object" src="{{ item.member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="Profile picture: {{ item.member.name }}">
+                      </a>
+                  </div>
+                  <div class="media-body">
+                      <a href="{{ item.member.pa_url }}">{{ item.member.name }}</a>
+                      <div class="text-muted">{{ item.member.party.name }}</div>
+                      {% if item.chairperson %}
+                      <span class="label label-success">Chairperson</span>
+                      {% endif %}
+                  </div>
               </li>
-          </ul>
           </div>
-      {% endfor %}
+          {% endfor %}
+      </ul>
       {% else %}
       <div class="no-members">
-      <span>There is no membership information at this time.</span>
+          <span>There is no membership information at this time.</span>
       </div>
       {% endif %}
   </div>

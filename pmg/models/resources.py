@@ -192,6 +192,10 @@ class Bill(ApiResource, db.Model):
     def list(cls):
         return cls.query.order_by(desc(cls.year))
 
+    @classmethod
+    def committee_bill(cls):
+        return cls.query.filter(cls.introduced_by.like("%Committee%"))
+
 
 class BillVersion(db.Model):
     __tablename__ = "bill_versions"

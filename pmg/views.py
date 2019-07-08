@@ -208,9 +208,11 @@ def bills_explained():
     return render_template('bills/explained.html')
 
 
-@app.route('/bills/<any(current):bill_type>/')
-@app.route('/bills/<any(all, draft, pmb, tabled):bill_type>/')
-@app.route('/bills/<any(all, draft, pmb, tabled):bill_type>/year/<int:year>/')
+@app.route("/bills/<any(current):bill_type>/")
+@app.route("/bills/<any(all, draft, pmb, tabled, committee):bill_type>/")
+@app.route(
+    "/bills/<any(all, draft, pmb, tabled, committee):bill_type>/year/<int:year>/"
+)
 def bills(bill_type, year=None):
     if bill_type == 'current':
         # don't paginate by year
@@ -230,11 +232,19 @@ def bills(bill_type, year=None):
             abort(404)
         params['filter[year]'] = year
 
-    api_url = 'bill' if bill_type == 'all' else 'bill/%s' % bill_type
-    bills = load_from_api(
-        api_url, return_everything=True, params=params)['results']
+    api_url = "bill" if bill_type == "all" else "bill/%s" % bill_type
+    bills = load_from_api(api_url, return_everything=True, params=params)["results"]
 
-    bills.sort(key=lambda b: [-b['year'], b['code'][0],  b.get('number', 0), b['title']])
+    if bill_type == "pmb":
+        api_url = "bill/committee"
+        committee = load_from_api(api_url, return_everything=True, params=params)[
+            "results"
+        ]
+        combined_bills = bills + committee
+
+    combined_bills.sort(
+        key=lambda b: [-b["year"], b["code"][0], b.get("number", 0), b["title"]]
+    )
 
     status_dict = {
         "na": ("in progress", "label-primary"),
@@ -246,8 +256,8 @@ def bills(bill_type, year=None):
     }
 
     return render_template(
-        'bills/list.html',
-        results=bills,
+        "bills/list.html",
+        results=combined_bills,
         status_dict=status_dict,
         year=year,
         year_list=year_list,

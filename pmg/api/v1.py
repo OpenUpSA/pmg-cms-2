@@ -302,8 +302,8 @@ def search():
     return send_api_response(result)
 
 
-@api.route('/bill/<int:bill_id>/')
-@api.route('/bill/<any(current, draft, pmb, tabled):scope>/')
+@api.route("/bill/<int:bill_id>/")
+@api.route("/bill/<any(current, draft, pmb, tabled, committee):scope>/")
 def current_bill_list(scope=None, bill_id=None):
     query = Bill.list()
 
@@ -317,15 +317,16 @@ def current_bill_list(scope=None, bill_id=None):
     elif scope == 'draft':
         query = query.filter(Bill.type == BillType.draft())
 
-    elif scope == 'pmb':
+    elif scope == "pmb":
         query = query.filter(
-            or_(
-                Bill.type_id.in_(
-                    [b.id for b in BillType.private_member_bill()]),
-                Bill.introduced_by.like('%Committee%')))
+            Bill.type_id.in_([b.id for b in BillType.private_member_bill()])
+        )
 
-    elif scope == 'tabled':
+    elif scope == "tabled":
         query = query.filter(Bill.type != BillType.draft())
+
+    elif scope == "committee":
+        query = Bill.committee_bill()
 
     return api_resource_list(query)
 

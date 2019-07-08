@@ -961,9 +961,13 @@ def members():
                 'sphere'] == 'national':
             members_by_house.setdefault(member['house']['name'],
                                         []).append(member)
+    id_mapping = {
+        house: house.lower().replace(" ", "-") for house in members_by_house.keys()
+    }
 
     return render_template(
-        'member_list.html', members_by_house=members_by_house)
+        "member_list.html", members_by_house=members_by_house, id_mapping=id_mapping
+    )
 
 
 @app.route('/member/<int:member_id>')

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import datetime
 import logging
 import os
@@ -26,14 +25,17 @@ import serializers
 from .s3_upload import S3Bucket
 from .base import ApiResource, FileLinkMixin
 
-STATIC_HOST = app.config['STATIC_HOST']
+STATIC_HOST = app.config["STATIC_HOST"]
 
 logger = logging.getLogger(__name__)
 s3_bucket = S3Bucket()
 
 
 def allowed_file(filename):
-    tmp = '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+    tmp = (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
+    )
     logger.debug("File upload for '%s' allowed? %s" % (filename, tmp))
     return tmp
 
@@ -47,8 +49,8 @@ class House(db.Model):
     name_short = db.Column(db.String(20), nullable=False)
     sphere = db.Column(db.String(20), nullable=False)
     contact_details = db.Column(db.Text())
-    speaker_id = db.Column(db.Integer, db.ForeignKey('member.id'))
-    speaker = db.relationship('Member', lazy=True, foreign_keys=[speaker_id])
+    speaker_id = db.Column(db.Integer, db.ForeignKey("member.id"))
+    speaker = db.relationship("Member", lazy=True, foreign_keys=[speaker_id])
 
     NATIONAL_ASSEMBLY = 3
     NAT_COUNCIL_OF_PROV = 2
@@ -59,11 +61,11 @@ class House(db.Model):
 
     @classmethod
     def ncop(cls):
-        return cls.query.filter(cls.name_short == 'NCOP').one()
+        return cls.query.filter(cls.name_short == "NCOP").one()
 
     @classmethod
     def na(cls):
-        return cls.query.filter(cls.name_short == 'NA').one()
+        return cls.query.filter(cls.name_short == "NA").one()
 
 
 class Party(db.Model):
@@ -103,11 +105,10 @@ class BillType(db.Model):
 
     @classmethod
     def private_member_bill(cls):
-        return cls.query.filter(
-            cls.name.like('Private Member Bill%')).distinct()
+        return cls.query.filter(cls.name.like("Private Member Bill%")).distinct()
 
     def is_private_member_bill(self):
-        return 'Private Member Bill' in self.name
+        return "Private Member Bill" in self.name
 
     def __unicode__(self):
         return unicode(self.description)
@@ -126,12 +127,17 @@ class BillStatus(db.Model):
         return cls.query.filter(cls.name.in_(["na", "ncop", "president"])).all()
 
     def __unicode__(self):
-        return u'%s (%s)' % (self.description, self.name)
+        return u"%s (%s)" % (self.description, self.name)
 
 
 class Bill(ApiResource, db.Model):
     __tablename__ = "bill"
-    __table_args__ = (db.UniqueConstraint('number', 'year', 'type_id', name='bill_number_year_type_id_key'), {})
+    __table_args__ = (
+        db.UniqueConstraint(
+            "number", "year", "type_id", name="bill_number_year_type_id_key"
+        ),
+        {},
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
@@ -143,18 +149,20 @@ class Bill(ApiResource, db.Model):
     act_name = db.Column(db.String(250))
     introduced_by = db.Column(db.String(250))
 
-    status_id = db.Column(db.Integer, db.ForeignKey('bill_status.id'))
-    status = db.relationship('BillStatus', backref='bill', lazy=False)
-    type_id = db.Column(db.Integer, db.ForeignKey('bill_type.id'), nullable=False)
-    type = db.relationship('BillType', backref='bill', lazy=False)
-    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey('house.id'))
-    place_of_introduction = db.relationship('House')
-    versions = db.relationship("BillVersion", backref='bill', cascade='all, delete, delete-orphan')
+    status_id = db.Column(db.Integer, db.ForeignKey("bill_status.id"))
+    status = db.relationship("BillStatus", backref="bill", lazy=False)
+    type_id = db.Column(db.Integer, db.ForeignKey("bill_type.id"), nullable=False)
+    type = db.relationship("BillType", backref="bill", lazy=False)
+    place_of_introduction_id = db.Column(db.Integer, db.ForeignKey("house.id"))
+    place_of_introduction = db.relationship("House")
+    versions = db.relationship(
+        "BillVersion", backref="bill", cascade="all, delete, delete-orphan"
+    )
 
     @property
     def code(self):
         if self.type.is_private_member_bill() and self.year >= 2016:
-            out = 'B'
+            out = "B"
         else:
             out = self.type.prefix if self.type else "X"
         out += str(self.number) if self.number else ""
@@ -179,7 +187,7 @@ class Bill(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['code'] = self.code
+        tmp["code"] = self.code
         return tmp
 
     def __unicode__(self):
@@ -203,10 +211,14 @@ class BillVersion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date(), nullable=False)
     title = db.Column(db.String(), nullable=False)
-    bill_id = db.Column(db.Integer, db.ForeignKey('bill.id', ondelete='CASCADE'), nullable=False)
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete='CASCADE'))
-    file = db.relationship('File', backref='bill_version', lazy=False)
-    enacted = db.Column(db.Boolean, default=False, server_default=sql.expression.false(), nullable=False)
+    bill_id = db.Column(
+        db.Integer, db.ForeignKey("bill.id", ondelete="CASCADE"), nullable=False
+    )
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id", ondelete="CASCADE"))
+    file = db.relationship("File", backref="bill_version", lazy=False)
+    enacted = db.Column(
+        db.Boolean, default=False, server_default=sql.expression.false(), nullable=False
+    )
 
 
 class File(db.Model):
@@ -225,9 +237,9 @@ class File(db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['url'] = self.url
+        tmp["url"] = self.url
         if self.soundcloud_track and self.soundcloud_track.state == "finished":
-            tmp['soundcloud_uri'] = self.soundcloud_track.uri
+            tmp["soundcloud_uri"] = self.soundcloud_track.uri
         return tmp
 
     @property
@@ -238,14 +250,14 @@ class File(db.Model):
     @property
     def url(self):
         """ The friendly URL a user can use to download this file. """
-        if self.file_path.startswith('/'): # For dev upload paths
+        if self.file_path.startswith("/"):  # For dev upload paths
             path = self.file_path[1:]
         else:
             path = self.file_path
         # XXX hack - use ProxyFix instead?
         # https://stackoverflow.com/questions/34802316/make-flasks-url-for-use-the-https-scheme-in-an-aws-load-balancer-without-mess
-        scheme = 'http' if app.config['DEBUG'] else 'https'
-        return url_for('docs', path=path, _scheme=scheme, _external=True)
+        scheme = "http" if app.config["DEBUG"] else "https"
+        return url_for("docs", path=path, _scheme=scheme, _external=True)
 
     def from_upload(self, file_data):
         """ Handle a POST-based file upload and use it as the content for this file. """
@@ -254,9 +266,9 @@ class File(db.Model):
 
         # save file to disk
         filename = secure_filename(file_data.filename)
-        path = os.path.join(app.config['UPLOAD_PATH'], filename)
+        path = os.path.join(app.config["UPLOAD_PATH"], filename)
 
-        logger.debug('saving uploaded file %s to %s' % (filename, path))
+        logger.debug("saving uploaded file %s to %s" % (filename, path))
         file_data.save(path)
 
         # save attributes
@@ -271,9 +283,9 @@ class File(db.Model):
 
     def open(self):
         # Ugly hack for local testing
-        if self.file_path.startswith('/tmp/'):
+        if self.file_path.startswith("/tmp/"):
             logging.info("Opening file %s locally", self.file_path)
-            return open(self.file_path, 'rb')
+            return open(self.file_path, "rb")
         else:
             logging.info("Downloading file %s from S3 to open locally", self.file_path)
             f = tempfile.NamedTemporaryFile(delete=True)
@@ -293,12 +305,12 @@ class File(db.Model):
         return key.get_contents_as_string()
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return unicode(self).encode("utf-8")
 
     def __unicode__(self):
         if self.title:
-            return u'%s (%s)' % (self.title, self.file_path)
-        return u'%s' % self.file_path
+            return u"%s (%s)" % (self.title, self.file_path)
+        return u"%s" % self.file_path
 
 
 # TODO: change to use normal sqlalchemy events, then set SQLALCHEMY_TRACK_MODIFICATIONS to False in the config
@@ -306,11 +318,14 @@ class File(db.Model):
 def delete_file_from_s3(sender, changes):
     for obj, change in changes:
         # obj is the changed object, change is one of: update, insert, delete
-        if change == 'delete' and isinstance(obj, File):
+        if change == "delete" and isinstance(obj, File):
             try:
                 obj.delete_from_s3()
             except Exception as e:
-                logger.warn("Couldn't delete %s from S3, ignoring: %s" % (obj, e.message), exc_info=e)
+                logger.warn(
+                    "Couldn't delete %s from S3, ignoring: %s" % (obj, e.message),
+                    exc_info=e,
+                )
 
 
 class Event(ApiResource, db.Model):
@@ -320,9 +335,7 @@ class Event(ApiResource, db.Model):
     """
 
     __tablename__ = "event"
-    __mapper_args__ = {
-        'polymorphic_on': 'type'
-    }
+    __mapper_args__ = {"polymorphic_on": "type"}
 
     id = db.Column(db.Integer, index=True, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), nullable=False)
@@ -338,23 +351,46 @@ class Event(ApiResource, db.Model):
     body = db.Column(db.Text())
     summary = db.Column(db.Text())
 
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
-    member = db.relationship('Member', backref='events')
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
-    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
-    house = db.relationship('House', lazy=True, backref=backref('events', order_by=desc('Event.date')))
-    bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
+    member_id = db.Column(db.Integer, db.ForeignKey("member.id"), index=True)
+    member = db.relationship("Member", backref="events")
+    committee_id = db.Column(
+        db.Integer, db.ForeignKey("committee.id", ondelete="SET NULL"), index=True
+    )
+    committee = db.relationship(
+        "Committee", lazy=False, backref=backref("events", order_by=desc("Event.date"))
+    )
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"), index=True)
+    house = db.relationship(
+        "House", lazy=True, backref=backref("events", order_by=desc("Event.date"))
+    )
+    bills = db.relationship(
+        "Bill",
+        secondary="event_bills",
+        backref=backref("events"),
+        cascade="save-update, merge",
+    )
     chairperson = db.Column(db.String(256))
 
     # did this meeting involve public participation?
-    public_participation = db.Column(db.Boolean, default=False, server_default=sql.expression.false())
+    public_participation = db.Column(
+        db.Boolean, default=False, server_default=sql.expression.false()
+    )
     # feature this on the front page?
-    featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
+    featured = db.Column(
+        db.Boolean(),
+        default=False,
+        server_default=sql.expression.false(),
+        nullable=False,
+        index=True,
+    )
     # optional file attachments
-    files = db.relationship('EventFile', lazy=True, cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "EventFile", lazy=True, cascade="all, delete, delete-orphan"
+    )
 
-    BILL_MENTION_RE = re.compile(u'bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d+)', re.IGNORECASE)
+    BILL_MENTION_RE = re.compile(
+        u"bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d+)", re.IGNORECASE
+    )
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -370,11 +406,14 @@ class Event(ApiResource, db.Model):
                     year += 1900
                 else:
                     year += 2000
-            code = '%s%s-%s' % (prefix.upper(), num, year)
+            code = "%s%s-%s" % (prefix.upper(), num, year)
 
             bill = Bill.query.filter(Bill.year == year, Bill.number == num).first()
             if bill and bill.code == code and bill not in self.bills:
-                logger.info("Auto-linking bill '%s' (%s) to event '%s' (%s)" % (bill.code, bill.id, self.title, self.id))
+                logger.info(
+                    "Auto-linking bill '%s' (%s) to event '%s' (%s)"
+                    % (bill.code, bill.id, self.title, self.id)
+                )
                 self.bills.append(bill)
 
     def __unicode__(self):
@@ -396,30 +435,43 @@ class Event(ApiResource, db.Model):
 
 
 event_bills = db.Table(
-    'event_bills',
-    db.Column('event_id', db.Integer(), db.ForeignKey('event.id', ondelete="CASCADE")),
-    db.Column('bill_id', db.Integer(), db.ForeignKey('bill.id', ondelete="CASCADE")))
+    "event_bills",
+    db.Column("event_id", db.Integer(), db.ForeignKey("event.id", ondelete="CASCADE")),
+    db.Column("bill_id", db.Integer(), db.ForeignKey("bill.id", ondelete="CASCADE")),
+)
 
 
 class EventFile(FileLinkMixin, db.Model):
     __tablename__ = "event_files"
 
     id = db.Column(db.Integer, index=True, primary_key=True)
-    event_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete="CASCADE"), index=True, nullable=False)
-    event = db.relationship('Event')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    event_id = db.Column(
+        db.Integer,
+        db.ForeignKey("event.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    event = db.relationship("Event")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 class CommitteeMeeting(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'committee-meeting'
-    }
+    __mapper_args__ = {"polymorphic_identity": "committee-meeting"}
     actual_start_time = db.Column(db.Time(timezone=True))
     actual_end_time = db.Column(db.Time(timezone=True))
     pmg_monitor = db.Column(db.String(255))
 
-    attendance = db.relationship('CommitteeMeetingAttendance', backref='meeting', cascade="all, delete, delete-orphan")
+    attendance = db.relationship(
+        "CommitteeMeetingAttendance",
+        backref="meeting",
+        cascade="all, delete, delete-orphan",
+    )
 
     def check_permission(self):
         """ Does the current user have permission to view this committee meeting?
@@ -444,12 +496,16 @@ class CommitteeMeeting(Event):
 
     def premium_but_free(self):
         # free before this date
-        return self.committee and self.committee.premium and \
-            self.date < app.config['PREMIUM_FREE_BEFORE']
+        return (
+            self.committee
+            and self.committee.premium
+            and self.date < app.config["PREMIUM_FREE_BEFORE"]
+        )
 
     @property
     def alert_template(self):
         from pmg.models.emails import EmailTemplate
+
         return EmailTemplate.query.filter(EmailTemplate.name == "Minute alert").first()
 
     def api_files(self):
@@ -461,15 +517,19 @@ class CommitteeMeeting(Event):
 
     def to_dict(self, include_related=False):
         tmp = super(CommitteeMeeting, self).to_dict(include_related=include_related)
-        tmp['attendance_url'] = url_for('api.committee_meeting_attendance', committee_meeting_id=self.id, _external=True)
+        tmp["attendance_url"] = url_for(
+            "api.committee_meeting_attendance",
+            committee_meeting_id=self.id,
+            _external=True,
+        )
         # check user permissions, popping some content if required
         if not self.check_permission():
             # remove premium content
-            tmp['premium_content_excluded'] = True
-            del tmp['body']
-            del tmp['summary']
-            if 'files' in tmp:
-                del tmp['files']
+            tmp["premium_content_excluded"] = True
+            del tmp["body"]
+            del tmp["summary"]
+            if "files" in tmp:
+                del tmp["files"]
 
         return tmp
 
@@ -479,9 +539,7 @@ class CommitteeMeeting(Event):
 
 
 class Hansard(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'plenary'
-    }
+    __mapper_args__ = {"polymorphic_identity": "plenary"}
 
     @classmethod
     def list(cls):
@@ -489,9 +547,7 @@ class Hansard(Event):
 
 
 class Briefing(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'media-briefing'
-    }
+    __mapper_args__ = {"polymorphic_identity": "media-briefing"}
 
     @classmethod
     def list(cls):
@@ -499,39 +555,27 @@ class Briefing(Event):
 
 
 class BillIntroduction(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-introduced'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-introduced"}
 
 
 class BillAdoption(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-passed'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-passed"}
 
 
 class BillApproval(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-signed'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-signed"}
 
 
 class BillEnactment(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-enacted'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-enacted"}
 
 
 class BillCommenced(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-act-commenced'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-act-commenced"}
 
 
 class BillUpdate(Event):
-    __mapper_args__ = {
-        'polymorphic_identity': 'bill-updated'
-    }
+    __mapper_args__ = {"polymorphic_identity": "bill-updated"}
 
 
 class MembershipType(db.Model):
@@ -557,31 +601,46 @@ class Member(ApiResource, db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
     profile_pic_url = db.Column(db.String(255))
     bio = db.Column(db.Text())
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"))
     house = db.relationship(House, foreign_keys=[house_id])
-    party_id = db.Column(db.Integer, db.ForeignKey('party.id'))
-    party = db.relationship(Party, backref="members", lazy='joined')
-    province_id = db.Column(db.Integer, db.ForeignKey('province.id'))
+    party_id = db.Column(db.Integer, db.ForeignKey("party.id"))
+    party = db.relationship(Party, backref="members", lazy="joined")
+    province_id = db.Column(db.Integer, db.ForeignKey("province.id"))
     province = db.relationship(Province)
     start_date = db.Column(db.Date())
     pa_link = db.Column(db.String(255), unique=True)
     # is this person *currently* an MP?
-    current = db.Column(db.Boolean, default=True, server_default=sql.expression.true(), nullable=False, index=True)
+    current = db.Column(
+        db.Boolean,
+        default=True,
+        server_default=sql.expression.true(),
+        nullable=False,
+        index=True,
+    )
 
-    memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined', cascade="all, delete, delete-orphan")
+    memberships = db.relationship(
+        "Membership",
+        backref=backref("member", lazy="joined"),
+        lazy="joined",
+        cascade="all, delete, delete-orphan",
+    )
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return u"%s" % self.name
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
 
-        tmp['questions_url'] = url_for('api.member_questions', member_id=self.id, _external=True)
-        tmp['attendance_url'] = url_for('api.member_attendance', member_id=self.id, _external=True)
+        tmp["questions_url"] = url_for(
+            "api.member_questions", member_id=self.id, _external=True
+        )
+        tmp["attendance_url"] = url_for(
+            "api.member_attendance", member_id=self.id, _external=True
+        )
 
-        tmp['profile_pic_url'] = self.full_profile_pic_url
-        if tmp['pa_link']:
-            tmp['pa_url'] = self.pa_url
+        tmp["profile_pic_url"] = self.full_profile_pic_url
+        if tmp["pa_link"]:
+            tmp["pa_url"] = self.pa_url
 
         return tmp
 
@@ -595,14 +654,14 @@ class Member(ApiResource, db.Model):
     def pa_url(self):
         if self.pa_link:
             url = self.pa_link
-            if not url.startswith('http'):
-                url = 'https://www.pa.org.za' + url
+            if not url.startswith("http"):
+                url = "https://www.pa.org.za" + url
             return url
 
-    @validates('pa_link')
+    @validates("pa_link")
     def validate_pa_link(self, key, value):
-        if value and not value.startswith('http'):
-            value = 'https://www.pa.org.za' + value
+        if value and not value.startswith("http"):
+            value = "https://www.pa.org.za" + value
         return value
 
     @property
@@ -613,17 +672,22 @@ class Member(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query\
-            .options(joinedload('house'),
-                     joinedload('province'),
-                     joinedload('memberships.committee'))\
-            .filter(Member.current == True)\
-            .order_by(Member.name)  # noqa
+        return (
+            cls.query.options(
+                joinedload("house"),
+                joinedload("province"),
+                joinedload("memberships.committee"),
+            )
+            .filter(Member.current == True)
+            .order_by(Member.name)
+        )  # noqa
 
     @classmethod
-    def find_by_inexact_name(cls, first_name, last_name, title, threshold=0.8, members=None):
+    def find_by_inexact_name(
+        cls, first_name, last_name, title, threshold=0.8, members=None
+    ):
         # in the db, the name format is "last_name, title initial"
-        first_name = first_name[0] if first_name else ''
+        first_name = first_name[0] if first_name else ""
         seeking = "%s, %s %s" % (last_name, title, first_name)
 
         members = members or Member.query.all()
@@ -646,21 +710,44 @@ class Committee(ApiResource, db.Model):
     name = db.Column(db.String(255), nullable=False, unique=True)
     about = db.Column(db.Text())
     contact_details = db.Column(db.Text())
-    ad_hoc = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
-    premium = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    ad_hoc = db.Column(
+        db.Boolean(),
+        default=False,
+        server_default=sql.expression.false(),
+        nullable=False,
+    )
+    premium = db.Column(
+        db.Boolean(),
+        default=False,
+        server_default=sql.expression.false(),
+        nullable=False,
+    )
     # is this committee considered active? (only for ad-hoc committees)
-    active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
+    active = db.Column(
+        db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False
+    )
     # year when this committee was last active (only for ad-hoc committees)
     last_active_year = db.Column(db.Integer)
     # Is this commmittee monitored by PMG? Some provincial committees aren't.
-    monitored = db.Column(db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False)
+    monitored = db.Column(
+        db.Boolean(), default=True, server_default=sql.expression.true(), nullable=False
+    )
 
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False)
-    house = db.relationship('House', lazy='joined')
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"), nullable=False)
+    house = db.relationship("House", lazy="joined")
 
-    memberships = db.relationship('Membership', backref="committee", cascade='all, delete, delete-orphan', passive_deletes=True)
-    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete='SET NULL'), nullable=True)
-    minister = db.relationship('Minister', backref=backref('committee', uselist=False), lazy=True)
+    memberships = db.relationship(
+        "Membership",
+        backref="committee",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    minister_id = db.Column(
+        db.Integer, db.ForeignKey("minister.id", ondelete="SET NULL"), nullable=True
+    )
+    minister = db.relationship(
+        "Minister", backref=backref("committee", uselist=False), lazy=True
+    )
 
     # Time after last meeting after which ad-hoc committees are considered inactive
     AD_HOC_INACTIVE_DAYS = 365
@@ -669,21 +756,22 @@ class Committee(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)
+        tmp["questions_url"] = url_for(
+            "api.committee_questions", committee_id=self.id, _external=True
+        )
         return tmp
 
     @classmethod
     def premium_for_select(cls):
-        return cls.query\
-                .filter(cls.premium == True)\
-                .order_by(cls.name)\
-                .all()  # noqa
+        return cls.query.filter(cls.premium == True).order_by(cls.name).all()  # noqa
 
     @classmethod
     def for_related(cls, other):
         """ Those Committees that are linked to `other` via a foreign key.
         """
-        ids = set(x[0] for x in db.session.query(func.distinct(other.committee_id)).all())
+        ids = set(
+            x[0] for x in db.session.query(func.distinct(other.committee_id)).all()
+        )
         return cls.query.filter(cls.id.in_(ids)).order_by(cls.name)
 
     @classmethod
@@ -708,10 +796,11 @@ class Committee(ApiResource, db.Model):
         Generally only used for ad-hoc committees.
         """
         # get most recent meeting
-        meeting = CommitteeMeeting.query\
-            .filter(CommitteeMeeting.committee == self)\
-            .order_by(desc(CommitteeMeeting.date))\
+        meeting = (
+            CommitteeMeeting.query.filter(CommitteeMeeting.committee == self)
+            .order_by(desc(CommitteeMeeting.date))
             .first()
+        )
 
         now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
         threshold = now - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
@@ -739,31 +828,36 @@ class Committee(ApiResource, db.Model):
 
 class Membership(db.Model):
 
-    __tablename__ = 'committee_members'
+    __tablename__ = "committee_members"
 
     id = db.Column(db.Integer, primary_key=True)
 
-    type_id = db.Column(db.Integer, db.ForeignKey('membership_type.id'))
-    type = db.relationship(MembershipType, lazy='joined')
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="CASCADE"), nullable=False)
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete="CASCADE"), nullable=False)
+    type_id = db.Column(db.Integer, db.ForeignKey("membership_type.id"))
+    type = db.relationship(MembershipType, lazy="joined")
+    committee_id = db.Column(
+        db.Integer, db.ForeignKey("committee.id", ondelete="CASCADE"), nullable=False
+    )
+    member_id = db.Column(
+        db.Integer, db.ForeignKey("member.id", ondelete="CASCADE"), nullable=False
+    )
 
     @property
     def chairperson(self):
         if self.type:
-            return self.type.name == 'chairperson'
+            return self.type.name == "chairperson"
         return False
 
     def __unicode__(self):
-        tmp = u" - ".join([unicode(self.type),
-                           unicode(self.member),
-                           unicode(self.committee)])
+        tmp = u" - ".join(
+            [unicode(self.type), unicode(self.member), unicode(self.committee)]
+        )
         return unicode(tmp)
 
 
 # === Committee Questions === #
 #
 # Questions asked by an MP of a Committe chairperson
+
 
 class CommitteeQuestion(ApiResource, db.Model):
     __tablename__ = "committee_question"
@@ -777,8 +871,10 @@ class CommitteeQuestion(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
-    minister = db.relationship('Minister', lazy='joined')
+    minister_id = db.Column(
+        db.Integer, db.ForeignKey("minister.id", ondelete="SET NULL")
+    )
+    minister = db.relationship("Minister", lazy="joined")
 
     # XXX: don't forget session, numbers are unique by session only
 
@@ -804,7 +900,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     question_number = db.Column(db.Integer, index=True, nullable=True)
 
     # This is in the identifier above.
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'))
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"))
     house = db.relationship("House", lazy=False)
 
     # Questions for written answer and questions for oral answer both have
@@ -823,7 +919,10 @@ class CommitteeQuestion(ApiResource, db.Model):
     president_number = db.Column(db.Integer, nullable=True, index=True)
     deputy_president_number = db.Column(db.Integer, nullable=True, index=True)
 
-    answer_type = db.Column(db.Enum('oral', 'written', name='committee_question_answer_type_enum'), nullable=False)
+    answer_type = db.Column(
+        db.Enum("oral", "written", name="committee_question_answer_type_enum"),
+        nullable=False,
+    )
 
     # Date of the question, generally the date on which it was answered. Not to
     # be confused with the date the question was published.
@@ -856,22 +955,42 @@ class CommitteeQuestion(ApiResource, db.Model):
     # Name of the person asking the question.
     asked_by_name = db.Column(db.String(1024))
     # The actual MP asking the question. This may be null if we weren't able to link it to an MP
-    asked_by_member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'))
-    asked_by_member = db.relationship('Member')
+    asked_by_member_id = db.Column(
+        db.Integer, db.ForeignKey("member.id", ondelete="CASCADE")
+    )
+    asked_by_member = db.relationship("Member")
 
     # the source document for this question
-    source_file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="SET NULL"), index=True, nullable=True)
-    source_file = db.relationship('File', lazy='joined')
+    source_file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="SET NULL"),
+        index=True,
+        nullable=True,
+    )
+    source_file = db.relationship("File", lazy="joined")
 
-    files = db.relationship("CommitteeQuestionFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "CommitteeQuestionFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
     # indexes for uniqueness
     __table_args__ = (
-        db.UniqueConstraint('date', 'code', name='date_code_ix'),
-        db.UniqueConstraint('date', 'house_id', 'oral_number', name='date_oral_number_ix'),
-        db.UniqueConstraint('date', 'house_id', 'written_number', name='date_written_number_ix'),
-        db.UniqueConstraint('date', 'house_id', 'president_number', name='date_president_number_ix'),
-        db.UniqueConstraint('date', 'house_id', 'deputy_president_number', name='date_deputy_president_number_ix'),
+        db.UniqueConstraint("date", "code", name="date_code_ix"),
+        db.UniqueConstraint(
+            "date", "house_id", "oral_number", name="date_oral_number_ix"
+        ),
+        db.UniqueConstraint(
+            "date", "house_id", "written_number", name="date_written_number_ix"
+        ),
+        db.UniqueConstraint(
+            "date", "house_id", "president_number", name="date_president_number_ix"
+        ),
+        db.UniqueConstraint(
+            "date",
+            "house_id",
+            "deputy_president_number",
+            name="date_deputy_president_number_ix",
+        ),
     )
 
     def populate_from_code(self, code):
@@ -880,27 +999,24 @@ class CommitteeQuestion(ApiResource, db.Model):
         """
         details = QuestionAnswerScraper().details_from_name(code)
 
-        house = details.pop('house')
-        if house == 'N':
+        house = details.pop("house")
+        if house == "N":
             house = House.na()
-        elif house == 'C':
+        elif house == "C":
             house = House.ncop()
         else:
             raise ValueError("Invalid house: %s" % house)
 
         # TODO: session
-        self.code = details['code']
+        self.code = details["code"]
         self.house = house
-        self.written_number = details.get('written_number')
-        self.oral_number = details.get('oral_number')
+        self.written_number = details.get("written_number")
+        self.oral_number = details.get("oral_number")
         self.question_number = self.written_number or self.oral_number
-        self.president_number = details.get('president_number')
-        self.deputy_president_number = details.get('deputy_president_number')
-        self.date = details.get('date')
-        self.answer_type = {
-            'O': 'oral',
-            'W': 'written',
-        }[details.get('type') or 'W']
+        self.president_number = details.get("president_number")
+        self.deputy_president_number = details.get("deputy_president_number")
+        self.date = details.get("date")
+        self.answer_type = {"O": "oral", "W": "written"}[details.get("type") or "W"]
 
     def parse_answer_file(self, filename):
         # process the actual document text
@@ -920,28 +1036,26 @@ class CommitteeQuestion(ApiResource, db.Model):
             raise ValueError("Couldn't find any questions in the text")
         q = questions[0]
 
-        self.question_to_name = q['questionto']
+        self.question_to_name = q["questionto"]
         self.minister = self.minister_from_minister_name(self.question_to_name)
 
-        self.asked_by_name = q['askedby']
-        parts = re.split(' +', self.asked_by_name)
-        title, first, last = parts[0], ''.join(parts[1:-1]), parts[-1]
+        self.asked_by_name = q["askedby"]
+        parts = re.split(" +", self.asked_by_name)
+        title, first, last = parts[0], "".join(parts[1:-1]), parts[-1]
         self.asked_by_member = Member.find_by_inexact_name(first, last, title)
 
-        self.question = q['question']
-        self.translated = q['translated']
-        self.intro = q['intro']
+        self.question = q["question"]
+        self.translated = q["translated"]
+        self.intro = q["intro"]
 
     def parse_answer_html(self, html):
         self.answer = QuestionAnswerScraper().extract_answer_from_html(html)
 
     def minister_from_minister_name(self, minister):
-        name = minister\
-            .replace('Minister of ', '')\
-            .replace('Minister in the ', '')
+        name = minister.replace("Minister of ", "").replace("Minister in the ", "")
         return Minister.find_by_inexact_name(name)
 
-    @validates('date')
+    @validates("date")
     def validate_date(self, key, value):
         self.year = value.year
         return value
@@ -953,8 +1067,8 @@ class CommitteeQuestion(ApiResource, db.Model):
     def import_from_uploaded_answer_file(cls, upload):
         # save the file to disk
         filename = secure_filename(upload.filename)
-        path = os.path.join(app.config['UPLOAD_PATH'], filename)
-        logger.debug('saving uploaded file %s to %s' % (filename, path))
+        path = os.path.join(app.config["UPLOAD_PATH"], filename)
+        logger.debug("saving uploaded file %s to %s" % (filename, path))
         upload.save(path)
         # reset file, so subsequent save() calls work
         upload.stream.seek(0)
@@ -992,18 +1106,29 @@ class CommitteeQuestion(ApiResource, db.Model):
 
 
 class CommitteeQuestionFile(FileLinkMixin, db.Model):
-    __tablename__ = 'committee_question_file_join'
+    __tablename__ = "committee_question_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_question_id = db.Column(db.Integer, db.ForeignKey('committee_question.id', ondelete='CASCADE'), index=True, nullable=False)
-    committee_question = db.relationship('CommitteeQuestion')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    committee_question_id = db.Column(
+        db.Integer,
+        db.ForeignKey("committee_question.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    committee_question = db.relationship("CommitteeQuestion")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 # === Legacy Questions & Replies === #
 #
 # Questions are stored in batches as HTML, linked to a committee.
+
 
 class QuestionReply(ApiResource, db.Model):
 
@@ -1017,16 +1142,20 @@ class QuestionReply(ApiResource, db.Model):
     slug_prefix = "question_reply"
 
     id = db.Column(db.Integer, primary_key=True)
-    minister_id = db.Column(db.Integer, db.ForeignKey('minister.id', ondelete="SET NULL"))
-    minister = db.relationship('Minister', lazy='joined')
+    minister_id = db.Column(
+        db.Integer, db.ForeignKey("minister.id", ondelete="SET NULL")
+    )
+    minister = db.relationship("Minister", lazy="joined")
     title = db.Column(db.String(255), nullable=False)
     start_date = db.Column(db.Date)
     body = db.Column(db.Text)
     question_number = db.Column(db.String(255))
     nid = db.Column(db.Integer())
-    files = db.relationship("QuestionReplyFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "QuestionReplyFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
-    @validates('committee')
+    @validates("committee")
     def validate_committee(self, key, cte):
         if cte:
             self.minister = cte.minister
@@ -1038,16 +1167,27 @@ class QuestionReply(ApiResource, db.Model):
 
 
 class QuestionReplyFile(FileLinkMixin, db.Model):
-    __tablename__ = 'question_reply_file_join'
+    __tablename__ = "question_reply_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    question_reply_id = db.Column(db.Integer, db.ForeignKey('question_reply.id', ondelete='CASCADE'), index=True, nullable=False)
-    question_reply = db.relationship('QuestionReply')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    question_reply_id = db.Column(
+        db.Integer,
+        db.ForeignKey("question_reply.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    question_reply = db.relationship("QuestionReply")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 # === Tabled Committee Report === #
+
 
 class TabledCommitteeReport(ApiResource, db.Model):
 
@@ -1059,12 +1199,22 @@ class TabledCommitteeReport(ApiResource, db.Model):
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
 
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False, index=True)
-    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc('start_date'))), lazy=False)
-    files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
+    committee_id = db.Column(
+        db.Integer, db.ForeignKey("committee.id"), nullable=False, index=True
+    )
+    committee = db.relationship(
+        "Committee",
+        backref=db.backref(
+            "tabled_committee_reports", order_by=nullslast(desc("start_date"))
+        ),
+        lazy=False,
+    )
+    files = db.relationship(
+        "TabledCommitteeReportFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
     def __unicode__(self):
-        return self.title or ('<TabledCommitteeReport %s>' % self.id)
+        return self.title or ("<TabledCommitteeReport %s>" % self.id)
 
     @classmethod
     def list(cls):
@@ -1072,24 +1222,41 @@ class TabledCommitteeReport(ApiResource, db.Model):
 
 
 class TabledCommitteeReportFile(FileLinkMixin, db.Model):
-    __tablename__ = 'tabled_committee_report_file_join'
+    __tablename__ = "tabled_committee_report_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    tabled_committee_report_id = db.Column(db.Integer, db.ForeignKey('tabled_committee_report.id', ondelete='CASCADE'), index=True, nullable=False)
-    tabled_committee_report = db.relationship('TabledCommitteeReport')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    tabled_committee_report_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tabled_committee_report.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    tabled_committee_report = db.relationship("TabledCommitteeReport")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 # === Calls for comment === #
+
 
 class CallForComment(ApiResource, db.Model):
 
     __tablename__ = "call_for_comment"
 
     id = db.Column(db.Integer, primary_key=True)
-    committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('calls_for_comments', order_by=desc('start_date')), lazy='joined')
+    committee_id = db.Column(
+        db.Integer, db.ForeignKey("committee.id", ondelete="SET NULL")
+    )
+    committee = db.relationship(
+        "Committee",
+        backref=db.backref("calls_for_comments", order_by=desc("start_date")),
+        lazy="joined",
+    )
     title = db.Column(db.Text(), nullable=False)
     start_date = db.Column(db.Date(), nullable=False)
     end_date = db.Column(db.Date())
@@ -1103,12 +1270,13 @@ class CallForComment(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query\
-            .options(joinedload('committee.minister'))\
-            .order_by(desc(cls.start_date))
+        return cls.query.options(joinedload("committee.minister")).order_by(
+            desc(cls.start_date)
+        )
 
 
 # === Policy document === #
+
 
 class PolicyDocument(ApiResource, db.Model):
 
@@ -1118,9 +1286,11 @@ class PolicyDocument(ApiResource, db.Model):
     title = db.Column(db.String(255))
     effective_date = db.Column(db.Date())
     start_date = db.Column(db.Date())
-    nid = db.Column('nid', db.Integer())
+    nid = db.Column("nid", db.Integer())
 
-    files = db.relationship("PolicyDocumentFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "PolicyDocumentFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
     @classmethod
     def list(cls):
@@ -1128,16 +1298,27 @@ class PolicyDocument(ApiResource, db.Model):
 
 
 class PolicyDocumentFile(FileLinkMixin, db.Model):
-    __tablename__ = 'policy_document_file_join'
+    __tablename__ = "policy_document_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    policy_document_id = db.Column(db.Integer, db.ForeignKey('policy_document.id', ondelete='CASCADE'), index=True, nullable=False)
-    policy_document = db.relationship('PolicyDocument')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    policy_document_id = db.Column(
+        db.Integer,
+        db.ForeignKey("policy_document.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    policy_document = db.relationship("PolicyDocument")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 # === Gazette === #
+
 
 class Gazette(ApiResource, db.Model):
 
@@ -1147,9 +1328,11 @@ class Gazette(ApiResource, db.Model):
     title = db.Column(db.String(255))
     effective_date = db.Column(db.Date())
     start_date = db.Column(db.Date())
-    nid = db.Column('nid', db.Integer())
+    nid = db.Column("nid", db.Integer())
 
-    files = db.relationship("GazetteFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "GazetteFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
     @classmethod
     def list(cls):
@@ -1160,13 +1343,24 @@ class GazetteFile(FileLinkMixin, db.Model):
     __tablename__ = "gazette_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    gazette_id = db.Column(db.Integer, db.ForeignKey('gazette.id', ondelete='CASCADE'), index=True, nullable=False)
-    gazette = db.relationship('Gazette')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    gazette_id = db.Column(
+        db.Integer,
+        db.ForeignKey("gazette.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    gazette = db.relationship("Gazette")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 # === Featured Content === #
+
 
 class Featured(db.Model):
 
@@ -1177,6 +1371,7 @@ class Featured(db.Model):
     blurb = db.Column(db.Text())
     link = db.Column(db.String(255))
     start_date = db.Column(db.DateTime(timezone=True), default=datetime.datetime.now)
+
 
 # === Daily schedules === #
 
@@ -1190,10 +1385,14 @@ class DailySchedule(ApiResource, db.Model):
     start_date = db.Column(db.Date(), nullable=False)
     body = db.Column(db.Text())
     nid = db.Column(db.Integer())
-    house_id = db.Column(db.Integer, db.ForeignKey('house.id'), nullable=False, index=True)
-    house = db.relationship('House', lazy='joined')
+    house_id = db.Column(
+        db.Integer, db.ForeignKey("house.id"), nullable=False, index=True
+    )
+    house = db.relationship("House", lazy="joined")
 
-    files = db.relationship("DailyScheduleFile", lazy='joined', cascade="all, delete, delete-orphan")
+    files = db.relationship(
+        "DailyScheduleFile", lazy="joined", cascade="all, delete, delete-orphan"
+    )
 
     def api_files(self):
         return [f.file for f in self.files]
@@ -1207,10 +1406,20 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
     __tablename__ = "daily_schedule_file_join"
 
     id = db.Column(db.Integer, primary_key=True)
-    daily_schedule_id = db.Column(db.Integer, db.ForeignKey('daily_schedule.id', ondelete='CASCADE'), index=True, nullable=False)
-    daily_schedule = db.relationship('DailySchedule')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    daily_schedule_id = db.Column(
+        db.Integer,
+        db.ForeignKey("daily_schedule.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    daily_schedule = db.relationship("DailySchedule")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")
 
 
 class CommitteeMeetingAttendance(ApiResource, db.Model):
@@ -1226,13 +1435,27 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         U:   Unknown
     """
     id = db.Column(db.Integer, primary_key=True)
-    alternate_member = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False)
+    alternate_member = db.Column(
+        db.Boolean(),
+        default=False,
+        server_default=sql.expression.false(),
+        nullable=False,
+    )
     # TODO: Y shouldn't be an option
-    attendance = db.Column(db.Enum('A', 'AP', 'DE', 'L', 'LDE', 'P', 'Y', 'U', name='meeting_attendance_enum'), nullable=False)
+    attendance = db.Column(
+        db.Enum(
+            "A", "AP", "DE", "L", "LDE", "P", "Y", "U", name="meeting_attendance_enum"
+        ),
+        nullable=False,
+    )
     chairperson = db.Column(db.Boolean(), default=False, nullable=False)
-    meeting_id = db.Column(db.Integer, db.ForeignKey('event.id', ondelete='CASCADE'), nullable=False)
-    member_id = db.Column(db.Integer, db.ForeignKey('member.id', ondelete='CASCADE'), nullable=False)
-    member = db.relationship('Member', lazy=False)
+    meeting_id = db.Column(
+        db.Integer, db.ForeignKey("event.id", ondelete="CASCADE"), nullable=False
+    )
+    member_id = db.Column(
+        db.Integer, db.ForeignKey("member.id", ondelete="CASCADE"), nullable=False
+    )
+    member = db.relationship("Member", lazy=False)
 
     ATTENDANCE_CODES = {
         "A": "Absent",
@@ -1243,7 +1466,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         "P": "Present",
         "U": "Unknown",
     }
-    ATTENDANCE_CODES_PRESENT = ['DE', 'L', 'LDE', 'P']
+    ATTENDANCE_CODES_PRESENT = ["DE", "L", "LDE", "P"]
 
     @property
     def committee_id(self):
@@ -1252,7 +1475,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         # Don't show URL while it's not served on the API.
-        del tmp['url']
+        del tmp["url"]
         return tmp
 
     @classmethod
@@ -1293,21 +1516,19 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def meetings_by_member(cls):
-        year = func.date_part('year', CommitteeMeeting.date).label('year')
-        meeting_date = func.date(CommitteeMeeting.date).label('meeting_date')
+        year = func.date_part("year", CommitteeMeeting.date).label("year")
+        meeting_date = func.date(CommitteeMeeting.date).label("meeting_date")
 
-        rows = db.session.query(
-            cls.member_id,
-            cls.attendance,
-            year,
-            cls.meeting_id,
-            meeting_date
-        )\
-            .select_from(cls)\
-            .join(CommitteeMeeting)\
-            .group_by(cls.member_id, cls.attendance, cls.meeting_id, meeting_date, year)\
-            .order_by(year.desc(), cls.member_id)\
+        rows = (
+            db.session.query(
+                cls.member_id, cls.attendance, year, cls.meeting_id, meeting_date
+            )
+            .select_from(cls)
+            .join(CommitteeMeeting)
+            .group_by(cls.member_id, cls.attendance, cls.meeting_id, meeting_date, year)
+            .order_by(year.desc(), cls.member_id)
             .all()
+        )
 
         return rows
 
@@ -1316,7 +1537,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         """ Attendance summary by year and committee. Excludes ad-hoc committees.
         Returns row tuples: (committe_id, house name, year, n_meetings, avg_attendance, avg_members)
         """
-        if period == 'historical':
+        if period == "historical":
             start_date = datetime.datetime(2018, 1, 1)
             end_date = datetime.datetime(2019, 6, 30)
         else:
@@ -1324,61 +1545,103 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             end_date = datetime.datetime(to_year, 12, 31)
 
         # attendance
-        subquery = db.session.query(
-            CommitteeMeeting.committee_id,
-            House.name_short.label('house'),
-            func.date_part('year', CommitteeMeeting.date).label('year'),
-            func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
-            func.count(CommitteeMeetingAttendance.id).label('n_members')
-        )\
-            .join(Committee, Committee.id == CommitteeMeeting.committee_id)\
-            .join(House, House.id == Committee.house_id)\
-            .join(CommitteeMeetingAttendance, CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-            .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id, House.name_short)\
-            .filter(CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date)\
-            .filter(Committee.ad_hoc == False)\
-            .subquery('attendance')
+        subquery = (
+            db.session.query(
+                CommitteeMeeting.committee_id,
+                House.name_short.label("house"),
+                func.date_part("year", CommitteeMeeting.date).label("year"),
+                func.count(
+                    case(
+                        [
+                            (
+                                CommitteeMeetingAttendance.attendance.in_(
+                                    CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
+                                ),
+                                1,
+                            )
+                        ]
+                    )
+                ).label("n_present"),
+                func.count(CommitteeMeetingAttendance.id).label("n_members"),
+            )
+            .join(Committee, Committee.id == CommitteeMeeting.committee_id)
+            .join(House, House.id == Committee.house_id)
+            .join(
+                CommitteeMeetingAttendance,
+                CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id,
+            )
+            .group_by(
+                "year",
+                CommitteeMeeting.committee_id,
+                CommitteeMeeting.id,
+                House.name_short,
+            )
+            .filter(
+                CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date
+            )
+            .filter(Committee.ad_hoc == False)
+            .subquery("attendance")
+        )
 
-        return db.session.query(
-            subquery.c.committee_id,
-            subquery.c.house,
-            cast(subquery.c.year, Integer).label('year'),
-            func.count(1).label('n_meetings'),
-            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
-            cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-        )\
-            .group_by(subquery.c.year, subquery.c.committee_id, subquery.c.house)\
-            .order_by(subquery.c.year, subquery.c.committee_id)\
+        return (
+            db.session.query(
+                subquery.c.committee_id,
+                subquery.c.house,
+                cast(subquery.c.year, Integer).label("year"),
+                func.count(1).label("n_meetings"),
+                func.avg(
+                    cast(subquery.c.n_present, Float) / subquery.c.n_members
+                ).label("avg_attendance"),
+                cast(func.avg(subquery.c.n_members), Float).label("avg_members"),
+            )
+            .group_by(subquery.c.year, subquery.c.committee_id, subquery.c.house)
+            .order_by(subquery.c.year, subquery.c.committee_id)
             .all()
+        )
 
     @classmethod
     def committee_attendence_trends(cls, committee_id, period):
-        query = db.session.query(
-                func.date_part('year', CommitteeMeeting.date).label('year'),
-                func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
-                func.count(CommitteeMeetingAttendance.id).label('n_members')
-                )\
-               .group_by('year', CommitteeMeeting.id)\
-               .filter(CommitteeMeeting.committee_id == committee_id)\
-               .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)
+        query = (
+            db.session.query(
+                func.date_part("year", CommitteeMeeting.date).label("year"),
+                func.count(
+                    case(
+                        [
+                            (
+                                CommitteeMeetingAttendance.attendance.in_(
+                                    CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT
+                                ),
+                                1,
+                            )
+                        ]
+                    )
+                ).label("n_present"),
+                func.count(CommitteeMeetingAttendance.id).label("n_members"),
+            )
+            .group_by("year", CommitteeMeeting.id)
+            .filter(CommitteeMeeting.committee_id == committee_id)
+            .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)
+        )
 
-        if period == 'current':
-            query = query.filter(
-                CommitteeMeetingAttendance.created_at >= '2019-07-01')
+        if period == "current":
+            query = query.filter(CommitteeMeetingAttendance.created_at >= "2019-07-01")
         else:
-            query = query.filter(
-                CommitteeMeetingAttendance.created_at <= '2019-06-30')
+            query = query.filter(CommitteeMeetingAttendance.created_at <= "2019-06-30")
 
-        subquery = query.subquery('attendance')
-        return db.session.query(
-            subquery.c.year,
-            func.count(1).label('n_meetings'),
-            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
-            cast(func.avg(subquery.c.n_members), Float).label('avg_members')
-        )\
-            .group_by(subquery.c.year)\
-            .order_by(subquery.c.year)\
+        subquery = query.subquery("attendance")
+        return (
+            db.session.query(
+                subquery.c.year,
+                func.count(1).label("n_meetings"),
+                func.avg(
+                    cast(subquery.c.n_present, Float) / subquery.c.n_members
+                ).label("avg_attendance"),
+                cast(func.avg(subquery.c.n_members), Float).label("avg_members"),
+            )
+            .group_by(subquery.c.year)
+            .order_by(subquery.c.year)
             .all()
+        )
 
     @classmethod
     def annual_attendance_rank_for_committee(cls, committee, year):
@@ -1396,7 +1659,13 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         return None, count
 
-db.Index('meeting_member_ix', CommitteeMeetingAttendance.meeting_id, CommitteeMeetingAttendance.member_id, unique=True)
+
+db.Index(
+    "meeting_member_ix",
+    CommitteeMeetingAttendance.meeting_id,
+    CommitteeMeetingAttendance.member_id,
+    unique=True,
+)
 
 
 class Minister(ApiResource, db.Model):
@@ -1411,7 +1680,9 @@ class Minister(ApiResource, db.Model):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp['questions_url'] = url_for('api.minister_questions', minister_id=self.id, _external=True)
+        tmp["questions_url"] = url_for(
+            "api.minister_questions", minister_id=self.id, _external=True
+        )
         return tmp
 
     def __unicode__(self):
@@ -1419,10 +1690,7 @@ class Minister(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls\
-            .query\
-            .options(joinedload('committee'))\
-            .order_by(cls.name)
+        return cls.query.options(joinedload("committee")).order_by(cls.name)
 
     @classmethod
     def find_by_inexact_name(cls, name, threshold=0.8, candidates=None):
@@ -1442,6 +1710,7 @@ class Minister(ApiResource, db.Model):
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
     from pmg.search import Search
+
     searcher = Search()
 
     for obj, change in changes:
@@ -1451,9 +1720,11 @@ def on_models_changed(sender, changes):
         # committed. Any work we want to do needs to be done in a new session.
 
         if searcher.indexable(obj):
-            logger.info('Reindexing changed item: %s %s(%s)' % (change, obj.__class__, obj.id))
+            logger.info(
+                "Reindexing changed item: %s %s(%s)" % (change, obj.__class__, obj.id)
+            )
 
-            if change == 'delete':
+            if change == "delete":
                 # deleted
                 searcher.delete_obj(obj.__class__, obj.id)
             else:
@@ -1467,6 +1738,7 @@ def on_models_changed(sender, changes):
                     searcher.add_obj(obj)
                 finally:
                     s.close()
+
 
 # Register all the resource types. This ensures they show up in the API and are searchable
 ApiResource.register(Bill)

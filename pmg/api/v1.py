@@ -303,7 +303,7 @@ def search():
 
 
 @api.route("/bill/<int:bill_id>/")
-@api.route("/bill/<any(current, draft, pmb, tabled, committee):scope>/")
+@api.route("/bill/<any(current, draft, pmb, tabled, 'pmb-committee'):scope>/")
 def current_bill_list(scope=None, bill_id=None):
     query = Bill.list()
 

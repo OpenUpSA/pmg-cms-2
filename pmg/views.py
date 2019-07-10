@@ -209,9 +209,9 @@ def bills_explained():
 
 
 @app.route("/bills/<any(current):bill_type>/")
-@app.route("/bills/<any(all, draft, pmb, tabled, committee):bill_type>/")
+@app.route("/bills/<any(all, draft, pmb, tabled, 'pmb-committee'):bill_type>/")
 @app.route(
-    "/bills/<any(all, draft, pmb, tabled, committee):bill_type>/year/<int:year>/"
+    "/bills/<any(all, draft, pmb, tabled, 'pmb-committee'):bill_type>/year/<int:year>/"
 )
 def bills(bill_type, year=None):
     if bill_type == 'current':

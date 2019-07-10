@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {% if bill_type == 'pmb' %}
+  {% if bill_type == 'pmb-committee' %}
     Private Member &amp Committee Bills
   {% elif bill_type == 'all' %}
     All Tabled &amp; Draft Bills
@@ -20,7 +20,7 @@
 {% block page %}
 <h1>
   <i class="fa fa-icon fa-file-text-o"></i>
-  {% if bill_type == 'pmb' %}
+  {% if bill_type == 'pmb-committee' %}
   Private Member &amp; Committee Bills
   {% elif bill_type == 'all' %}
   All Tabled &amp; Draft Bills

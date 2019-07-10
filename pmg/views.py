@@ -12,6 +12,7 @@ from flask import request, flash, url_for, session, render_template, abort, redi
 from flask_security import current_user
 from flask_mail import Message
 from flask import make_response
+from slugify import slugify
 
 from pmg import app, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
@@ -961,9 +962,7 @@ def members():
                 'sphere'] == 'national':
             members_by_house.setdefault(member['house']['name'],
                                         []).append(member)
-    id_mapping = {
-        house: house.lower().replace(" ", "-") for house in members_by_house.keys()
-    }
+    id_mapping = {house: slugify(house) for house in members_by_house.keys()}
 
     return render_template(
         "member_list.html", members_by_house=members_by_house, id_mapping=id_mapping

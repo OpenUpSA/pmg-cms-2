@@ -325,8 +325,13 @@ def current_bill_list(scope=None, bill_id=None):
     elif scope == "tabled":
         query = query.filter(Bill.type != BillType.draft())
 
-    elif scope == "committee":
-        query = Bill.committee_bill()
+    elif scope == "pmb-committee":
+        query = query.filter(
+            or_(
+                Bill.type_id.in_([b.id for b in BillType.private_member_bill()]),
+                Bill.introduced_by.like("%Committee%"),
+            )
+        )
 
     return api_resource_list(query)
 

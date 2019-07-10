@@ -232,15 +232,14 @@ def bills(bill_type, year=None):
             abort(404)
         params['filter[year]'] = year
 
-    api_url = "bill" if bill_type == "all" else "bill/%s" % bill_type
-    bills = load_from_api(api_url, return_everything=True, params=params)["results"]
+    if bill_type == "all":
+        api_url = "bill"
+    elif bill_type == "pmb-committee":
+        api_url = "bill/pmb-committee"
+    else:
+        api_url = "bill/%s" % bill_type
 
-    if bill_type == "pmb":
-        api_url = "bill/committee"
-        committee = load_from_api(api_url, return_everything=True, params=params)[
-            "results"
-        ]
-        bills = bills + committee
+    bills = load_from_api(api_url, return_everything=True, params=params)["results"]
 
     bills.sort(key=lambda b: [-b["year"], b["code"][0], b.get("number", 0), b["title"]])
 

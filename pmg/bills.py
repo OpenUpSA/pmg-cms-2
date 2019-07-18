@@ -111,7 +111,59 @@ def bill_history(bill):
         info.update(location)
         history.append(info)
 
+    history = hansard_linking(history)
     return history
+
+
+def match_title(event_title):
+    """
+    Match bill title against the following possible titles
+    """
+    bill_titles = [
+        "Bill passed by National Assembly",
+        "Bill passed by both Houses",
+        "Bill revived on this date",
+        "The NCOP rescinded",
+        "Bill remitted",
+    ]
+    for title in bill_titles:
+        if title in event_title:
+            return True
+    return False
+
+
+def match_dates(hansard_date, event_date):
+    hansard_iso_date = iso8601.parse_date(hansard_date)
+    event_iso_date = iso8601.parse_date(event_date)
+    if hansard_iso_date.date() == event_iso_date.date():
+        return True
+    return False
+
+
+def hansard_linking(bill_history):
+    """
+    We need to link certain bill events to hansards
+    Hansrds will always be linked to a house (NA or NCOP)
+    The Date of the bill event and the hansard will be the same.
+    Bill Titles we are looking for:
+    * Bill passed by National Assembly
+    * Bill passed by both Houses
+    * Bill revived on this date
+    * The NCOP rescinded
+    * Bill remitted
+    """
+
+    for class_history in bill_history:
+        for event_history in class_history["events"]:
+            if event_history["type"] == "house":
+                for event in event_history["events"]:
+                    if event["type"] == "plenary":
+                        for bill_event in event_history["events"]:
+                            if match_title(bill_event["title"]) and match_dates(
+                                event["date"], bill_event["date"]
+                            ):
+                                bill_event["hansard"] = {"id": event["id"]}
+    return bill_history
 
 
 def count_parliamentary_days(date_from, date_to):

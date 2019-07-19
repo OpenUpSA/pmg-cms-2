@@ -13,7 +13,7 @@
   <a class="btn btn-sm btn-info" href="{{ url_for('archived_attendance_overview')}}">Historical Attendance</a>
 
   <h2 id="national-assembly">National Assembly</h2>
-  {% if not attendance %}
+  {% if not attendance_na %}
   <h4>Data for current parliament is not avaliable yet.</h4>
   {% else %}
   <table class="table table-hover sortable">
@@ -62,7 +62,7 @@
   {% endif %}
 
   <h2 id="ncop">National Council of Provinces</h2>
-  {% if not attendance %}
+  {% if not attendance_ncop %}
   <h4>Data for current parliament is not avaliable yet.</h4>
   {% else %}
   <table class="table table-hover sortable">

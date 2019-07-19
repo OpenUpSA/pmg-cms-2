@@ -491,10 +491,50 @@ def attendance_overview():
     Display overview of attendance for meetings.
     """
     this_year = datetime.today().year
-    attendance = CommitteeMeetingAttendance.annual_attendance_trends(
-        to_year=this_year)
+    attendance = CommitteeMeetingAttendance.annual_attendance_trends(to_year=this_year)
+
+    years = {
+        year: {
+            cte_id: list(cte_group)[0]
+            for cte_id, cte_group in groupby(group, lambda r: r.committee_id)
+        }
+        for year, group in groupby(attendance, lambda r: r.year)
+    }
+
+    attendance = {"NA": [], "NCOP": []}
+
+    for cte in Committee.list().all():
+        curr = years[this_year].get(cte.id)
+        prev = years[this_year].get(cte.id)
+
+        if cte.house.sphere != "national":
+            continue
+        if not curr or cte.ad_hoc or cte.house.name_short == "Joint":
+            continue
+
+        attendance[cte.house.name_short].append(
+            {
+                "committee": cte.name,
+                "committee_id": cte.id,
+                "n_meetings": curr.n_meetings,
+                "avg_attendance": curr.avg_attendance * 100,
+                "change": (curr.avg_attendance - (prev.avg_attendance if prev else 0))
+                * 100,
+            }
+        )
+
+    # rank them
+    for att in attendance.itervalues():
+        att.sort(key=lambda a: a["avg_attendance"], reverse=True)
+        for i, item in enumerate(att):
+            att[i]["rank"] = len(att) - i
+
     return render_template(
-        'attendance_overview.html', year=this_year, attendance=attendance)
+        "attendance_overview.html",
+        year=this_year,
+        attendance_na=attendance["NA"],
+        attendance_ncop=attendance["NCOP"],
+    )
 
 
 @app.route('/committee-question/<int:question_id>/')

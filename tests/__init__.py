@@ -1,6 +1,8 @@
 # setup testing environment
 import os
 
+os.environ["FLASK_ENV"] = "test"
+
 from pmg import app
 from pmg.models import db
 from flask_testing import TestCase
@@ -8,7 +10,6 @@ from flask_testing import LiveServerTestCase
 import multiprocessing
 import time
 
-os.environ["FLASK_ENV"] = "test"
 
 
 class PMGTestCase(TestCase):

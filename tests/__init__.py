@@ -72,6 +72,8 @@ class PMGLiveServerTestCase(LiveServerTestCase):
                 break
 
     def create_app(self):
+        # https://stackoverflow.com/a/38529331/1305080
+        db.engine.dispose()
         return app
 
     def setUp(self):

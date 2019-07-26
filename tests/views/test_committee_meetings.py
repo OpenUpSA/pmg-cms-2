@@ -10,6 +10,10 @@ class TestCommitteeMeetings(PMGLiveServerTestCase):
         self.fx = dbfixture.data(HouseData, CommitteeData, CommitteeMeetingData)
         self.fx.setup()
 
+    def tearDown(self):
+        self.fx.teardown()
+        super(TestCommitteeMeetings, self).tearDown()
+
     def test_premium_committee_meeting(self):
         res = urllib2.urlopen(
             "http://pmg.test:5000/committee-meeting/%s/"
@@ -33,6 +37,10 @@ class TestCommitteeMeetings2(PMGLiveServerTestCase):
 
         self.fx = dbfixture.data(HouseData, CommitteeData, CommitteeMeetingData)
         self.fx.setup()
+
+    def tearDown(self):
+        self.fx.teardown()
+        super(TestCommitteeMeetings2, self).tearDown()
 
     def test_premium_committee_meeting2(self):
         res = urllib2.urlopen(

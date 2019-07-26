@@ -39,6 +39,10 @@ class CommitteeData(DataSet):
         name = 'Arts and Culture'
         house = HouseData.na
 
+    class constitutional_review:
+        name = 'Constitutional Review Committee'
+        house = HouseData.joint
+
 
 class CommitteeMeetingData(DataSet):
     class arts_meeting_one:

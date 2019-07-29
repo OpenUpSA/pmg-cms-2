@@ -18,11 +18,15 @@ class TestMemberPage(PMGLiveServerTestCase):
         super(TestMemberPage, self).tearDown()
 
     def test_members_page(self):
+        """
+        Test members page (http://pmg.test:5000/members)
+        """
         committee = self.fx.MemberData.veronica
         self.get_page_contents(
             "http://pmg.test:5000/members/"
         )
         self.assertIn('Members of Parliament', self.html)
+        self.assertIn('Search for members', self.html)
 
         self.check_member(MemberData.veronica)
         self.check_member(MemberData.not_current_member)

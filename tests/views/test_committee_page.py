@@ -21,6 +21,9 @@ class TestCommitteePage(PMGLiveServerTestCase):
         super(TestCommitteePage, self).tearDown()
 
     def test_committee_page(self):
+        """
+        Test committee page (http://pmg.test:5000/committee/<id>/)
+        """
         committee = self.fx.CommitteeData.arts
         self.get_page_contents(
             "http://pmg.test:5000/committee/%s/"

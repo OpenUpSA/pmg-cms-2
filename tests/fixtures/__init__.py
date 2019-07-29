@@ -5,7 +5,7 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-    CommitteeQuestion, Minister, Event, Featured, Page, BillStatus
+    CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -244,6 +244,14 @@ class PageData(DataSet):
         slug = "unfeaturedpage" 
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         featured = False
+
+class PostData(DataSet):
+    class the_week_ahead:
+        title = "The Week Ahead: End of the First Term"
+        slug = "theweekahead" 
+        featured = True
+        body = "A lot was packed into the first term of the Sixth Parliament."
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
 
 
 dbfixture = SQLAlchemyFixture(

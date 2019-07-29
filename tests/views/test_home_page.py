@@ -1,7 +1,7 @@
 from tests import PMGLiveServerTestCase
 from tests.fixtures import (
     dbfixture, MemberData, FeaturedData, PageData, CommitteeMeetingData,
-    BillData
+    BillData, CommitteeQuestionData, PostData
 )
 from flask import url_for
 
@@ -22,7 +22,8 @@ class TestHomePage(PMGLiveServerTestCase):
         super(TestHomePage, self).setUp()
 
         self.fx = dbfixture.data(
-            MemberData, FeaturedData, PageData, CommitteeMeetingData, BillData
+            MemberData, FeaturedData, PageData, CommitteeMeetingData, BillData,
+            CommitteeQuestionData, PostData
         )
         self.fx.setup()
 
@@ -93,10 +94,20 @@ class TestHomePage(PMGLiveServerTestCase):
         self.assertIn(bill.introduced_by, self.html)
 
     def doesNotContainUnCurrentBill(self, bill):
-        self.assertNotIn(bill.title, self.html)
+        self.assertNotIn(bill.title, self.html, 'Home page should not contain bills that doesn\'t have a "current" status.')
 
     def containsRecentQuestionsAndReplies(self):
         self.assertIn('Recent Questions and Replies', self.html)
+        self.containsQuestion(self.fx.CommitteeQuestionData.arts_committee_question_one)
+
+    def containsQuestion(self, question):
+        self.assertIn(question.question_to_name, self.html)
+        self.assertIn(question.question[:80], self.html)
 
     def containsRecentBlogs(self):
         self.assertIn('Recent Blogs', self.html)
+        self.containsPost(self.fx.PostData.the_week_ahead)
+
+    def containsPost(self, post):
+        self.assertIn(post.title, self.html)
+        self.assertIn(post.body[:80], self.html)

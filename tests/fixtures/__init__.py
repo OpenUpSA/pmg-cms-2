@@ -5,7 +5,7 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-    CommitteeQuestion, Minister
+    CommitteeQuestion, Minister, Event
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -32,7 +32,6 @@ class HouseData(DataSet):
         name_short = 'President'
         sphere = 'national'
 
-
 class MinisterData(DataSet):
     class minister_of_arts:
         name = "Minister of Sports, Arts and Culture"
@@ -51,7 +50,6 @@ class CommitteeData(DataSet):
     class constitutional_review:
         name = 'Constitutional Review Committee'
         house = HouseData.joint
-
 
 class CommitteeMeetingData(DataSet):
     class arts_meeting_one:
@@ -81,6 +79,11 @@ class BillTypeData(DataSet):
         name = "Section 74"
         prefix = "B"
         description = "Section 74"
+        
+    class section_75:
+        name = "Section 75"
+        prefix = "B"
+        description = "Ordinary Bills not affecting the provinces"
 
     class section_77:
         name = "Section 77"
@@ -123,6 +126,10 @@ class BillData(DataSet):
         title = "Children's Amendment Bill"
         type = BillTypeData.private_member_bill_77
 
+    class sport:
+        year = 2019
+        title = "2010 FIFA World Cup South Africa Special Measures Bill"
+        type = BillTypeData.section_75
 
 class CallForCommentData(DataSet):
     class arts_call_for_comment_one:
@@ -184,7 +191,16 @@ class CommitteeQuestionData(DataSet):
         intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
         asked_by_name = "Van Dyk, Ms V"
         asked_by_member = MemberData.veronica
-        # source_file = "TODO"
+
+class EventData(DataSet):
+    class arts_bill_event:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = "2010 FIFA World Cup South Africa Special Measures Bill [B13-2006]: Department briefing"
+        type = "Meeting"
+        committee = CommitteeData.arts
+        house = HouseData.na
+        bills = [BillData.sport]
+
 
 
 dbfixture = SQLAlchemyFixture(

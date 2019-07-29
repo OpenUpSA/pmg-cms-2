@@ -1,7 +1,8 @@
 from tests import PMGLiveServerTestCase
 from tests.fixtures import (
     dbfixture, HouseData, CommitteeData, CommitteeMeetingData,
-    CallForCommentData, TabledCommitteeReportData, CommitteeQuestionData
+    CallForCommentData, TabledCommitteeReportData, CommitteeQuestionData,
+    EventData, BillData
 )
 
 
@@ -11,7 +12,7 @@ class TestCommittees(PMGLiveServerTestCase):
 
         self.fx = dbfixture.data(
             HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData,
-            TabledCommitteeReportData, CommitteeQuestionData
+            TabledCommitteeReportData, CommitteeQuestionData, BillData, EventData
         )
         self.fx.setup()
 
@@ -76,4 +77,6 @@ class TestCommittees(PMGLiveServerTestCase):
 
     def containsBills(self):
         self.assertIn('Bills', self.html)
-        self.assertTrue(False)
+        self.assertIn(
+            self.fx.BillData.sport.title,
+            self.html)

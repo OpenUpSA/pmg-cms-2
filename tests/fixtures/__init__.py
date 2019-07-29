@@ -5,7 +5,8 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-    CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post
+    CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post, User,
+    Role
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -13,21 +14,25 @@ THIS_YEAR = datetime.datetime.today().year
 
 class HouseData(DataSet):
     class joint:
+        id = 1
         name = 'Joint (NA + NCOP)'
         name_short = 'Joint'
         sphere = 'national'
 
     class ncop:
+        id = 2
         name = 'National Council of Provinces'
         name_short = 'NCOP'
         sphere = 'national'
 
     class na:
+        id = 3
         name = 'National Assembly'
         name_short = 'NA'
         sphere = 'national'
 
     class president:
+        id = 4
         name = 'The President\'s Office',
         name_short = 'President'
         sphere = 'national'
@@ -252,6 +257,23 @@ class PostData(DataSet):
         featured = True
         body = "A lot was packed into the first term of the Sixth Parliament."
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+
+class RoleData(DataSet):
+    class admin:
+        name = "user-admin"
+        description = "user-admin"
+    class editor:
+        name = "editor"
+        description = "editor"
+
+class UserData(DataSet):
+    class admin:
+        email = "admin@pmg.org.za"
+        name = "Admin User"
+        active = True
+        roles = [RoleData.admin, RoleData.editor]
+        current_login_at = datetime.datetime.utcnow()
+        confirmed = True
 
 
 dbfixture = SQLAlchemyFixture(

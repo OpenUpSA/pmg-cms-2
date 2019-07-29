@@ -84,6 +84,16 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         db.drop_all()
 
     def get_page_contents(self, url):
-        res = urllib2.urlopen(url)
-        self.assertEqual(200, res.code)
-        self.html = res.read()
+        response = urllib2.urlopen(url)
+        self.assertEqual(200, response.code)
+        self.html = response.read()
+
+    def get_page_contents_as_user(self, user, url):
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session['user_id'] = user.id
+                session['fresh'] = True
+
+            response = client.get("http://pmg.test:5000/admin", follow_redirects=True)
+            self.assertEqual(200, response.status_code)
+            self.html = response.data

@@ -8,6 +8,7 @@ from pmg.models import db
 from flask_testing import TestCase, LiveServerTestCase
 import multiprocessing
 import time
+import urllib2
 
 
 class PMGTestCase(TestCase):
@@ -81,3 +82,9 @@ class PMGLiveServerTestCase(LiveServerTestCase):
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+
+    def get_page_contents(self, url):
+        res = urllib2.urlopen(url)
+        self.assertEqual(200, res.code)
+        self.html = res.read()
+

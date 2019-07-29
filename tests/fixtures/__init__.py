@@ -4,7 +4,8 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 
 from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
-    CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport
+    CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
+    CommitteeQuestion, Minister
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -32,6 +33,10 @@ class HouseData(DataSet):
         sphere = 'national'
 
 
+class MinisterData(DataSet):
+    class minister_of_arts:
+        name = "Minister of Sports, Arts and Culture"
+
 class CommitteeData(DataSet):
     class communications:
         name = 'Communications'
@@ -41,6 +46,7 @@ class CommitteeData(DataSet):
     class arts:
         name = 'Arts and Culture'
         house = HouseData.na
+        minister = MinisterData.minister_of_arts
 
     class constitutional_review:
         name = 'Constitutional Review Committee'
@@ -136,6 +142,49 @@ class TabledCommitteeReportData(DataSet):
         committee = CommitteeData.arts
         end_date = datetime.datetime(2019, 4, 30, 0, 0, 0, tzinfo=pytz.utc)
         body = "The Portfolio Committee on Agriculture, Land Reform and Rural Development (hereinafter referred to as the Committee) examined Budget Vote 24: Agriculture, Forestry and Fisheries including the Annual Performance Plan of the Department of Agriculture, Forestry and Fisheries (hereinafter referred to as DAFF or the Department) for the 2019/20 financial year and budget projections for the Medium Term Expenditure Framework (MTEF) period ending in 2021/22."
+
+class PartyData(DataSet):
+    class da:
+        name = "Democratic Alliance (DA)"
+    class anc:
+        name = "African National Congress (ANC)"
+
+class ProvinceData(DataSet):
+    class western_cape:
+        name = "Western Cape"
+    class gauteng:
+        name = "Gauteng"
+
+class MemberData(DataSet):
+    class veronica:
+        name = "Ms Veronica Van Dyk"
+        profile_pic_url = "https://www.pa.org.za/media_root/cache/02/93/0293cce7701daf86fa88fe02e1db9c58.jpg"
+        bio = "Ms Veronica van Dyk is the Deputy Shadow Minister for Communications in the DA, since June 2014. She is a former Ward Councillor of the Nama Khoi Local Municipality."
+        house = HouseData.na 
+        party = PartyData.da
+        province = ProvinceData.western_cape
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        pa_link = "http://www.pa.org.za"
+        current = True
+
+class CommitteeQuestionData(DataSet):
+    class arts_committee_question_one:
+        minister = MinisterData.minister_of_arts
+        code = "NA1"
+        question_number = 1
+        house = HouseData.na
+        written_number = 1
+        oral_number = 1
+        answer_type = "oral"
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        year = 2019
+        question = "What programmes that promote the languages, culture and heritage of the Khoi and San has the Government implemented in each province in each of the past five years" 
+        answer = "Through possible funding and strategic partnerships between PanSALB and my Department, PanSALB was able to initiate and support the following programmes."
+        question_to_name = "Minister of Sports, Arts and Culture"
+        intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
+        asked_by_name = "Van Dyk, Ms V"
+        asked_by_member = MemberData.veronica
+        # source_file = "TODO"
 
 
 dbfixture = SQLAlchemyFixture(

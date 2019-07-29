@@ -6,9 +6,9 @@ from tests.fixtures import (
 )
 
 
-class TestCommittees(PMGLiveServerTestCase):
+class TestCommitteePage(PMGLiveServerTestCase):
     def setUp(self):
-        super(TestCommittees, self).setUp()
+        super(TestCommitteePage, self).setUp()
 
         self.fx = dbfixture.data(
             HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData,
@@ -18,18 +18,7 @@ class TestCommittees(PMGLiveServerTestCase):
 
     def tearDown(self):
         self.fx.teardown()
-        super(TestCommittees, self).tearDown()
-
-    def test_committees_page(self):
-        self.get_page_contents("http://pmg.test:5000/committees")
-        self.assertIn('committees', self.html)
-        self.assertIn(self.fx.CommitteeData.communications.name, self.html)
-        self.assertIn(self.fx.CommitteeData.arts.name, self.html)
-        self.assertIn(self.fx.CommitteeData.constitutional_review.name, self.html)
-        headings = ['National Assembly', 'Joint',
-                    'National Council of Provinces', 'Ad-hoc']
-        for heading in headings:
-            self.assertIn(heading, self.html)
+        super(TestCommitteePage, self).tearDown()
 
     def test_committee_page(self):
         committee = self.fx.CommitteeData.arts

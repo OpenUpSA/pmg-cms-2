@@ -1,6 +1,7 @@
 from tests import PMGLiveServerTestCase
 from tests.fixtures import (
-    dbfixture, HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData
+    dbfixture, HouseData, CommitteeData, CommitteeMeetingData,
+    CallForCommentData, TabledCommitteeReportData
 )
 import urllib2
 
@@ -10,7 +11,9 @@ class TestCommittees(PMGLiveServerTestCase):
         super(TestCommittees, self).setUp()
 
         self.fx = dbfixture.data(
-            HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData)
+            HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData,
+            TabledCommitteeReportData
+        )
         self.fx.setup()
 
     def tearDown(self):
@@ -28,7 +31,10 @@ class TestCommittees(PMGLiveServerTestCase):
         self.assertIn(self.fx.CommitteeData.communications.name, html)
         self.assertIn(self.fx.CommitteeData.arts.name, html)
         self.assertIn(self.fx.CommitteeData.constitutional_review.name, html)
-        self.assertIn(self.fx.HouseData.cjoint.name, html)
+        headings = ['National Assembly', 'Joint',
+                    'National Council of Provinces', 'Ad-hoc']
+        for heading in headings:
+            self.assertIn(heading, html)
 
     def test_committee_page(self):
         committee = self.fx.CommitteeData.arts
@@ -42,23 +48,15 @@ class TestCommittees(PMGLiveServerTestCase):
         for heading in headings:
             self.assertIn(heading, html)
 
-    def test_committee_page_meetings(self):
-        committee = self.fx.CommitteeData.arts
-        html = self.get_page_contents(
-            "http://pmg.test:5000/committee/%s/"
-            % committee.id
-        )
-
         self.assertIn(
             self.fx.CommitteeMeetingData.arts_meeting_one.title, html)
         self.assertIn(
             self.fx.CommitteeMeetingData.arts_meeting_two.title, html)
 
-    def test_committee_calls_for_comment(self):
-        committee = self.fx.CommitteeData.arts
-        html = self.get_page_contents(
-            "http://pmg.test:5000/committee/%s/"
-            % committee.id
-        )
+        self.assertIn(
+            self.fx.CallForCommentData.arts_call_for_comment_one,
+            html)
 
-        self.assertIn(self.fx.CallForCommentData.arts_call_for_comment_one, html)
+        self.assertIn(
+            self.fx.TabledCommitteeReportData.arts_tabled_committee_report_one.title,
+            html)

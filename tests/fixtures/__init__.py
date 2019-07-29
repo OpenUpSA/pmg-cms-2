@@ -173,6 +173,18 @@ class MemberData(DataSet):
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         pa_link = "http://www.pa.org.za"
         current = True
+    class not_current_member:
+        name = "Phoebe Noxolo Abraham"
+        house = HouseData.na 
+        party = PartyData.anc
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        current = False
+    class laetitia:
+        name = "Laetitia Heloise Arries"
+        house = HouseData.joint
+        party = PartyData.anc
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        current = True
 
 class CommitteeQuestionData(DataSet):
     class arts_committee_question_one:

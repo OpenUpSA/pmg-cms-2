@@ -5,8 +5,7 @@ os.environ["FLASK_ENV"] = "test"
 from pmg import app
 from pmg.models import db
 
-from flask_testing import TestCase
-from flask_testing import LiveServerTestCase
+from flask_testing import TestCase, LiveServerTestCase
 import multiprocessing
 import time
 

@@ -5,7 +5,7 @@ from fixture import DataSet, NamedDataStyle, SQLAlchemyFixture
 from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
-    CommitteeQuestion, Minister, Event
+    CommitteeQuestion, Minister, Event, Featured, Page, BillStatus
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -61,6 +61,7 @@ class CommitteeMeetingData(DataSet):
         date = datetime.datetime(2019, 8, 1, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Public meeting Two'
         committee = CommitteeData.arts
+        featured = True
 
     class premium_recent:
         date = datetime.datetime(THIS_YEAR, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
@@ -101,6 +102,11 @@ class BillTypeData(DataSet):
         description = 'Private Member Bill: Section 77'
 
 
+class BillStatusData(DataSet):
+    class current:
+        name = "na"
+        description = "current"
+
 class BillData(DataSet):
     """
     Enter various types of bills
@@ -110,6 +116,8 @@ class BillData(DataSet):
         year = 2019
         title = "Food and Health Bill"
         type = BillTypeData.section_74
+        introduced_by = "Minister of Finance"
+        status = BillStatusData.current
 
     class farm:
         year = 2019
@@ -213,6 +221,29 @@ class EventData(DataSet):
         house = HouseData.na
         bills = [BillData.sport]
 
+class FeaturedData(DataSet):
+    class the_week_ahead:
+        title = "The Week Ahead: End of the First Term"
+        link = "https://pmg.org.za/blog/The%20Week%20Ahead:%20End%20of%20the%20First%20Term"
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+
+    class current_bills:
+        title = "Current Bills"
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        link = "https://pmg.org.za/bills/current/"
+
+class PageData(DataSet):
+    class section_25_review_process:
+        title = "Section 25 review process"
+        slug = "Section25reviewprocess" 
+        body = "In February 2018, the National Assembly adopted a motion proposed by the EFF, with amendments by the ANC that Parliament's Constitutional Review Committee investigates mechanisms through which land can be expropriated without compensation."
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        featured = True
+    class un_featured_page:
+        title = "Unfeatured page"
+        slug = "unfeaturedpage" 
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        featured = False
 
 
 dbfixture = SQLAlchemyFixture(

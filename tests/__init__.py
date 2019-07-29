@@ -87,4 +87,3 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         res = urllib2.urlopen(url)
         self.assertEqual(200, res.code)
         self.html = res.read()
-

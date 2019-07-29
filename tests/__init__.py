@@ -94,6 +94,6 @@ class PMGLiveServerTestCase(LiveServerTestCase):
                 session['user_id'] = user.id
                 session['fresh'] = True
 
-            response = client.get("http://pmg.test:5000/admin", follow_redirects=True)
+            response = client.get(url, follow_redirects=True)
             self.assertEqual(200, response.status_code)
             self.html = response.data

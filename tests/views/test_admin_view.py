@@ -10,7 +10,7 @@ class TestAdminView(PMGLiveServerTestCase):
         super(TestAdminView, self).setUp()
 
         self.fx = dbfixture.data(
-            RoleData,UserData, 
+            RoleData, UserData, 
         )
         self.fx.setup()
 
@@ -20,14 +20,14 @@ class TestAdminView(PMGLiveServerTestCase):
 
     def test_admin_page_unauthorised(self):
         """
-        Test admin page (http://pmg.test:5000/admin)
+        Test admin page (http://pmg.test:5000/admin) unauthorised
         """
         self.get_page_contents("http://pmg.test:5000/admin")
         self.assertIn('Login now', self.html)
 
     def test_admin_page_authorised(self):
         """
-        Test admin page (http://pmg.test:5000/admin)
+        Test admin page (http://pmg.test:5000/admin) authorised
         """
         user = self.fx.UserData.admin
         self.get_page_contents_as_user(user, "http://pmg.test:5000/admin")

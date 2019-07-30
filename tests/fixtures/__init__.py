@@ -6,7 +6,7 @@ from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
     CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post, User,
-    Role
+    Role, Membership, MembershipType
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -274,6 +274,17 @@ class UserData(DataSet):
         roles = [RoleData.admin, RoleData.editor]
         current_login_at = datetime.datetime.utcnow()
         confirmed = True
+
+class MembershipTypeData(DataSet):
+    class member:
+        name = "Member"
+
+class MembershipData(DataSet):
+    class arts_membership_one:
+        type = MembershipTypeData.member
+        committee = CommitteeData.arts
+        member = MemberData.veronica
+
 
 
 dbfixture = SQLAlchemyFixture(

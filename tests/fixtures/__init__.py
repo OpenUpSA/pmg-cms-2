@@ -111,6 +111,12 @@ class BillStatusData(DataSet):
     class current:
         name = "na"
         description = "current"
+    class assent:
+        name = "assent"
+        description = "assent"
+    class president:
+        name = "president"
+        description = "president"
 
 class BillData(DataSet):
     """
@@ -128,11 +134,13 @@ class BillData(DataSet):
         year = 2019
         title = 'Farm and Agricultural Bill'
         type = BillTypeData.section_77
+        status = BillStatusData.president
 
     class public:
         year = 2019
         title = 'Public Investment Corporation Amendment Bill'
         type = BillTypeData.private_member_bill_74
+        status = BillStatusData.assent
 
     class child:
         year = 2019

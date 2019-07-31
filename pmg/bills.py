@@ -151,6 +151,8 @@ def hansard_linking(bill_history):
     * Bill revived on this date
     * The NCOP rescinded
     * Bill remitted
+    If the event(bill_passed etc) is matched, a new dict is created with the matching hansard id.
+    The Hansard event is not modified.
     """
 
     for class_history in bill_history:

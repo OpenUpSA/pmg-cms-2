@@ -1,14 +1,18 @@
 language: python
+cache: pip
 sudo: false
 python:
   - "2.7"
 addons:
   postgresql: "9.4"
+  hosts:
+    - pmg.test
+    - api.pmg.test
 env:
   - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:@localhost:5432/pmg_test?client_encoding=utf8
 before_script:
   - export BOTO_CONFIG=/dev/null
   - psql -c 'create database pmg_test;' -U postgres
-install: 
+install:
   - "pip install -r requirements.txt"
 script: nosetests tests

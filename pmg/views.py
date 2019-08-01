@@ -529,9 +529,11 @@ def attendance_overview():
         for i, item in enumerate(att):
             att[i]["rank"] = len(att) - i
 
+    total_years = len(years.keys())
     return render_template(
         "attendance_overview.html",
         year=this_year,
+        total_years=total_years,
         attendance_na=attendance["NA"],
         attendance_ncop=attendance["NCOP"],
     )

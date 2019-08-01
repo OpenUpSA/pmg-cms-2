@@ -100,13 +100,5 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn("Committee meeting attendance trends for 2019", self.html)
         self.assertIn("Arts and Culture", self.html)
         self.assertIn("50%", self.html)
-
-    def test_historical_attendance_overview(self):
-        self.get_page_contents("http://pmg.test:5000/archived-attendance-overview")
-        self.assertIn(
-            "This data contains historical data for the 5th parliament.", self.html
-        )
-
-    # def test_historical_attendance_overview(self):
-    #      self.get_page_contents("http://pmg.test:5000/committees")
-    #     pass
+        self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
+        self.assertNotIn("Since", self.html)

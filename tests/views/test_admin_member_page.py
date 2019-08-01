@@ -70,3 +70,21 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
             Member.name == data['name']).scalar()
         self.assertTrue(created_member)
         self.created_objects.append(created_member)
+
+    def test_admin_delete_member(self):
+        """
+        Delete a member with the admin interface (http://pmg.test:5000/admin/member/action/)
+        """
+        before_count = len(Member.query.all())
+        url = "http://pmg.test:5000/admin/member/action/"
+        data = {
+            'url': '/admin/member/',
+            'action': 'delete',
+            'rowid': [
+                str(self.fx.MemberData.veronica.id),
+            ]
+        }
+        response = self.request_as_user(self.user, url, data=data, method="POST")
+        after_count = len(Member.query.all())
+        self.assertEqual(302, response.status_code)
+        self.assertGreater(before_count, after_count)

@@ -59,3 +59,21 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         created_committee = Committee.query.filter(Committee.name == data['name']).scalar()
         self.assertTrue(created_committee)
         self.created_objects.append(created_committee)
+
+    def test_admin_delete_committee(self):
+        """
+        Delete a committee with the admin interface (http://pmg.test:5000/admin/committee/action/)
+        """
+        before_count = len(Committee.query.all())
+        url = "http://pmg.test:5000/admin/committee/action/"
+        data = {
+            'url': '/admin/committee/',
+            'action': 'delete',
+            'rowid': [
+                str(self.fx.CommitteeData.arts.id),
+            ]
+        }
+        response = self.request_as_user(self.user, url, data=data, method="POST")
+        after_count = len(Committee.query.all())
+        self.assertEqual(302, response.status_code)
+        self.assertGreater(before_count, after_count)

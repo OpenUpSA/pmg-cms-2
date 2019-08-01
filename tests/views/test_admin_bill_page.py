@@ -61,3 +61,21 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         created_bill = Bill.query.filter(Bill.title == data['title']).scalar()
         self.assertTrue(created_bill)
         self.created_objects.append(created_bill)
+
+    def test_admin_delete_bill(self):
+        """
+        Delete a bill with the admin interface (http://pmg.test:5000/admin/bill/action/)
+        """
+        before_count = len(Bill.query.all())
+        url = "http://pmg.test:5000/admin/bill/action/"
+        data = {
+            'url': '/admin/bill/',
+            'action': 'delete',
+            'rowid': [
+                str(self.fx.BillData.food.id),
+            ]
+        }
+        response = self.request_as_user(self.user, url, data=data, method="POST")
+        after_count = len(Bill.query.all())
+        self.assertEqual(302, response.status_code)
+        self.assertGreater(before_count, after_count)

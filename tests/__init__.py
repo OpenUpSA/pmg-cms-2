@@ -97,3 +97,18 @@ class PMGLiveServerTestCase(LiveServerTestCase):
             response = client.get(url, follow_redirects=True)
             self.assertEqual(200, response.status_code)
             self.html = response.data
+
+    def post_request_as_user(self, user, url, data):
+        with self.app.test_client() as client:
+            with client.session_transaction() as session:
+                session['user_id'] = user.id
+                session['fresh'] = True
+
+            response = client.post(url, data=data, content_type="multipart/form-data", follow_redirects=False)
+            self.html = response.data
+            return response
+
+    def delete_created_objects(self):
+        for to_delete in self.created_objects:
+            db.session.delete(to_delete)
+        db.session.commit()

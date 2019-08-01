@@ -78,6 +78,7 @@ class PMGLiveServerTestCase(LiveServerTestCase):
 
     def setUp(self):
         db.create_all()
+        self.created_objects = []
 
     def tearDown(self):
         db.session.remove()

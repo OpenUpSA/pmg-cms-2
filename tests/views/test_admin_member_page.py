@@ -1,5 +1,5 @@
 from tests import PMGLiveServerTestCase
-from pmg.models import db
+from pmg.models import db, Member
 from tests.fixtures import (
     dbfixture, MemberData, UserData, MembershipData
 )
@@ -16,6 +16,7 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         self.user = self.fx.UserData.admin
 
     def tearDown(self):
+        self.delete_created_objects()
         self.fx.teardown()
         super(TestAdminMemberPage, self).tearDown()
 
@@ -42,3 +43,28 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
             self.assertIn(member.profile_pic_url, self.html)
         for membership in member.memberships:
             self.assertIn(membership.committee.name, self.html)
+
+    def test_admin_create_member(self):
+        """
+        Create a member with the admin interface (http://pmg.test:5000/admin/member/new/)
+        """
+        before_count = len(Member.query.all())
+        url = "http://pmg.test:5000/admin/member/new/?url=%2Fadmin%2Fmember%2F"
+        data = {
+            'name': 'New member',
+            'current': 'y',
+            'monitored': 'y',
+            'house': '__None',
+            'party': '__None',
+            'province': '__None',
+            'bio': '',
+            'pa_link': '',
+        }
+        response = self.post_request_as_user(self.user, url, data)
+        after_count = len(Member.query.all())
+        self.assertEqual(302, response.status_code)
+        self.assertLess(before_count, after_count)
+
+        created_member = Member.query.filter(Member.name == data['name']).scalar()
+        self.assertTrue(created_member)
+        self.created_objects.append(created_member)

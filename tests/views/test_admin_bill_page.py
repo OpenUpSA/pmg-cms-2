@@ -15,7 +15,6 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         )
         self.fx.setup()
         self.user = self.fx.UserData.admin
-        self.created_objects = []
 
     def tearDown(self):
         self.delete_created_objects()

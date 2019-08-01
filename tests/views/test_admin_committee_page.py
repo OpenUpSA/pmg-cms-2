@@ -1,5 +1,5 @@
 from tests import PMGLiveServerTestCase
-from pmg.models import db
+from pmg.models import db, Committee
 from tests.fixtures import (
     dbfixture, UserData, CommitteeData, MembershipData
 )
@@ -16,6 +16,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         self.user = self.fx.UserData.admin
 
     def tearDown(self):
+        self.delete_created_objects()
         self.fx.teardown()
         super(TestAdminCommitteePage, self).tearDown()
 
@@ -34,3 +35,27 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         self.assertIn(committee.name, self.html)
         self.assertIn(committee.house.name, self.html)
         self.assertIn(str(len(committee.memberships)), self.html)
+
+    def test_admin_create_committee(self):
+        """
+        Create a committee with the admin interface (http://pmg.test:5000/admin/committee/new/)
+        """
+        before_count = len(Committee.query.all())
+        url = "http://pmg.test:5000/admin/committee/new/?url=%2Fadmin%2Fcommittee%2F"
+        data = {
+            'name': 'New committee',
+            'active': 'y',
+            'monitored': 'y',
+            'house': str(self.fx.HouseData.na.id),
+            'minister': '__None',
+            'about': '',
+            'contact_details': '',
+        }
+        response = self.post_request_as_user(self.user, url, data)
+        after_count = len(Committee.query.all())
+        self.assertEqual(302, response.status_code)
+        self.assertLess(before_count, after_count)
+
+        created_committee = Committee.query.filter(Committee.name == data['name']).scalar()
+        self.assertTrue(created_committee)
+        self.created_objects.append(created_committee)

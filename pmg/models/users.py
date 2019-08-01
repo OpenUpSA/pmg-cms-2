@@ -125,7 +125,7 @@ class User(db.Model, UserMixin):
 
     def update_current_login(self):
         now = datetime.datetime.utcnow()
-        if self.current_login_at + datetime.timedelta(hours=1) < now:
+        if self.current_login_at.replace(tzinfo=None) + datetime.timedelta(hours=1) < now:
             self.current_login_at = now
             db.session.commit()
 

@@ -14,7 +14,7 @@
     </tr>
     {% endfor %}
 {% else %}
-    {% for item in attendance_na %}
+    {% for item in attendance_house %}
     <tr id="{{ item.committee_id }}">
         <td class="rank">#{{ loop.index }}</td>
         <td class="cte-name"><a href="{{ url_for('committee_detail', committee_id=item.committee_id) }}">{{ item.committee }}</a></td>

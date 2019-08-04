@@ -6,7 +6,7 @@ from flask.ext.migrate import MigrateCommand
 app.debug = True
 
 manager = Manager(app)
-manager.add_command('runserver', Server(port=5000, threaded=True))
+manager.add_command('runserver', Server(port=5000, threaded=True, host='0.0.0.0'))
 manager.add_command('db', MigrateCommand)
 
 

@@ -15,11 +15,12 @@ SECRET_KEY = env.get('FLASK_SECRET_KEY',
                      "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
 
+DATABASE_SERVER_NAME = env.get('DATABASE_SERVER_NAME', 'localhost')
 SQLALCHEMY_DATABASE_URI = env.get(
     'SQLALCHEMY_DATABASE_URI',
-    'postgresql+psycopg2://pmg:pmg@localhost/pmg_test?client_encoding=utf8'
+    'postgresql+psycopg2://pmg:pmg@{}/pmg_test?client_encoding=utf8'.format(DATABASE_SERVER_NAME)
     if TEST else
-    'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
+    'postgresql+psycopg2://pmg:pmg@{}/pmg?client_encoding=utf8').format(DATABASE_SERVER_NAME)
 SQLALCHEMY_ECHO = False
 # This is required only be pmg.models.resources.delete_file_from_s3 and can de turned off if
 # that is changed to use sqlalchemy events

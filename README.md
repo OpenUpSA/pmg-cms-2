@@ -48,16 +48,17 @@ If you want to contribute to the code, please fork the repository, make your cha
 ### Local setup
 Build the necessary services:
 
-    sudo docker-compose build
+    docker-compose build
 
 Setup the database:
 
-    sudo docker-compose run --rm web python setup_database.py
-    sudo docker-compose run --rm web python app.py db stamp head
+    docker-compose run --rm web python setup_dev_database.py
+    docker-compose run --rm web python app.py db stamp head
+    docker-compose run --rm web python index_elastic.py
 
 Start the server:  
 
-    sudo docker-compose up 
+    docker-compose up
 
 You should now see it running at [http://pmg.test:5000/](http://pmg.test:5000/) and [http://api.pmg.test:5000/](http://api.pmg.test:5000/).
 
@@ -68,12 +69,12 @@ You can login with:
 
 Each time you pull in changes that might contain database changes:
 
-    sudo docker-compose run --rm web python app.py db migrate
-    sudo docker-compose run --rm web python app.py db upgrade
+    docker-compose run --rm web python app.py db migrate
+    docker-compose run --rm web python app.py db upgrade
 
 To delete the database for a completely fresh setup, run:
 
-    sudo docker-compose down --volumes
+    docker-compose down --volumes
 
 ### Developing email features
 
@@ -87,7 +88,7 @@ source env.localmail
 
 ### Running tests
 
-sudo docker-compose run --rm web nosetests tests
+    docker-compose run --rm web nosetests tests
 
 ### Deployment instructions
 

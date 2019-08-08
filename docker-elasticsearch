@@ -1,0 +1,5 @@
+FROM elasticsearch:1
+MAINTAINER Greg Kempe <greg@code4sa.org>
+
+# install the attachment plugin
+RUN /usr/share/elasticsearch/bin/plugin install elasticsearch/elasticsearch-mapper-attachments/2.7.1

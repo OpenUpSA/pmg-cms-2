@@ -30,5 +30,6 @@ class TestAdminView(PMGLiveServerTestCase):
         Test admin page (http://pmg.test:5000/admin) authorised
         """
         user = self.fx.UserData.admin
-        self.get_page_contents_as_user(user, "http://pmg.test:5000/admin")
+        self.request_as_user(
+            user, "http://pmg.test:5000/admin", follow_redirects=True)
         self.assertIn('Record counts', self.html)

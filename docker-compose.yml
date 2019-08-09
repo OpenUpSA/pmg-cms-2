@@ -12,7 +12,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://pmg:pmg@postgres/pmg?client_encoding=utf8
+      - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200
     ports:
       - "5000:5000"

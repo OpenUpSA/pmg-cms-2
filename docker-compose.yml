@@ -19,7 +19,6 @@ services:
     command: python app.py runserver
     extra_hosts:
       - "api.pmg.test:127.0.0.1"
-      - "pmg.test:127.0.0.1"
 
   postgres:
     image: postgres:9.6

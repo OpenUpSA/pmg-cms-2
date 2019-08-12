@@ -52,3 +52,4 @@ pmg/static/stylesheets/
 
 bin/*.csv
 src/
+.vscode

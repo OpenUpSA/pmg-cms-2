@@ -83,4 +83,4 @@ wsgiref==0.1.2
 WTForms==2.0.2
 XlsxWriter==0.6.6
 xlrd==1.0.0
--e git+https://github.com/Code4SA/za-parliament-scrapers.git@master#egg=za_parliament_scrapers
+git+https://github.com/Code4SA/za-parliament-scrapers.git@master#egg=za_parliament_scrapers

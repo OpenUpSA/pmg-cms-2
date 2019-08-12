@@ -46,48 +46,40 @@ This required re-writing the history of the repo. You **must** [pull and rebase 
 If you want to contribute to the code, please fork the repository, make your changes, and create a pull request.
 
 ### Local setup
+Build the necessary services:
 
-Install the [PostgreSQL](https://www.postgresql.org/) database server. It's a useful idea to setup [passwordless authentication for local connections](https://www.postgresql.org/docs/current/static/auth-methods.html#AUTH-TRUST).
+    docker-compose build
 
-You'll also need the psql and libxml development libraries. 
+Setup the database:
 
-```sh
-# Ubuntu/debian
-sudo apt-get install libpq-devel libxml2-dev libxslt1-dev python-dev
-# macOS
-brew install libxml2
-```
+    docker-compose run --rm web python setup_dev_database.py
+    docker-compose run --rm web python app.py db stamp head
+    docker-compose run --rm web python index_elastic.py
 
-You'll need python 2.7 and [virtualenv](https://virtualenv.pypa.io/en/stable/installation/).
+Add the following lines to your .hosts file:
 
-Clone this repo, and setup a virtualenv:
-
-    virtualenv --no-site-packages env
-    source env/bin/activate
-
-Install requirements:
-
-    pip install -r requirements.txt
-
-Add the following lines to your `.hosts` file:
-
-    127.0.0.1 api.pmg.test
     127.0.0.1 pmg.test
+    127.0.0.1 api.pmg.test
 
-Create the pmg user with password `pmg`, and an empty database:
+Start the server:  
 
-    createuser pmg -P
-    createdb -O pmg pmg
-
-Get a copy of the production database from a colleague, or setup a blank database. If you have a database copy, run:
-
-    gunzip -c pmg.sql.gz | psql -U pmg
-
-Start the server:
-
-    python app.py runserver
+    docker-compose up
 
 You should now see it running at [http://pmg.test:5000/](http://pmg.test:5000/) and [http://api.pmg.test:5000/](http://api.pmg.test:5000/).
+
+You can login with:
+
+    user : admin
+    password : admin
+
+Each time you pull in changes that might contain database changes:
+
+    docker-compose run --rm web python app.py db migrate
+    docker-compose run --rm web python app.py db upgrade
+
+To delete the database for a completely fresh setup, run:
+
+    docker-compose down --volumes
 
 ### Developing email features
 
@@ -101,14 +93,7 @@ source env.localmail
 
 ### Running tests
 
-Create a test database:
-
-    psql -c 'create database pmg_test'
-    psql -c 'grant all privileges on database pmg_test to pmg'
-
-Then run the tests:
-
-    nosetests tests
+    docker-compose run --rm web nosetests tests
 
 ### Deployment instructions
 

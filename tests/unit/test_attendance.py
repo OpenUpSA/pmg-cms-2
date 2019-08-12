@@ -47,7 +47,7 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             attendance='P',
             member=jabu,
             meeting=old_parliament_meeting,
-            created_at='2019-01-01')
+            created_at='2019-08-01')
         db.session.add(attendance_one_jabu)
         attendance_one_mike = CommitteeMeetingAttendance(
             attendance='P',

@@ -12,10 +12,14 @@ services:
   - docker
 env:
   - SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://postgres:@localhost:5432/pmg_test?client_encoding=utf8
+install:
+  - "pip install -r requirements.txt"
+before_script:
+  - export BOTO_CONFIG=/dev/null
+  - psql -c 'create database pmg_test;' -U postgres
 script:
-  - "docker-compose down --volumes"
+  - nosetests tests
   - "docker-compose build"
   - "docker-compose run --rm web python setup_dev_database.py"
   - "docker-compose run --rm web python app.py db stamp head"
   - "docker-compose run --rm web python index_elastic.py"
-  - "docker-compose run --rm web nosetests tests"

@@ -78,6 +78,7 @@ class PMGLiveServerTestCase(LiveServerTestCase):
 
     def setUp(self):
         db.create_all()
+        self.created_objects = []
 
     def tearDown(self):
         db.session.remove()
@@ -88,12 +89,17 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         self.assertEqual(200, response.code)
         self.html = response.read()
 
-    def get_page_contents_as_user(self, user, url):
+    def request_as_user(self, user, url, **args):
         with self.app.test_client() as client:
             with client.session_transaction() as session:
                 session['user_id'] = user.id
                 session['fresh'] = True
 
-            response = client.get(url, follow_redirects=True)
-            self.assertEqual(200, response.status_code)
+            response = client.open(url, **args)
             self.html = response.data
+            return response
+
+    def delete_created_objects(self):
+        for to_delete in self.created_objects:
+            db.session.delete(to_delete)
+        db.session.commit()

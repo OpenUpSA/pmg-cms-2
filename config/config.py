@@ -10,7 +10,7 @@ DEBUG_CACHE = env.get('FLASK_DEBUG_CACHE', "false") == 'true'
 
 RUN_PERIODIC_TASKS = env.get('RUN_PERIODIC_TASKS') == 'true'
 
-WTF_CSRF_ENABLED = True
+WTF_CSRF_ENABLED = False if TEST else True
 SECRET_KEY = env.get('FLASK_SECRET_KEY',
                      "NSTHNSTHaoensutCGSRCGnsthoesucgsrSNTH")
 GOOGLE_ANALYTICS_ID = 'UA-10305579-1'
@@ -20,6 +20,7 @@ SQLALCHEMY_DATABASE_URI = env.get(
     'postgresql+psycopg2://pmg:pmg@localhost/pmg_test?client_encoding=utf8'
     if TEST else
     'postgresql+psycopg2://pmg:pmg@localhost/pmg?client_encoding=utf8')
+
 SQLALCHEMY_ECHO = False
 # This is required only be pmg.models.resources.delete_file_from_s3 and can de turned off if
 # that is changed to use sqlalchemy events

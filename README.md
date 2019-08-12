@@ -56,6 +56,11 @@ Setup the database:
     docker-compose run --rm web python app.py db stamp head
     docker-compose run --rm web python index_elastic.py
 
+Add the following lines to your .hosts file:
+
+    127.0.0.1 pmg.test
+    127.0.0.1 api.pmg.test
+
 Start the server:  
 
     docker-compose up

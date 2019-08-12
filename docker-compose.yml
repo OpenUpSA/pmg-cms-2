@@ -18,6 +18,7 @@ services:
       - "5000:5000"
     command: python app.py runserver
     extra_hosts:
+      - "pmg.test:127.0.0.1"
       - "api.pmg.test:127.0.0.1"
 
   postgres:
@@ -31,7 +32,7 @@ services:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - "5431:5432"
-  
+
   elastic:
     image: elastic
     build:

@@ -666,7 +666,12 @@ class Committee(ApiResource, db.Model):
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         tmp['questions_url'] = url_for('api.committee_questions', committee_id=self.id, _external=True)
+        tmp['display_name'] = self.get_display_name()
         return tmp
+
+    def get_display_name(self):
+        """ Add '(Inactive)' to the display name if the committee is not active. """
+        return '%s %s' % (self.name, '(Inactive)' if not self.active else '')
 
     @classmethod
     def premium_for_select(cls):

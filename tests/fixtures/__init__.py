@@ -55,6 +55,7 @@ class CommitteeData(DataSet):
     class constitutional_review:
         name = 'Constitutional Review Committee'
         house = HouseData.joint
+        active = False
 
 class CommitteeMeetingData(DataSet):
     class arts_meeting_one:

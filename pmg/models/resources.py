@@ -671,7 +671,7 @@ class Committee(ApiResource, db.Model):
 
     def get_display_name(self):
         """ Add '(Inactive)' to the display name if the committee is not active. """
-        return '%s %s' % (self.name, '(Inactive)' if not self.active else '')
+        return '%s%s' % (self.name, ' (Inactive)' if not self.active else '')
 
     @classmethod
     def premium_for_select(cls):

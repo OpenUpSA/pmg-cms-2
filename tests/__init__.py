@@ -32,7 +32,7 @@ class PMGLiveServerTestCase(LiveServerTestCase):
 
         # Get the app
         self.app = self.create_app()
-        self.port = self.app.config.get("LIVESERVER_PORT", 5000)
+        self.port = self.app.config.get("LIVESERVER_PORT", 5001)
 
         # We need to create a context in order for extensions to catch up
         self._ctx = self.app.test_request_context()

@@ -282,6 +282,8 @@ class UserData(DataSet):
         roles = [RoleData.admin, RoleData.editor]
         current_login_at = datetime.datetime.utcnow()
         confirmed = True
+        confirmed_at = datetime.datetime.utcnow()
+        committee_alerts = [CommitteeData.arts]
 
 class MembershipTypeData(DataSet):
     class member:

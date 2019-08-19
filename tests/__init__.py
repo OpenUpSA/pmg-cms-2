@@ -89,6 +89,12 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         self.assertEqual(200, response.code)
         self.html = response.read()
 
+    def make_request(self, url, **args):
+        with self.app.test_client() as client:
+            response = client.open(url, **args)
+            self.html = response.data
+            return response
+
     def request_as_user(self, user, url, **args):
         with self.app.test_client() as client:
             with client.session_transaction() as session:

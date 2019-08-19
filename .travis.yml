@@ -4,7 +4,7 @@ addons:
 services:
   - docker
 script:
-  - "docker-compose run --rm web nosetests tests"
+  - "docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests"
   - "docker-compose run --rm web python setup_dev_database.py"
   - "docker-compose run --rm web python app.py db stamp head"
   - "docker-compose run --rm web python index_elastic.py"

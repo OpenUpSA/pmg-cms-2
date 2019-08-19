@@ -35,6 +35,23 @@ class TestCommitteePage(PMGLiveServerTestCase):
         self.containsTabledReports()
         self.containsQuestionsAndReplies()
         self.containsBills()
+    
+
+    def test_committee_page_write_to_committee_facet(self):
+        """
+        Test the presence of the "Write to committee" facet on the 
+        committee page (http://pmg.test:5000/committee/<id>/)
+        """
+        for committee_tuple in self.fx.CommitteeData:
+            committee = committee_tuple[1]
+            self.get_page_contents(
+                "http://pmg.test:5000/committee/%s/"
+                % committee.id
+            )
+            if committee.active and committee.house.name_short == 'NA':
+                self.assertIn('Write to this committee', self.html)
+            else:
+                self.assertNotIn('Write to this committee', self.html)
 
     def containsCommitteeMeetings(self):
         self.assertIn('Committee meetings', self.html)

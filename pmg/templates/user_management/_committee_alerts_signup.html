@@ -25,11 +25,13 @@
       </p>
       Follow this committee and get <a href="{{ url_for('email_alerts') }}">free email alerts</a> whenever we get new information about it.
     </div>
-    {% endif %}
-    {% endif %}
+  {% endif %}
+{% endif %}
+    {% if committee.house.short_name == 'NA' %}
     <div class="email-alert-box">
         <p>
-            <a class="btn btn-info btn-block" href="https://www.pa.org.za/write-committees/recipients/" target="_blank">Write to this committe</a>
+            <a class="btn btn-info btn-block" href="https://www.pa.org.za/write-committees/recipients/" target="_blank">Write to this committee</a>
         </p>
     </div>    
     {% endif %}
+{% endif %}

@@ -36,11 +36,9 @@ class TestHomePage(PMGLiveServerTestCase):
 
     def test_members_page(self):
         """
-        Test home page (http://pmg.test:5000/home)
+        Test home page (/home)
         """
-        self.get_page_contents(
-            "http://pmg.test:5000"
-        )
+        self.make_request("/")
         for navigation in self.NAVIGATION:
             self.assertIn(navigation, self.html, 'Page should contain navigation heading "%s"' % navigation)
         

@@ -20,16 +20,15 @@ class TestAdminView(PMGLiveServerTestCase):
 
     def test_admin_page_unauthorised(self):
         """
-        Test admin page (http://pmg.test:5000/admin) unauthorised
+        Test admin page (/admin) unauthorised
         """
-        self.get_page_contents("http://pmg.test:5000/admin")
+        self.make_request("/admin", follow_redirects=True)
         self.assertIn('Login now', self.html)
 
     def test_admin_page_authorised(self):
         """
-        Test admin page (http://pmg.test:5000/admin) authorised
+        Test admin page (/admin) authorised
         """
         user = self.fx.UserData.admin
-        self.make_request(
-            "http://pmg.test:5000/admin", user, follow_redirects=True)
+        self.make_request("/admin", user, follow_redirects=True)
         self.assertIn('Record counts', self.html)

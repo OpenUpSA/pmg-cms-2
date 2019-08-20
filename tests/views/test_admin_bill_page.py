@@ -23,10 +23,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_bill_page(self):
         """
-        Test admin bill page (http://pmg.test:5000/admin/bill)
+        Test admin bill page (/admin/bill)
         """
         self.make_request(
-            "http://pmg.test:5000/admin/bill", self.user, follow_redirects=True)
+            "/admin/bill", self.user, follow_redirects=True)
         self.assertIn('Bills', self.html)
         self.containsBill(self.fx.BillData.farm)
         self.containsBill(self.fx.BillData.food)
@@ -38,10 +38,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_create_bill(self):
         """
-        Create a bill with the admin interface (http://pmg.test:5000/admin/bill/new/)
+        Create a bill with the admin interface (/admin/bill/new/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/new/?url=%2Fadmin%2Fbill%2F"
+        url = "/admin/bill/new/?url=%2Fadmin%2Fbill%2F"
         data = {
             'year': '2020',
             'title': 'Cool Bill',
@@ -64,11 +64,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_action_bill(self):
         """
-        Delete a bill with the action url on the admin interface 
-        (http://pmg.test:5000/admin/bill/action/)
+        Delete a bill with the admin interface (/admin/bill/action/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/action/"
+        url = "/admin/bill/action/"
         data = {
             'url': '/admin/bill/',
             'action': 'delete',

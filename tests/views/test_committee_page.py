@@ -22,12 +22,11 @@ class TestCommitteePage(PMGLiveServerTestCase):
 
     def test_committee_page(self):
         """
-        Test committee page (http://pmg.test:5000/committee/<id>/)
+        Test committee page (/committee/<id>/)
         """
         committee = self.fx.CommitteeData.arts
-        self.get_page_contents(
-            "http://pmg.test:5000/committee/%s/"
-            % committee.id
+        self.make_request(
+            "/committee/%s/" % committee.id
         )
         self.assertIn(committee.name, self.html)
         self.containsCommitteeMeetings()

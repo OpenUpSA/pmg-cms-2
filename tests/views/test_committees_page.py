@@ -19,9 +19,9 @@ class TestCommitteesPage(PMGLiveServerTestCase):
 
     def test_committees_page(self):
         """
-        Test committees page (http://pmg.test:5000/committees)
+        Test committees page (/committees)
         """
-        self.get_page_contents("http://pmg.test:5000/committees")
+        self.make_request("/committees", follow_redirects=True)
         self.assertIn('Parliamentary Committees', self.html)
         self.assertIn(self.fx.CommitteeData.communications.name, self.html)
         self.assertIn(self.fx.CommitteeData.arts.name, self.html)

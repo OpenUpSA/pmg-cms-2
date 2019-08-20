@@ -19,12 +19,10 @@ class TestMemberPage(PMGLiveServerTestCase):
 
     def test_members_page(self):
         """
-        Test members page (http://pmg.test:5000/members)
+        Test members page (/members)
         """
         committee = self.fx.MemberData.veronica
-        self.get_page_contents(
-            "http://pmg.test:5000/members/"
-        )
+        self.make_request("/members/")
         self.assertIn('Members of Parliament', self.html)
         self.assertIn('Search for members', self.html)
 

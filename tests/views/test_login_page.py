@@ -20,9 +20,9 @@ class TestLoginPage(PMGLiveServerTestCase):
 
     def test_view_login(self):
         """
-        Test view login (http://pmg.test:5000/user/login).
+        Test view login (/user/login).
         """
-        response = self.make_request("http://pmg.test:5000/user/login/",
+        response = self.make_request("/user/login/",
                                      follow_redirects=True)
         self.assertEqual(200, response.status_code)
         self.assertIn('Login now to view premium content', self.html)
@@ -31,13 +31,13 @@ class TestLoginPage(PMGLiveServerTestCase):
 
     def test_submit_login(self):
         """
-        Test submit login (http://pmg.test:5000/user/login).
+        Test submit login (/user/login).
         """
         user = User.query.first()
         password = 'password'
         user.password = encrypt_password(password)
         data = {'email': user.email, 'password': password}
-        response = self.make_request("http://pmg.test:5000/user/login/",
+        response = self.make_request("/user/login/",
                                      follow_redirects=True,
                                      method="POST",
                                      data=data)

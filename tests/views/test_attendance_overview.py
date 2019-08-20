@@ -96,7 +96,7 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         db.session.commit()
 
     def test_attendance_overview(self):
-        self.get_page_contents("http://pmg.test:5000/attendance-overview")
+        self.make_request("/attendance-overview")
         self.assertIn("Committee meeting attendance trends for 2019", self.html)
         self.assertIn("Arts and Culture", self.html)
         self.assertIn("50%", self.html)

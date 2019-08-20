@@ -16,11 +16,11 @@ class TestCommitteeMeetingPage(PMGLiveServerTestCase):
 
     def test_premium_committee_meeting(self):
         """
-        Test premium committee meeting page (http://pmg.test:5000/committee-meeting/<id>/)
+        Test premium committee meeting page (/committee-meeting/<id>/)
         """
         meeting = self.fx.CommitteeMeetingData.premium_recent
-        self.get_page_contents(
-            "http://pmg.test:5000/committee-meeting/%s/"
+        self.make_request(
+            "/committee-meeting/%s/"
             % meeting.id
         )
         self.assertIn(meeting.title, self.html)

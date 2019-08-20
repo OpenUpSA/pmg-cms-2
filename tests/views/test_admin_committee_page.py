@@ -24,8 +24,8 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         """
         Test view admin committee page (http://pmg.test:5000/admin/committee)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/committee", follow_redirects=True)
+        self.make_request(
+            "http://pmg.test:5000/admin/committee", self.user, follow_redirects=True)
         self.assertIn('Committees', self.html)
         self.containsCommittee(self.fx.CommitteeData.communications)
         self.containsCommittee(self.fx.CommitteeData.arts)
@@ -51,7 +51,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
             'about': '',
             'contact_details': '',
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -73,7 +73,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
                 str(self.fx.CommitteeData.communications.id),
             ]
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)

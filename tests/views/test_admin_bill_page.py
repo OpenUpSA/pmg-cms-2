@@ -25,8 +25,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         """
         Test admin bill page (http://pmg.test:5000/admin/bill)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/bill", follow_redirects=True)
+        self.make_request(
+            "http://pmg.test:5000/admin/bill", self.user, follow_redirects=True)
         self.assertIn('Bills', self.html)
         self.containsBill(self.fx.BillData.farm)
         self.containsBill(self.fx.BillData.food)
@@ -53,7 +53,7 @@ class TestAdminBillPage(PMGLiveServerTestCase):
             'effective_date': '2019-07-03',
             'act_name': 'Fundamental',
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Bill.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -76,7 +76,7 @@ class TestAdminBillPage(PMGLiveServerTestCase):
                 str(self.fx.BillData.food.id),
             ]
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Bill.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)

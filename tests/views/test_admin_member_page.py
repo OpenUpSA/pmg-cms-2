@@ -24,8 +24,8 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         """
         Test view admin member page (http://pmg.test:5000/admin/member)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/member", follow_redirects=True)
+        self.make_request(
+            "http://pmg.test:5000/admin/member", self.user, follow_redirects=True)
         self.assertIn('Members', self.html)
         self.containsMember(self.fx.MemberData.veronica)
         self.containsMember(self.fx.MemberData.laetitia)
@@ -60,8 +60,8 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
             'bio': '',
             'pa_link': '',
         }
-        response = self.request_as_user(
-            self.user, url, data=data, method="POST")
+        response = self.make_request(
+            url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -84,7 +84,7 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
                 str(self.fx.MemberData.veronica.id),
             ]
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)

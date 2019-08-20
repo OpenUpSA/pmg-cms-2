@@ -89,16 +89,20 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         self.assertEqual(200, response.code)
         self.html = response.read()
 
-    def make_request(self, url, **args):
-        with self.app.test_client() as client:
-            response = client.open(url, **args)
-            self.html = response.data
-            return response
+    def make_request(self, url, user=None, **args):
+        """
+        Make a request to the test app (optionally with a user session).
 
-    def request_as_user(self, user, url, **args):
+        Args:
+            url: Endpoint to make the request to.
+            user: User to make the request as.
+        
+        Keyword arguments are passed on to the test client 
+        (https://werkzeug.palletsprojects.com/en/0.15.x/test/#testing-api).
+        """
         with self.app.test_client() as client:
             with client.session_transaction() as session:
-                session['user_id'] = user.id
+                session['user_id'] = user.id if user else None
                 session['fresh'] = True
 
             response = client.open(url, **args)

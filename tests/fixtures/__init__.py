@@ -265,6 +265,25 @@ class PostData(DataSet):
         featured = True
         body = "A lot was packed into the first term of the Sixth Parliament."
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+    class first_term_review:
+        title = "First Term Review: Sixth Parliament"
+        slug = "FirstTermReview" 
+        featured = True
+        body = "Parliaments first term ended last week. According to the programme, the term was 11 weeks but the main thrust of the work was compressed into the final 5 weeks of the quarter."
+        date = datetime.datetime(2019, 2, 17, 0, 0, 0, tzinfo=pytz.utc)
+    class brief_explainer:
+        title = "BRIEF EXPLAINER: LAPSED BILLS IN PARLIAMENT"
+        slug = "BriefExplainer" 
+        featured = True
+        body = "There were 39 unfinished bills when the Fifth Parliament ended."
+        date = datetime.datetime(2019, 2, 17, 12, 0, 0, tzinfo=pytz.utc)
+    class government_priorities:
+        title = "Government's legislative priorities"
+        slug = "GovernmentPriorities" 
+        featured = True
+        body = "The Constitution of South Africa empowers the Executive to prepare and initiate legislation. Similarly, Parliament (through its committees) and individual MPs also have initiating power but the vast majority of legislation (92%) is introduced by the Executive."
+        date = datetime.datetime(2018, 8, 17, 0, 0, 0, tzinfo=pytz.utc)
+        
 
 class RoleData(DataSet):
     class admin:

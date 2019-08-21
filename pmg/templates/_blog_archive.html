@@ -11,7 +11,7 @@
     </a>
     <div class="list-group collapse" id="item-{{year.year}}">
       {% for month in year.month_names %}
-      <a href="?filter[month]={{month}}&filter[year]={{year.year}}" class="list-group-item month">
+      <a href="/blog?filter[month]={{month}}&filter[year]={{year.year}}" class="list-group-item month">
         {{ month }}
         <span class="count badge">{{ year.months_posts[loop.index0] }}</span>
       </a>

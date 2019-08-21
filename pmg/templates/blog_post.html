@@ -10,6 +10,11 @@
       <div class="single-post">
         <div class="date">{{ post.date.strftime('%d %B %Y') }}</div>
         <h2 class="title">{{ post.title }}</h2>
+        <div class="preview-image">
+            {% if post.get_preview_image() %}
+              <img src="{{ post.get_preview_image().url }}" alt="{{ post.get_preview_image().title }}" />
+            {% endif %}
+        </div>
         <div class="body">
           {{ post.body | safe }}
           {% for image in attachments %}
@@ -22,8 +27,7 @@
         {% include '_social_sharing.html' %}
       </div>
     </div>
-    <div class="col-sm-4">
-      <h1>&nbsp;</h1>
+    <div class="col-sm-4 blog-info">
       {% include '_blog_infobox.html' %}
       {% include '_social_sharing.html' %}
     </div>

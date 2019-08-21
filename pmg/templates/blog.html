@@ -7,7 +7,8 @@
 <section class="blog-page">
   <div class="row">
     <div class="col-sm-8 post-list">
-      <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> That week in Parliament</h1>
+      {% include '_social_sharing.html' %}
+      <h1>That week in Parliament</h1>
       {% if filters['year'] %}
       <h3>Showing posts from: 
         <span class="current-filter">{{filters['month']}} {{filters['year']}}
@@ -36,10 +37,8 @@
       </div>
       {% endfor %}
     </div>
-    <div class="col-sm-4">
-      <h1>&nbsp;</h1>
+    <div class="col-sm-4 blog-info">
       {% include '_blog_infobox.html' %}
-      {% include '_social_sharing.html' %}
       {% include '_blog_archive.html' %}
     </div>
   </div>

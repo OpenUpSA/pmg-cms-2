@@ -1918,6 +1918,18 @@ ul.menu {
       flex-basis: 70%;
       padding: 10px;
     }
+    .list-group {
+      .list-group {
+          margin-bottom: 0;
+      }
+      .list-group-item {
+        display: flex;
+        justify-content: space-between;
+      }
+      .list-group-item.year {
+          background-color: #efefef;
+      }
+    }
 }
 .single-blog {
   .single-post {

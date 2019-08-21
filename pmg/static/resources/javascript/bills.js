@@ -68,5 +68,6 @@ $(function() {
 
   // show the first tab when the page loads
   var firstTab = $('.bill-version-content a[data-toggle="tab"]')[0];
-  autoShowBillPdf(firstTab.getAttribute('href').slice(1));
+  if (firstTab)
+    autoShowBillPdf(firstTab.getAttribute('href').slice(1));
 });

@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
-from sqlalchemy import desc
+from sqlalchemy import desc, func, cast, Integer
 from itertools import groupby
 from unidecode import unidecode
 import requests
@@ -14,7 +14,7 @@ from flask_mail import Message
 from flask import make_response
 from slugify import slugify
 
-from pmg import app, mail, cache, cache_key, should_skip_cache
+from pmg import app, db, mail, cache, cache_key, should_skip_cache
 from pmg.bills import bill_history, MIN_YEAR
 from pmg.api.client import load_from_api, ApiException
 from pmg.api.v1 import create_next_page_url
@@ -1709,12 +1709,40 @@ def blog(page=0):
                 .offset(page*per_page)\
                 .all()
 
+    year = func.date_part('year', Post.date).label('year')
+    month = func.to_char(Post.date, 'Month').label('month')
+    month_name = func.to_char(Post.date, 'Month').label('month_name')
+
+    months = db.session.query(
+            func.to_char(Post.date, 'Month').label('month_name'), 
+            func.date_part('month', Post.date).label('month'), 
+            func.date_part('year', Post.date).label('year'), 
+            func.count(Post.id).label('month_posts')
+        )\
+        .group_by('year', 'month', 'month_name')\
+        .order_by(year.desc(), month.asc())\
+        .subquery('months')
+
+    years = db.session.query(
+                cast(months.c.year, Integer).label('year'), 
+                func.sum(months.c.month_posts).label('year_posts'), 
+                func.array_agg(months.c.month).label('months'), 
+                func.array_agg(months.c.month_name).label('month_names'), 
+                func.array_agg(months.c.month_posts).label('months_posts'))\
+        .group_by('year')\
+        .order_by(year.desc())\
+        .all()
+
+    months = ['January', 'February', 'March', 'April', 'May']
+    # years = db.session.query(months.c.year, func.sum(months.c.n_posts).label('year_posts'), func.array_agg(tuple_(months.c.month, months.c.n_posts)).label('monthss')).group_by('year').order_by(year.desc()).all()
+
     next = create_next_page_url(count, page, per_page)
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/blog"
     return render_template(
         '/blog.html',
         posts=posts,
+        years=years,
         num_pages=num_pages,
         page=page,
         per_page=per_page,

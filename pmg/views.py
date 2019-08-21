@@ -1701,20 +1701,30 @@ def correct_this_page():
 @app.route('/blog/<int:page>/')
 def blog(page=0):
     per_page = 10
+    filters = {}
 
-    count = Post.query.count()
-    posts =  Post.query\
+    year = func.date_part('year', Post.date).label('year')
+    month = func.date_part('month', Post.date).label('month')
+    month_name = func.to_char(Post.date, 'FMMonth').label('month_name')
+
+    post_query = Post.query
+
+    if request.args.get('filter[month]') and request.args.get('filter[year]'):
+        filters['month'] = request.args.get('filter[month]')
+        filters['year'] = request.args.get('filter[year]')
+        post_query = post_query\
+            .filter(month_name == filters['month'])\
+            .filter(year == filters['year'])
+
+    count = post_query.count()
+    posts =  post_query\
                 .order_by(desc(Post.date))\
                 .limit(per_page)\
                 .offset(page*per_page)\
                 .all()
 
-    year = func.date_part('year', Post.date).label('year')
-    month = func.to_char(Post.date, 'Month').label('month')
-    month_name = func.to_char(Post.date, 'Month').label('month_name')
-
     months = db.session.query(
-            func.to_char(Post.date, 'Month').label('month_name'), 
+            func.to_char(Post.date, 'FMMonth').label('month_name'), 
             func.date_part('month', Post.date).label('month'), 
             func.date_part('year', Post.date).label('year'), 
             func.count(Post.id).label('month_posts')
@@ -1733,7 +1743,6 @@ def blog(page=0):
         .order_by(year.desc())\
         .all()
 
-    months = ['January', 'February', 'March', 'April', 'May']
     # years = db.session.query(months.c.year, func.sum(months.c.n_posts).label('year_posts'), func.array_agg(tuple_(months.c.month, months.c.n_posts)).label('monthss')).group_by('year').order_by(year.desc()).all()
 
     next = create_next_page_url(count, page, per_page)
@@ -1741,6 +1750,7 @@ def blog(page=0):
     url = "/blog"
     return render_template(
         '/blog.html',
+        filters=filters,
         posts=posts,
         years=years,
         num_pages=num_pages,

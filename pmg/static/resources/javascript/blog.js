@@ -5,3 +5,4 @@ $(function() {
       .toggleClass('fa-chevron-down')
   });
 });
+

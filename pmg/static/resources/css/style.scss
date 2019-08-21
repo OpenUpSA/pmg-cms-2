@@ -1904,7 +1904,19 @@ ul.menu {
     .archive {
       clear: both;
     }
+    .current-filter {
+      padding: 0.3em 0.4em;
+      background: #222;
+      color: white;
+      border-radius: 0.5em;
+      a {
+        color: white;
+      }
+    }
     h1 {
+      margin-bottom: 30px;
+    }
+    h3 {
       margin-bottom: 30px;
     }
     .single-post {

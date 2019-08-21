@@ -8,6 +8,12 @@
   <div class="row">
     <div class="col-sm-8 post-list">
       <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> That week in Parliament</h1>
+      {% if filters['year'] %}
+      <h3>Showing posts from: 
+        <span class="current-filter">{{filters['month']}} {{filters['year']}}
+          <a href="/blog"><i class="fa fa-fw fa-times" aria-hidden="true"></i></a>
+      </span></h3>
+      {% endif %}
       {% for post in posts %}
       <div class="single-post">
         <div class="preview-image">

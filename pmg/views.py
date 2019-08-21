@@ -1724,9 +1724,9 @@ def blog(page=0):
                 .all()
 
     months = db.session.query(
-            func.to_char(Post.date, 'FMMonth').label('month_name'), 
-            func.date_part('month', Post.date).label('month'), 
-            func.date_part('year', Post.date).label('year'), 
+            month_name, 
+            month, 
+            year, 
             func.count(Post.id).label('month_posts')
         )\
         .group_by('year', 'month', 'month_name')\

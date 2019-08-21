@@ -1,9 +1,6 @@
 from tests import PMGLiveServerTestCase
 from tests.fixtures import dbfixture, PostData
-import urllib2
 import flask
-from sqlalchemy import func
-from collections import defaultdict
 
 from pmg.models import db, Post
 
@@ -24,10 +21,7 @@ class TestBlogPages(PMGLiveServerTestCase):
         Test blog post page (http://pmg.test:5000/blog/<slug>)
         """
         post = self.fx.PostData.the_week_ahead
-        self.get_page_contents(
-            "http://pmg.test:5000/blog/%s/"
-            % post.slug
-        )
+        self.get_page_contents("http://pmg.test:5000/blog/%s/" % post.slug)
         self.assertIn(post.title, self.html)
         self.assertIn(post.body[0:100], self.html)
         self.assertIn('That week in Parliament', self.html)
@@ -49,9 +43,8 @@ class TestBlogPages(PMGLiveServerTestCase):
         month = 'February'
         year = 2019
         self.get_page_contents(
-            "http://pmg.test:5000/blog?filter[month]=%s&filter[year]=%d" 
-            % (month, year)
-            )
+            "http://pmg.test:5000/blog?filter[month]=%s&filter[year]=%d" %
+            (month, year))
         self.contains_template_text()
         self.contains_posts([
             self.fx.PostData.first_term_review,
@@ -62,7 +55,7 @@ class TestBlogPages(PMGLiveServerTestCase):
             self.fx.PostData.government_priorities,
         ])
         self.contains_archive()
-    
+
     def contains_template_text(self):
         self.assertIn('That week in Parliament', self.html)
         self.assertIn('About this blog', self.html)
@@ -86,6 +79,9 @@ class TestBlogPages(PMGLiveServerTestCase):
     def contains_archive(self):
         self.assertIn("2019 (3)", self.html)
         self.assertIn("2018 (1)", self.html)
-        self.assertIn('January\n        <span class="count badge">1</span>', self.html)
-        self.assertIn('February\n        <span class="count badge">2</span>', self.html)
-        self.assertIn('August\n        <span class="count badge">1</span>', self.html)
+        self.assertIn('January\n        <span class="count badge">1</span>',
+                      self.html)
+        self.assertIn('February\n        <span class="count badge">2</span>',
+                      self.html)
+        self.assertIn('August\n        <span class="count badge">1</span>',
+                      self.html)

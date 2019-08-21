@@ -1709,12 +1709,13 @@ def blog(page=0):
 
     post_query = Post.query
 
-    if request.args.get('filter[month]') and request.args.get('filter[year]'):
+    if request.args.get('filter[month]'):
         filters['month'] = request.args.get('filter[month]')
+        post_query = post_query.filter(month_name == filters['month'])
+
+    if request.args.get('filter[year]'):
         filters['year'] = request.args.get('filter[year]')
-        post_query = post_query\
-            .filter(month_name == filters['month'])\
-            .filter(year == filters['year'])
+        post_query = post_query.filter(year == filters['year'])
 
     count = post_query.count()
     posts =  post_query\

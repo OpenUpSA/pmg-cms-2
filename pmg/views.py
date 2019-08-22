@@ -1739,7 +1739,7 @@ def blog(page=0):
                 func.sum(months.c.month_posts).label('year_posts'), 
                 func.array_agg(months.c.month).label('months'), 
                 func.array_agg(months.c.month_name).label('month_names'), 
-                func.array_agg(months.c.month_posts).label('months_posts'))\
+                func.array_agg(months.c.month_posts).label('month_posts'))\
         .group_by('year')\
         .order_by(year.desc())\
         .all()

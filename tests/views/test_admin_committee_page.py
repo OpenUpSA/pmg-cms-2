@@ -70,7 +70,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
             'url': '/admin/committee/',
             'action': 'delete',
             'rowid': [
-                str(self.fx.CommitteeData.arts.id),
+                str(self.fx.CommitteeData.communications.id),
             ]
         }
         response = self.request_as_user(self.user, url, data=data, method="POST")

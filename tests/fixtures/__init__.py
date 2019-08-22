@@ -6,7 +6,7 @@ from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
     CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post, User,
-    Role, Membership, MembershipType
+    Role, Membership, MembershipType, EmailTemplate
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -283,6 +283,8 @@ class UserData(DataSet):
         roles = [RoleData.admin, RoleData.editor]
         current_login_at = datetime.datetime.utcnow()
         confirmed = True
+        confirmed_at = datetime.datetime.utcnow()
+        committee_alerts = [CommitteeData.arts]
 
 class MembershipTypeData(DataSet):
     class member:
@@ -293,6 +295,13 @@ class MembershipData(DataSet):
         type = MembershipTypeData.member
         committee = CommitteeData.arts
         member = MemberData.veronica
+
+class EmailTemplateData(DataSet):
+    class template_one:
+        name = "Template One"
+        description = "Template One Description"
+        subject = "Template One Subject"
+        body = "Template One Body"
 
 
 

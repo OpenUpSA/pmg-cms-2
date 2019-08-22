@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  web:
+    environment:
+      - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg_test?client_encoding=utf8

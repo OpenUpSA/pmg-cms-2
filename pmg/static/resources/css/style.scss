@@ -1361,9 +1361,6 @@ header.detail-page-header {
     margin-top:15px;
     margin-bottom:0;
   }
-  .read-more {
-    margin-top:10px;
-  }
 }
 
 .cte-about-link {
@@ -1902,9 +1899,11 @@ ul.menu {
 
 .blog-page, .single-blog {
   .single-post {
+    color: black;
     background-color: $grey-light;
     margin-bottom: 25px;
     border-radius: 5px;
+    border-bottom: 1px solid $grey-medium;
 
     .title {
       margin-top: 0;
@@ -1955,6 +1954,7 @@ ul.menu {
 .single-blog {
   .single-post {
       padding: 10px;
+      overflow: auto;
   }
   .preview-image {
     img {
@@ -1983,9 +1983,17 @@ ul.menu {
         color: white;
       }
     }
+    .post-list {
+      a {
+        text-decoration: none;
+      }
+    }
     .single-post {
       overflow: hidden; 
       display: flex;
+      &:hover {
+        background-color: $grey-medium;
+      }
     }
     .page-sharing {
       margin-bottom: 10px;

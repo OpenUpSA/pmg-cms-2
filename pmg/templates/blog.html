@@ -17,25 +17,24 @@
       </h3>
       {% endif %}
       {% for post in posts %}
-      <div class="single-post">
-        <div class="preview-image">
-            {% if post.get_preview_image() %}
-              <img src="{{ post.get_preview_image().url }}" alt="{{ post.get_preview_image().title }}" />
-            {% else %}
-              <img src="/static/resources/images/pmg-placeholder.png" />
-            {% endif %}
-        </div>
-        <div class="single-post-text">
-          <div class="date">{{ post.date.strftime('%d %B %Y') }}</div>
-          <h3 class="title"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
-          <div class="preview">
-            {{ post.body | striptags | truncate }}
+      <a href="/blog/{{ post.slug }}">
+        <div class="single-post">
+          <div class="preview-image">
+              {% if post.get_preview_image() %}
+                <img src="{{ post.get_preview_image().url }}" alt="{{ post.get_preview_image().title }}" />
+              {% else %}
+                <img src="/static/resources/images/pmg-placeholder.png" />
+              {% endif %}
           </div>
-          <div class="read-more">
-              <a href="/blog/{{ post.slug }}">Read more...</a>
+          <div class="single-post-text">
+            <div class="date">{{ post.date.strftime('%d %B %Y') }}</div>
+            <h3 class="title">{{ post.title }}</h3>
+            <div class="preview">
+              {{ post.body | striptags | truncate }}
+            </div>
           </div>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
     <div class="col-sm-4 blog-info">

@@ -1744,8 +1744,6 @@ def blog(page=0):
         .order_by(year.desc())\
         .all()
 
-    # years = db.session.query(months.c.year, func.sum(months.c.n_posts).label('year_posts'), func.array_agg(tuple_(months.c.month, months.c.n_posts)).label('monthss')).group_by('year').order_by(year.desc()).all()
-
     next = create_next_page_url(count, page, per_page)
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/blog"

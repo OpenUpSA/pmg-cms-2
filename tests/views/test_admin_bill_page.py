@@ -83,27 +83,28 @@ class TestAdminBillPage(PMGLiveServerTestCase):
     def test_admin_delete_bill(self):
         """
         Delete a bill on the admin interface 
-        (http://pmg.test:5000/admin/bill/delete/)
+        (/admin/bill/delete/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/delete/"
+        url = "/admin/bill/delete/"
         data = {
             'url': '/admin/bill/',
             'id' : str(self.fx.BillData.food.id),
             
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(
+            url, self.user, follow_redirects=True, data=data, method="POST")
         after_count = len(Bill.query.all())
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
         self.assertGreater(before_count, after_count)
 
     def test_admin_edit_bill(self):
         """
-        Edit a bill with the admin interface (http://pmg.test:5000/admin/bill/edit/)
+        Edit a bill with the admin interface (/admin/bill/edit/)
         """
         bill = db.session.query(Bill).first()
         new_title = 'Cool Bill'
-        url = "http://pmg.test:5000/admin/bill/edit/?id=%d" % bill.id
+        url = "/admin/bill/edit/?id=%d" % bill.id
         data = {
             'year': '2020',
             'title': new_title,
@@ -115,8 +116,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
             'effective_date': '2019-07-03',
             'act_name': 'Fundamental',
         }
-        response = self.request_as_user(self.user, url, data=data, 
-            method="POST", follow_redirects=True)
+        response = self.make_request(
+            url, self.user, follow_redirects=True, data=data, method="POST")
         self.assertEqual(200, response.status_code)
 
         db.session.refresh(bill)

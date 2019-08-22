@@ -1361,9 +1361,6 @@ header.detail-page-header {
     margin-top:15px;
     margin-bottom:0;
   }
-  .read-more {
-    margin-top:10px;
-  }
 }
 
 .cte-about-link {
@@ -1902,15 +1899,30 @@ ul.menu {
 
 .blog-page, .single-blog {
   .single-post {
-    margin-bottom: 45px;
+    color: black;
+    background-color: $grey-light;
+    margin-bottom: 25px;
+    border-radius: 5px;
+    border-bottom: 1px solid $grey-medium;
+
     .title {
-      margin-bottom: 0;
-    }
-    .date {
-      color: #999;
+      margin-top: 0;
       margin-bottom: 10px;
     }
+    .preview {
+      margin-bottom: 20px;
+    }
+    .date {
+      color: $grey-darkest;
+      background: $grey-medium;
+      padding: 0.2em 0.4em;
+      border-radius: 0.5em;
+      font-weight: bold;
+      margin-bottom: 10px;
+      float: right;
+    }
     .body {
+      clear: both;
       margin-bottom: 20px;
       img {
         width: 100%;
@@ -1920,7 +1932,6 @@ ul.menu {
   .infobox {
     width: 100%;
     padding: 15px;
-    background-color: $grey-light;
     overflow: auto;
     margin-bottom: 20px;
     img {
@@ -1929,6 +1940,89 @@ ul.menu {
       float: right;
     }
   }
+  .blog-info {
+    border-left: 2px solid $grey-light;
+  }
+  h1 {
+    font-weight: bold;
+  }
+  h1, h2, h3 {
+    margin-bottom: 30px;
+    margin-top: 0;
+  }
+}
+.single-blog {
+  .single-post {
+      padding: 10px;
+      overflow: auto;
+  }
+  .preview-image {
+    img {
+      margin: 10px 0;
+      width: 300px;
+      height: auto;
+    }
+  }
+}
+.blog-page {
+    padding-top: 20px;
+    .archive {
+      clear: both;
+      padding: 15px;
+    }
+    .infobox {
+      border-bottom: 2px solid $grey-light;
+      padding-top: 0;
+    }
+    .current-filter {
+      padding: 0.3em 0.4em;
+      background: #222;
+      color: white;
+      border-radius: 0.5em;
+      a {
+        color: white;
+      }
+    }
+    .post-list {
+      a {
+        text-decoration: none;
+      }
+    }
+    .single-post {
+      overflow: hidden; 
+      display: flex;
+      &:hover {
+        background-color: $grey-medium;
+      }
+    }
+    .page-sharing {
+      margin-bottom: 10px;
+    }
+    .preview-image {
+      flex-basis: 30%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      img {
+        width: 100%;
+      }
+    }
+    .single-post-text {
+      flex-basis: 70%;
+      padding: 20px;
+    }
+    .list-group {
+      .list-group {
+          margin-bottom: 0;
+      }
+      .list-group-item {
+        display: flex;
+        justify-content: space-between;
+      }
+      .list-group-item.year {
+          background-color: #efefef;
+      }
+    }
 }
 
 .bill-version-content {

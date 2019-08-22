@@ -8,8 +8,14 @@
   <div class="row">
     <div class="col-sm-8">
       <div class="single-post">
+        <div class="date">{{ post.date.strftime('%d %B %Y') }}</div>
         <h2 class="title">{{ post.title }}</h2>
-        <div class="date">{{ post.date.strftime('%d-%m-%Y') }}</div>
+        <div class="preview-image">
+			{% set preview_image = post.get_preview_image() %}
+            {% if preview_image %}
+              <img src="{{ preview_image.url }}" alt="{{ preview_image.title }}" />
+            {% endif %}
+        </div>
         <div class="body">
           {{ post.body | safe }}
           {% for image in attachments %}
@@ -22,8 +28,7 @@
         {% include '_social_sharing.html' %}
       </div>
     </div>
-    <div class="col-sm-4">
-      <h1>&nbsp;</h1>
+    <div class="col-sm-4 blog-info">
       {% include '_blog_infobox.html' %}
       {% include '_social_sharing.html' %}
     </div>

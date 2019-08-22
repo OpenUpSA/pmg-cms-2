@@ -164,6 +164,7 @@ assets.register(
         'resources/javascript/moment.min.js',
         'resources/javascript/bootstrap-sortable.js',
         'resources/javascript/bills.js',
+        'resources/javascript/blog.js',
         output='javascript/app.%(version)s.js'))
 
 assets.register(

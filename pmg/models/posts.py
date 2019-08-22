@@ -19,6 +19,12 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
     updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
 
+    def get_preview_image(self):
+        if self.files:
+            return self.files[0].file
+        else:
+            return None
+
     @validates('slug')
     def validate_slug(self, key, value):
         return value.strip('/')

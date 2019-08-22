@@ -7,21 +7,40 @@
 <section class="blog-page">
   <div class="row">
     <div class="col-sm-8 post-list">
-      <h1><i class="fa fa-fw fa-book" aria-hidden="true"></i> That week in Parliament</h1>
+      {% include '_social_sharing.html' %}
+      <h1>That week in Parliament</h1>
+      {% if 'year' in filters or 'month' in filters %}
+      <h3>Showing posts from: 
+        <span class="current-filter">{{filters['month']}} {{filters['year']}}
+          <a href="/blog"><i class="fa fa-fw fa-times" aria-hidden="true"></i></a>
+        </span>
+      </h3>
+      {% endif %}
       {% for post in posts %}
-      <div class="single-post">
-        <h3 class="title"><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h3>
-        <div class="date">{{ post.date.strftime('%d-%m-%Y') }}</div>
-        <div class="preview">
-          {{ post.body | striptags | truncate }}
+      <a href="/blog/{{ post.slug }}">
+        <div class="single-post">
+          <div class="preview-image">
+		  	  {% set preview_image = post.get_preview_image() %}
+              {% if preview_image %}
+                <img src="{{ preview_image.url }}" alt="{{ preview_image.title }}" />
+              {% else %}
+                <img src="/static/resources/images/pmg-placeholder.png" />
+              {% endif %}
+          </div>
+          <div class="single-post-text">
+            <div class="date">{{ post.date.strftime('%d %B %Y') }}</div>
+            <h3 class="title">{{ post.title }}</h3>
+            <div class="preview">
+              {{ post.body | striptags | truncate }}
+            </div>
+          </div>
         </div>
-      </div>
+      </a>
       {% endfor %}
     </div>
-    <div class="col-sm-4">
-      <h1>&nbsp;</h1>
+    <div class="col-sm-4 blog-info">
       {% include '_blog_infobox.html' %}
-      {% include '_social_sharing.html' %}
+      {% include '_blog_archive.html' %}
     </div>
   </div>
 </section>

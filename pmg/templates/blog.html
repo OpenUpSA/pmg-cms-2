@@ -20,8 +20,9 @@
       <a href="/blog/{{ post.slug }}">
         <div class="single-post">
           <div class="preview-image">
-              {% if post.get_preview_image() %}
-                <img src="{{ post.get_preview_image().url }}" alt="{{ post.get_preview_image().title }}" />
+		  	  {% set preview_image = post.get_preview_image() %}
+              {% if preview_image %}
+                <img src="{{ preview_image.url }}" alt="{{ preview_image.title }}" />
               {% else %}
                 <img src="/static/resources/images/pmg-placeholder.png" />
               {% endif %}

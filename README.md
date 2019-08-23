@@ -54,7 +54,7 @@ Setup the database:
 
     docker-compose run --rm web python setup_dev_database.py
     docker-compose run --rm web python app.py db stamp head
-    docker-compose run --rm web python index_elastic.py
+    docker-compose run --rm web python bin/search.py --reindex all
 
 Add the following lines to your .hosts file:
 

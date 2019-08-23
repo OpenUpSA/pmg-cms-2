@@ -406,7 +406,10 @@ class Search:
             self.reindex_all(data_type)
 
     def delete_everything(self):
-        self.es.delete_index(self.index_name)
+        try:
+            self.es.delete_index(self.index_name)
+        except ElasticHttpNotFoundError:
+            pass
 
     def create_index(self):
         settings = {

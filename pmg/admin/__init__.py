@@ -30,6 +30,7 @@ import flask_wtf
 
 from pmg import app, db
 from pmg.models import *  # noqa
+from pmg.admin.validators import BillEventTitleAllowed
 import pmg.utils
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
@@ -1128,6 +1129,11 @@ class InlineBillEventsForm(InlineFormAdmin):
         'member',
     )
     form_overrides = {'type': EventTypeSelectField}
+    form_args = {
+        'title': {
+            'validators': [BillEventTitleAllowed()]
+        },
+    }
 
     form_ajax_refs = {
         'member': {

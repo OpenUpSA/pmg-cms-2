@@ -4,6 +4,7 @@ from pmg.models import db, BillType, Minister, Bill
 from tests.fixtures import (
     dbfixture, UserData, RoleData, BillData, HouseData, BillTypeData
 )
+from flask import escape
 
 
 class TestAdminBillPage(PMGLiveServerTestCase):
@@ -61,6 +62,29 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         created_bill = Bill.query.filter(Bill.title == data['title']).scalar()
         self.assertTrue(created_bill)
         self.created_objects.append(created_bill)
+
+    def test_admin_create_bill_with_bill_passed_event_incorrect_title(self):
+        """
+        The admin bill create page should show a validation error for
+        a bill event title when the bill type is "bill-passed" and the title is 
+        not one of the allowed titles.
+        """
+        before_count = len(Bill.query.all())
+        url = "http://pmg.test:5000/admin/bill/new/?url=%2Fadmin%2Fbill%2F"
+        data = {
+            'events-0-id': '',
+            'events-0-date': '',
+            'events-0-type': 'bill-passed',
+            'events-0-title': 'Test title',
+        }
+        response = self.request_as_user(self.user, url, data=data, method="POST")
+
+        self.assertIn(
+            escape('When event type is "Bill passed", event title must be one of'), 
+            self.html)
+        self.assertIn(
+            escape('Bill passed by the National Assembly and transmitted to the NCOP for concurrence'), 
+            self.html)
 
     def test_admin_action_bill(self):
         """

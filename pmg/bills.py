@@ -126,7 +126,7 @@ def match_title(event_title):
         'bill passed and referred to the ncop',
         'bill passed and sent to the president for assent',
         'bill passed and submitted to the ncop',
-        'bill passed by both houses',
+        'bill passed by both',
         'bill passed by na',
         'bill passed by national assembly',
         'bill passed by national council of provinces',

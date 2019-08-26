@@ -1,4 +1,5 @@
 from wtforms.validators import AnyOf
+from wtforms.compat import string_types, text_type
 
 
 class BillEventTitleAllowed(object):
@@ -21,5 +22,14 @@ class BillEventTitleAllowed(object):
         bill_type = form['type']
         if bill_type.data == 'bill-passed':
             message = 'When event type is "Bill passed", event title must be one of: %(values)s.'
-            any_of = AnyOf(self.ALLOWED_TITLES, message=message)
+            any_of = AnyOf(self.ALLOWED_TITLES, message=message,
+                           values_formatter=self.values_formatter)
             return any_of(form, field)
+
+    @classmethod
+    def values_formatter(cls, values):
+        return ', '.join(cls.quoted(text_type(x)) for x in values)
+
+    @classmethod
+    def quoted(cls, value):
+        return '"%s"' % value

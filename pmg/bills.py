@@ -171,12 +171,10 @@ def hansard_linking(bill_history):
                 for event in event_history["events"]:
                     if event["type"] == "plenary":
                         for bill_event in event_history["events"]:
-                            if bill_event is not event and match_dates(
+                            if bill_event['type'] != 'plenary' and match_dates(
                                 event["date"], bill_event["date"]
                             ) and match_title(bill_event["title"]):
                                 bill_event["hansard"] = {"id": event["id"]}
-                                # Break because we've found the event's hansard
-                                break
     return bill_history
 
 

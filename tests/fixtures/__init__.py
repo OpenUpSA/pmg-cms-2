@@ -37,6 +37,13 @@ class HouseData(DataSet):
         name_short = 'President'
         sphere = 'national'
 
+    class western_cape:
+        id = 5
+        name = 'Western Cape'
+        name_short = 'western_cape'
+        sphere = 'provincial'
+
+
 class MinisterData(DataSet):
     class minister_of_arts:
         name = "Minister of Sports, Arts and Culture"
@@ -55,6 +62,11 @@ class CommitteeData(DataSet):
     class constitutional_review:
         name = 'Constitutional Review Committee'
         house = HouseData.joint
+        active = False
+
+    class western_cape_budget:
+        name = 'Budget (WCPP)'
+        house = HouseData.western_cape
         active = False
 
 class CommitteeMeetingData(DataSet):

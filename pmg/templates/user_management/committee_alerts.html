@@ -54,8 +54,6 @@
           {% endif %}
         {% endfor %}
       </ul>
-    </div>
-    <div class="col-md-4">
       <h3>Joint Committees</h3>
       <ul class="list-unstyled">
         {{ render_select_all() }}
@@ -66,6 +64,21 @@
         {% endfor %}
       </ul>
     </div>
+
+    {% if provincial_committees %}
+    <h2>Provincial Legislatures Committees</h2>
+      <div class="col-md-4">
+        {% for legislature in provincial_committees.keys() %}
+        <h3>{{ legislature }}</h3>
+        <ul class="list-unstyled">
+          {{ render_select_all() }}
+          {% for committee in provincial_committees[legislature] %}
+          {{ render_committee_checkbox(committee) }}
+          {% endfor %}
+        </ul>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 
   <h2>Ad-Hoc Committees</h2>
@@ -106,22 +119,6 @@
   </div>
 
 
-  {% if provincial_committees %}
-  <h2>Provincial Legislatures Committees</h2>
-  <div class="row">
-    <div class="col-md-4">
-      {% for legislature in provincial_committees.keys() %}
-      <h3>{{ legislature }}</h3>
-      <ul class="list-unstyled">
-        {{ render_select_all() }}
-        {% for committee in provincial_committees[legislature] %}
-        {{ render_committee_checkbox(committee) }}
-        {% endfor %}
-      </ul>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
 
 
 </form>

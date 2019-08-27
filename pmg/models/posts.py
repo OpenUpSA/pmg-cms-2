@@ -42,7 +42,6 @@ class PostFile(FileLinkMixin, db.Model):
     file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
 
-    resource_content_type = 'post' 
-
 # Register all the resource types. This ensures they show up in the API and are searchable
 ApiResource.register(Post)
+

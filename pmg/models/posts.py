@@ -1,12 +1,12 @@
 from sqlalchemy import func, sql
 from sqlalchemy.orm import validates
 
-from .base import FileLinkMixin
+from .base import FileLinkMixin, ApiResource
 
 from pmg import db
 
 
-class Post(db.Model):
+class Post(ApiResource, db.Model):
     __tablename__ = 'post'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -41,3 +41,8 @@ class PostFile(FileLinkMixin, db.Model):
     post = db.relationship('Post')
     file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
     file = db.relationship('File', lazy='joined')
+
+    resource_content_type = 'post' 
+
+# Register all the resource types. This ensures they show up in the API and are searchable
+ApiResource.register(Post)

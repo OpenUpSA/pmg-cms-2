@@ -14,6 +14,7 @@ from bs4 import BeautifulSoup
 
 from . import db, app
 from pmg.models.resources import *  # noqa
+from pmg.models.posts import Post
 from pmg.models.base import resource_slugs
 
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
@@ -46,6 +47,7 @@ class Search:
         ("policy_document", "Policy Documents"),
         ("gazette", "Gazettes"),
         ("daily_schedule", "Daily Schedules"),
+        ("post", "Post"),
     ])
 
     def reindex_all(self, data_type):
@@ -531,6 +533,12 @@ class Transforms:
             "title": "title",
             "fulltext": "body",
             "date": "start_date",
+        },
+        Post: {
+            "title": "title",
+            "fulltext": "body",
+            "date": "date",
+            "slug": "slug",
         },
     }
 

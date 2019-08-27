@@ -26,7 +26,7 @@ $(function() {
 });
 
 $(function() {
-  $('.help-event-title').on('click', function(e) {
+  $('#events').on('click', '.help-event-title', function(e) {
     e.preventDefault();
     $(this).children('i').toggleClass('fa-chevron-right');
     $(this).children('i').toggleClass('fa-chevron-down');

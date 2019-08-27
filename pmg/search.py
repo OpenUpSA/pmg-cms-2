@@ -47,7 +47,7 @@ class Search:
         ("policy_document", "Policy Documents"),
         ("gazette", "Gazettes"),
         ("daily_schedule", "Daily Schedules"),
-        ("post", "Post"),
+        ("post", "Blog Posts"),
     ])
 
     def reindex_all(self, data_type):

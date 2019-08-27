@@ -54,7 +54,7 @@ class TestSearchPage(PMGLiveServerTestCase):
             "http://pmg.test:5000/search/?q=%s" % search_term
         )
         self.assertIn(search_term, self.html)
-        self.assertIn('post', self.html)
-        self.assertIn('committee', self.html)
+        self.assertIn('Blog Posts', self.html)
+        self.assertIn('Committees', self.html)
         self.assertIn('2018', self.html)
         self.assertIn('2019', self.html)

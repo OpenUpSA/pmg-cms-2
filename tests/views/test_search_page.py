@@ -20,7 +20,7 @@ class TestSearchPage(PMGLiveServerTestCase):
         super(TestSearchPage, self).tearDown()
 
     @patch.object(ElasticSearch, 'search')
-    def test_search_page(self, search_mock):
+    def __call__(self, result=None, search_mock=None):
         search_mock.return_value = {
             u'hits': {
                 u'hits': [], u'total': 1, u'max_score': 1.1129572
@@ -48,7 +48,9 @@ class TestSearchPage(PMGLiveServerTestCase):
                 }
             }, u'timed_out': False
         }
+        super(TestSearchPage, self).__call__(result)
 
+    def test_search_page(self):
         search_term = 'content'
         self.get_page_contents(
             "http://pmg.test:5000/search/?q=%s" % search_term

@@ -30,7 +30,6 @@ import flask_wtf
 
 from pmg import app, db
 from pmg.models import *  # noqa
-from pmg.admin.validators import BillEventTitleAllowed
 import pmg.utils
 from xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
@@ -1141,7 +1140,6 @@ class InlineBillEventsForm(InlineFormAdmin):
     form_overrides = {'type': EventTypeSelectField}
     form_args = {
         'title': {
-            'validators': [BillEventTitleAllowed()],
             'description': '<div><a href="#" class="help-event-title">'
             '<i class="fa fa-icon fa-fw fa-chevron-right"></i>Help?</a>'
             '<div class="help-event-title-content">When event type is "Bill passed", '

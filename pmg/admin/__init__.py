@@ -1120,6 +1120,16 @@ class EventTypeSelectField(fields.SelectField):
 
 
 class InlineBillEventsForm(InlineFormAdmin):
+    ALLOWED_BILL_PASSED_TITLES = [
+        'Bill passed by the National Assembly and transmitted to the NCOP for concurrence',
+        'Bill passed by both Houses and sent to President for assent',
+        'Bill passed by the NCOP and returned to the National Assembly for concurrence',
+        'Bill passed and amended by the NCOP and returned to the National Assembly for concurrence',
+        'Bill passed by the NCOP and sent to the President for assent',
+        'The NCOP rescinded its decision',
+        'Bill remitted',
+        'Bill revived on this date'
+    ]
     form_columns = (
         'id',
         'date',
@@ -1131,7 +1141,12 @@ class InlineBillEventsForm(InlineFormAdmin):
     form_overrides = {'type': EventTypeSelectField}
     form_args = {
         'title': {
-            'validators': [BillEventTitleAllowed()]
+            'validators': [BillEventTitleAllowed()],
+            'description': '<div><a href="#" class="help-event-title">'
+            '<i class="fa fa-icon fa-fw fa-chevron-right"></i>Help?</a>'
+            '<div class="help-event-title-content">When event type is "Bill passed", '
+            'event title must be one of: <ul>%s</ul></div></div>' % 
+                ''.join(('<li>%s</li>' % title for title in ALLOWED_BILL_PASSED_TITLES))
         },
     }
 

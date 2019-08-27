@@ -24,3 +24,12 @@ $(function() {
     }
   });
 });
+
+$(function() {
+  $('.help-event-title').on('click', function(e) {
+    e.preventDefault();
+    $(this).children('i').toggleClass('fa-chevron-right');
+    $(this).children('i').toggleClass('fa-chevron-down');
+    $(this).siblings('.help-event-title-content').toggleClass('active');
+  });
+});

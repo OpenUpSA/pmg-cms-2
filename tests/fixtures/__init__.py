@@ -39,7 +39,11 @@ class HouseData(DataSet):
 
 class MinisterData(DataSet):
     class minister_of_arts:
+        id = 1
         name = "Minister of Sports, Arts and Culture"
+    class minister_of_transport:
+        id = 2
+        name = "Minister of Transport "
 
 class CommitteeData(DataSet):
     class communications:
@@ -225,6 +229,23 @@ class CommitteeQuestionData(DataSet):
         intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
         asked_by_name = "Van Dyk, Ms V"
         asked_by_member = MemberData.veronica
+    class arts_committee_question_two:
+        minister = MinisterData.minister_of_transport
+        code = "NA1"
+        question_number = 1
+        house = HouseData.na
+        written_number = 1
+        oral_number = 1
+        answer_type = "oral"
+        date = datetime.datetime(2018, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        year = 2018
+        question = "What has he found were the reasons for not reporting on the 2018-19 Fourth Quarter expenditure?" 
+        answer = "During the Fourth Quarter of the 2018-19 financial year there were no expenditure incurred on the development of the Rail Safety Bill and therefore there was no reporting."
+        question_to_name = "Minister of Sports, Arts and Culture"
+        intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
+        asked_by_name = "Van Dyk, Ms V"
+        asked_by_member = MemberData.veronica
+
 
 class EventData(DataSet):
     class arts_bill_event:

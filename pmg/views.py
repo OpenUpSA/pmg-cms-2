@@ -1453,8 +1453,10 @@ def question_replies(page=0):
         'v2/ministers', return_everything=True)['results']
     filters = {}
     params = {}
-    if 'filter[year]' in request.args:
-        filters["year"] = params['filter[year]'] = request.args.get('filter[year]')
+    year = request.args.get('filter[year]', None)
+    if year is not None:
+        filters["year"] = params['filter[year]'] = year
+        year = int(year)
     filters["minister"] = params['filter[minister_id]'] = request.args.get(
         'filter[minister]')
     questions = load_from_api(
@@ -1465,6 +1467,9 @@ def question_replies(page=0):
 
     # sort ministers to put President first
     ministers.sort(key=lambda m: 0 if m['name'] == 'President' else m['name'])
+
+    year_list = range(MIN_YEAR, date.today().year + 1)
+    year_list.reverse()
 
     return render_template(
         'question_list.html',
@@ -1479,7 +1484,9 @@ def question_replies(page=0):
         content_type="minister_question",
         ministers=ministers,
         all_committees_option="All Ministries",
-        filters=filters)
+        filters=filters,
+        selected_year=year,
+        year_list=year_list)
 
 
 @app.route('/search/')

@@ -18,3 +18,11 @@ fieldset {
 input[type="checkbox"] {
   width: auto;
 }
+
+.help-event-title-content {
+  display: none;
+}
+
+.help-event-title-content.active {
+  display: block;
+}

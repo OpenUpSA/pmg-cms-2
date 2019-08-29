@@ -1,6 +1,7 @@
+import os
 from tests import PMGTestCase
 from pmg.models import db, Bill, BillType, BillStatus, Event, House, Member, Committee
-from pmg.bills import bill_history
+from pmg.bills import bill_history, match_title
 from datetime import datetime, timedelta
 
 
@@ -100,3 +101,19 @@ class TestHansardLink(PMGTestCase):
                 self.assertEqual(
                     event.id, event_class["events"][0]["events"][0]["hansard"]["id"]
                 )
+
+    def test_match_title(self):
+        """
+        Test that the match_title function matches all of the bill events 
+        provided.
+        """
+        path = self.get_absolute_file_path('../data/bill_event_titles.txt')
+        with open(path, mode='r') as event_titles:
+            for event_title in event_titles:
+                self.assertTrue(
+                    match_title(event_title),
+                    "Event title '%s' should be matched." % event_title)
+
+    def get_absolute_file_path(self, relative_path):
+        dir_name = os.path.dirname(__file__)
+        return os.path.join(dir_name, relative_path)

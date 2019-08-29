@@ -1453,6 +1453,8 @@ def question_replies(page=0):
         'v2/ministers', return_everything=True)['results']
     filters = {}
     params = {}
+    if 'filter[year]' in request.args:
+        filters["year"] = params['filter[year]'] = request.args.get('filter[year]')
     filters["minister"] = params['filter[minister_id]'] = request.args.get(
         'filter[minister]')
     questions = load_from_api(

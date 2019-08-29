@@ -409,7 +409,8 @@ class Search:
         try:
             self.es.delete_index(self.index_name)
         except ElasticHttpNotFoundError:
-            pass
+            self.logger.info("Index '%s' not found. Creating index..." %
+                self.index_name)
 
     def create_index(self):
         settings = {

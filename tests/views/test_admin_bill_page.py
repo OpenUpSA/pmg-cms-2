@@ -68,8 +68,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         The admin bill create page should show help text for
         which bill event title are allowed when the bill type is "bill-passed".
         """
-        url = "http://pmg.test:5000/admin/bill/new"
-        response = self.request_as_user(self.user, url, follow_redirects=True)
+        url = "/admin/bill/new"
+        response = self.make_request(url, self.user, follow_redirects=True)
 
         self.assertIn(escape('Help?'), self.html)
         self.assertIn(

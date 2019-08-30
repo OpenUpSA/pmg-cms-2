@@ -4,6 +4,7 @@ from pmg.models import db, BillType, Minister, Bill
 from tests.fixtures import (
     dbfixture, UserData, RoleData, BillData, HouseData, BillTypeData
 )
+from flask import escape
 
 
 class TestAdminBillPage(PMGLiveServerTestCase):
@@ -62,6 +63,24 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         self.assertTrue(created_bill)
         self.created_objects.append(created_bill)
 
+    def test_admin_create_bill_event_titles_help_section(self):
+        """
+        The admin bill create page should show help text for
+        which bill event title are allowed when the bill type is "bill-passed".
+        """
+        url = "http://pmg.test:5000/admin/bill/new"
+        response = self.request_as_user(self.user, url, follow_redirects=True)
+
+        self.assertIn(escape('Help?'), self.html)
+        self.assertIn(
+            escape('When event type is "Bill passed", event title must be one of'),
+            self.html)
+        self.assertIn(
+            escape(
+                'Bill passed by the National Assembly and transmitted to the '
+                'NCOP for concurrence'),
+            self.html)
+
     def test_admin_action_bill(self):
         """
         Delete a bill with the admin interface (/admin/bill/action/)
@@ -89,8 +108,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         url = "/admin/bill/delete/"
         data = {
             'url': '/admin/bill/',
-            'id' : str(self.fx.BillData.food.id),
-            
+            'id': str(self.fx.BillData.food.id),
+
         }
         response = self.make_request(
             url, self.user, follow_redirects=True, data=data, method="POST")

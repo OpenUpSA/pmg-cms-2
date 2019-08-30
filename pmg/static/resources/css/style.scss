@@ -1899,15 +1899,12 @@ ul.menu {
 
 .blog-page, .single-blog {
   .single-post {
-    color: black;
-    background-color: $grey-light;
     margin-bottom: 25px;
-    border-radius: 5px;
-    border-bottom: 1px solid $grey-medium;
 
     .title {
       margin-top: 0;
       margin-bottom: 10px;
+      font-weight: bold;
     }
     .preview {
       margin-bottom: 20px;
@@ -1949,12 +1946,17 @@ ul.menu {
   h1, h2, h3 {
     margin-bottom: 30px;
     margin-top: 0;
+    font-weight: bold;
   }
 }
 .single-blog {
   .single-post {
       padding: 10px;
       overflow: auto;
+  }
+  .infobox {
+      background-color: $grey-light;
+      border-radius: 0.5em;
   }
   .preview-image {
     img {
@@ -1974,13 +1976,17 @@ ul.menu {
       border-bottom: 2px solid $grey-light;
       padding-top: 0;
     }
+    h4 {
+      margin-bottom: 20px;
+    }
     .current-filter {
-      padding: 0.3em 0.4em;
-      background: #222;
-      color: white;
+      padding: 0.2em 0.1em 0.2em 0.4em;
+      color: $grey-darkest;
+      background: $grey-medium;
       border-radius: 0.5em;
+      font-weight: bold;
       a {
-        color: white;
+        color: $grey-darkest;
       }
     }
     .post-list {
@@ -1989,10 +1995,14 @@ ul.menu {
       }
     }
     .single-post {
+      border-radius: 5px;
+      border-bottom: 1px solid $grey-medium;
+      color: $black;
+      background-color: $grey-light;
       overflow: hidden; 
       display: flex;
       &:hover {
-        background-color: $grey-medium;
+        filter: brightness(90%);
       }
     }
     .page-sharing {

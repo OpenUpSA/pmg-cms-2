@@ -89,9 +89,9 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255), default='', server_default='', nullable=False)
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
-    confirmed_at = db.Column(db.DateTime(timezone=True))
-    last_login_at = db.Column(db.DateTime(timezone=True))
-    current_login_at = db.Column(db.DateTime(timezone=True))
+    confirmed_at = db.Column(db.DateTime(timezone=False))
+    last_login_at = db.Column(db.DateTime(timezone=False))
+    current_login_at = db.Column(db.DateTime(timezone=False))
     last_login_ip = db.Column(db.String(100))
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
@@ -125,7 +125,7 @@ class User(db.Model, UserMixin):
 
     def update_current_login(self):
         now = datetime.datetime.utcnow()
-        if self.current_login_at.replace(tzinfo=None) + datetime.timedelta(hours=1) < now:
+        if self.current_login_at + datetime.timedelta(hours=1) < now:
             self.current_login_at = now
             db.session.commit()
 

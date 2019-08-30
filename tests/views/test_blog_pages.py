@@ -18,19 +18,19 @@ class TestBlogPages(PMGLiveServerTestCase):
 
     def test_blog_post_page(self):
         """
-        Test blog post page (http://pmg.test:5000/blog/<slug>)
+        Test blog post page (/blog/<slug>)
         """
         post = self.fx.PostData.the_week_ahead
-        self.get_page_contents("http://pmg.test:5000/blog/%s/" % post.slug)
+        self.make_request("/blog/%s/" % post.slug)
         self.assertIn(post.title, self.html)
         self.assertIn(post.body[0:100], self.html)
         self.assertIn('That week in Parliament', self.html)
 
     def test_blog_listings_page(self):
         """
-        Test blog listings page (http://pmg.test:5000/blog)
+        Test blog listings page (/blog)
         """
-        self.get_page_contents("http://pmg.test:5000/blog")
+        self.make_request("/blog/")
         self.contains_template_text()
         self.contains_posts(Post.query.all())
         self.contains_archive()
@@ -38,12 +38,12 @@ class TestBlogPages(PMGLiveServerTestCase):
     def test_blog_listings_page_with_filter(self):
         """
         Test blog listings page with a filter 
-        (http://pmg.test:5000/blog?filter[month]=<month>&filter[year]=<year>).
+        (/blog?filter[month]=<month>&filter[year]=<year>).
         """
         month = 'February'
         year = 2019
-        self.get_page_contents(
-            "http://pmg.test:5000/blog?filter[month]=%s&filter[year]=%d" %
+        self.make_request(
+            "/blog/?filter[month]=%s&filter[year]=%d" %
             (month, year))
         self.contains_template_text()
         self.contains_posts([

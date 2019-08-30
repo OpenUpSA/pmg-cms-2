@@ -33,10 +33,10 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
 
     def test_admin_alerts_page(self):
         """
-        Test admin alerts page (http://pmg.test:5000/admin/alerts)
+        Test admin alerts page (/admin/alerts)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/alerts", follow_redirects=True)
+        self.make_request(
+            "/admin/alerts", self.user, follow_redirects=True)
         self.assertIn('Send an email alert', self.html)
         self.assertIn('What template would you like to use?', self.html)
         self.assertIn('If none of these are suitable, <a href="/admin/email-templates/new/">create a new template', self.html)
@@ -44,12 +44,12 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
 
     def test_admin_alerts_new_page(self):
         """
-        Test admin new alerts page (http://pmg.test:5000/admin/alerts/new)
+        Test admin new alerts page (/admin/alerts/new)
         """
-        self.request_as_user(
-            self.user, 
-            "http://pmg.test:5000/admin/alerts/new?template_id=%d" % \
+        self.make_request(
+            "/admin/alerts/new?template_id=%d" % \
             self.fx.EmailTemplateData.template_one.id, 
+            self.user, 
             follow_redirects=True)
         self.assertIn('Send an email alert: %s' % \
             self.fx.EmailTemplateData.template_one.name, self.html)
@@ -63,11 +63,11 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
 
     def test_post_admin_alerts_new_page_preview(self):
         """
-        Test admin new alerts page preview (http://pmg.test:5000/admin/alerts/preview)
+        Test admin new alerts page preview (/admin/alerts/preview)
         """
-        response = self.request_as_user(
+        response = self.make_request(
+            "/admin/alerts/preview", 
             self.user, 
-            "http://pmg.test:5000/admin/alerts/preview", 
             data=self.create_alert_data, method="POST", follow_redirects=True)
         self.assertEqual(200, response.status_code)
         self.assertIn('Subject', self.html)
@@ -76,11 +76,11 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
     @patch('pmg.admin.email_alerts.send_sendgrid_email', return_value=True)
     def test_post_admin_alerts_new_page(self, mock):
         """
-        Test submit admin new alerts page (http://pmg.test:5000/admin/alerts/new)
+        Test submit admin new alerts page (/admin/alerts/new)
         """
-        response = self.request_as_user(
+        response = self.make_request(
+            "/admin/alerts/new", 
             self.user, 
-            "http://pmg.test:5000/admin/alerts/new", 
             data=self.create_alert_data, method="POST", follow_redirects=True)
         self.assertEqual(200, response.status_code)
         self.assertIn(

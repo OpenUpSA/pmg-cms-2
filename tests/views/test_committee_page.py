@@ -22,12 +22,11 @@ class TestCommitteePage(PMGLiveServerTestCase):
 
     def test_committee_page(self):
         """
-        Test committee page (http://pmg.test:5000/committee/<id>/)
+        Test committee page (/committee/<id>/)
         """
         committee = self.fx.CommitteeData.arts
-        self.get_page_contents(
-            "http://pmg.test:5000/committee/%s/"
-            % committee.id
+        self.make_request(
+            "/committee/%s/" % committee.id
         )
         self.assertIn(committee.name, self.html)
         self.containsCommitteeMeetings()
@@ -40,12 +39,12 @@ class TestCommitteePage(PMGLiveServerTestCase):
     def test_committee_page_write_to_committee_facet(self):
         """
         Test the presence of the "Write to committee" facet on the 
-        committee page (http://pmg.test:5000/committee/<id>/)
+        committee page (/committee/<id>/)
         """
         for committee_tuple in self.fx.CommitteeData:
             committee = committee_tuple[1]
-            self.get_page_contents(
-                "http://pmg.test:5000/committee/%s/"
+            self.make_request(
+                "/committee/%s/"
                 % committee.id
             )
             if committee.active and committee.house.name_short == 'NA':

@@ -24,6 +24,7 @@ class PMGTestCase(TestCase):
 
 
 class PMGLiveServerTestCase(LiveServerTestCase):
+
     def __call__(self, result=None):
         """
         Does the required setup, doing it here means you don't have to
@@ -33,6 +34,7 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         # Get the app
         self.app = self.create_app()
         self.port = self.app.config.get("LIVESERVER_PORT", 5000)
+        self.base_url = "http://pmg.test:5000/"
 
         # We need to create a context in order for extensions to catch up
         self._ctx = self.app.test_request_context()
@@ -84,18 +86,23 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         db.session.remove()
         db.drop_all()
 
-    def get_page_contents(self, url):
-        response = urllib2.urlopen(url)
-        self.assertEqual(200, response.code)
-        self.html = response.read()
+    def make_request(self, path, user=None, **args):
+        """
+        Make a request to the test app (optionally with a user session).
 
-    def request_as_user(self, user, url, **args):
+        Args:
+            path: Endpoint to make the request to.
+            user: User to make the request as.
+        
+        Keyword arguments are passed on to the test client 
+        (https://werkzeug.palletsprojects.com/en/0.15.x/test/#testing-api).
+        """
         with self.app.test_client() as client:
             with client.session_transaction() as session:
-                session['user_id'] = user.id
+                session['user_id'] = user.id if user else None
                 session['fresh'] = True
 
-            response = client.open(url, **args)
+            response = client.open(path, base_url=self.base_url, **args)
             self.html = response.data
             return response
 

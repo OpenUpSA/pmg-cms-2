@@ -22,10 +22,10 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
 
     def test_view_admin_committee_page(self):
         """
-        Test view admin committee page (http://pmg.test:5000/admin/committee)
+        Test view admin committee page (/admin/committee)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/committee", follow_redirects=True)
+        self.make_request(
+            "/admin/committee", self.user, follow_redirects=True)
         self.assertIn('Committees', self.html)
         self.containsCommittee(self.fx.CommitteeData.communications)
         self.containsCommittee(self.fx.CommitteeData.arts)
@@ -38,10 +38,10 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
 
     def test_admin_create_committee(self):
         """
-        Create a committee with the admin interface (http://pmg.test:5000/admin/committee/new/)
+        Create a committee with the admin interface (/admin/committee/new/)
         """
         before_count = len(Committee.query.all())
-        url = "http://pmg.test:5000/admin/committee/new/?url=%2Fadmin%2Fcommittee%2F"
+        url = "/admin/committee/new/?url=%2Fadmin%2Fcommittee%2F"
         data = {
             'name': 'New committee',
             'active': 'y',
@@ -51,7 +51,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
             'about': '',
             'contact_details': '',
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -62,10 +62,10 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
 
     def test_admin_delete_committee(self):
         """
-        Delete a committee with the admin interface (http://pmg.test:5000/admin/committee/action/)
+        Delete a committee with the admin interface (/admin/committee/action/)
         """
         before_count = len(Committee.query.all())
-        url = "http://pmg.test:5000/admin/committee/action/"
+        url = "/admin/committee/action/"
         data = {
             'url': '/admin/committee/',
             'action': 'delete',
@@ -73,7 +73,7 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
                 str(self.fx.CommitteeData.communications.id),
             ]
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)

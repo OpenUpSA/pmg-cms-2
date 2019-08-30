@@ -24,10 +24,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_bill_page(self):
         """
-        Test admin bill page (http://pmg.test:5000/admin/bill)
+        Test admin bill page (/admin/bill)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/bill", follow_redirects=True)
+        self.make_request(
+            "/admin/bill", self.user, follow_redirects=True)
         self.assertIn('Bills', self.html)
         self.containsBill(self.fx.BillData.farm)
         self.containsBill(self.fx.BillData.food)
@@ -39,10 +39,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_create_bill(self):
         """
-        Create a bill with the admin interface (http://pmg.test:5000/admin/bill/new/)
+        Create a bill with the admin interface (/admin/bill/new/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/new/?url=%2Fadmin%2Fbill%2F"
+        url = "/admin/bill/new/?url=%2Fadmin%2Fbill%2F"
         data = {
             'year': '2020',
             'title': 'Cool Bill',
@@ -54,8 +54,7 @@ class TestAdminBillPage(PMGLiveServerTestCase):
             'effective_date': '2019-07-03',
             'act_name': 'Fundamental',
         }
-        response = self.request_as_user(
-            self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Bill.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -69,8 +68,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         The admin bill create page should show help text for
         which bill event title are allowed when the bill type is "bill-passed".
         """
-        url = "http://pmg.test:5000/admin/bill/new"
-        response = self.request_as_user(self.user, url, follow_redirects=True)
+        url = "/admin/bill/new"
+        response = self.make_request(url, self.user, follow_redirects=True)
 
         self.assertIn(escape('Help?'), self.html)
         self.assertIn(
@@ -84,11 +83,10 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_action_bill(self):
         """
-        Delete a bill with the action url on the admin interface 
-        (http://pmg.test:5000/admin/bill/action/)
+        Delete a bill with the admin interface (/admin/bill/action/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/action/"
+        url = "/admin/bill/action/"
         data = {
             'url': '/admin/bill/',
             'action': 'delete',
@@ -96,8 +94,7 @@ class TestAdminBillPage(PMGLiveServerTestCase):
                 str(self.fx.BillData.food.id),
             ]
         }
-        response = self.request_as_user(
-            self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Bill.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)
@@ -105,28 +102,28 @@ class TestAdminBillPage(PMGLiveServerTestCase):
     def test_admin_delete_bill(self):
         """
         Delete a bill on the admin interface 
-        (http://pmg.test:5000/admin/bill/delete/)
+        (/admin/bill/delete/)
         """
         before_count = len(Bill.query.all())
-        url = "http://pmg.test:5000/admin/bill/delete/"
+        url = "/admin/bill/delete/"
         data = {
             'url': '/admin/bill/',
             'id': str(self.fx.BillData.food.id),
 
         }
-        response = self.request_as_user(
-            self.user, url, data=data, method="POST")
+        response = self.make_request(
+            url, self.user, follow_redirects=True, data=data, method="POST")
         after_count = len(Bill.query.all())
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
         self.assertGreater(before_count, after_count)
 
     def test_admin_edit_bill(self):
         """
-        Edit a bill with the admin interface (http://pmg.test:5000/admin/bill/edit/)
+        Edit a bill with the admin interface (/admin/bill/edit/)
         """
         bill = db.session.query(Bill).first()
         new_title = 'Cool Bill'
-        url = "http://pmg.test:5000/admin/bill/edit/?id=%d" % bill.id
+        url = "/admin/bill/edit/?id=%d" % bill.id
         data = {
             'year': '2020',
             'title': new_title,
@@ -138,8 +135,8 @@ class TestAdminBillPage(PMGLiveServerTestCase):
             'effective_date': '2019-07-03',
             'act_name': 'Fundamental',
         }
-        response = self.request_as_user(self.user, url, data=data,
-                                        method="POST", follow_redirects=True)
+        response = self.make_request(
+            url, self.user, follow_redirects=True, data=data, method="POST")
         self.assertEqual(200, response.status_code)
 
         db.session.refresh(bill)

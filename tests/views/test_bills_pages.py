@@ -30,9 +30,9 @@ class TestBillsPages(PMGLiveServerTestCase):
 
     def test_bills_page(self):
         """
-        Test bills page (http://pmg.test:5000/bills)
+        Test bills page (/bills)
         """
-        self.get_page_contents("http://pmg.test:5000/bills")
+        self.make_request("/bills", follow_redirects=True)
         headings = ['Current Bills', 'All Tabled Bills',
                     'Private Member &amp; Committee Bills',
                     'All Tabled &amp; Draft Bills',
@@ -42,9 +42,9 @@ class TestBillsPages(PMGLiveServerTestCase):
 
     def test_current_bills_page(self):
         """
-        Test current bills page (http://pmg.test:5000/bills/current)
+        Test current bills page (/bills/current)
         """
-        self.get_page_contents("http://pmg.test:5000/bills/current")
+        self.make_request("/bills/current", follow_redirects=True)
         self.assertIn('Current Bills', self.html)
         self.assertIn('Weekly update for all current bills', self.html)
         for bill_key in self.fx.BillData:
@@ -53,19 +53,6 @@ class TestBillsPages(PMGLiveServerTestCase):
                 self.contains_bill(bill)
             else:
                 self.doesnt_contain_bill(bill)
-
-    # def test_draft_bills_page(self):
-    #     """
-    #     Test draft bills page (http://pmg.test:5000/bills/draft/year/<year>)
-    #     """
-    #     self.get_page_contents("http://pmg.test:5000/bills/draft/year/2019")
-    #     self.assertIn('Draft Bills from 2019', self.html)
-    #     for bill_key in self.fx.BillData:
-    #         bill = getattr(self.fx.BillData, bill_key[0])
-    #         if bill.status and bill.status.name in self.current_statuses:
-    #             self.contains_bill(bill)
-    #         else:
-    #             self.doesnt_contain_bill(bill)
 
     def contains_bill(self, bill):
         self.assertIn(bill.title, self.html)

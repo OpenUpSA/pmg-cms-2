@@ -22,10 +22,10 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
 
     def test_view_admin_member_page(self):
         """
-        Test view admin member page (http://pmg.test:5000/admin/member)
+        Test view admin member page (/admin/member)
         """
-        self.request_as_user(
-            self.user, "http://pmg.test:5000/admin/member", follow_redirects=True)
+        self.make_request(
+            "/admin/member", self.user, follow_redirects=True)
         self.assertIn('Members', self.html)
         self.containsMember(self.fx.MemberData.veronica)
         self.containsMember(self.fx.MemberData.laetitia)
@@ -46,10 +46,10 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
 
     def test_admin_create_member(self):
         """
-        Create a member with the admin interface (http://pmg.test:5000/admin/member/new/)
+        Create a member with the admin interface (/admin/member/new/)
         """
         before_count = len(Member.query.all())
-        url = "http://pmg.test:5000/admin/member/new/?url=%2Fadmin%2Fmember%2F"
+        url = "/admin/member/new/?url=%2Fadmin%2Fmember%2F"
         data = {
             'name': 'New member',
             'current': 'y',
@@ -60,8 +60,8 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
             'bio': '',
             'pa_link': '',
         }
-        response = self.request_as_user(
-            self.user, url, data=data, method="POST")
+        response = self.make_request(
+            url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
@@ -73,10 +73,10 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
 
     def test_admin_delete_member(self):
         """
-        Delete a member with the admin interface (http://pmg.test:5000/admin/member/action/)
+        Delete a member with the admin interface (/admin/member/action/)
         """
         before_count = len(Member.query.all())
-        url = "http://pmg.test:5000/admin/member/action/"
+        url = "/admin/member/action/"
         data = {
             'url': '/admin/member/',
             'action': 'delete',
@@ -84,7 +84,7 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
                 str(self.fx.MemberData.veronica.id),
             ]
         }
-        response = self.request_as_user(self.user, url, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)

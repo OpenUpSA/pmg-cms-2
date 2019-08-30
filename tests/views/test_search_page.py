@@ -52,8 +52,8 @@ class TestSearchPage(PMGLiveServerTestCase):
 
     def test_search_page(self):
         search_term = 'content'
-        self.get_page_contents(
-            "http://pmg.test:5000/search/?q=%s" % search_term
+        self.make_request(
+            "/search/?q=%s" % search_term
         )
         self.assertIn(search_term, self.html)
         self.assertIn('Blog Posts', self.html)

@@ -22,8 +22,8 @@ class TestQuestionRepliesPage(PMGLiveServerTestCase):
         Test Questions and Replies page (/question_replies).
         """
         question  = self.fx.CommitteeQuestionData.arts_committee_question_one
-        self.get_page_contents(
-            "http://pmg.test:5000/question_replies/"
+        self.make_request(
+            "/question_replies/"
         )
         self.assertIn('Questions and Replies', self.html)
         self.assertIn('Filter by year', self.html)
@@ -38,8 +38,8 @@ class TestQuestionRepliesPage(PMGLiveServerTestCase):
         """
         question_2019 = self.fx.CommitteeQuestionData.arts_committee_question_one
         question_2018 = self.fx.CommitteeQuestionData.arts_committee_question_two
-        self.get_page_contents(
-            "http://pmg.test:5000/question_replies/?filter[year]=2018"
+        self.make_request(
+            "/question_replies/?filter[year]=2018"
         )
         self.assertIn(question_2018.question, self.html)
         self.assertNotIn(question_2019.question, self.html)
@@ -51,8 +51,8 @@ class TestQuestionRepliesPage(PMGLiveServerTestCase):
         """
         question_2019 = self.fx.CommitteeQuestionData.arts_committee_question_one
         question_2018 = self.fx.CommitteeQuestionData.arts_committee_question_two
-        self.get_page_contents(
-            "http://pmg.test:5000/question_replies/?filter[year]=2018"
+        self.make_request(
+            "/question_replies/?filter[year]=2018"
         )
         self.assertIn(question_2018.question, self.html)
         self.assertNotIn(question_2019.question, self.html)

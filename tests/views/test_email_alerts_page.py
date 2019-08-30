@@ -21,7 +21,7 @@ class TestEmailAlertsPage(PMGLiveServerTestCase):
         """
         Test email alerts page (/email-alerts)
         """
-        self.get_page_contents("http://pmg.test:5000/email-alerts")
+        self.make_request("/email-alerts", follow_redirects=True)
         self.assertIn('Which committees should we send you email alerts for?',
                       self.html)
         self.assertIn('National Assembly', self.html)

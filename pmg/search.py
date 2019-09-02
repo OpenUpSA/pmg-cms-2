@@ -406,9 +406,15 @@ class Search:
             self.reindex_all(data_type)
 
     def delete_everything(self):
-        self.es.delete_index(self.index_name)
+        self.logger.info("Deleting index '%s'..." % self.index_name)
+        try:
+            self.es.delete_index(self.index_name)
+            self.logger.info("Index '%s' deleted." % self.index_name)
+        except ElasticHttpNotFoundError:
+            self.logger.info("Index '%s' not found." % self.index_name)
 
     def create_index(self):
+        self.logger.info("Creating index '%s'..." % self.index_name)
         settings = {
             "analysis": {
                 "analyzer": {

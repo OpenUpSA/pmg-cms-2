@@ -102,3 +102,24 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn("50%", self.html)
         self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
         self.assertNotIn("Since", self.html)
+
+    def test_attendance_overview_for_no_attendance_data(self):
+        CommitteeMeetingAttendance.query.delete()
+        res = self.make_request("/attendance-overview")
+        self.assertEqual(200, res.status_code)
+        self.assertIn("Committee meeting attendance trends for 2019", self.html)
+        self.assertNotIn("Arts and Culture", self.html)
+
+    def test_archived_attendance_overview(self):
+        self.make_request("/archived-attendance-overview")
+        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn("50%", self.html)
+        self.assertIn('<td class="number-meetings hidden-xs">2</td>', self.html)
+
+    def test_archived_attendance_overview_for_no_attendance_data(self):
+        CommitteeMeetingAttendance.query.delete()
+        res = self.make_request("/archived-attendance-overview")
+        self.assertEqual(200, res.status_code)
+        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertNotIn("Arts and Culture", self.html)

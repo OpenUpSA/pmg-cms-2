@@ -1282,9 +1282,9 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         )
 
         if period == "historical":
-            rows = rows.filter(CommitteeMeeting.date <= "2019-06-30")
+            rows = rows.filter(CommitteeMeeting.date <= "2019-05-31")
         else:
-            rows = rows.filter(CommitteeMeeting.date >= "2019-07-01")
+            rows = rows.filter(CommitteeMeeting.date >= "2019-06-01")
 
         rows = rows.order_by(
             year.desc(), cls.member_id, CommitteeMeeting.committee_id
@@ -1365,10 +1365,10 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
         if period == 'current':
             query = query.filter(
-                CommitteeMeeting.date >= '2019-07-01')
+                CommitteeMeeting.date >= '2019-06-01')
         else:
             query = query.filter(
-                CommitteeMeeting.date <= '2019-06-30')
+                CommitteeMeeting.date <= '2019-05-31')
 
         subquery = query.subquery('attendance')
         return db.session.query(

@@ -1575,8 +1575,12 @@ header.detail-page-header {
   .cte-dtl-meetings-filter,
   .bill-status-container,
   .bill-versions, #wrapper > div > article > div.row > div.col-sm-4 > div,
-  .form-group {
-    display: none;
+  .form-group,
+  .confirm-email,
+  .free-banner,
+  .cte-meeting-share,
+  .page-sharing {
+    display: none !important;
   }
 
   .list-spaced li {

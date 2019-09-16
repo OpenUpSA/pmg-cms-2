@@ -1319,9 +1319,9 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         """
         if period == 'historical':
             start_date = datetime.datetime(2018, 1, 1)
-            end_date = datetime.datetime(2019, 6, 30)
+            end_date = datetime.datetime(2019, 5, 31)
         else:
-            start_date = datetime.datetime(2019, 7, 1)
+            start_date = datetime.datetime(2019, 6, 1)
             end_date = datetime.datetime(to_year, 12, 31)
 
         # attendance

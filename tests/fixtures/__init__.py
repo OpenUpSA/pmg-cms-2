@@ -90,7 +90,7 @@ class BillTypeData(DataSet):
         name = "Section 74"
         prefix = "B"
         description = "Section 74"
-        
+
     class section_75:
         name = "Section 75"
         prefix = "B"
@@ -193,7 +193,7 @@ class MemberData(DataSet):
         name = "Ms Veronica Van Dyk"
         profile_pic_url = "https://www.pa.org.za/media_root/cache/02/93/0293cce7701daf86fa88fe02e1db9c58.jpg"
         bio = "Ms Veronica van Dyk is the Deputy Shadow Minister for Communications in the DA, since June 2014. She is a former Ward Councillor of the Nama Khoi Local Municipality."
-        house = HouseData.na 
+        house = HouseData.na
         party = PartyData.da
         province = ProvinceData.western_cape
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
@@ -201,7 +201,7 @@ class MemberData(DataSet):
         current = True
     class not_current_member:
         name = "Phoebe Noxolo Abraham"
-        house = HouseData.na 
+        house = HouseData.na
         party = PartyData.anc
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         current = False
@@ -223,23 +223,23 @@ class CommitteeQuestionData(DataSet):
         answer_type = "oral"
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         year = 2019
-        question = "What programmes that promote the languages, culture and heritage of the Khoi and San has the Government implemented in each province in each of the past five years" 
+        question = "What programmes that promote the languages, culture and heritage of the Khoi and San has the Government implemented in each province in each of the past five years"
         answer = "Through possible funding and strategic partnerships between PanSALB and my Department, PanSALB was able to initiate and support the following programmes."
         question_to_name = "Minister of Sports, Arts and Culture"
         intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
         asked_by_name = "Van Dyk, Ms V"
         asked_by_member = MemberData.veronica
     class arts_committee_question_two:
-        minister = MinisterData.minister_of_transport
+        minister = MinisterData.minister_of_arts
         code = "NA1"
-        question_number = 1
+        question_number = 2
         house = HouseData.na
-        written_number = 1
-        oral_number = 1
+        written_number = 2
+        oral_number = 2
         answer_type = "oral"
         date = datetime.datetime(2018, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         year = 2018
-        question = "What has he found were the reasons for not reporting on the 2018-19 Fourth Quarter expenditure?" 
+        question = "What has he found were the reasons for not reporting on the 2018-19 Fourth Quarter expenditure?"
         answer = "During the Fourth Quarter of the 2018-19 financial year there were no expenditure incurred on the development of the Rail Safety Bill and therefore there was no reporting."
         question_to_name = "Minister of Sports, Arts and Culture"
         intro = "Van Dyk, Ms V to ask the Minister of Sports, Arts and Culture:"
@@ -270,42 +270,42 @@ class FeaturedData(DataSet):
 class PageData(DataSet):
     class section_25_review_process:
         title = "Section 25 review process"
-        slug = "Section25reviewprocess" 
+        slug = "Section25reviewprocess"
         body = "In February 2018, the National Assembly adopted a motion proposed by the EFF, with amendments by the ANC that Parliament's Constitutional Review Committee investigates mechanisms through which land can be expropriated without compensation."
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         featured = True
     class un_featured_page:
         title = "Unfeatured page"
-        slug = "unfeaturedpage" 
+        slug = "unfeaturedpage"
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         featured = False
 
 class PostData(DataSet):
     class the_week_ahead:
         title = "The Week Ahead: End of the First Term"
-        slug = "theweekahead" 
+        slug = "theweekahead"
         featured = True
         body = "A lot was packed into the first term of the Sixth Parliament."
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
     class first_term_review:
         title = "First Term Review: Sixth Parliament"
-        slug = "FirstTermReview" 
+        slug = "FirstTermReview"
         featured = True
         body = "Parliaments first term ended last week. According to the programme, the term was 11 weeks but the main thrust of the work was compressed into the final 5 weeks of the quarter."
         date = datetime.datetime(2019, 2, 17, 0, 0, 0, tzinfo=pytz.utc)
     class brief_explainer:
         title = "BRIEF EXPLAINER: LAPSED BILLS IN PARLIAMENT"
-        slug = "BriefExplainer" 
+        slug = "BriefExplainer"
         featured = True
         body = "There were 39 unfinished bills when the Fifth Parliament ended."
         date = datetime.datetime(2019, 2, 17, 12, 0, 0, tzinfo=pytz.utc)
     class government_priorities:
         title = "Government's legislative priorities"
-        slug = "GovernmentPriorities" 
+        slug = "GovernmentPriorities"
         featured = True
         body = "The Constitution of South Africa empowers the Executive to prepare and initiate legislation. Similarly, Parliament (through its committees) and individual MPs also have initiating power but the vast majority of legislation (92%) is introduced by the Executive."
         date = datetime.datetime(2018, 8, 17, 0, 0, 0, tzinfo=pytz.utc)
-        
+
 
 class RoleData(DataSet):
     class admin:

@@ -446,8 +446,8 @@ def archived_attendance_overview():
     }
 
     for cte in Committee.list().all():
-        curr = years[this_year].get(cte.id)
-        prev = years[last_year].get(cte.id)
+        curr = years.get(this_year, {}).get(cte.id)
+        prev = years.get(last_year, {}).get(cte.id)
 
         if cte.house.sphere != 'national':
             continue
@@ -504,8 +504,8 @@ def attendance_overview():
     attendance = {"NA": [], "NCOP": []}
 
     for cte in Committee.list().all():
-        curr = years[this_year].get(cte.id)
-        prev = years[this_year].get(cte.id)
+        curr = years.get(this_year, {}).get(cte.id)
+        prev = years.get(this_year, {}).get(cte.id)
 
         if cte.house.sphere != "national":
             continue

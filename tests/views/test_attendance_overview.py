@@ -30,11 +30,11 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         )
         db.session.add(old_parliament_meeting)
         old_parliament_meeting_two = CommitteeMeeting(
-            title="Feb Arts 2", date="2019-02-01", committee=committee
+            title="Feb Arts 2", date="2019-05-31", committee=committee
         )
         db.session.add(old_parliament_meeting_two)
         new_parliament_meeting = CommitteeMeeting(
-            title="Arts 2", date="2019-08-01", committee=committee
+            title="Arts 2", date="2019-06-01", committee=committee
         )
         db.session.add(new_parliament_meeting)
         db.session.commit()
@@ -102,3 +102,24 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn("50%", self.html)
         self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
         self.assertNotIn("Since", self.html)
+
+    def test_attendance_overview_for_no_attendance_data(self):
+        CommitteeMeetingAttendance.query.delete()
+        res = self.make_request("/attendance-overview")
+        self.assertEqual(200, res.status_code)
+        self.assertIn("Committee meeting attendance trends for 2019", self.html)
+        self.assertNotIn("Arts and Culture", self.html)
+
+    def test_archived_attendance_overview(self):
+        self.make_request("/archived-attendance-overview")
+        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn("50%", self.html)
+        self.assertIn('<td class="number-meetings hidden-xs">2</td>', self.html)
+
+    def test_archived_attendance_overview_for_no_attendance_data(self):
+        CommitteeMeetingAttendance.query.delete()
+        res = self.make_request("/archived-attendance-overview")
+        self.assertEqual(200, res.status_code)
+        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertNotIn("Arts and Culture", self.html)

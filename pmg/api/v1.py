@@ -9,7 +9,7 @@ from flask import request, redirect, url_for, Blueprint, make_response
 from flask_security import current_user
 from flask_security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
@@ -81,6 +81,11 @@ def get_filters():
 
             if fieldname:
                 if fieldname.endswith('_id'):
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        continue
+                if fieldname == 'year':
                     try:
                         value = int(value)
                     except ValueError:
@@ -427,12 +432,22 @@ def minister_questions_combined():
 
     # get a combined list of IDs
     q1 = db.session.query(CommitteeQuestion.id, CommitteeQuestion.date.label("date"), literal_column("'cq'").label("type"))
+
+    committee_question_year = func.date_part('year', CommitteeQuestion.date)
+    question_reply_year = func.date_part('year', QuestionReply.start_date)
+
     for f in filters:
-        q1 = q1.filter_by(**f)
+        if 'year' in f:
+            q1 = q1.filter(committee_question_year == f['year'])
+        else:
+            q1 = q1.filter_by(**f)
 
     q2 = db.session.query(QuestionReply.id, QuestionReply.start_date.label("date"), literal_column("'qr'").label("type"))
     for f in filters:
-        q2 = q2.filter_by(**f)
+        if 'year' in f:
+            q2 = q2.filter(question_reply_year == f['year'])
+        else:
+            q2 = q2.filter_by(**f)
 
     query = q1.union_all(q2).order_by(desc("date"))
     query, count, next = paginate_request_query(query)
@@ -450,7 +465,10 @@ def minister_questions_combined():
             joinedload('asked_by_member'),
             lazyload('asked_by_member.memberships'))
     for f in filters:
-        query = query.filter_by(**f)
+        if 'year' in f:
+            query = query.filter(committee_question_year == f['year'])
+        else:
+            query = query.filter_by(**f)
     objects = query.all()
 
     # get question reply objects
@@ -460,7 +478,10 @@ def minister_questions_combined():
         .options(
             lazyload('minister'))
     for f in filters:
-        query = query.filter_by(**f)
+        if 'year' in f:
+            query = query.filter(question_reply_year == f['year'])
+        else:
+            query = query.filter_by(**f)
     # mash them together
     objects.extend(query.all())
 

@@ -1,4 +1,6 @@
 from tests import PMGLiveServerTestCase
+from mock import patch
+from datetime import date
 from pmg.models import (
     db,
     CommitteeMeeting,
@@ -95,7 +97,9 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         db.session.add(attendance_two_mike)
         db.session.commit()
 
-    def test_attendance_overview(self):
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2019(self, date_mock):
+        date_mock.today.return_value = date(2019, 1, 1)
         self.make_request("/attendance-overview")
         self.assertIn("Committee meeting attendance trends for 2019", self.html)
         self.assertIn("Arts and Culture", self.html)
@@ -103,7 +107,9 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
         self.assertNotIn("Since", self.html)
 
-    def test_attendance_overview_for_no_attendance_data(self):
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_for_no_attendance_data_2019(self, date_mock):
+        date_mock.today.return_value = date(2019, 1, 1)
         CommitteeMeetingAttendance.query.delete()
         res = self.make_request("/attendance-overview")
         self.assertEqual(200, res.status_code)

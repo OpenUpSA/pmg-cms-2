@@ -2,7 +2,7 @@ from tests import PMGLiveServerTestCase
 from tests.fixtures import (
     dbfixture, HouseData, CommitteeData, CommitteeMeetingData,
     CallForCommentData, TabledCommitteeReportData, CommitteeQuestionData,
-    EventData, BillData
+    EventData, BillData, CommitteeMeetingAttendanceData
 )
 
 
@@ -12,7 +12,8 @@ class TestCommitteePage(PMGLiveServerTestCase):
 
         self.fx = dbfixture.data(
             HouseData, CommitteeData, CommitteeMeetingData, CallForCommentData,
-            TabledCommitteeReportData, CommitteeQuestionData, BillData, EventData
+            TabledCommitteeReportData, CommitteeQuestionData, BillData, EventData,
+            CommitteeMeetingAttendanceData,
         )
         self.fx.setup()
 
@@ -34,7 +35,7 @@ class TestCommitteePage(PMGLiveServerTestCase):
         self.containsTabledReports()
         self.containsQuestionsAndReplies()
         self.containsBills()
-    
+        self.containsAttendance()
 
     def test_committee_page_write_to_committee_facet(self):
         """
@@ -87,4 +88,13 @@ class TestCommitteePage(PMGLiveServerTestCase):
         self.assertIn('Bills', self.html)
         self.assertIn(
             self.fx.BillData.sport.title,
+            self.html)
+
+    def containsAttendance(self):
+        self.assertIn('Attendance', self.html)
+        self.assertIn(
+            '<small class="rate-text">Attendance rate </small><strong class="rate">50%</strong>',
+            self.html)
+        self.assertIn(
+            '<strong class="year">2019</strong> <small>1 meetings</small>',
             self.html)

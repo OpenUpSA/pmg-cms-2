@@ -224,6 +224,19 @@ class MemberData(DataSet):
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         current = True
 
+class CommitteeMeetingAttendanceData(DataSet):
+    class arts_meeting_attendance_one:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'P'
+        meeting = CommitteeMeetingData.arts_meeting_two
+        member = MemberData.laetitia
+    class arts_meeting_attendance_two:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'A'
+        meeting = CommitteeMeetingData.arts_meeting_two
+        member = MemberData.veronica
+
+
 class CommitteeQuestionData(DataSet):
     class arts_committee_question_one:
         minister = MinisterData.minister_of_arts

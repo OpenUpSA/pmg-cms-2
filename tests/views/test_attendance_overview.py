@@ -39,6 +39,10 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
             title="Arts 2", date="2019-06-01", committee=committee
         )
         db.session.add(new_parliament_meeting)
+        future_parliament_meeting_one = CommitteeMeeting(
+            title="Arts 2", date="2020-06-01", committee=committee
+        )
+        db.session.add(future_parliament_meeting_one)
         db.session.commit()
 
         jabu = Member(
@@ -95,6 +99,21 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
             created_at="2019-08-01",
         )
         db.session.add(attendance_two_mike)
+
+        future_attendance_jabu_one = CommitteeMeetingAttendance(
+            attendance="P",
+            member=jabu,
+            meeting=future_parliament_meeting_one,
+            created_at="2020-08-01",
+        )
+        db.session.add(future_attendance_jabu_one)
+        future_attendance_mike_one = CommitteeMeetingAttendance(
+            attendance="P",
+            member=mike,
+            meeting=future_parliament_meeting_one,
+            created_at="2020-08-01",
+        )
+        db.session.add(future_attendance_mike_one)
         db.session.commit()
 
     @patch('pmg.views.datetime')
@@ -105,6 +124,7 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn("Arts and Culture", self.html)
         self.assertIn("50%", self.html)
         self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
+        self.assertIn('<td class="attendance" data-value="50.0">', self.html)
         self.assertNotIn("Since", self.html)
 
     @patch('pmg.views.datetime')
@@ -115,6 +135,17 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertEqual(200, res.status_code)
         self.assertIn("Committee meeting attendance trends for 2019", self.html)
         self.assertNotIn("Arts and Culture", self.html)
+
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2020(self, date_mock):
+        date_mock.today.return_value = date(2020, 1, 1)
+        self.make_request("/attendance-overview")
+        self.assertIn("Committee meeting attendance trends for 2020", self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
+        self.assertIn("Since 2019", self.html)
+        self.assertIn('<td class="attendance" data-value="100.0">', self.html)
+        self.assertIn('<td class="attendance-change" data-value="50.0">', self.html)
 
     def test_archived_attendance_overview(self):
         self.make_request("/archived-attendance-overview")

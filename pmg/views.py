@@ -491,6 +491,7 @@ def attendance_overview():
     Display overview of attendance for meetings.
     """
     this_year = datetime.today().year
+    last_year = this_year - 1
     attendance = CommitteeMeetingAttendance.annual_attendance_trends(to_year=this_year)
 
     years = {
@@ -505,7 +506,7 @@ def attendance_overview():
 
     for cte in Committee.list().all():
         curr = years.get(this_year, {}).get(cte.id)
-        prev = years.get(this_year, {}).get(cte.id)
+        prev = years.get(last_year, {}).get(cte.id)
 
         if cte.house.sphere != "national":
             continue
@@ -533,6 +534,7 @@ def attendance_overview():
     return render_template(
         "attendance_overview.html",
         year=this_year,
+        last_year=last_year,
         total_years=total_years,
         attendance_na=attendance["NA"],
         attendance_ncop=attendance["NCOP"],

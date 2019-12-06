@@ -39,10 +39,14 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
             title="Arts 2", date="2019-06-01", committee=committee
         )
         db.session.add(new_parliament_meeting)
-        future_parliament_meeting_one = CommitteeMeeting(
+        future_parliament_meeting_2020 = CommitteeMeeting(
             title="Arts 2", date="2020-06-01", committee=committee
         )
-        db.session.add(future_parliament_meeting_one)
+        future_parliament_meeting_2021 = CommitteeMeeting(
+            title="Arts 2", date="2021-06-01", committee=committee
+        )
+        db.session.add(future_parliament_meeting_2020)
+        db.session.add(future_parliament_meeting_2021)
         db.session.commit()
 
         jabu = Member(
@@ -103,17 +107,31 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         future_attendance_jabu_one = CommitteeMeetingAttendance(
             attendance="P",
             member=jabu,
-            meeting=future_parliament_meeting_one,
+            meeting=future_parliament_meeting_2020,
             created_at="2020-08-01",
         )
         db.session.add(future_attendance_jabu_one)
         future_attendance_mike_one = CommitteeMeetingAttendance(
             attendance="P",
             member=mike,
-            meeting=future_parliament_meeting_one,
+            meeting=future_parliament_meeting_2020,
             created_at="2020-08-01",
         )
         db.session.add(future_attendance_mike_one)
+        future_attendance_jabu_2021 = CommitteeMeetingAttendance(
+            attendance="P",
+            member=jabu,
+            meeting=future_parliament_meeting_2021,
+            created_at="2021-08-01",
+        )
+        db.session.add(future_attendance_jabu_2021)
+        future_attendance_mike_2021 = CommitteeMeetingAttendance(
+            attendance="A",
+            member=mike,
+            meeting=future_parliament_meeting_2021,
+            created_at="2021-08-01",
+        )
+        db.session.add(future_attendance_mike_2021)
         db.session.commit()
 
     @patch('pmg.views.datetime')
@@ -146,6 +164,17 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn("Since 2019", self.html)
         self.assertIn('<td class="attendance" data-value="100.0">', self.html)
         self.assertIn('<td class="attendance-change" data-value="50.0">', self.html)
+
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2021(self, date_mock):
+        date_mock.today.return_value = date(2021, 1, 1)
+        self.make_request("/attendance-overview")
+        self.assertIn("Committee meeting attendance trends for 2021", self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
+        self.assertIn("Since 2020", self.html)
+        self.assertIn('<td class="attendance" data-value="50.0">', self.html)
+        self.assertIn('<td class="attendance-change" data-value="-50.0">', self.html)
 
     def test_archived_attendance_overview(self):
         self.make_request("/archived-attendance-overview")

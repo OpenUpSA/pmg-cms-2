@@ -92,9 +92,10 @@ class TestCommitteePage(PMGLiveServerTestCase):
 
     def containsAttendance(self):
         self.assertIn('Attendance', self.html)
+        ATTENDANCE_FORMAT = '<strong class="year">%d</strong> <small>%d meetings</small>\n              <span class="pull-right">\n\t\t  <small class="rate-text">%s</small><strong class="rate">%s</strong>'
         self.assertIn(
-            '<small class="rate-text">Attendance rate </small><strong class="rate">50%</strong>',
+            ATTENDANCE_FORMAT % (2019, 1, "", "50%"),
             self.html)
         self.assertIn(
-            '<strong class="year">2019</strong> <small>1 meetings</small>',
+            ATTENDANCE_FORMAT % (2020, 2, "Attendance rate ", "50%"),
             self.html)

@@ -31,7 +31,7 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         db.session.add(new_parliament_meeting)
 
         future_parliament_meeting_one = CommitteeMeeting(
-            title='Arts 2020', date='2020-06-01', committee=committee)
+            title='Arts 2020', date='2020-02-01', committee=committee)
         future_parliament_meeting_two = CommitteeMeeting(
             title='Arts 2020', date='2020-07-01', committee=committee)
         db.session.add(future_parliament_meeting_one)

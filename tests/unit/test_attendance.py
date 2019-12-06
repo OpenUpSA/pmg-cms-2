@@ -157,7 +157,6 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         trends = CommitteeMeetingAttendance.annual_attendance_trends(
             to_year=2019, period='historical')
 
-        print(trends)
         expected = [
             # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
             (self.committee.id, u'na', 2019, 2L, 0.5, 2.0),

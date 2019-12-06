@@ -23,7 +23,7 @@
           <th class="th-number-meetings hidden-xs" data-firstsort="desc">Meetings</th>
           <th class="th-attendance" data-defaultsort="desc">Attendance</th>
           {% if total_years > 1 %}
-          <th class="th-attendance-change">Since {{year}}</th>
+          <th class="th-attendance-change">Since {{last_year}}</th>
           {% endif %}
       </thead>
       {% with attendance_house=attendance_na %}
@@ -43,7 +43,7 @@
           <th class="th-number-meetings hidden-xs">Meetings</th>
           <th class="th-attendance" data-defaultsort="desc">Attendance</th>
           {% if total_years > 1 %}
-          <th class="th-attendance-change">Since {{year}}</th>
+          <th class="th-attendance-change">Since {{last_year}}</th>
           {% endif %}
       </thead>
       {% with attendance_house=attendance_ncop %}

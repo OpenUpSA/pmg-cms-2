@@ -27,9 +27,6 @@
             </div>
         </td>
         <td class="attendance-change" data-value="{{ item.change }}">
-            {% if item.avg_attendance == item.change  %}
-            <div class="na">N/A</div>
-            {% else %}
             <div class="value hidden-sm hidden-xs" style="
                         {% if item.change < 0 %}right: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
                         {% if item.change >= 0 %}left: calc(50% + {{ item.change|abs }}% + 3px){% endif %}
@@ -44,7 +41,6 @@
             <div class="value-mobile hidden-md hidden-lg">
                 <span class="label label-{% if item.change > 0 %}success{% else %}danger{% endif %}">{% if item.change > 0 %}+{% endif %}{{ item.change|int }}%</span>
             </div>
-            {% endif %}
         </td>
         </tr>
     {% endfor %}

@@ -13,9 +13,12 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             name='National Assembly', sphere='national', name_short='na')
         db.session.add(house)
         db.session.commit()
-        committee = Committee(name='Arts and Culture', house=house)
+
+        self.committee = committee = Committee(
+            name='Arts and Culture', house=house)
         db.session.add(committee)
         db.session.commit()
+
         old_parliament_meeting = CommitteeMeeting(
             title='Jan Arts 1', date='2019-01-01', committee=committee)
         db.session.add(old_parliament_meeting)
@@ -26,6 +29,14 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         new_parliament_meeting = CommitteeMeeting(
             title='Arts 2', date='2019-06-01', committee=committee)
         db.session.add(new_parliament_meeting)
+
+        future_parliament_meeting_one = CommitteeMeeting(
+            title='Arts 2020', date='2020-02-01', committee=committee)
+        future_parliament_meeting_two = CommitteeMeeting(
+            title='Arts 2020', date='2020-07-01', committee=committee)
+        db.session.add(future_parliament_meeting_one)
+        db.session.add(future_parliament_meeting_two)
+
         db.session.commit()
 
         jabu = Member(
@@ -82,6 +93,18 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             meeting=new_parliament_meeting,
             created_at='2019-08-01')
         db.session.add(attendance_two_mike)
+        attendance_three_mike = CommitteeMeetingAttendance(
+            attendance='A',
+            member=mike,
+            meeting=future_parliament_meeting_one,
+            created_at='2020-08-01')
+        attendance_four_mike = CommitteeMeetingAttendance(
+            attendance='P',
+            member=mike,
+            meeting=future_parliament_meeting_two,
+            created_at='2020-08-01')
+        db.session.add(attendance_three_mike)
+        db.session.add(attendance_four_mike)
         db.session.commit()
 
     def test_committee_attendance_trends(self):
@@ -95,7 +118,8 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         historical_attendance = CommitteeMeetingAttendance.committee_attendence_trends(
             committee.id, 'historical')
 
-        self.assertEqual([(2019.0, 1L, 0.5, 2.0)], current_attendance)
+        self.assertEqual(
+            [(2019.0, 1L, 0.5, 2.0), (2020.0, 2L, 0.5, 1.0)], current_attendance)
         self.assertEqual([(2019.0, 2L, 0.5, 2.0)], historical_attendance)
 
     def test_committee_attendance_summary(self):
@@ -103,9 +127,39 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         checking that the correct number of rows are returned from a attendance summary
         """
         current_attendance = CommitteeMeetingAttendance.summary()
-        historical_attendance = CommitteeMeetingAttendance.summary("historical")
-        self.assertEqual([(1, 'P', 2019.0, 1, 1L), (2, 'A', 2019.0, 1, 1L)], current_attendance)
+        historical_attendance = CommitteeMeetingAttendance.summary(
+            "historical")
+        self.assertEqual(
+            [
+                (2, 'A', 2020.0, 1, 1L),
+                (2, 'P', 2020.0, 1, 1L),
+                (1, 'P', 2019.0, 1, 1L),
+                (2, 'A', 2019.0, 1, 1L)
+            ], current_attendance)
         self.assertEqual([(1, 'A', 2019.0, 1, 1L),
                           (1, 'P', 2019.0, 1, 1L),
                           (2, 'A', 2019.0, 1, 1L),
                           (2, 'P', 2019.0, 1, 1L)], historical_attendance)
+
+    def test_annual_attendance_trends(self):
+        trends = CommitteeMeetingAttendance.annual_attendance_trends(
+            to_year=2020)
+
+        expected = [
+            # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
+            (1, u'na', 2019, 1L, 0.5, 2.0),
+            (1, u'na', 2020, 2L, 0.5, 1.0),
+        ]
+
+        self.assertEqual(expected, trends)
+
+    def test_annual_attendance_trends_historical(self):
+        trends = CommitteeMeetingAttendance.annual_attendance_trends(
+            to_year=2019, period='historical')
+
+        expected = [
+            # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
+            (self.committee.id, u'na', 2019, 2L, 0.5, 2.0),
+        ]
+
+        self.assertEqual(expected, trends)

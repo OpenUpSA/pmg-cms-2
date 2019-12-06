@@ -1,4 +1,6 @@
 from tests import PMGLiveServerTestCase
+from mock import patch
+from datetime import date
 from pmg.models import (
     db,
     CommitteeMeeting,
@@ -9,6 +11,13 @@ from pmg.models import (
     Party,
     Member,
 )
+
+HISTORICAL_HEADING_FORMAT = "Historical Committee meeting attendance trends for %d"
+HEADING_FORMAT = "Committee meeting attendance trends for %d"
+NUM_MEETINGS_FORMAT = '<td class="number-meetings hidden-xs">%d</td>'
+SINCE_FORMAT = "Since %d"
+ATTENDANCE_FORMAT = '<td class="attendance" data-value="%s">'
+CHANGE_FORMAT = '<td class="attendance-change" data-value="%s">'
 
 
 class TestAttendanceOverview(PMGLiveServerTestCase):
@@ -37,6 +46,14 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
             title="Arts 2", date="2019-06-01", committee=committee
         )
         db.session.add(new_parliament_meeting)
+        future_parliament_meeting_2020 = CommitteeMeeting(
+            title="Arts 2", date="2020-06-01", committee=committee
+        )
+        future_parliament_meeting_2021 = CommitteeMeeting(
+            title="Arts 2", date="2021-06-01", committee=committee
+        )
+        db.session.add(future_parliament_meeting_2020)
+        db.session.add(future_parliament_meeting_2021)
         db.session.commit()
 
         jabu = Member(
@@ -93,33 +110,89 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
             created_at="2019-08-01",
         )
         db.session.add(attendance_two_mike)
+
+        future_attendance_jabu_one = CommitteeMeetingAttendance(
+            attendance="P",
+            member=jabu,
+            meeting=future_parliament_meeting_2020,
+            created_at="2020-08-01",
+        )
+        db.session.add(future_attendance_jabu_one)
+        future_attendance_mike_one = CommitteeMeetingAttendance(
+            attendance="P",
+            member=mike,
+            meeting=future_parliament_meeting_2020,
+            created_at="2020-08-01",
+        )
+        db.session.add(future_attendance_mike_one)
+        future_attendance_jabu_2021 = CommitteeMeetingAttendance(
+            attendance="P",
+            member=jabu,
+            meeting=future_parliament_meeting_2021,
+            created_at="2021-08-01",
+        )
+        db.session.add(future_attendance_jabu_2021)
+        future_attendance_mike_2021 = CommitteeMeetingAttendance(
+            attendance="A",
+            member=mike,
+            meeting=future_parliament_meeting_2021,
+            created_at="2021-08-01",
+        )
+        db.session.add(future_attendance_mike_2021)
         db.session.commit()
 
-    def test_attendance_overview(self):
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2019(self, date_mock):
+        date_mock.today.return_value = date(2019, 1, 1)
         self.make_request("/attendance-overview")
-        self.assertIn("Committee meeting attendance trends for 2019", self.html)
+        self.assertIn(HEADING_FORMAT % 2019, self.html)
         self.assertIn("Arts and Culture", self.html)
         self.assertIn("50%", self.html)
-        self.assertIn('<td class="number-meetings hidden-xs">1</td>', self.html)
+        self.assertIn(NUM_MEETINGS_FORMAT % 1, self.html)
+        self.assertIn(ATTENDANCE_FORMAT % '50.0', self.html)
         self.assertNotIn("Since", self.html)
 
-    def test_attendance_overview_for_no_attendance_data(self):
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_for_no_attendance_data_2019(self, date_mock):
+        date_mock.today.return_value = date(2019, 1, 1)
         CommitteeMeetingAttendance.query.delete()
         res = self.make_request("/attendance-overview")
         self.assertEqual(200, res.status_code)
-        self.assertIn("Committee meeting attendance trends for 2019", self.html)
+        self.assertIn(HEADING_FORMAT % 2019, self.html)
         self.assertNotIn("Arts and Culture", self.html)
+
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2020(self, date_mock):
+        date_mock.today.return_value = date(2020, 1, 1)
+        self.make_request("/attendance-overview")
+        self.assertIn(HEADING_FORMAT % 2020, self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn(NUM_MEETINGS_FORMAT % 1, self.html)
+        self.assertIn(SINCE_FORMAT % 2019, self.html)
+        self.assertIn(ATTENDANCE_FORMAT % "100.0", self.html)
+        self.assertIn(CHANGE_FORMAT % '50.0', self.html)
+
+    @patch('pmg.views.datetime')
+    def test_attendance_overview_2021(self, date_mock):
+        date_mock.today.return_value = date(2021, 1, 1)
+        self.make_request("/attendance-overview")
+        self.assertIn(HEADING_FORMAT % 2021, self.html)
+        self.assertIn("Arts and Culture", self.html)
+        self.assertIn(NUM_MEETINGS_FORMAT % 1, self.html)
+        self.assertIn(SINCE_FORMAT % 2020, self.html)
+        self.assertIn(ATTENDANCE_FORMAT % '50.0', self.html)
+        self.assertIn(CHANGE_FORMAT % '-50.0', self.html)
 
     def test_archived_attendance_overview(self):
         self.make_request("/archived-attendance-overview")
-        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertIn(HEADING_FORMAT % 2019, self.html)
         self.assertIn("Arts and Culture", self.html)
         self.assertIn("50%", self.html)
-        self.assertIn('<td class="number-meetings hidden-xs">2</td>', self.html)
+        self.assertIn(NUM_MEETINGS_FORMAT % 2, self.html)
 
     def test_archived_attendance_overview_for_no_attendance_data(self):
         CommitteeMeetingAttendance.query.delete()
         res = self.make_request("/archived-attendance-overview")
         self.assertEqual(200, res.status_code)
-        self.assertIn("Historical Committee meeting attendance trends for 2019", self.html)
+        self.assertIn(HISTORICAL_HEADING_FORMAT % 2019, self.html)
         self.assertNotIn("Arts and Culture", self.html)

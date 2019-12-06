@@ -85,6 +85,16 @@ class CommitteeMeetingData(DataSet):
         committee = CommitteeData.arts
         featured = True
 
+    class arts_future_meeting_one:
+        date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = 'Public meeting 2020 one'
+        committee = CommitteeData.arts
+
+    class arts_future_meeting_two:
+        date = datetime.datetime(2020, 5, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = 'Public meeting 2020 two'
+        committee = CommitteeData.arts
+
     class premium_recent:
         date = datetime.datetime(THIS_YEAR, 11, 5, 0, 0, 0, tzinfo=pytz.utc)
         title = 'Premium meeting recent'
@@ -223,6 +233,29 @@ class MemberData(DataSet):
         party = PartyData.anc
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         current = True
+
+class CommitteeMeetingAttendanceData(DataSet):
+    class arts_meeting_attendance_one:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'P'
+        meeting = CommitteeMeetingData.arts_meeting_two
+        member = MemberData.laetitia
+    class arts_meeting_attendance_two:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'A'
+        meeting = CommitteeMeetingData.arts_meeting_two
+        member = MemberData.veronica
+    class arts_future_meeting_attendance_one:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'P'
+        meeting = CommitteeMeetingData.arts_future_meeting_one
+        member = MemberData.laetitia
+    class arts_future_meeting_attendance_two:
+        date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        attendance = 'A'
+        meeting = CommitteeMeetingData.arts_future_meeting_two
+        member = MemberData.veronica
+
 
 class CommitteeQuestionData(DataSet):
     class arts_committee_question_one:

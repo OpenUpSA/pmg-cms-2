@@ -36,7 +36,7 @@ humanize==0.5.1
 inflection==0.2.1
 iso8601==0.1.12
 itsdangerous==0.24
-Jinja2==2.7.3
+Jinja2==2.10.3
 lxml==3.4.1
 Mako==1.0.2
 mammoth==0.3.23
@@ -77,7 +77,7 @@ Unidecode==0.4.21
 universal-analytics-python==0.2.4
 urllib3==1.21.1
 watchdog==0.8.3
-webassets==0.10.1
+webassets==2.0
 Werkzeug==0.10.1
 wsgiref==0.1.2
 WTForms==2.0.2

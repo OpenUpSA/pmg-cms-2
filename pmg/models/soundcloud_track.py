@@ -3,7 +3,7 @@ from pmg import db, app
 from pmg.models import File, EventFile
 from requests.exceptions import HTTPError
 from soundcloud import Client
-from sqlalchemy import asc, desc, func
+from sqlalchemy import asc, desc, func, text
 from sqlalchemy.orm import backref
 import logging
 
@@ -189,7 +189,7 @@ class SoundcloudTrack(db.Model):
                                            .filter(cls.state == 'failed')\
                                            .outerjoin(SoundcloudTrackRetry)\
                                            .group_by(cls.id)\
-                                           .order_by('retries')\
+                                           .order_by(text('retries'))\
                                            .limit(app.config['MAX_SOUNDCLOUD_BATCH']):
             if retries <= app.config['MAX_SOUNDCLOUD_RETRIES']:
                 soundcloud_track = db.session.query(cls).get(track_id)

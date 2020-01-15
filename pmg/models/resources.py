@@ -8,7 +8,7 @@ import base64
 import tempfile
 import pytz
 
-from sqlalchemy import desc, func, sql, case, cast, Float, Integer
+from sqlalchemy import desc, func, sql, case, cast, Float, Integer, text
 from sqlalchemy.sql.expression import nullslast
 from sqlalchemy.orm import backref, joinedload, validates
 
@@ -337,9 +337,9 @@ class Event(ApiResource, db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'), index=True)
     member = db.relationship('Member', backref='events')
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete='SET NULL'), index=True)
-    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc('Event.date')))
+    committee = db.relationship('Committee', lazy=False, backref=backref('events', order_by=desc(text('Event.date'))))
     house_id = db.Column(db.Integer, db.ForeignKey('house.id'), index=True)
-    house = db.relationship('House', lazy=True, backref=backref('events', order_by=desc('Event.date')))
+    house = db.relationship('House', lazy=True, backref=backref('events', order_by=desc(text('Event.date'))))
     bills = db.relationship('Bill', secondary='event_bills', backref=backref('events'), cascade="save-update, merge")
     chairperson = db.Column(db.String(256))
 
@@ -1061,7 +1061,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
     nid = db.Column(db.Integer())
 
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id'), nullable=False, index=True)
-    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc('start_date'))), lazy=False)
+    committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc(text('start_date')))), lazy=False)
     files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 
     def __unicode__(self):
@@ -1090,7 +1090,7 @@ class CallForComment(ApiResource, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     committee_id = db.Column(db.Integer, db.ForeignKey('committee.id', ondelete="SET NULL"))
-    committee = db.relationship('Committee', backref=db.backref('calls_for_comments', order_by=desc('start_date')), lazy='joined')
+    committee = db.relationship('Committee', backref=db.backref('calls_for_comments', order_by=desc(text('start_date'))), lazy='joined')
     title = db.Column(db.Text(), nullable=False)
     start_date = db.Column(db.Date(), nullable=False)
     end_date = db.Column(db.Date())
@@ -1335,7 +1335,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             .join(Committee, Committee.id == CommitteeMeeting.committee_id)\
             .join(House, House.id == Committee.house_id)\
             .join(CommitteeMeetingAttendance, CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)\
-            .group_by('year', CommitteeMeeting.committee_id, CommitteeMeeting.id, House.name_short)\
+            .group_by(text('year'), CommitteeMeeting.committee_id, CommitteeMeeting.id, House.name_short)\
             .filter(CommitteeMeeting.date >= start_date, CommitteeMeeting.date <= end_date)\
             .filter(Committee.ad_hoc == False)\
             .subquery('attendance')
@@ -1359,7 +1359,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
                 func.count(case([(CommitteeMeetingAttendance.attendance.in_(CommitteeMeetingAttendance.ATTENDANCE_CODES_PRESENT), 1)])).label('n_present'),
                 func.count(CommitteeMeetingAttendance.id).label('n_members')
                 )\
-               .group_by('year', CommitteeMeeting.id)\
+               .group_by(text('year'), CommitteeMeeting.id)\
                .filter(CommitteeMeeting.committee_id == committee_id)\
                .filter(CommitteeMeetingAttendance.meeting_id == CommitteeMeeting.id)
 

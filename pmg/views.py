@@ -1752,7 +1752,7 @@ def blog(page=0):
                 func.array_agg(months.c.month_name).label('month_names'), 
                 func.array_agg(months.c.month_posts).label('month_posts'))\
         .group_by(text('year'))\
-        .order_by(year.desc())\
+        .order_by(desc(text('year')))\
         .all()
 
     next = create_next_page_url(count, page, per_page)

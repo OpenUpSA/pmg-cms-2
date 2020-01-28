@@ -61,7 +61,7 @@ Add the following lines to your .hosts file:
     127.0.0.1 pmg.test
     127.0.0.1 api.pmg.test
 
-Start the server:  
+Start the server:
 
     docker-compose up
 
@@ -117,6 +117,7 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * SOUNDCLOUD_PASSWORD
 * SOUNDCLOUD_PERIOD_MINUTES=5
 * MAX_SOUNDCLOUD_BATCH=10
+* `API_URL` - the URL the web frontend will use to connect to the PMG API (also this app). Must start with `api.` or `api-internal.`. We usually point `api-internal.` to `127.0.0.1` to minimise data transfer costs and latency.
 
 ### Reindexing for Search
 

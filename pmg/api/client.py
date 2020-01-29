@@ -9,8 +9,9 @@ import urllib3
 
 from pmg import app
 
-API_URL = app.config['API_URL']
-API_HOST = "api-internal." + app.config['SERVER_NAME']
+API_URL = "http://127.0.0.1:5000/"
+# Fake host header because API bluebrints expect to be subdomain of SERVER_NAME.
+API_HOST = "api." + app.config['SERVER_NAME']
 
 # timeout connecting and reading from remote host
 TIMEOUTS = urllib3.Timeout(connect=3.05, read=10)
@@ -82,8 +83,10 @@ def load_from_api(resource_name, resource_id=None, page=None, return_everything=
     if pagesize:
         params["per_page"] = pagesize
 
-    headers = {'Host': API_HOST}
-    print("\nHeaders: %r\n\n" % headers)
+    headers = {
+        'Host': API_HOST,
+    }
+
     # add auth header
     if current_user.is_authenticated():
         headers['Authentication-Token'] = current_user.get_auth_token()

@@ -25,6 +25,7 @@ The project consists of the following major components:
     * https://pmg.org.za/admin
   * API (Flask)
     * https://api.pmg.org.za
+    * https://api-internal.pmg.org.za (always connects to 127.0.0.1:5000)
 
 ## Making use of the API
 
@@ -117,7 +118,7 @@ Sensitive configuration variables are set as environment variables using Heroku 
 * SOUNDCLOUD_PASSWORD
 * SOUNDCLOUD_PERIOD_MINUTES=5
 * MAX_SOUNDCLOUD_BATCH=10
-* `API_URL` - the URL the web frontend will use to connect to the PMG API (also this app). Must start with `api.` or `api-internal.`. We usually point `api-internal.` to `127.0.0.1` to minimise data transfer costs and latency.
+
 
 ### Reindexing for Search
 

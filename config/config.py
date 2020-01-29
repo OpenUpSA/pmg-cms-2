@@ -128,7 +128,6 @@ SECURITY_CHANGEABLE = True
 SHARPSPRING_API_KEY = env.get('SHARPSPRING_API_KEY')
 SHARPSPRING_API_SECRET = env.get('SHARPSPRING_API_SECRET')
 
-SERVER_NAME = env.get("SERVER_NAME", "pmg.test:5001")
-API_URL = env.get("API_URL", "http://api-internal.pmg.test:5000/")
+SERVER_NAME = env.get("SERVER_NAME", "pmg.test:5000")
 FRONTEND_HOST = env.get("FRONTEND_HOST", "http://pmg.test:5000/")
 SESSION_COOKIE_DOMAIN = env.get("SESSION_COOKIE_DOMAIN", "pmg.test")

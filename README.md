@@ -25,7 +25,7 @@ The project consists of the following major components:
     * https://pmg.org.za/admin
   * API (Flask)
     * https://api.pmg.org.za
-    * https://api-internal.pmg.org.za (always connects to 127.0.0.1:5000)
+    * When this web app connects to its own API, it always  connects to 127.0.0.1:5000 and sends the Host header of the `api.` subdomain of `SERVER_HOST` to avoid routing "dogfooding" traffic to the outside internet.
 
 ## Making use of the API
 
@@ -102,8 +102,18 @@ Deployment is to dokku, a Heroku-like environment. To deploy, simply push to the
 
     git push dokku
 
-Sensitive configuration variables are set as environment variables using Heroku or `dokku config:set`, the important ones are:
+Sensitive or environment-specific configuration variables are set as environment variables using `dokku config:set`, the important ones are:
 
+* SERVER_NAME - Flask uses this as the base hostname and port for the server - Flask Blueprint subdomains base from this. If it can't match the Host header in requests to this, it serves a 404 response.
+  - `pmg.org.za` in production
+  - `pmg.test:5000` in development
+  - Flask seems to use this for generating absolute URLs, except when the `X-Forwarded-Host` header is provided, in which case that hostname is used for absolute URLs.
+* FRONTEND_HOST - It's not currently clear if this is used anywhere
+  - `https://pmg.org.za/` in production
+  - `http://pmg.test:5000/` in development
+* SESSION_COOKIE_DOMAIN
+  - `pmg.org.za` in production
+  - `pmg.test` in dev
 * SQLALCHEMY_DATABASE_URI
 * FLASK_ENV=production
 * AWS_ACCESS_KEY_ID

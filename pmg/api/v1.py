@@ -9,7 +9,7 @@ from flask import request, redirect, url_for, Blueprint, make_response
 from flask_security import current_user
 from flask_security.decorators import _check_token, _check_http_auth
 from werkzeug.exceptions import HTTPException
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, text
 from sqlalchemy.orm import lazyload, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import literal_column
@@ -449,7 +449,7 @@ def minister_questions_combined():
         else:
             q2 = q2.filter_by(**f)
 
-    query = q1.union_all(q2).order_by(desc("date"))
+    query = q1.union_all(q2).order_by(desc(text("date")))
     query, count, next = paginate_request_query(query)
 
     # pull out the IDs we want

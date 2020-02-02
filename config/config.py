@@ -128,15 +128,6 @@ SECURITY_CHANGEABLE = True
 SHARPSPRING_API_KEY = env.get('SHARPSPRING_API_KEY')
 SHARPSPRING_API_SECRET = env.get('SHARPSPRING_API_SECRET')
 
-if DEBUG:
-    SERVER_NAME = 'pmg.test:5000'
-    API_URL = "http://api.pmg.test:5000/"
-    FRONTEND_HOST = "http://pmg.test:5000/"
-    SESSION_COOKIE_DOMAIN = "pmg.test"
-else:
-    SERVER_NAME = 'pmg.org.za'
-    # Use the EC2-internal API endpoint, which doesn't trombone through the EC2
-    # firewall and back in again, saving us money and msecs
-    API_URL = "https://api-internal.pmg.org.za/"
-    FRONTEND_HOST = "https://pmg.org.za/"
-    SESSION_COOKIE_DOMAIN = "pmg.org.za"
+SERVER_NAME = env.get("SERVER_NAME", "pmg.test:5000")
+FRONTEND_HOST = env.get("FRONTEND_HOST", "http://pmg.test:5000/")
+SESSION_COOKIE_DOMAIN = env.get("SESSION_COOKIE_DOMAIN", "pmg.test")

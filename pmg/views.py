@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 import math
 from urlparse import urlparse, urlunparse
 from bs4 import BeautifulSoup
-from sqlalchemy import desc, func, cast, Integer
+from sqlalchemy import desc, func, cast, Integer, text
 from itertools import groupby
 from unidecode import unidecode
 import requests
@@ -1741,7 +1741,7 @@ def blog(page=0):
             year, 
             func.count(Post.id).label('month_posts')
         )\
-        .group_by('year', 'month', 'month_name')\
+        .group_by(text('year'), text('month'), text('month_name'))\
         .order_by(year.desc(), month.asc())\
         .subquery('months')
 
@@ -1751,8 +1751,8 @@ def blog(page=0):
                 func.array_agg(months.c.month).label('months'), 
                 func.array_agg(months.c.month_name).label('month_names'), 
                 func.array_agg(months.c.month_posts).label('month_posts'))\
-        .group_by('year')\
-        .order_by(year.desc())\
+        .group_by(text('year'))\
+        .order_by(desc(text('year')))\
         .all()
 
     next = create_next_page_url(count, page, per_page)

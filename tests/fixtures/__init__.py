@@ -6,7 +6,7 @@ from pmg.models import (
     db, House, Committee, CommitteeMeeting, Bill, BillType, Province, Party,
     CommitteeMeetingAttendance, Member, CallForComment, TabledCommitteeReport,
     CommitteeQuestion, Minister, Event, Featured, Page, BillStatus, Post, User,
-    Role, Membership, MembershipType, EmailTemplate
+    Role, Membership, MembershipType, EmailTemplate, DailySchedule
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -387,6 +387,13 @@ class EmailTemplateData(DataSet):
         description = "Template One Description"
         subject = "Template One Subject"
         body = "Template One Body"
+
+class DailyScheduleData(DataSet):
+    class schedule_one:
+        title = 'Schedule one'
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        body = 'Schedule body'
+        house = HouseData.na
 
 
 

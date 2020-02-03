@@ -393,7 +393,7 @@ class DailyScheduleData(DataSet):
         title = 'Schedule one'
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         body = 'Schedule body'
-        house = HouseData.na
+        house = HouseData.western_cape
 
 
 

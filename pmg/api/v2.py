@@ -27,7 +27,7 @@ def apply_filters(query):
 
         # support filtering by house, via committee if necessary
         if key == 'house':
-            model = query._entity_zero().entity_zero.entity
+            model = query._query_entity_zero().entity_zero.entity
             if not hasattr(model, 'house'):
                 if hasattr(model, 'committee'):
                     query = query.join(Committee)

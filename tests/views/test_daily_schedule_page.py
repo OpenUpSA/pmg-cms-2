@@ -18,8 +18,8 @@ class TestDailySchedulePage(PMGLiveServerTestCase):
         Test daily schedule page for schedule (/daily-scheduleis/<id>/)
         """
         self.make_request(
-            "/daily-schedule/%s/" % self.fx.DailyScheduleData.schedule_one.id,
+            "/daily-schedule/%s/" % self.fx.DailyScheduleData.schedule_provincial.id,
             follow_redirects=True,
         )
         self.assertIn("Daily Schedules", self.html)
-        self.assertIn(self.fx.DailyScheduleData.schedule_one.title, self.html)
+        self.assertIn(self.fx.DailyScheduleData.schedule_provincial.title, self.html)

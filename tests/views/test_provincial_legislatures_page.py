@@ -45,7 +45,7 @@ class TestProvincialLegislaturesPages(PMGLiveServerTestCase):
         Test provincial programme page (/provincial-legislatures/<slug>/programme/<int:programme_id>/)
         """
         slug = utils.slugify_province(self.fx.HouseData.western_cape.name)
-        programme = self.fx.DailyScheduleData.schedule_one
+        programme = self.fx.DailyScheduleData.schedule_provincial
         self.make_request(
             "/provincial-legislatures/%s/programme/%s" % (slug, programme.id),
             follow_redirects=True,
@@ -57,7 +57,7 @@ class TestProvincialLegislaturesPages(PMGLiveServerTestCase):
         Test provincial programmes page (/provincial-legislatures/<slug>/programmes/)
         """
         slug = utils.slugify_province(self.fx.HouseData.western_cape.name)
-        programme = self.fx.DailyScheduleData.schedule_one
+        programme = self.fx.DailyScheduleData.schedule_provincial
         self.make_request(
             "/provincial-legislatures/%s/programmes/" % (slug),
             follow_redirects=True,

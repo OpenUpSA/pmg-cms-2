@@ -19,4 +19,4 @@ class TestDailySchedulesPage(PMGLiveServerTestCase):
         """
         self.make_request("/daily-schedules/", follow_redirects=True)
         self.assertIn("Daily Schedules", self.html)
-        self.assertIn(self.fx.DailyScheduleData.schedule_one.title, self.html)
+        self.assertIn(self.fx.DailyScheduleData.schedule_ncop.title, self.html)

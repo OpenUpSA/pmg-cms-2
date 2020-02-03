@@ -389,11 +389,17 @@ class EmailTemplateData(DataSet):
         body = "Template One Body"
 
 class DailyScheduleData(DataSet):
-    class schedule_one:
-        title = 'Schedule one'
+    class schedule_provincial:
+        title = 'Schedule provincial'
         start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
-        body = 'Schedule body'
-        house = HouseData.na
+        body = 'Schedule provincial'
+        house = HouseData.western_cape
+
+    class schedule_ncop:
+        title = 'Schedule NCOP'
+        start_date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        body = 'Schedule NCOP body'
+        house = HouseData.ncop
 
 
 

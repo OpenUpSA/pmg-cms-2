@@ -38,7 +38,6 @@ inflection==0.2.1
 iso8601==0.1.12
 itsdangerous==0.24
 Jinja2==2.10.3
-lxml==3.4.1
 Mako==1.0.2
 mammoth==0.3.23
 MarkupSafe==0.23

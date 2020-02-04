@@ -1,10 +1,16 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
 import math
 import logging
 import json
 from collections import OrderedDict
 import re
 import copy
-import cPickle
+import pickle
 
 from pyelasticsearch import ElasticSearch
 from pyelasticsearch.exceptions import ElasticHttpNotFoundError
@@ -20,7 +26,7 @@ from pmg.models.base import resource_slugs
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 MAX_INDEXABLE_BYTES = 104857600 # Limit ElasticSearch/Netty has by default
 
-class Search:
+class Search(object):
 
     esserver = app.config['ES_SERVER']
     index_name = "pmg"
@@ -59,7 +65,7 @@ class Search:
 
         self.mapping(data_type)
 
-        models = [m for m in resource_slugs.itervalues() if m.resource_content_type == data_type]
+        models = [m for m in list(resource_slugs.values()) if m.resource_content_type == data_type]
         for model in models:
             self.reindex_for_model(model)
 
@@ -80,7 +86,7 @@ class Search:
         while len(ids):
             self.logger.info("Items left %s" % len(ids))
             id_subsection = []
-            for x in xrange(0, per_batch):
+            for x in range(0, per_batch):
                 if ids:
                     id_subsection.append(ids.pop())
 
@@ -93,7 +99,7 @@ class Search:
     def filter_too_large(self, items):
         ok_items = []
         for item in items:
-            size = len(cPickle.dumps(item))
+            size = len(pickle.dumps(item))
             if size < MAX_INDEXABLE_BYTES:
                 ok_items.append(item)
             else:
@@ -335,13 +341,13 @@ class Search:
 
         aggs = {
             "types": {
-                "filter": {"and": {"filters": [v for k, v in filters.iteritems() if k != "document_type"]}},
+                "filter": {"and": {"filters": [v for k, v in list(filters.items()) if k != "document_type"]}},
                 "aggs": {"types": {
                     "terms": {"field": "_type"}
                 }},
             },
             "years": {
-                "filter": {"and": {"filters": [v for k, v in filters.iteritems() if k != "date"]}},
+                "filter": {"and": {"filters": [v for k, v in list(filters.items()) if k != "date"]}},
                 "aggs": {"years": {
                     "date_histogram": {
                         "field": "date",
@@ -361,7 +367,7 @@ class Search:
             # filter the results after the query, so that the per-aggregation filters
             # aren't impacted by these filters. See
             # http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_post_filter.html
-            "post_filter": {"and": {"filters": filters.values()}},
+            "post_filter": {"and": {"filters": list(filters.values())}},
             "aggs": aggs,
             "highlight": {
                 "pre_tags": ["<mark>"],
@@ -430,7 +436,7 @@ class Search:
         self.es.create_index(self.index_name, settings=settings)
 
 
-class Transforms:
+class Transforms(object):
     """
     Each API model in PMG has different fields, so we need to describe how to map
     the model into something that can be indexed by ElasticSearch.
@@ -442,7 +448,7 @@ class Transforms:
 
     @classmethod
     def data_types(cls):
-        return sorted(list(set(k.resource_content_type for k in cls.convert_rules.iterkeys())))
+        return sorted(list(set(k.resource_content_type for k in list(cls.convert_rules.keys()))))
 
     # If there is a rule defined here, the corresponding CamelCase model
     # will be indexed
@@ -563,9 +569,9 @@ class Transforms:
         if 'id' not in rules:
             item['id'] = obj.id
 
-        for key, field in rules.iteritems():
+        for key, field in list(rules.items()):
             val = cls.get_val(obj, field)
-            if isinstance(val, unicode):
+            if isinstance(val, str):
                 val = BeautifulSoup(val).get_text().strip()
             item[key] = val
 
@@ -576,7 +582,7 @@ class Transforms:
         if isinstance(field, list):
             # join multiple fields
             vals = (cls.get_val(obj, f) or '' for f in field)
-            vals = [unicode(v) if not isinstance(v, basestring) else v for v in vals]
+            vals = [str(v) if not isinstance(v, basestring) else v for v in vals]
             return ' '.join(vals)
 
         elif '.' in field:

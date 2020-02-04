@@ -1,3 +1,6 @@
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 import logging
 from functools import wraps
 from itertools import groupby
@@ -38,7 +41,7 @@ def load_user():
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
-            for mechanism in login_mechanisms.itervalues():
+            for mechanism in list(login_mechanisms.values()):
                 if mechanism():
                     break
             return fn(*args, **kwargs)
@@ -216,7 +219,7 @@ def landing():
     """
     List available endpoints.
     """
-    endpoints = [request.base_url + s + '/' for s in resource_slugs.iterkeys()]
+    endpoints = [request.base_url + s + '/' for s in list(resource_slugs.keys())]
     return send_api_response({
         'endpoints': endpoints,
         'documentation': 'https://github.com/OpenUpSA/pmg-cms-2/blob/master/API.md',
@@ -294,13 +297,13 @@ def search():
         }
     }
 
-    logger.debug("Pages %i", math.ceil(result["hits"] / per_page))
+    logger.debug("Pages %i", math.ceil(old_div(result["hits"], per_page)))
 
     if result["hits"] > (page + 1) * per_page:
         result["next"] = request.url_root + "search/?q=" + q + \
             "&page=" + str(page + 1) + "&per_page=" + str(per_page)
         result["last"] = request.url_root + "search/?q=" + q + "&page=" + \
-            str(int(math.ceil(result["hits"] / per_page))) + "&per_page=" + str(per_page)
+            str(int(math.ceil(old_div(result["hits"], per_page)))) + "&per_page=" + str(per_page)
         result["first"] = request.url_root + "search/?q=" + \
             q + "&page=0" + "&per_page=" + str(per_page)
 

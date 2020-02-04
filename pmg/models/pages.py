@@ -28,7 +28,7 @@ class Redirect(db.Model):
 
     @classmethod
     def object_for_nid(cls, nid):
-        for cls in resource_slugs.itervalues():
+        for cls in list(resource_slugs.values()):
             if hasattr(cls, 'nid'):
                 obj = cls.query.filter(cls.nid == nid).first()
                 if obj:

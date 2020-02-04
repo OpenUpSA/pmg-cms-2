@@ -23,7 +23,7 @@ def get_api_fields():
 
 def apply_filters(query):
     for f in get_filters():
-        key = f.keys()[0]
+        key = list(f.keys())[0]
 
         # support filtering by house, via committee if necessary
         if key == 'house':

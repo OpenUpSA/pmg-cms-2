@@ -1,4 +1,6 @@
 from __future__ import absolute_import
+from builtins import str
+from builtins import object
 import logging
 from operator import itemgetter
 import datetime
@@ -57,7 +59,7 @@ class BaseForm(flask_wtf.Form):
         super(BaseForm, self).__init__(
             formdata=formdata, obj=obj, prefix=prefix, **kwargs)
 
-    class Meta:
+    class Meta(object):
         def bind_field(self, form, unbound_field, options):
             # ensure that all form fields strip() their values,
             # so that we don't get random whitespace at the end

@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import str
+from builtins import object
+from past.utils import old_div
 import boto
 import boto.s3
 from boto.s3.key import Key
@@ -17,7 +21,7 @@ logger = logging.getLogger(__name__)
 def rounded_megabytes(bytes):
 
     megabytes = bytes / float(1024 * 1024)
-    megabytes = math.ceil(megabytes * 1000) / 1000  # round the float
+    megabytes = old_div(math.ceil(megabytes * 1000), 1000)  # round the float
     return megabytes
 
 
@@ -42,7 +46,7 @@ def increment_filename(filename):
     return '%d/%s' % (counter + 1, rest)
 
 
-class S3Bucket():
+class S3Bucket(object):
     def __init__(self):
         self._bucket = None
 

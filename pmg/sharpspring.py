@@ -1,3 +1,4 @@
+from builtins import object
 import requests
 from logging import getLogger
 import uuid

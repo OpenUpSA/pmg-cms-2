@@ -1,3 +1,4 @@
+from builtins import str
 from tests import PMGLiveServerTestCase
 import unittest
 from pmg.models import db, BillType, Minister, Bill

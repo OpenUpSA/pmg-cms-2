@@ -1,3 +1,4 @@
+from builtins import object
 from marshmallow import fields
 from marshmallow_polyfield import PolyField
 
@@ -26,7 +27,7 @@ class AbsoluteUrlFor(ma.UrlFor):
 
 
 class CommitteeSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Committee
         fields = ('id', 'about', 'name', 'house', 'contact_details', 'ad_hoc', 'active', 'premium',
                   'monitored', 'minister', 'last_active_year', '_links')
@@ -42,14 +43,14 @@ class CommitteeSchema(ma.ModelSchema):
 
 
 class HouseSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = House
         fields = ('id', 'name', 'short_name', 'sphere',)
     short_name = fields.String(attribute='name_short')
 
 
 class EventSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Event
         fields = ('id', 'date', 'title', 'chairperson', 'public_participation', 'committee_id', 'committee', 'type', 'house')
     committee = fields.Nested('CommitteeSchema')
@@ -57,7 +58,7 @@ class EventSchema(ma.ModelSchema):
 
 
 class CommitteeMeetingSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = CommitteeMeeting
         fields = ('id', 'actual_start_time', 'actual_end_time', 'date', 'title', 'body', 'summary',
                   'chairperson', 'public_participation', 'bills', 'files', 'committee_id', '_links', 'committee',
@@ -93,7 +94,7 @@ class CommitteeMeetingSchema(ma.ModelSchema):
 
 
 class CallForCommentSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = CallForComment
         fields = ('id', 'title', 'start_date', 'end_date', 'body', 'summary', 'committee_id', '_links', 'closed', 'committee')
     committee = fields.Nested('CommitteeSchema')
@@ -104,7 +105,7 @@ class CallForCommentSchema(ma.ModelSchema):
 
 
 class TabledCommitteeReportSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = TabledCommitteeReport
         fields = ('id', 'title', 'start_date', 'body', 'committee_id', '_links')
     _links = ma.Hyperlinks({
@@ -114,7 +115,7 @@ class TabledCommitteeReportSchema(ma.ModelSchema):
 
 
 class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = CommitteeMeetingAttendance
         fields = ('id', 'alternate_member', 'attendance', 'chairperson', 'member', '_links', 'committee_meeting_id',
                   'committee_id')
@@ -127,7 +128,7 @@ class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
 
 
 class MemberSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Member
         fields = ('id', 'name', 'profile_pic_url', 'party', 'pa_url', 'current', 'house')
     party = fields.Nested('PartySchema')
@@ -137,7 +138,7 @@ class MemberSchema(ma.ModelSchema):
 
 
 class MembershipSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Membership
         fields = ('member', 'chairperson')
     member = fields.Nested('MemberSchema')
@@ -145,20 +146,20 @@ class MembershipSchema(ma.ModelSchema):
 
 
 class PartySchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Party
         fields = ('id', 'name')
 
 
 class FileSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = File
         fields = ('id', 'title', 'description', 'origname', 'file_mime', 'file_bytes', 'url', 'file_path',
                   'soundcloud_uri')
 
 
 class MinisterSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Minister
         fields = ('id', 'name', '_links', 'committee')
 
@@ -170,7 +171,7 @@ class MinisterSchema(ma.ModelSchema):
 
 
 class CommitteeQuestionSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = CommitteeQuestion
         fields = ('id', 'date', 'intro', 'year', 'code',
                   'answer', 'answer_type', 'asked_by_member_id', 'asked_by_name', 'asked_by_member',
@@ -189,7 +190,7 @@ class CommitteeQuestionSchema(ma.ModelSchema):
 
 
 class QuestionReplySchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = QuestionReply
         fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
                   'question_number', 'minister', 'minister_id', '_links',)
@@ -200,7 +201,7 @@ class QuestionReplySchema(ma.ModelSchema):
 
 
 class DailyScheduleSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = DailySchedule
         fields = ('id', 'body', 'title', 'created_at', 'updated_at', 'start_date',
                   'house', 'house_id', 'files', '_links',)
@@ -212,7 +213,7 @@ class DailyScheduleSchema(ma.ModelSchema):
 
 
 class BillSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = Bill
         fields = ('id', 'type', 'status', 'code', 'title', 'number', 'year',
                   'introduced_by', 'place_of_introduction', 'date_of_introduction',
@@ -231,19 +232,19 @@ class BillSchema(ma.ModelSchema):
 
 
 class BillTypeSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = BillType
         fields = ('id', 'prefix', 'description', 'name')
 
 
 class BillStatusSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = BillStatus
         fields = ('id', 'description', 'name')
 
 
 class BillVersionSchema(ma.ModelSchema):
-    class Meta:
+    class Meta(object):
         model = BillVersion
         fields = ('id', 'title', 'file', 'date', 'enacted')
     file = fields.Nested('FileSchema')

@@ -1,3 +1,4 @@
+from builtins import str
 import logging
 import json
 from datetime import datetime, date, time
@@ -41,7 +42,7 @@ def model_to_dict(obj, include_related=False):
     """
 
     # attributes from columns
-    columns = obj.__mapper__.column_attrs.keys()
+    columns = list(obj.__mapper__.column_attrs.keys())
     tmp_dict = {
         key: getattr(obj, key) for key in columns
     }
@@ -51,7 +52,7 @@ def model_to_dict(obj, include_related=False):
     except AttributeError:
         pass
 
-    relations = obj.__mapper__.relationships.keys()
+    relations = list(obj.__mapper__.relationships.keys())
     for key in relations:
         # serialize eagerly loaded related objects, or all related objects if
         # the flag is set

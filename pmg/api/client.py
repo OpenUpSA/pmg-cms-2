@@ -1,5 +1,8 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 from flask import flash, session, abort, redirect, url_for, request, render_template
@@ -42,7 +45,7 @@ class ApiException(HTTPException):
 
         if self.code == 401:
             session.clear()
-            return redirect(url_for('login') + "?next=" + urllib.quote_plus(request.path))
+            return redirect(url_for('login') + "?next=" + urllib.parse.quote_plus(request.path))
 
         return super(ApiException, self).get_response(environ)
 

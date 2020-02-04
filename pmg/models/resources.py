@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 import datetime
 import logging
 import os
@@ -56,7 +59,7 @@ class House(db.Model):
     JOINT_COMMITTEE = 1
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     @classmethod
     def ncop(cls):
@@ -75,7 +78,7 @@ class Party(db.Model):
     name = db.Column(db.String(255), nullable=False)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 
 class Province(db.Model):
@@ -86,7 +89,7 @@ class Province(db.Model):
     name = db.Column(db.String(255), nullable=False)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 
 class BillType(db.Model):
@@ -111,7 +114,7 @@ class BillType(db.Model):
         return 'Private Member Bill' in self.name
 
     def __unicode__(self):
-        return unicode(self.description)
+        return str(self.description)
 
 
 class BillStatus(db.Model):
@@ -160,7 +163,7 @@ class Bill(ApiResource, db.Model):
             out = self.type.prefix if self.type else "X"
         out += str(self.number) if self.number else ""
         out += "-" + str(self.year)
-        return unicode(out)
+        return str(out)
 
     @property
     def latest_version(self):
@@ -187,7 +190,7 @@ class Bill(ApiResource, db.Model):
         out = self.code
         if self.title:
             out += " - " + self.title
-        return unicode(out)
+        return str(out)
 
     @classmethod
     def list(cls):
@@ -290,7 +293,7 @@ class File(db.Model):
         return key.get_contents_as_string()
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     def __unicode__(self):
         if self.title:
@@ -380,16 +383,16 @@ class Event(ApiResource, db.Model):
             if self.date:
                 tmp = self.date.date().isoformat()
             if self.committee:
-                tmp += " [" + unicode(self.committee) + "]"
+                tmp += " [" + str(self.committee) + "]"
             if self.title:
                 tmp += " - " + self.title
-            return unicode(tmp)
+            return str(tmp)
         tmp = self.type
         if self.date:
             tmp += " - " + self.date.date().isoformat()
         if self.title:
             tmp += " - " + self.title
-        return unicode(tmp)
+        return str(tmp)
 
 
 event_bills = db.Table(
@@ -543,7 +546,7 @@ class MembershipType(db.Model):
         return self.name
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 
 class Member(ApiResource, db.Model):
@@ -725,7 +728,7 @@ class Committee(ApiResource, db.Model):
         tmp = self.name
         if self.house:
             tmp = self.house.name_short + " " + tmp
-        return unicode(tmp)
+        return str(tmp)
 
     @classmethod
     def update_active_committees(cls):
@@ -757,10 +760,10 @@ class Membership(db.Model):
         return False
 
     def __unicode__(self):
-        tmp = u" - ".join([unicode(self.type),
-                           unicode(self.member),
-                           unicode(self.committee)])
-        return unicode(tmp)
+        tmp = u" - ".join([str(self.type),
+                           str(self.member),
+                           str(self.committee)])
+        return str(tmp)
 
 
 # === Committee Questions === #
@@ -1346,7 +1349,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
             subquery.c.house,
             cast(subquery.c.year, Integer).label('year'),
             func.count(1).label('n_meetings'),
-            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
+            func.avg(old_div(cast(subquery.c.n_present, Float), subquery.c.n_members)).label('avg_attendance'),
             cast(func.avg(subquery.c.n_members), Float).label('avg_members')
         )\
             .group_by(subquery.c.year, subquery.c.committee_id, subquery.c.house)\
@@ -1375,7 +1378,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         return db.session.query(
             subquery.c.year,
             func.count(1).label('n_meetings'),
-            func.avg(cast(subquery.c.n_present, Float) / subquery.c.n_members).label('avg_attendance'),
+            func.avg(old_div(cast(subquery.c.n_present, Float), subquery.c.n_members)).label('avg_attendance'),
             cast(func.avg(subquery.c.n_members), Float).label('avg_members')
         )\
             .group_by(subquery.c.year)\
@@ -1417,7 +1420,7 @@ class Minister(ApiResource, db.Model):
         return tmp
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     @classmethod
     def list(cls):

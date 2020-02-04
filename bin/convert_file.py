@@ -1,4 +1,6 @@
 from __future__ import print_function
+from builtins import str
+from builtins import range
 import argparse
 import os
 import sys
@@ -31,7 +33,7 @@ if __name__ == "__main__":
 
             for row in reader:
                 # Clean field names
-                for key in row.iterkeys():
+                for key in list(row.keys()):
                     new_key = key.strip(' \t\n\r')
                     row[new_key] = row.pop(key)
 

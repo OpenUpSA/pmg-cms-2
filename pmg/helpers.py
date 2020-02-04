@@ -1,3 +1,7 @@
+from __future__ import division
+from builtins import str
+from builtins import range
+from past.utils import old_div
 from datetime import date, datetime
 import dateutil.parser
 import logging
@@ -30,8 +34,8 @@ def pagination_processor():
             elif range_length > page_count:
                 range_length = page_count
             range_length -= 1
-            range_min = max(current_page - (range_length / 2) + 1, 1)
-            range_max = min(current_page + (range_length / 2) + 1, page_count)
+            range_min = max(current_page - (old_div(range_length, 2)) + 1, 1)
+            range_max = min(current_page + (old_div(range_length, 2)) + 1, page_count)
             range_diff = range_max - range_min
             if range_diff < range_length:
                 shift = range_length - range_diff
@@ -39,7 +43,7 @@ def pagination_processor():
                     range_min -= shift
                 else:
                     range_max += shift
-        page_range = range(range_min, range_max + 1)
+        page_range = list(range(range_min, range_max + 1))
         s = ""
         for i in page_range:
             active = ""

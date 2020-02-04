@@ -1,3 +1,4 @@
+from builtins import object
 from collections import deque
 from contextlib import contextmanager
 import random

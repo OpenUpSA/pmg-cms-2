@@ -1,3 +1,4 @@
+from builtins import object
 from inflection import underscore, dasherize
 from flask import url_for
 from sqlalchemy import func

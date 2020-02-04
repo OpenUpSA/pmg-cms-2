@@ -1,3 +1,4 @@
+from builtins import str
 from sqlalchemy import func, sql
 from sqlalchemy.orm import validates
 
@@ -30,7 +31,7 @@ class Post(ApiResource, db.Model):
         return value.strip('/')
 
     def __unicode__(self):
-        return unicode(self.title)
+        return str(self.title)
 
 
 class PostFile(FileLinkMixin, db.Model):

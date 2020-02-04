@@ -1,3 +1,5 @@
+from future import standard_library
+standard_library.install_aliases()
 import os
 
 # setup testing environment before anything imports app
@@ -8,7 +10,7 @@ from pmg.models import db
 from flask_testing import TestCase, LiveServerTestCase
 import multiprocessing
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class PMGTestCase(TestCase):

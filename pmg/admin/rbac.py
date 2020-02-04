@@ -1,4 +1,7 @@
-import urllib
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
+import urllib.request, urllib.parse, urllib.error
 
 from flask import request, redirect, abort, url_for
 from flask_security import current_user

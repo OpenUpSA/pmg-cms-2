@@ -1,8 +1,13 @@
 from __future__ import absolute_import
+from __future__ import division
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from past.utils import old_div
 import logging
 from datetime import datetime, date, timedelta
 import math
-from urlparse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse
 from bs4 import BeautifulSoup
 from sqlalchemy import desc, func, cast, Integer, text
 from itertools import groupby
@@ -222,7 +227,7 @@ def bills(bill_type, year=None):
         params = {}
 
     else:
-        year_list = range(MIN_YEAR, date.today().year + 1)
+        year_list = list(range(MIN_YEAR, date.today().year + 1))
         year_list.reverse()
         params = {}
 
@@ -469,7 +474,7 @@ def archived_attendance_overview():
         })
 
     # rank them
-    for att in attendance.itervalues():
+    for att in list(attendance.values()):
         att.sort(key=lambda a: a['avg_attendance'], reverse=True)
         for i, item in enumerate(att):
             att[i]['rank'] = len(att) - i
@@ -526,12 +531,12 @@ def attendance_overview():
         )
 
     # rank them
-    for att in attendance.itervalues():
+    for att in list(attendance.values()):
         att.sort(key=lambda a: a["avg_attendance"], reverse=True)
         for i, item in enumerate(att):
             att[i]["rank"] = len(att) - i
 
-    total_years = len(years.keys())
+    total_years = len(list(years.keys()))
     return render_template(
         "attendance_overview.html",
         year=this_year,
@@ -628,10 +633,10 @@ def committees():
                     committees_type[house['short_name']]['committees'].append(
                         committee)
 
-    for typ in adhoc_committees.itervalues():
+    for typ in list(adhoc_committees.values()):
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
-    for typ in wc_committees.itervalues():
+    for typ in list(wc_committees.values()):
         typ['committees'].sort(key=lambda x: (not x['active'], x['name']))
 
     return render_template(
@@ -649,7 +654,7 @@ def sort_houses(houses):
     sorted_houses.append(houses_dict.pop(House.NATIONAL_ASSEMBLY))
     sorted_houses.append(houses_dict.pop(House.NAT_COUNCIL_OF_PROV))
     sorted_houses.append(houses_dict.pop(House.JOINT_COMMITTEE))
-    for house in houses_dict.values():
+    for house in list(houses_dict.values()):
         sorted_houses.append(house)
     return sorted_houses
 
@@ -1014,7 +1019,7 @@ def members():
                 'sphere'] == 'national':
             members_by_house.setdefault(member['house']['name'],
                                         []).append(member)
-    id_mapping = {house: slugify(house) for house in members_by_house.keys()}
+    id_mapping = {house: slugify(house) for house in list(members_by_house.keys())}
 
     return render_template(
         "member_list.html", members_by_house=members_by_house, id_mapping=id_mapping
@@ -1068,7 +1073,7 @@ def hansards(page=0):
         params['filter[year]'] = year
         year = int(year)
 
-    year_list = range(MIN_YEAR, date.today().year + 1)
+    year_list = list(range(MIN_YEAR, date.today().year + 1))
     year_list.reverse()
 
     hansards_list = load_from_api('hansard', page=page, params=params)
@@ -1471,7 +1476,7 @@ def question_replies(page=0):
     # sort ministers to put President first
     ministers.sort(key=lambda m: 0 if m['name'] == 'President' else m['name'])
 
-    year_list = range(MIN_YEAR, date.today().year + 1)
+    year_list = list(range(MIN_YEAR, date.today().year + 1))
     year_list.reverse()
 
     return render_template(
@@ -1508,7 +1513,7 @@ def search(page=0):
     filters["committee"] = request.args.get('filter[committee]', '')
 
     # support legacy search URLs that allowed "None" as a value
-    for k, v in filters.iteritems():
+    for k, v in list(filters.items()):
         if v == "None":
             filters[k] = None
 
@@ -1534,7 +1539,7 @@ def search(page=0):
         else:
             raise e
 
-    years = range(1997, datetime.now().year + 1)
+    years = list(range(1997, datetime.now().year + 1))
     years.reverse()
 
     bincount = {}
@@ -1555,7 +1560,7 @@ def search(page=0):
     def search_url(**kwargs):
         args = dict(filters)
         args.update(kwargs)
-        args = {('filter[%s]' % k): v for k, v in args.iteritems() if v}
+        args = {('filter[%s]' % k): v for k, v in list(args.items()) if v}
         return url_for('search', q=q, **args)
 
     saved_search = None
@@ -1575,7 +1580,7 @@ def search(page=0):
     # suggest a phrase search?
     if q and '"' not in q and search['hits'] > 0:
         suggest_phrase = '"%s"' % q
-        kwargs = {('filter[%s]' % k): v for k, v in filters.iteritems() if v}
+        kwargs = {('filter[%s]' % k): v for k, v in list(filters.items()) if v}
         kwargs['q'] = suggest_phrase
         suggest_phrase_url = url_for('search', **kwargs)
     else:
@@ -1607,7 +1612,7 @@ def search(page=0):
         yearcount=yearcount,
         committees=committees,
         houses=houses,
-        search_types=Search.friendly_data_types.items(),
+        search_types=list(Search.friendly_data_types.items()),
         saved_search=saved_search,
         suggest_phrase=suggest_phrase,
         suggest_phrase_url=suggest_phrase_url,
@@ -1693,7 +1698,7 @@ def correct_this_page():
 
     else:
         form_errors = {}
-        for field, errors in form.errors.items():
+        for field, errors in list(form.errors.items()):
             for error in errors:
                 if field == 'recaptcha':
                     form_errors.update({
@@ -1866,4 +1871,4 @@ def stats_review(stat):
 # Test to make sure sentry is working
 @app.route('/debug-sentry')
 def trigger_error():
-    division_by_zero = 1 / 0
+    division_by_zero = old_div(1, 0)

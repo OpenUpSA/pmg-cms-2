@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from builtins import str
 import datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
@@ -29,7 +30,7 @@ class Role(db.Model, RoleMixin):
     description = db.Column(db.String(255))
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
 
 def one_year_later():
@@ -60,7 +61,7 @@ class Organisation(db.Model):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
     def __unicode__(self):
-        return unicode(self.name)
+        return str(self.name)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -116,7 +117,7 @@ class User(db.Model, UserMixin):
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
     def __unicode__(self):
-        return unicode(self.email)
+        return str(self.email)
 
     def is_confirmed(self):
         return self.confirmed_at is not None

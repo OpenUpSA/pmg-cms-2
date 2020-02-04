@@ -1,3 +1,4 @@
+from builtins import str
 from datetime import datetime
 from pmg import db, app
 from pmg.models import File, EventFile
@@ -53,7 +54,7 @@ class SoundcloudTrack(db.Model):
     state = db.Column(db.String())
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     def __unicode__(self):
         return u'<SoundcloudTrack id=%d>' % self.id

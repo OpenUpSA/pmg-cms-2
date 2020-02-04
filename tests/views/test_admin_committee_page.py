@@ -1,3 +1,4 @@
+from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Committee
 from tests.fixtures import (

@@ -1,8 +1,9 @@
+from builtins import object
 from pmg.models import db
 from tests.fixtures import *
 
 class UserData(DataSet):
-    class admin_user:
+    class admin_user(object):
         email = "admin"
         name = "Admin"
         password = "admin"

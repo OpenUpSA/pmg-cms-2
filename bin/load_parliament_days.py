@@ -10,6 +10,8 @@
 #   ...
 #
 
+from builtins import str
+from builtins import range
 import argparse
 import os.path
 from datetime import date

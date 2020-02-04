@@ -1,6 +1,8 @@
+from future import standard_library
+standard_library.install_aliases()
 from tests import PMGLiveServerTestCase
 from tests.fixtures import dbfixture, HouseData, CommitteeData, CommitteeMeetingData
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class TestCommitteeMeetingPage(PMGLiveServerTestCase):

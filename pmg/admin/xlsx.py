@@ -1,8 +1,11 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import xlsxwriter
-import StringIO
+import io
 
 
-class XLSXBuilder:
+class XLSXBuilder(object):
     def __init__(self):
         self.formats = {}
 
@@ -25,7 +28,7 @@ class XLSXBuilder:
 
         ws = wb.add_worksheet('Results')
 
-        data = [rows.keys()] + [[r[k] for k in rows.keys()] for r in rows]
+        data = [list(rows.keys())] + [[r[k] for k in list(rows.keys())] for r in rows]
         self.write_table(ws, data)
 
         wb.close()
@@ -34,7 +37,7 @@ class XLSXBuilder:
         return output.read()
 
     def new_workbook(self):
-        output = StringIO.StringIO()
+        output = io.StringIO()
         workbook = xlsxwriter.Workbook(output)
 
         self.formats['date'] = workbook.add_format({'num_format': 'yyyy/mm/dd'})

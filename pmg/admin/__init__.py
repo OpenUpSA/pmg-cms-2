@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import logging
 from operator import itemgetter
 import datetime
@@ -31,11 +32,11 @@ import flask_wtf
 from pmg import app, db
 from pmg.models import *  # noqa
 import pmg.utils
-from xlsx import XLSXBuilder
+from .xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
 from .rbac import RBACMixin
 from .reports import ReportView
-import widgets
+from . import widgets
 
 logger = logging.getLogger(__name__)
 

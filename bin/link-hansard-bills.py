@@ -4,6 +4,7 @@
 """ Script to ensure that events mentioning bills in their
 titles are correctly linked to those bills.
 """
+from __future__ import print_function
 from pmg.models import Event, Bill, db
 from pmg.search import Search
 from sqlalchemy.orm import subqueryload
@@ -39,11 +40,11 @@ def fixbills():
                 if bill not in event.bills:
                     event.bills.append(bill)
                     fixed += 1
-                    print "Matched %s [%s] (%d) to %s (%d)" % (bill.code, bill.title, bill.id, event.title, event.id)
+                    print("Matched %s [%s] (%d) to %s (%d)" % (bill.code, bill.title, bill.id, event.title, event.id))
             else:
-                print "No bill %s" % code
+                print("No bill %s" % code)
 
-    print "Fixed %d links" % fixed
+    print("Fixed %d links" % fixed)
     db.session.commit()
 
 

@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -71,9 +72,9 @@ if __name__ == "__main__":
 
                     if not committee:
                         # Committee not found
-                        print "%s: Not found" % (row['Name Committee'])
+                        print("%s: Not found" % (row['Name Committee']))
 
                     else:
-                        print "'%s': '%s'," % (row['Name Committee'], committee.name)
+                        print("'%s': '%s'," % (row['Name Committee'], committee.name))
 
                 continue

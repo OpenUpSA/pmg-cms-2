@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 from pmg.models import Bill, BillVersion, File, db, BillType
 import json
 import re
@@ -54,10 +55,10 @@ already_exists = 0
 
 def commit():
     #db.session.commit()
-    print "added %d" % added
-    print "missing %d" % missing
-    print "already_enacted %d" % already_enacted
-    print "already_exists %d" % already_exists
+    print("added %d" % added)
+    print("missing %d" % missing)
+    print("already_enacted %d" % already_enacted)
+    print("already_exists %d" % already_exists)
 
 # now load files into db
 not_found = []
@@ -69,30 +70,30 @@ for bill in bills:
 
     bill_obj = Bill.query.filter(Bill.year == year, Bill.number == number).join(BillType).filter(BillType.name == bill_type).first()
     if not bill_obj:
-        print "Missing: %s %s -- %s" % (year, number, title)
+        print("Missing: %s %s -- %s" % (year, number, title))
         missing += 1
         continue
 
-    print "%s %s %s -- %s" % (bill_obj.id, year, number, title)
+    print("%s %s %s -- %s" % (bill_obj.id, year, number, title))
 
     # already have enacted?
     if any(v.enacted for v in bill_obj.versions):
         already_enacted += 1
-        print "Already have enacted, skipping"
+        print("Already have enacted, skipping")
         continue
 
     for version in (e for e in bill['entries'] if e['type'] == 'act'):
         # find the file details
         info = get_file_info(version["url"])
-        print "Version info: %s" % version
-        print "File info: %s" % info
+        print("Version info: %s" % version)
+        print("File info: %s" % info)
 
         # is there already a matching version?
         existing = [bv for bv in bill_obj.versions if bv.file.file_path == info['filepath']]
         if existing:
             existing[0].enacted = True
             already_exists += 1
-            print "Already have matching file, skipping"
+            print("Already have matching file, skipping")
             continue
 
         # does the file exist?

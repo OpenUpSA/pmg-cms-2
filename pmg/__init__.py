@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import logging
 import logging.config
 import os
@@ -196,10 +197,10 @@ if app.config['RUN_PERIODIC_TASKS']:
 import pmg.tasks
 Thread(target=pmg.tasks.schedule).start()
 
-import helpers
-import views
-import user_management
-import admin
+from . import helpers
+from . import views
+from . import user_management
+from . import admin
 
 from pmg.api.v1 import api as api_v1
 app.register_blueprint(api_v1, subdomain='api')

@@ -119,8 +119,8 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             committee.id, 'historical')
 
         self.assertEqual(
-            [(2019.0, 1L, 0.5, 2.0), (2020.0, 2L, 0.5, 1.0)], current_attendance)
-        self.assertEqual([(2019.0, 2L, 0.5, 2.0)], historical_attendance)
+            [(2019.0, 1, 0.5, 2.0), (2020.0, 2, 0.5, 1.0)], current_attendance)
+        self.assertEqual([(2019.0, 2, 0.5, 2.0)], historical_attendance)
 
     def test_committee_attendance_summary(self):
         """
@@ -131,15 +131,15 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             "historical")
         self.assertEqual(
             [
-                (2, 'A', 2020.0, 1, 1L),
-                (2, 'P', 2020.0, 1, 1L),
-                (1, 'P', 2019.0, 1, 1L),
-                (2, 'A', 2019.0, 1, 1L)
+                (2, 'A', 2020.0, 1, 1),
+                (2, 'P', 2020.0, 1, 1),
+                (1, 'P', 2019.0, 1, 1),
+                (2, 'A', 2019.0, 1, 1)
             ], current_attendance)
-        self.assertEqual([(1, 'A', 2019.0, 1, 1L),
-                          (1, 'P', 2019.0, 1, 1L),
-                          (2, 'A', 2019.0, 1, 1L),
-                          (2, 'P', 2019.0, 1, 1L)], historical_attendance)
+        self.assertEqual([(1, 'A', 2019.0, 1, 1),
+                          (1, 'P', 2019.0, 1, 1),
+                          (2, 'A', 2019.0, 1, 1),
+                          (2, 'P', 2019.0, 1, 1)], historical_attendance)
 
     def test_annual_attendance_trends(self):
         trends = CommitteeMeetingAttendance.annual_attendance_trends(
@@ -147,8 +147,8 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
 
         expected = [
             # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (1, u'na', 2019, 1L, 0.5, 2.0),
-            (1, u'na', 2020, 2L, 0.5, 1.0),
+            (1, u'na', 2019, 1, 0.5, 2.0),
+            (1, u'na', 2020, 2, 0.5, 1.0),
         ]
 
         self.assertEqual(expected, trends)
@@ -159,7 +159,7 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
 
         expected = [
             # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (self.committee.id, u'na', 2019, 2L, 0.5, 2.0),
+            (self.committee.id, u'na', 2019, 2, 0.5, 2.0),
         ]
 
         self.assertEqual(expected, trends)

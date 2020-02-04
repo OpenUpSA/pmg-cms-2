@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
@@ -12,7 +13,7 @@ from flask import render_template
 from flask_mail import Message
 
 from pmg import app, db
-import serializers
+from . import serializers
 import pmg.forms as forms
 
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import re
 
 from sqlalchemy import func, sql
@@ -6,7 +7,7 @@ from sqlalchemy.orm import validates
 from pmg import app, db
 from .base import resource_slugs, FileLinkMixin
 
-import serializers
+from . import serializers
 
 
 class Redirect(db.Model):

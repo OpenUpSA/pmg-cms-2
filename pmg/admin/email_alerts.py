@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from itertools import chain
 import logging
 
@@ -14,7 +15,7 @@ from sqlalchemy.sql.functions import count
 
 from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting, db
 from pmg.models.emails import send_sendgrid_email
-from rbac import RBACMixin
+from .rbac import RBACMixin
 
 log = logging.getLogger(__name__)
 

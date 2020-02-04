@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -91,9 +92,9 @@ if __name__ == "__main__":
 
                 if not member:
                     # Member not found
-                    print "%s: Not found" % (member_name)
+                    print("%s: Not found" % (member_name))
 
                 elif member_name != member.name:
-                    print "'%s': '%s'," % (member_name, member.name)
+                    print("'%s': '%s'," % (member_name, member.name))
 
             continue

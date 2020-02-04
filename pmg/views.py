@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import logging
 from datetime import datetime, date, timedelta
 import math
@@ -25,10 +26,10 @@ from pmg.models.resources import Committee
 from copy import deepcopy
 from collections import OrderedDict
 
-import forms
-import utils
-from helpers import _jinja2_filter_datetime as pretty_date
-from user_management import follow_committee
+from . import forms
+from . import utils
+from .helpers import _jinja2_filter_datetime as pretty_date
+from .user_management import follow_committee
 
 LEGACY_DOMAINS = set([
     'new.pmg.org.za', 'www.pmg.org.za', 'bills.pmg.org.za',
@@ -1653,7 +1654,7 @@ def docs(path, dir=''):
     # report to google analytics
     try:
         utils.track_pageview()
-    except StandardError as e:
+    except Exception as e:
         logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
 
     remote = app.config['STATIC_HOST'] + dir + path

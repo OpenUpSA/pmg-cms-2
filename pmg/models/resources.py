@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
 import datetime
 import logging
 import os
@@ -22,7 +23,7 @@ from za_parliament_scrapers.questions import QuestionAnswerScraper
 from pmg import app, db
 from pmg.utils import levenshtein
 
-import serializers
+from . import serializers
 from .s3_upload import S3Bucket
 from .base import ApiResource, FileLinkMixin
 

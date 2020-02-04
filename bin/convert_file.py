@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -68,5 +69,5 @@ if __name__ == "__main__":
                             ])
                         except KeyError as e:
                             import ipdb; ipdb.set_trace()
-                            print e
+                            print(e)
 

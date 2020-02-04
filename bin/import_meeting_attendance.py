@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -257,7 +258,7 @@ if __name__ == "__main__":
                     if not member:
                         # Member not found
                         log_error(writer, row, error='Member not found.')
-                        print "Member not found: %s" % (str(reader.line_num))
+                        print("Member not found: %s" % (str(reader.line_num)))
                         continue
 
                     # Get committee
@@ -290,8 +291,8 @@ if __name__ == "__main__":
                             error = "Multiple committee meetings for date found in database."
 
                         log_error(writer, row, error=error)
-                        print "Meeting error: %s :: No of meetings: %s" % (
-                            str(reader.line_num), str(len(committee_meeting_results)))
+                        print("Meeting error: %s :: No of meetings: %s" % (
+                            str(reader.line_num), str(len(committee_meeting_results))))
                     else:
                         committee_meeting = committee_meeting_results[0]
 
@@ -312,9 +313,9 @@ if __name__ == "__main__":
                                     member=member)
 
                                 db.session.add(committee_meeting_attendance)
-                                print 'Adding attendance: %s' % (reader.line_num)
+                                print('Adding attendance: %s' % (reader.line_num))
                             else:
-                                print 'Attendance exists: %s' % (reader.line_num)
+                                print('Attendance exists: %s' % (reader.line_num))
 
                         else:
                             log_error(writer, row, error='Duplicate attendance for meeting in sheet.')

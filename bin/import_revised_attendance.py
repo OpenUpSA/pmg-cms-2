@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 import argparse
 import os
 import sys
@@ -204,10 +205,10 @@ if __name__ == "__main__":
                                 member=member)
 
                             db.session.add(committee_meeting_attendance)
-                            print 'Adding attendance: %s' % (reader.line_num)
+                            print('Adding attendance: %s' % (reader.line_num))
                         else:
                             # log_error(writer, row, error='Attendance exists.')
-                            print 'Attendance exists: %s' % (reader.line_num)
+                            print('Attendance exists: %s' % (reader.line_num))
                     else:
                         log_error(writer, row, error='Duplicate: Member, committee, date combination')
                         continue

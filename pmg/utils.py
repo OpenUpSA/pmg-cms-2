@@ -2,7 +2,7 @@ from __future__ import division
 import re
 
 import nltk
-from UniversalAnalytics import Tracker
+from universal_analytics import Tracker
 from flask import request
 from flask_security import current_user
 

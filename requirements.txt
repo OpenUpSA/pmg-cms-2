@@ -30,7 +30,7 @@ Flask-WTF==0.11
 fudge==1.1.0
 funcsigs==0.4
 futures==3.0.3
-gevent==1.2.1
+gevent==1.4.0
 greenlet==0.4.12
 gunicorn==19.9.0
 humanize==0.5.1

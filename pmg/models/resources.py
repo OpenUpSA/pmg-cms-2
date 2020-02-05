@@ -58,7 +58,7 @@ class House(db.Model):
     NAT_COUNCIL_OF_PROV = 2
     JOINT_COMMITTEE = 1
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
     @classmethod
@@ -77,7 +77,7 @@ class Party(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 
@@ -88,7 +88,7 @@ class Province(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 
@@ -113,7 +113,7 @@ class BillType(db.Model):
     def is_private_member_bill(self):
         return 'Private Member Bill' in self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.description)
 
 
@@ -129,7 +129,7 @@ class BillStatus(db.Model):
     def current(cls):
         return cls.query.filter(cls.name.in_(["na", "ncop", "president"])).all()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s (%s)' % (self.description, self.name)
 
 
@@ -186,7 +186,7 @@ class Bill(ApiResource, db.Model):
         tmp['code'] = self.code
         return tmp
 
-    def __unicode__(self):
+    def __str__(self):
         out = self.code
         if self.title:
             out += " - " + self.title
@@ -295,7 +295,7 @@ class File(db.Model):
     def __str__(self):
         return str(self).encode('utf-8')
 
-    def __unicode__(self):
+    def __str__(self):
         if self.title:
             return u'%s (%s)' % (self.title, self.file_path)
         return u'%s' % self.file_path
@@ -377,7 +377,7 @@ class Event(ApiResource, db.Model):
                 logger.info("Auto-linking bill '%s' (%s) to event '%s' (%s)" % (bill.code, bill.id, self.title, self.id))
                 self.bills.append(bill)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.type == "committee-meeting":
             tmp = "unknown date"
             if self.date:
@@ -545,7 +545,7 @@ class MembershipType(db.Model):
         # reduce this model to a string
         return self.name
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 
@@ -570,7 +570,7 @@ class Member(ApiResource, db.Model):
 
     memberships = db.relationship('Membership', backref=backref("member", lazy="joined"), lazy='joined', cascade="all, delete, delete-orphan")
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.name
 
     def to_dict(self, include_related=False):
@@ -724,7 +724,7 @@ class Committee(ApiResource, db.Model):
         self.active = meeting is not None and meeting.date >= threshold
         self.last_active_year = meeting.date.year if meeting else None
 
-    def __unicode__(self):
+    def __str__(self):
         tmp = self.name
         if self.house:
             tmp = self.house.name_short + " " + tmp
@@ -759,7 +759,7 @@ class Membership(db.Model):
             return self.type.name == 'chairperson'
         return False
 
-    def __unicode__(self):
+    def __str__(self):
         tmp = u" - ".join([str(self.type),
                            str(self.member),
                            str(self.committee)])
@@ -1068,7 +1068,7 @@ class TabledCommitteeReport(ApiResource, db.Model):
     committee = db.relationship('Committee', backref=db.backref('tabled_committee_reports', order_by=nullslast(desc(text('start_date')))), lazy=False)
     files = db.relationship("TabledCommitteeReportFile", lazy='joined', cascade="all, delete, delete-orphan")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or ('<TabledCommitteeReport %s>' % self.id)
 
     @classmethod
@@ -1419,7 +1419,7 @@ class Minister(ApiResource, db.Model):
         tmp['questions_url'] = url_for('api.minister_questions', minister_id=self.id, _external=True)
         return tmp
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
     @classmethod

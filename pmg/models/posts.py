@@ -30,7 +30,7 @@ class Post(ApiResource, db.Model):
     def validate_slug(self, key, value):
         return value.strip('/')
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.title)
 
 

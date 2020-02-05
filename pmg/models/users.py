@@ -29,7 +29,7 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
 
@@ -60,7 +60,7 @@ class Organisation(db.Model):
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.name)
 
     def to_dict(self, include_related=False):
@@ -116,7 +116,7 @@ class User(db.Model, UserMixin):
     committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
     roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.email)
 
     def is_confirmed(self):

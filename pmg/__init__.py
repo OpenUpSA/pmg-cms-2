@@ -29,7 +29,7 @@ app.config.from_pyfile("../config/config.py")
 with open("config/logging-%s.yaml" % env) as f:
     import yaml
 
-    logging.config.dictConfig(yaml.load(f))
+    logging.config.dictConfig(yaml.load(f, Loader=yaml.FullLoader))
 
 logger = logging.getLogger(__name__)
 

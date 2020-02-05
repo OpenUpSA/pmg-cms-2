@@ -101,7 +101,7 @@ source env.localmail
 We use [Black](https://github.com/psf/black) to format our code. You can install it using
 `pip install black` and run it with:
 
-   black app.py bin config pmg tests
+    black app.py bin config pmg tests
 
 
 ### Deployment instructions

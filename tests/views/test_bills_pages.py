@@ -80,6 +80,11 @@ class TestBillsPages(PMGLiveServerTestCase):
         bill = self.fx.BillData.draft
         self.assertIn(bill.title, self.html)
 
+    def test_bills_explained_page(self):
+        response = self.make_request("/bills/explained/", follow_redirects=True)
+        self.assertEqual(200, response.status_code)
+        self.assertIn("The Legislative Process", self.html)
+
     def contains_bill(self, bill):
         self.assertIn(bill.title, self.html)
         if bill.type and "Private Member Bill" in bill.type.name:

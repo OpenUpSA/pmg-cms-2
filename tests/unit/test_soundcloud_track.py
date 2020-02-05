@@ -1,6 +1,6 @@
 from nose.tools import *  # noqa
 import datetime
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, mock_open
 
 from pmg.models.soundcloud_track import SoundcloudTrack
 from pmg.models import db, File, Event, EventFile
@@ -38,10 +38,10 @@ class TestSoundcloudTrack(PMGTestCase):
         self.uploaded_file = File(
             title="Test Audio",
             file_mime="audio/mp3",
-            file_path="tmp/file",
+            file_path="tmp/file-2",
             file_bytes="1",
-            origname="Test file",
-            description="Test file",
+            origname="Test file 2",
+            description="Test file 2",
             playtime="3min",
         )
         self.soundcloud_track = SoundcloudTrack(
@@ -66,3 +66,18 @@ class TestSoundcloudTrack(PMGTestCase):
         client_mock.get.return_value = track_mock
         SoundcloudTrack.sync_upload_state(client_mock)
         client_mock.get.assert_called_with(self.soundcloud_track.uri)
+
+    def test_new_from_file_already_being_uploaded(self):
+        client_mock = MagicMock()
+
+        self.soundcloud_track = SoundcloudTrack(
+            file=self.file,
+            uri="https://soundcloud.com/pmgza/test-file-2",
+            state="processing",
+        )
+        db.session.commit()
+
+        soundcloud_file_count_before = SoundcloudTrack.query.count()
+        SoundcloudTrack.new_from_file(client_mock, self.file)
+        soundcloud_file_count_after = SoundcloudTrack.query.count()
+        self.assertEqual(soundcloud_file_count_before, soundcloud_file_count_after)

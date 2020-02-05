@@ -420,6 +420,26 @@ class UserData(DataSet):
         confirmed_at = datetime.datetime.utcnow()
         committee_alerts = [CommitteeData.arts]
 
+    class editor(object):
+        email = "editor@pmg.org.za"
+        name = "Editor User"
+        active = True
+        roles = [RoleData.editor]
+        current_login_at = datetime.datetime.utcnow()
+        confirmed = True
+        confirmed_at = datetime.datetime.utcnow()
+        committee_alerts = [CommitteeData.arts]
+
+    class inactive(object):
+        email = "inactive@pmg.org.za"
+        name = "Inactive User"
+        active = False
+        roles = [RoleData.editor]
+        current_login_at = datetime.datetime.utcnow()
+        confirmed = True
+        confirmed_at = datetime.datetime.utcnow()
+        committee_alerts = [CommitteeData.arts]
+
 
 class MembershipTypeData(DataSet):
     class member(object):

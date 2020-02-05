@@ -1,7 +1,7 @@
 from pmg import app
 from pmg.models.soundcloud_track import SoundcloudTrack
-from flask.ext.script import Server, Manager
-from flask.ext.migrate import MigrateCommand
+from flask_script import Server, Manager
+from flask_migrate import MigrateCommand
 
 app.debug = True
 

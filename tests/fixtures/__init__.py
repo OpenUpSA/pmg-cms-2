@@ -29,6 +29,7 @@ from pmg.models import (
     MembershipType,
     EmailTemplate,
     DailySchedule,
+    Organisation,
 )
 
 THIS_YEAR = datetime.datetime.today().year
@@ -439,6 +440,16 @@ class UserData(DataSet):
         confirmed = True
         confirmed_at = datetime.datetime.utcnow()
         committee_alerts = [CommitteeData.arts]
+
+
+class OrganisationData(DataSet):
+    class pmg(object):
+        name = "PMG"
+        domain = "PMG Domain"
+        paid_subscriber = True
+        expiry = datetime.datetime.utcnow() + datetime.timedelta(days=365)
+        contact = "pmg@pmg.com"
+        subscriptions = [CommitteeData.arts]
 
 
 class MembershipTypeData(DataSet):

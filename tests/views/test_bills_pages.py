@@ -1,3 +1,6 @@
+from urllib.parse import urlparse
+import datetime
+
 from tests import PMGLiveServerTestCase
 from pmg.models import db, BillStatus
 from tests.fixtures import dbfixture, BillData, BillStatusData
@@ -52,6 +55,30 @@ class TestBillsPages(PMGLiveServerTestCase):
                 self.contains_bill(bill)
             else:
                 self.doesnt_contain_bill(bill)
+
+    def test_draft_bills_page(self):
+        """
+        Test draft bills page (/bills/draft/) redirects to current year's 
+        draft bills page.
+        """
+        response = self.make_request("/bills/draft/", follow_redirects=False)
+        self.assertEqual(302, response.status_code)
+        current_year = datetime.datetime.today().year
+        self.assertEqual(
+            urlparse(response.location).path, "/bills/draft/year/%d/" % current_year
+        )
+
+    def test_draft_bills_page_for_year(self):
+        """
+        Test draft bills page for a year (/bills/draft/<year>).
+        """
+        year = 2019
+        response = self.make_request(
+            "/bills/draft/year/%d/" % year, follow_redirects=True
+        )
+        self.assertEqual(200, response.status_code)
+        bill = self.fx.BillData.draft
+        self.assertIn(bill.title, self.html)
 
     def contains_bill(self, bill):
         self.assertIn(bill.title, self.html)

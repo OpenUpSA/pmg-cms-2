@@ -158,6 +158,11 @@ class BillTypeData(DataSet):
         prefix = "PMB"
         description = "Private Member Bill: Section 77"
 
+    class draft(object):
+        name = "Draft"
+        prefix = "D"
+        description = "Draft bill"
+
 
 class BillStatusData(DataSet):
     class current(object):
@@ -206,6 +211,11 @@ class BillData(DataSet):
         year = 2019
         title = "2010 FIFA World Cup South Africa Special Measures Bill"
         type = BillTypeData.section_75
+
+    class draft(object):
+        year = 2019
+        title = "Test Draft Bill"
+        type = BillTypeData.draft
 
 
 class CallForCommentData(DataSet):

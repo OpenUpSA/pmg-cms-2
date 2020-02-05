@@ -64,7 +64,7 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
         committee_name_format = "%s - %s (%d)" % (
             self.fx.CommitteeData.arts.house.name,
             self.fx.CommitteeData.arts.name,
-            1,
+            3,
         )
         self.assertIn(committee_name_format, self.html)
 
@@ -98,6 +98,6 @@ class TestAdminAlertsPage(PMGLiveServerTestCase):
         self.assertEqual(200, response.status_code)
         self.assertIn(
             "Your email alert with subject &#39;%s&#39; has been sent to %d recipients."
-            % (self.fx.EmailTemplateData.template_one.subject, 1),
+            % (self.fx.EmailTemplateData.template_one.subject, 3),
             self.html,
         )

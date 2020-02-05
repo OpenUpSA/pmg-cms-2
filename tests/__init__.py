@@ -105,7 +105,7 @@ class PMGLiveServerTestCase(LiveServerTestCase):
                 session['fresh'] = True
 
             response = client.open(path, base_url=self.base_url, **args)
-            self.html = response.data
+            self.html = response.data.decode()
             return response
 
     def delete_created_objects(self):

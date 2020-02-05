@@ -3,14 +3,14 @@ import datetime
 
 from tests import PMGLiveServerTestCase
 from pmg.models import db, BillStatus
-from tests.fixtures import dbfixture, BillData, BillStatusData
+from tests.fixtures import dbfixture, BillData, BillStatusData, EventData
 
 
 class TestBillsPages(PMGLiveServerTestCase):
     def setUp(self):
         super(TestBillsPages, self).setUp()
 
-        self.fx = dbfixture.data(BillStatusData, BillData)
+        self.fx = dbfixture.data(BillStatusData, BillData, EventData)
         self.fx.setup()
         self.current_statuses = [status.name for status in BillStatus.current()]
         self.status_dict = {
@@ -41,6 +41,19 @@ class TestBillsPages(PMGLiveServerTestCase):
         ]
         for heading in headings:
             self.assertIn(heading, self.html)
+
+    def test_bill_page(self):
+        """
+        Test bill page (/bills/<id>)
+        """
+        bill = self.fx.BillData.food
+        self.make_request("/bill/%d/" % bill.id, follow_redirects=True)
+        self.assertIn(bill.type.name, self.html)
+        # Check if "na" stage is in page
+        self.assertIn("stage2", self.html)
+        # Check if plenary event is shown in Bill History
+        self.assertIn("Bill history", self.html)
+        self.assertIn("National Assembly", self.html)
 
     def test_current_bills_page(self):
         """

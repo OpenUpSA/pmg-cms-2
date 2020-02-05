@@ -188,6 +188,7 @@ class BillData(DataSet):
         title = "Food and Health Bill"
         type = BillTypeData.section_74
         introduced_by = "Minister of Finance"
+        date_of_introduction = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         status = BillStatusData.current
 
     class farm(object):
@@ -347,10 +348,16 @@ class EventData(DataSet):
     class arts_bill_event(object):
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         title = "2010 FIFA World Cup South Africa Special Measures Bill [B13-2006]: Department briefing"
-        type = "Meeting"
+        type = "committee-meeting"
         committee = CommitteeData.arts
         house = HouseData.na
-        bills = [BillData.sport]
+
+    class food_bill_hansard_event(object):
+        date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = "Hansard event"
+        type = "plenary"
+        house = HouseData.na
+        bills = [BillData.food]
 
 
 class FeaturedData(DataSet):

@@ -1,4 +1,5 @@
 from future import standard_library
+
 standard_library.install_aliases()
 import os
 
@@ -26,7 +27,6 @@ class PMGTestCase(TestCase):
 
 
 class PMGLiveServerTestCase(LiveServerTestCase):
-
     def __call__(self, result=None):
         """
         Does the required setup, doing it here means you don't have to
@@ -101,8 +101,8 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         """
         with self.app.test_client() as client:
             with client.session_transaction() as session:
-                session['user_id'] = user.id if user else None
-                session['fresh'] = True
+                session["user_id"] = user.id if user else None
+                session["fresh"] = True
 
             response = client.open(path, base_url=self.base_url, **args)
             self.html = response.data.decode()

@@ -18,10 +18,11 @@ def fixbills():
     # index by year and num
     bills = {b.code: b for b in bills if b.number}
 
-    events = Event.query\
-        .filter(Event.title.ilike('%bill%'))\
-        .options(subqueryload('bills'))\
+    events = (
+        Event.query.filter(Event.title.ilike("%bill%"))
+        .options(subqueryload("bills"))
         .all()
+    )
 
     for event in events:
         for match in Event.BILL_MENTION_RE.finditer(event.title):
@@ -33,14 +34,17 @@ def fixbills():
                     year += 1900
                 else:
                     year += 2000
-            code = '%s%s-%s' % (prefix, num, year)
+            code = "%s%s-%s" % (prefix, num, year)
 
             bill = bills.get(code)
             if bill:
                 if bill not in event.bills:
                     event.bills.append(bill)
                     fixed += 1
-                    print("Matched %s [%s] (%d) to %s (%d)" % (bill.code, bill.title, bill.id, event.title, event.id))
+                    print(
+                        "Matched %s [%s] (%d) to %s (%d)"
+                        % (bill.code, bill.title, bill.id, event.title, event.id)
+                    )
             else:
                 print("No bill %s" % code)
 
@@ -48,5 +52,5 @@ def fixbills():
     db.session.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fixbills()

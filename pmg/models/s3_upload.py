@@ -12,7 +12,7 @@ import logging
 
 from pmg import app
 
-S3_BUCKET = app.config['S3_BUCKET']
+S3_BUCKET = app.config["S3_BUCKET"]
 CACHE_SECS = 3600 * 24
 
 logger = logging.getLogger(__name__)
@@ -31,11 +31,11 @@ def increment_filename(filename):
     We do this by adding a counter as a path component at the start of the filename,
     so that the original name is not changed.
     """
-    if '/' not in filename:
+    if "/" not in filename:
         counter = 0
         rest = filename
     else:
-        counter, rest = filename.split('/', 1)
+        counter, rest = filename.split("/", 1)
         try:
             counter = int(counter)
         except ValueError:
@@ -43,7 +43,7 @@ def increment_filename(filename):
             counter = 0
             rest = filename
 
-    return '%d/%s' % (counter + 1, rest)
+    return "%d/%s" % (counter + 1, rest)
 
 
 class S3Bucket(object):
@@ -53,7 +53,7 @@ class S3Bucket(object):
     @property
     def bucket(self):
         if self._bucket is None:
-            conn = boto.s3.connect_to_region('eu-west-1')
+            conn = boto.s3.connect_to_region("eu-west-1")
             self._bucket = conn.get_bucket(S3_BUCKET)
         return self._bucket
 
@@ -69,8 +69,10 @@ class S3Bucket(object):
                 key = increment_filename(key)
                 tmp_key = self.bucket.get_key(key)
 
-            headers = {'Cache-Control': 'max-age=%d, public' % CACHE_SECS}
-            logger.debug("uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + key)
+            headers = {"Cache-Control": "max-age=%d, public" % CACHE_SECS}
+            logger.debug(
+                "uploading " + path + " (" + str(megabytes) + " MB) to S3 at " + key
+            )
 
             # only upload if the key doesn't exist yet
             tmp_key = Key(self.bucket)

@@ -1,4 +1,5 @@
 from future import standard_library
+
 standard_library.install_aliases()
 from builtins import str
 from builtins import range
@@ -24,37 +25,45 @@ from pmg.models.posts import Post
 from pmg.models.base import resource_slugs
 
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
-MAX_INDEXABLE_BYTES = 104857600 # Limit ElasticSearch/Netty has by default
+MAX_INDEXABLE_BYTES = 104857600  # Limit ElasticSearch/Netty has by default
+
 
 class Search(object):
 
-    esserver = app.config['ES_SERVER']
+    esserver = app.config["ES_SERVER"]
     index_name = "pmg"
     search_fields = ["title^2", "description", "fulltext", "attachments"]
-    exact_search_fields = ["title.exact^2", "description.exact", "fulltext.exact", "attachments_exact"]
+    exact_search_fields = [
+        "title.exact^2",
+        "description.exact",
+        "fulltext.exact",
+        "attachments_exact",
+    ]
     es = ElasticSearch(esserver)
     per_batch = 200
     logger = logging.getLogger(__name__)
 
-    reindex_changes = app.config['SEARCH_REINDEX_CHANGES']
+    reindex_changes = app.config["SEARCH_REINDEX_CHANGES"]
     """ Should updates to models be reindexed? """
 
-    friendly_data_types = OrderedDict([
-        ("committee", "Committees"),
-        ("committee_meeting", "Committee Meetings"),
-        ("bill", "Bills"),
-        ("member", "MPs"),
-        ("hansard", "Hansards"),
-        ("briefing", "Media Briefings"),
-        # this is both QuestionReply and CommitteeQuestion objects
-        ("minister_question", "Questions & Replies"),
-        ("tabled_committee_report", "Tabled Committee Reports"),
-        ("call_for_comment", "Calls for Comments"),
-        ("policy_document", "Policy Documents"),
-        ("gazette", "Gazettes"),
-        ("daily_schedule", "Daily Schedules"),
-        ("post", "Blog Posts"),
-    ])
+    friendly_data_types = OrderedDict(
+        [
+            ("committee", "Committees"),
+            ("committee_meeting", "Committee Meetings"),
+            ("bill", "Bills"),
+            ("member", "MPs"),
+            ("hansard", "Hansards"),
+            ("briefing", "Media Briefings"),
+            # this is both QuestionReply and CommitteeQuestion objects
+            ("minister_question", "Questions & Replies"),
+            ("tabled_committee_report", "Tabled Committee Reports"),
+            ("call_for_comment", "Calls for Comments"),
+            ("policy_document", "Policy Documents"),
+            ("gazette", "Gazettes"),
+            ("daily_schedule", "Daily Schedules"),
+            ("post", "Blog Posts"),
+        ]
+    )
 
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
@@ -65,7 +74,11 @@ class Search(object):
 
         self.mapping(data_type)
 
-        models = [m for m in list(resource_slugs.values()) if m.resource_content_type == data_type]
+        models = [
+            m
+            for m in list(resource_slugs.values())
+            if m.resource_content_type == data_type
+        ]
         for model in models:
             self.reindex_for_model(model)
 
@@ -73,7 +86,7 @@ class Search(object):
         """ Index all content of type +model+ """
         ids = [r[0] for r in db.session.query(model.id).all()]
 
-        if model.__name__ == 'Bill':
+        if model.__name__ == "Bill":
             per_batch = 1
         else:
             per_batch = self.per_batch
@@ -103,11 +116,13 @@ class Search(object):
             if size < MAX_INDEXABLE_BYTES:
                 ok_items.append(item)
             else:
-                self.logger.warn("Not indexing %s id=%d bigger than max (%d > %d)",
-                                 item['slug_prefix'],
-                                 item['model_id'],
-                                 size,
-                                 MAX_INDEXABLE_BYTES)
+                self.logger.warn(
+                    "Not indexing %s id=%d bigger than max (%d > %d)",
+                    item["slug_prefix"],
+                    item["model_id"],
+                    size,
+                    MAX_INDEXABLE_BYTES,
+                )
         return ok_items
 
     def drop_index(self, data_type):
@@ -188,12 +203,8 @@ class Search(object):
                         },
                     },
                 },
-                "number": {
-                    "type": "integer",
-                },
-                "year": {
-                    "type": "integer",
-                },
+                "number": {"type": "integer",},
+                "year": {"type": "integer",},
                 "attachments": {
                     "type": "attachment",
                     "fields": {
@@ -216,23 +227,22 @@ class Search(object):
         }
         self.es.put_mapping(self.index_name, data_type, mapping)
 
-    def build_filters(self, start_date, end_date, document_type, committee, updated_since, exclude_document_types):
+    def build_filters(
+        self,
+        start_date,
+        end_date,
+        document_type,
+        committee,
+        updated_since,
+        exclude_document_types,
+    ):
         filters = {}
 
         if start_date and end_date:
-            filters["date"] = {
-                "range": {
-                    "date": {
-                        "gte": start_date,
-                        "lte": end_date,
-                    }
-                }
-            }
+            filters["date"] = {"range": {"date": {"gte": start_date, "lte": end_date,}}}
 
         if committee:
-            filters["committe"] = {
-                "term": {"committee_id": committee}
-            }
+            filters["committe"] = {"term": {"committee_id": committee}}
 
         if document_type:
             filters["document_type"] = {
@@ -247,13 +257,7 @@ class Search(object):
             }
 
         if updated_since:
-            filters["updated_at"] = {
-                "range": {
-                    "updated_at": {
-                        "gte": updated_since,
-                    }
-                }
-            }
+            filters["updated_at"] = {"range": {"updated_at": {"gte": updated_since,}}}
 
         return filters
 
@@ -264,7 +268,7 @@ class Search(object):
 
         phrases = [p[0].strip() for p in PHRASE_RE.findall(query)]
         phrases = [p for p in phrases if p]
-        terms = PHRASE_RE.sub('', query).strip()
+        terms = PHRASE_RE.sub("", query).strip()
 
         if not terms and not phrases:
             raise ValueError("No search given")
@@ -273,13 +277,16 @@ class Search(object):
 
         if phrases:
             # match to a phrase
-            q["bool"]["must"].extend({
-                "multi_match": {
-                    "query": p,
-                    "fields": self.exact_search_fields,
-                    "type": "phrase",
-                },
-            } for p in phrases)
+            q["bool"]["must"].extend(
+                {
+                    "multi_match": {
+                        "query": p,
+                        "fields": self.exact_search_fields,
+                        "type": "phrase",
+                    },
+                }
+                for p in phrases
+            )
 
         if terms:
             # We do two queries, one is a general term query across the fields,
@@ -287,18 +294,20 @@ class Search(object):
             # match the term search, and items are preferred if they
             # also match the phrase search.
 
-            q["bool"]["must"].append({
-                # best across all the fields
-                "multi_match": {
-                    "query": terms,
-                    "fields": self.search_fields,
-                    "type": "best_fields",
-                    # this helps skip stopwords, see
-                    # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
-                    "cutoff_frequency": 0.0007,
-                    "operator": "and",
+            q["bool"]["must"].append(
+                {
+                    # best across all the fields
+                    "multi_match": {
+                        "query": terms,
+                        "fields": self.search_fields,
+                        "type": "best_fields",
+                        # this helps skip stopwords, see
+                        # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
+                        "cutoff_frequency": 0.0007,
+                        "operator": "and",
+                    }
                 }
-            })
+            )
             q["bool"]["should"] = {
                 # try to match to a phrase
                 "multi_match": {
@@ -309,17 +318,34 @@ class Search(object):
             }
 
         highlight_q = copy.deepcopy(q)
-        highlight_q['bool'].pop('should', None)
+        highlight_q["bool"].pop("should", None)
         # boost phrase matches in highlight query
-        for mm in [m['multi_match'] for m in highlight_q['bool']['must']]:
-            if mm['type'] == 'phrase':
-                mm['boost'] = 5
+        for mm in [m["multi_match"] for m in highlight_q["bool"]["must"]]:
+            if mm["type"] == "phrase":
+                mm["boost"] = 5
 
         return q, highlight_q
 
-    def search(self, query, size=10, es_from=0, start_date=False, end_date=False, document_type=False, committee=False,
-               updated_since=None, exclude_document_types=None):
-        filters = self.build_filters(start_date, end_date, document_type, committee, updated_since, exclude_document_types)
+    def search(
+        self,
+        query,
+        size=10,
+        es_from=0,
+        start_date=False,
+        end_date=False,
+        document_type=False,
+        committee=False,
+        updated_since=None,
+        exclude_document_types=None,
+    ):
+        filters = self.build_filters(
+            start_date,
+            end_date,
+            document_type,
+            committee,
+            updated_since,
+            exclude_document_types,
+        )
 
         q, highlight_q = self.build_query(query)
 
@@ -335,32 +361,37 @@ class Search(object):
                         "scale": "30d",
                         "decay": 0.6,
                     }
-                }
+                },
             }
         }
 
         aggs = {
             "types": {
-                "filter": {"and": {"filters": [v for k, v in list(filters.items()) if k != "document_type"]}},
-                "aggs": {"types": {
-                    "terms": {"field": "_type"}
-                }},
+                "filter": {
+                    "and": {
+                        "filters": [
+                            v for k, v in list(filters.items()) if k != "document_type"
+                        ]
+                    }
+                },
+                "aggs": {"types": {"terms": {"field": "_type"}}},
             },
             "years": {
-                "filter": {"and": {"filters": [v for k, v in list(filters.items()) if k != "date"]}},
-                "aggs": {"years": {
-                    "date_histogram": {
-                        "field": "date",
-                        "interval": "year"
-                    },
-                }},
-            }
+                "filter": {
+                    "and": {
+                        "filters": [v for k, v in list(filters.items()) if k != "date"]
+                    }
+                },
+                "aggs": {
+                    "years": {"date_histogram": {"field": "date", "interval": "year"},}
+                },
+            },
         }
 
         q = {
             "from": es_from,
             "size": size,
-            "sort": {'_score': {'order': 'desc'}},
+            "sort": {"_score": {"order": "desc"}},
             # don't return big fields
             "_source": {"exclude": ["fulltext", "description", "attachments"]},
             "query": q,
@@ -390,14 +421,10 @@ class Search(object):
                         "matched_fields": ["fulltext", "fulltext.exact"],
                         "type": "fvh",
                     },
-                    "attachments": {
-                        "number_of_fragments": 2,
-                    },
-                    "attachments_exact": {
-                        "number_of_fragments": 2,
-                    },
-                }
-            }
+                    "attachments": {"number_of_fragments": 2,},
+                    "attachments_exact": {"number_of_fragments": 2,},
+                },
+            },
         }
 
         self.logger.debug("query_statement: %s" % json.dumps(q, indent=2))
@@ -426,10 +453,7 @@ class Search(object):
         settings = {
             "analysis": {
                 "analyzer": {
-                    "english_exact": {
-                        "tokenizer": "standard",
-                        "filter": ["lowercase"]
-                    }
+                    "english_exact": {"tokenizer": "standard", "filter": ["lowercase"]}
                 }
             }
         }
@@ -448,7 +472,9 @@ class Transforms(object):
 
     @classmethod
     def data_types(cls):
-        return sorted(list(set(k.resource_content_type for k in list(cls.convert_rules.keys()))))
+        return sorted(
+            list(set(k.resource_content_type for k in list(cls.convert_rules.keys())))
+        )
 
     # If there is a rule defined here, the corresponding CamelCase model
     # will be indexed
@@ -493,11 +519,7 @@ class Transforms(object):
             "house_name": "place_of_introduction.name",
             "house_name_short": "place_of_introduction.name_short",
         },
-        Hansard: {
-            "title": "title",
-            "fulltext": "body",
-            "date": "date",
-        },
+        Hansard: {"title": "title", "fulltext": "body", "date": "date",},
         Briefing: {
             "title": "title",
             "description": "summary",
@@ -533,41 +555,26 @@ class Transforms(object):
             "house_name": "committee.house.name",
             "house_name_short": "committee.house.name_short",
         },
-        PolicyDocument: {
-            "title": "title",
-            "date": "start_date",
-        },
-        Gazette: {
-            "title": "title",
-            "date": "start_date",
-        },
-        DailySchedule: {
-            "title": "title",
-            "fulltext": "body",
-            "date": "start_date",
-        },
-        Post: {
-            "title": "title",
-            "fulltext": "body",
-            "date": "date",
-            "slug": "slug",
-        },
+        PolicyDocument: {"title": "title", "date": "start_date",},
+        Gazette: {"title": "title", "date": "start_date",},
+        DailySchedule: {"title": "title", "fulltext": "body", "date": "start_date",},
+        Post: {"title": "title", "fulltext": "body", "date": "date", "slug": "slug",},
     }
 
     @classmethod
     def serialise(cls, obj):
         item = {
-            'model_id': obj.id,
-            'url': obj.url,
-            'api_url': obj.api_url,
-            'slug_prefix': obj.slug_prefix,
-            'created_at': obj.created_at.astimezone(pytz.utc).isoformat(),
-            'updated_at': obj.updated_at.astimezone(pytz.utc).isoformat(),
+            "model_id": obj.id,
+            "url": obj.url,
+            "api_url": obj.api_url,
+            "slug_prefix": obj.slug_prefix,
+            "created_at": obj.created_at.astimezone(pytz.utc).isoformat(),
+            "updated_at": obj.updated_at.astimezone(pytz.utc).isoformat(),
         }
 
         rules = Transforms.convert_rules[obj.__class__]
-        if 'id' not in rules:
-            item['id'] = obj.id
+        if "id" not in rules:
+            item["id"] = obj.id
 
         for key, field in list(rules.items()):
             val = cls.get_val(obj, field)
@@ -581,13 +588,13 @@ class Transforms(object):
     def get_val(cls, obj, field):
         if isinstance(field, list):
             # join multiple fields
-            vals = (cls.get_val(obj, f) or '' for f in field)
+            vals = (cls.get_val(obj, f) or "" for f in field)
             vals = [str(v) if not isinstance(v, basestring) else v for v in vals]
-            return ' '.join(vals)
+            return " ".join(vals)
 
-        elif '.' in field:
+        elif "." in field:
             # get nested attributes: foo.bar.baz
-            for part in field.split('.'):
+            for part in field.split("."):
                 if not obj:
                     return None
                 obj = getattr(obj, part)

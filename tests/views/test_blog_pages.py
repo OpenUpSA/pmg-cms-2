@@ -24,7 +24,7 @@ class TestBlogPages(PMGLiveServerTestCase):
         self.make_request("/blog/%s/" % post.slug)
         self.assertIn(post.title, self.html)
         self.assertIn(post.body[0:100], self.html)
-        self.assertIn('That week in Parliament', self.html)
+        self.assertIn("That week in Parliament", self.html)
 
     def test_blog_listings_page(self):
         """
@@ -40,26 +40,22 @@ class TestBlogPages(PMGLiveServerTestCase):
         Test blog listings page with a filter 
         (/blog?filter[month]=<month>&filter[year]=<year>).
         """
-        month = 'February'
+        month = "February"
         year = 2019
-        self.make_request(
-            "/blog/?filter[month]=%s&filter[year]=%d" %
-            (month, year))
+        self.make_request("/blog/?filter[month]=%s&filter[year]=%d" % (month, year))
         self.contains_template_text()
-        self.contains_posts([
-            self.fx.PostData.first_term_review,
-            self.fx.PostData.brief_explainer,
-        ])
-        self.doesnt_contain_posts([
-            self.fx.PostData.the_week_ahead,
-            self.fx.PostData.government_priorities,
-        ])
+        self.contains_posts(
+            [self.fx.PostData.first_term_review, self.fx.PostData.brief_explainer,]
+        )
+        self.doesnt_contain_posts(
+            [self.fx.PostData.the_week_ahead, self.fx.PostData.government_priorities,]
+        )
         self.contains_archive()
 
     def contains_template_text(self):
-        self.assertIn('That week in Parliament', self.html)
-        self.assertIn('About this blog', self.html)
-        self.assertIn('Blog Archive', self.html)
+        self.assertIn("That week in Parliament", self.html)
+        self.assertIn("About this blog", self.html)
+        self.assertIn("Blog Archive", self.html)
 
     def contains_posts(self, posts):
         for post in posts:
@@ -79,9 +75,6 @@ class TestBlogPages(PMGLiveServerTestCase):
     def contains_archive(self):
         self.assertIn("2019 (3)", self.html)
         self.assertIn("2018 (1)", self.html)
-        self.assertIn('January\n        <span class="count badge">1</span>',
-                      self.html)
-        self.assertIn('February\n        <span class="count badge">2</span>',
-                      self.html)
-        self.assertIn('August\n        <span class="count badge">1</span>',
-                      self.html)
+        self.assertIn('January\n        <span class="count badge">1</span>', self.html)
+        self.assertIn('February\n        <span class="count badge">2</span>', self.html)
+        self.assertIn('August\n        <span class="count badge">1</span>', self.html)

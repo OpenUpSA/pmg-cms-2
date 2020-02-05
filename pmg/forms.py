@@ -21,7 +21,7 @@ class SendConfirmationForm(BaseSendConfirmationForm, NextFormMixin):
 
 
 class CorrectThisPageForm(BaseForm):
-    email = TextField('Email', [validators.Optional()])
-    details = TextField('Details', [validators.Optional()])
-    url = TextField('URL', [validators.Optional()])
+    email = TextField("Email", [validators.Optional()])
+    details = TextField("Details", [validators.Optional()])
+    url = TextField("URL", [validators.Optional()])
     recaptcha = RecaptchaField()

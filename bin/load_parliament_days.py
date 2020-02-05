@@ -32,7 +32,7 @@ def build_pm_dates(pm_days_file):
             # bits of information beyond the rows of the calendar.
             if sheet.cell_type(row, 0) != 0:
                 for col in range(1, sheet.ncols):
-                    if sheet.cell_value(row, col) == 'P':
+                    if sheet.cell_value(row, col) == "P":
                         try:
                             dates.append(date(year, row - 1, col))
                         except ValueError:
@@ -46,15 +46,25 @@ def build_pm_dates(pm_days_file):
 def load_parliamentary_days(args):
     dates = sorted(build_pm_dates(args.pm_days))
 
-    with open(os.path.join(os.path.dirname(__file__), "../data/parliament-sitting-days.txt"), "w") as f:
+    with open(
+        os.path.join(os.path.dirname(__file__), "../data/parliament-sitting-days.txt"),
+        "w",
+    ) as f:
         for d in dates:
             f.write(str(d))
             f.write("\n")
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Calculate how many of the days that passed between the stages of bills, were parliamentary days')
-    parser.add_argument('--pm-days', metavar="excel-file", help='An Excel document containing sheets that indicate which days of the year were parliamentary days', required=True)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Calculate how many of the days that passed between the stages of bills, were parliamentary days"
+    )
+    parser.add_argument(
+        "--pm-days",
+        metavar="excel-file",
+        help="An Excel document containing sheets that indicate which days of the year were parliamentary days",
+        required=True,
+    )
 
     args = parser.parse_args()
     load_parliamentary_days(args)

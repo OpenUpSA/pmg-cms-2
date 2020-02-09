@@ -1,7 +1,5 @@
 $(function() {
-  $('.ckeditor').each(function() {
-    var editor = CKEDITOR.instances[this.id];
-    editor.destroy(true);
+  $('.ckeditor_instance').each(function() {
     CKEDITOR.replace(this, {
       extraPlugins: 'autogrow',
       height: 200,

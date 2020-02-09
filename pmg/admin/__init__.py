@@ -445,10 +445,10 @@ class CommitteeView(MyModelView):
     )
     form_widget_args = {
         'about': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'contact_details': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     form_args = {
@@ -657,10 +657,10 @@ class CommitteeMeetingView(EventView):
     }
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'summary': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         }
     }
     form_ajax_refs = {'bills': {'fields': ('title', ), 'page_size': 50}}
@@ -711,7 +711,7 @@ class HansardView(EventView):
     }
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     form_ajax_refs = {'bills': {'fields': ('title', ), 'page_size': 50}}
@@ -731,7 +731,7 @@ class ProvincialLegislatureView(MyModelView):
     )
     form_widget_args = {
         'contact_details': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'name': {
             'readonly': True
@@ -780,10 +780,10 @@ class BriefingView(EventView):
     )
     form_widget_args = {
         'summary': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     inline_models = [InlineFile(EventFile)]
@@ -898,7 +898,7 @@ class CommitteeQuestionView(MyModelView):
     }
     form_widget_args = {
         'answer': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     form_ajax_refs = {
@@ -961,7 +961,7 @@ class QuestionReplyView(MyModelView):
     )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     inline_models = [InlineFile(QuestionReplyFile)]
@@ -993,7 +993,7 @@ class CallForCommentView(MyModelView):
     )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
 
@@ -1015,7 +1015,7 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
     )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     inline_models = [InlineFile(DailyScheduleFile)]
@@ -1051,7 +1051,7 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     column_searchable_list = ('title', )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
     form_columns = (
@@ -1080,7 +1080,7 @@ class EmailTemplateView(MyModelView):
     )
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
     }
 
@@ -1354,7 +1354,7 @@ class PageView(ViewWithFiles, MyModelView):
     }
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'path': {
             'readonly': True
@@ -1391,7 +1391,7 @@ class PostView(ViewWithFiles, MyModelView):
     }
     form_widget_args = {
         'body': {
-            'class': 'ckeditor'
+            'class': 'ckeditor_instance'
         },
         'path': {
             'readonly': True

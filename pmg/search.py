@@ -575,7 +575,7 @@ class Transforms(object):
         for key, field in list(rules.items()):
             val = cls.get_val(obj, field)
             if isinstance(val, str):
-                val = BeautifulSoup(val).get_text().strip()
+                val = BeautifulSoup(val, "html.parser").get_text().strip()
             item[key] = val
 
         return item

@@ -38,6 +38,7 @@ Flask-Testing==0.6.1
 Flask-WTF==0.11
 fudge==1.1.0
 funcsigs==0.4
+future==0.18.2
 futures==3.0.3
 gevent==1.4.0
 greenlet==0.4.15

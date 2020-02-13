@@ -1,6 +1,5 @@
 #!/bin/env python
 
-from __future__ import print_function
 from pmg.models import Bill, BillVersion, File, db, BillType
 import json
 import re

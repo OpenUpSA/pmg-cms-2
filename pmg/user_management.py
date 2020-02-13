@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 import logging
 from .ga import ga_event
 from collections import defaultdict, OrderedDict

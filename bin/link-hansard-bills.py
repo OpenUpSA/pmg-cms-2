@@ -4,7 +4,6 @@
 """ Script to ensure that events mentioning bills in their
 titles are correctly linked to those bills.
 """
-from __future__ import print_function
 from pmg.models import Event, Bill, db
 from pmg.search import Search
 from sqlalchemy.orm import subqueryload

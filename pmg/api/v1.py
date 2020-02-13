@@ -1,5 +1,4 @@
 from builtins import str
-from past.utils import old_div
 import logging
 from functools import wraps
 from itertools import groupby
@@ -310,7 +309,7 @@ def search():
         },
     }
 
-    logger.debug("Pages %i", math.ceil(old_div(result["hits"], per_page)))
+    logger.debug("Pages %i", math.ceil(result["hits"] // per_page))
 
     if result["hits"] > (page + 1) * per_page:
         result["next"] = (
@@ -327,7 +326,7 @@ def search():
             + "search/?q="
             + q
             + "&page="
-            + str(int(math.ceil(old_div(result["hits"], per_page))))
+            + str(int(math.ceil(result["hits"] // per_page)))
             + "&per_page="
             + str(per_page)
         )

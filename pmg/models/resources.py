@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from builtins import str
-from past.utils import old_div
 import datetime
 import logging
 import os
@@ -1594,7 +1593,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
                 cast(subquery.c.year, Integer).label("year"),
                 func.count(1).label("n_meetings"),
                 func.avg(
-                    old_div(cast(subquery.c.n_present, Float), subquery.c.n_members)
+                    cast(subquery.c.n_present, Float) / subquery.c.n_members
                 ).label("avg_attendance"),
                 cast(func.avg(subquery.c.n_members), Float).label("avg_members"),
             )
@@ -1638,7 +1637,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
                 subquery.c.year,
                 func.count(1).label("n_meetings"),
                 func.avg(
-                    old_div(cast(subquery.c.n_present, Float), subquery.c.n_members)
+                    cast(subquery.c.n_present, Float) / subquery.c.n_members
                 ).label("avg_attendance"),
                 cast(func.avg(subquery.c.n_members), Float).label("avg_members"),
             )

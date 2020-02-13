@@ -1,5 +1,4 @@
 from builtins import range
-from past.utils import old_div
 import logging
 from datetime import datetime, date, timedelta
 import math
@@ -1996,4 +1995,4 @@ def stats_review(stat):
 # Test to make sure sentry is working
 @app.route("/debug-sentry")
 def trigger_error():
-    division_by_zero = old_div(1, 0)
+    division_by_zero = 1 // 0

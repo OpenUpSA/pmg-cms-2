@@ -1,6 +1,5 @@
 from builtins import str
 from builtins import object
-from past.utils import old_div
 import boto
 import boto.s3
 from boto.s3.key import Key
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 def rounded_megabytes(bytes):
 
     megabytes = bytes / float(1024 * 1024)
-    megabytes = old_div(math.ceil(megabytes * 1000), 1000)  # round the float
+    megabytes = math.ceil(megabytes * 1000) // 1000  # round the float
     return megabytes
 
 

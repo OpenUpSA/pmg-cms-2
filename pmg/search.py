@@ -1,6 +1,5 @@
 from builtins import str
 from builtins import range
-from past.builtins import basestring
 from builtins import object
 import math
 import logging
@@ -586,7 +585,7 @@ class Transforms(object):
         if isinstance(field, list):
             # join multiple fields
             vals = (cls.get_val(obj, f) or "" for f in field)
-            vals = [str(v) if not isinstance(v, basestring) else v for v in vals]
+            vals = [str(v) if not isinstance(v, str) else v for v in vals]
             return " ".join(vals)
 
         elif "." in field:

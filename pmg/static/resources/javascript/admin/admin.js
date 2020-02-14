@@ -1,5 +1,5 @@
 $(function() {
-  $('.ckeditor_instance').each(function() {
+  $('.pmg_ckeditor').each(function() {
     CKEDITOR.replace(this, {
       extraPlugins: 'autogrow',
       height: 200,

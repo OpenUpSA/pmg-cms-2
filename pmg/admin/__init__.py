@@ -464,12 +464,8 @@ class CommitteeView(MyModelView):
         "memberships",
     )
     form_widget_args = {
-        'about': {
-            'class': 'pmg_ckeditor'
-        },
-        'contact_details': {
-            'class': 'pmg_ckeditor'
-        },
+        "about": {"class": "pmg_ckeditor"},
+        "contact_details": {"class": "pmg_ckeditor"},
     }
     form_args = {
         "memberships": {"widget": widgets.InlineMembershipsWidget()},
@@ -668,23 +664,13 @@ class CommitteeMeetingView(EventView):
     )
     form_create_rules = form_edit_rules
     form_args = {
-        'summary': {
-            'default': '<p>Report of the meeting to follow.</p>'
-        },
-        'committee': {
-            'validators': [data_required()]
-        },
-        'files': {
-            'widget': widgets.InlineFileWidget()
-        },
+        "summary": {"default": "<p>Report of the meeting to follow.</p>"},
+        "committee": {"validators": [data_required()]},
+        "files": {"widget": widgets.InlineFileWidget()},
     }
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
-        'summary': {
-            'class': 'pmg_ckeditor'
-        }
+        "body": {"class": "pmg_ckeditor"},
+        "summary": {"class": "pmg_ckeditor"},
     }
     form_widget_args = {"body": {"class": "ckeditor"}, "summary": {"class": "ckeditor"}}
     form_ajax_refs = {"bills": {"fields": ("title",), "page_size": 50}}
@@ -731,9 +717,7 @@ class HansardView(EventView):
         "house": {"validators": [data_required()]},
     }
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
     form_ajax_refs = {"bills": {"fields": ("title",), "page_size": 50}}
     inline_models = [InlineFile(EventFile)]
@@ -751,16 +735,9 @@ class ProvincialLegislatureView(MyModelView):
         "speaker",
     )
     form_widget_args = {
-        'contact_details': {
-            'class': 'pmg_ckeditor'
-        },
-        'name': {
-            'readonly': True
-        },
-        'speaker': {
-            'fields': ('name', ),
-            'page_size': 25
-        },
+        "contact_details": {"class": "pmg_ckeditor"},
+        "name": {"readonly": True},
+        "speaker": {"fields": ("name",), "page_size": 25},
     }
 
     def frontend_url(self, model):
@@ -800,12 +777,8 @@ class BriefingView(EventView):
         "files",
     )
     form_widget_args = {
-        'summary': {
-            'class': 'pmg_ckeditor'
-        },
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "summary": {"class": "pmg_ckeditor"},
+        "body": {"class": "pmg_ckeditor"},
     }
     inline_models = [InlineFile(EventFile)]
 
@@ -907,9 +880,7 @@ class CommitteeQuestionView(MyModelView):
         "minister": {"validators": [data_required()]},
     }
     form_widget_args = {
-        'answer': {
-            'class': 'pmg_ckeditor'
-        },
+        "answer": {"class": "pmg_ckeditor"},
     }
     form_ajax_refs = {
         "source_file": {"fields": ("title", "file_path"), "page_size": 10,},
@@ -961,9 +932,7 @@ class QuestionReplyView(MyModelView):
         "body",
     )
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
     inline_models = [InlineFile(QuestionReplyFile)]
     column_labels = {
@@ -991,9 +960,7 @@ class CallForCommentView(MyModelView):
         "body",
     )
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
 
 
@@ -1013,9 +980,7 @@ class DailyScheduleView(ViewWithFiles, MyModelView):
         "files",
     )
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
     inline_models = [InlineFile(DailyScheduleFile)]
 
@@ -1049,9 +1014,7 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     column_default_sort = ("start_date", True)
     column_searchable_list = ("title",)
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
     form_columns = (
         "committee",
@@ -1078,9 +1041,7 @@ class EmailTemplateView(MyModelView):
         "body",
     )
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
+        "body": {"class": "pmg_ckeditor"},
     }
 
 
@@ -1343,12 +1304,8 @@ class PageView(ViewWithFiles, MyModelView):
         "path": fields.TextField("Path"),
     }
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
-        'path': {
-            'readonly': True
-        },
+        "body": {"class": "pmg_ckeditor"},
+        "path": {"readonly": True},
     }
     inline_models = [InlineFile(PageFile)]
     column_descriptions = {
@@ -1378,12 +1335,8 @@ class PostView(ViewWithFiles, MyModelView):
         "path": fields.TextField("Path"),
     }
     form_widget_args = {
-        'body': {
-            'class': 'pmg_ckeditor'
-        },
-        'path': {
-            'readonly': True
-        },
+        "body": {"class": "pmg_ckeditor"},
+        "path": {"readonly": True},
     }
     form_args = {
         "date": {"default": datetime.datetime.now()},

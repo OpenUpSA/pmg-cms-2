@@ -5,7 +5,7 @@ jobs:
       install:
         - pip install black==19.10b0
       script:
-        - black --check --diff app.py bin config pmg pyelasticsearch tests
+        - black --check --diff app.py bin config pmg tests
     - stage: test
       addons:
         hosts:

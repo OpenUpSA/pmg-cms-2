@@ -1,9 +1,9 @@
-from builtins import object
 from pmg.models import db
 from tests.fixtures import *
 
+
 class UserData(DataSet):
-    class admin_user(object):
+    class admin_user:
         email = "admin"
         name = "Admin"
         password = "admin"
@@ -11,10 +11,11 @@ class UserData(DataSet):
         roles = [RoleData.admin, RoleData.editor]
         confirmed = True
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     db.create_all()
     db_fixture = dbfixture.data(
-        HouseData, 
+        HouseData,
         MinisterData,
         CommitteeData,
         CommitteeMeetingData,
@@ -34,6 +35,6 @@ if __name__ == '__main__':
         RoleData,
         UserData,
         MembershipTypeData,
-        MembershipData   
+        MembershipData,
     )
     db_fixture.setup()

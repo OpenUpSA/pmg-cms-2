@@ -1,4 +1,3 @@
-from builtins import object
 from flask import abort, request, make_response
 from flask_admin import expose, BaseView
 from datetime import date
@@ -33,7 +32,7 @@ def add_bill_parliament_days(report, rows):
     return rows
 
 
-class MutableResultProxy(object):
+class MutableResultProxy:
     def __init__(self, rows):
         self._keys = list(rows.keys())
         self._rows = [dict(r) for r in rows]
@@ -49,7 +48,7 @@ class MutableResultProxy(object):
         return len(self._rows)
 
 
-class Report(object):
+class Report:
     def __init__(self, id, name, description, sql, transform=None):
         self.id = id
         self.name = name

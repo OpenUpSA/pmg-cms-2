@@ -1,5 +1,5 @@
 from builtins import str
-from builtins import object
+
 import boto
 import boto.s3
 from boto.s3.key import Key
@@ -44,7 +44,7 @@ def increment_filename(filename):
     return "%d/%s" % (counter + 1, rest)
 
 
-class S3Bucket(object):
+class S3Bucket:
     def __init__(self):
         self._bucket = None
 

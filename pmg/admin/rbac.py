@@ -1,11 +1,10 @@
-from builtins import object
 import urllib.request, urllib.parse, urllib.error
 
 from flask import request, redirect, abort, url_for
 from flask_security import current_user
 
 
-class RBACMixin(object):
+class RBACMixin:
     """ Role-based access control for views. """
 
     # if False, we don't require authentication at all

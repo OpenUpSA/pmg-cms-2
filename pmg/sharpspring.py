@@ -1,4 +1,4 @@
-from builtins import object
+
 import requests
 from logging import getLogger
 import uuid
@@ -9,7 +9,7 @@ from pmg import app
 log = getLogger(__name__)
 
 
-class Sharpspring(object):
+class Sharpspring():
     url = "http://api.sharpspring.com/pubapi/v1/"
 
     def __init__(self):

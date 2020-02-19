@@ -2,7 +2,7 @@
 from builtins import str
 from builtins import filter
 from builtins import range
-from builtins import object
+
 from datetime import datetime
 from operator import itemgetter
 from functools import wraps
@@ -100,7 +100,7 @@ def es_kwargs(*args_to_convert):
     return decorator
 
 
-class ElasticSearch(object):
+class ElasticSearch():
     """
     An object which manages connections to elasticsearch and acts as a
     go-between for API calls to it

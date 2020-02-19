@@ -1,6 +1,6 @@
 from builtins import str
 from builtins import range
-from builtins import object
+
 import math
 import logging
 import json
@@ -24,7 +24,7 @@ PHRASE_RE = re.compile(r'"([^"]*)("|$)')
 MAX_INDEXABLE_BYTES = 104857600  # Limit ElasticSearch/Netty has by default
 
 
-class Search(object):
+class Search():
 
     esserver = app.config["ES_SERVER"]
     index_name = "pmg"
@@ -456,7 +456,7 @@ class Search(object):
         self.es.create_index(self.index_name, settings=settings)
 
 
-class Transforms(object):
+class Transforms():
     """
     Each API model in PMG has different fields, so we need to describe how to map
     the model into something that can be indexed by ElasticSearch.

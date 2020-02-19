@@ -1,4 +1,4 @@
-from builtins import object
+
 from marshmallow import fields
 from marshmallow_polyfield import PolyField
 
@@ -46,7 +46,7 @@ class AbsoluteUrlFor(ma.UrlFor):
 
 
 class CommitteeSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Committee
         fields = (
             "id",
@@ -81,7 +81,7 @@ class CommitteeSchema(ma.ModelSchema):
 
 
 class HouseSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = House
         fields = (
             "id",
@@ -94,7 +94,7 @@ class HouseSchema(ma.ModelSchema):
 
 
 class EventSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Event
         fields = (
             "id",
@@ -113,7 +113,7 @@ class EventSchema(ma.ModelSchema):
 
 
 class CommitteeMeetingSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = CommitteeMeeting
         fields = (
             "id",
@@ -170,7 +170,7 @@ class CommitteeMeetingSchema(ma.ModelSchema):
 
 
 class CallForCommentSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = CallForComment
         fields = (
             "id",
@@ -195,7 +195,7 @@ class CallForCommentSchema(ma.ModelSchema):
 
 
 class TabledCommitteeReportSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = TabledCommitteeReport
         fields = ("id", "title", "start_date", "body", "committee_id", "_links")
 
@@ -208,7 +208,7 @@ class TabledCommitteeReportSchema(ma.ModelSchema):
 
 
 class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = CommitteeMeetingAttendance
         fields = (
             "id",
@@ -234,7 +234,7 @@ class CommitteeMeetingAttendanceSchema(ma.ModelSchema):
 
 
 class MemberSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Member
         fields = (
             "id",
@@ -253,7 +253,7 @@ class MemberSchema(ma.ModelSchema):
 
 
 class MembershipSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Membership
         fields = ("member", "chairperson")
 
@@ -262,13 +262,13 @@ class MembershipSchema(ma.ModelSchema):
 
 
 class PartySchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Party
         fields = ("id", "name")
 
 
 class FileSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = File
         fields = (
             "id",
@@ -284,7 +284,7 @@ class FileSchema(ma.ModelSchema):
 
 
 class MinisterSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Minister
         fields = ("id", "name", "_links", "committee")
 
@@ -294,7 +294,7 @@ class MinisterSchema(ma.ModelSchema):
 
 
 class CommitteeQuestionSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = CommitteeQuestion
         fields = (
             "id",
@@ -337,7 +337,7 @@ class CommitteeQuestionSchema(ma.ModelSchema):
 
 
 class QuestionReplySchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = QuestionReply
         fields = (
             "id",
@@ -359,7 +359,7 @@ class QuestionReplySchema(ma.ModelSchema):
 
 
 class DailyScheduleSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = DailySchedule
         fields = (
             "id",
@@ -380,7 +380,7 @@ class DailyScheduleSchema(ma.ModelSchema):
 
 
 class BillSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = Bill
         fields = (
             "id",
@@ -412,19 +412,19 @@ class BillSchema(ma.ModelSchema):
 
 
 class BillTypeSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = BillType
         fields = ("id", "prefix", "description", "name")
 
 
 class BillStatusSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = BillStatus
         fields = ("id", "description", "name")
 
 
 class BillVersionSchema(ma.ModelSchema):
-    class Meta(object):
+    class Meta():
         model = BillVersion
         fields = ("id", "title", "file", "date", "enacted")
 

@@ -3,9 +3,9 @@ jobs:
     - stage: black
       language: python
       install:
-        - pip install black
+        - pip install black==19.10b0
       script:
-        - black --check --diff app.py bin config pmg tests
+        - black --check --diff app.py bin config pmg pyelasticsearch tests
     - stage: test
       addons:
         hosts:
@@ -25,5 +25,5 @@ jobs:
         - "docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov"
 
 stages:
-  - black 
+  - black
   - test

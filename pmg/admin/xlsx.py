@@ -1,9 +1,8 @@
-
 import xlsxwriter
 import io
 
 
-class XLSXBuilder():
+class XLSXBuilder:
     def __init__(self):
         self.formats = {}
 

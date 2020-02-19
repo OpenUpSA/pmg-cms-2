@@ -1,4 +1,3 @@
-
 from inflection import underscore, dasherize
 from flask import url_for
 from sqlalchemy import func
@@ -8,7 +7,7 @@ from pmg.models import db
 resource_slugs = {}
 
 
-class ApiResource():
+class ApiResource:
     """ Mixin that defines some helpers for resources that we expose
     directly through the API.
 
@@ -64,7 +63,7 @@ class ApiResource():
         resource_slugs[target.slug_prefix] = target
 
 
-class FileLinkMixin():
+class FileLinkMixin:
     """ Mixin for models that link a content type to a File object
     in a many-to-many relationship.
     """

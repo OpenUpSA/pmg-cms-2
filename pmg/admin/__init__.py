@@ -59,7 +59,7 @@ class BaseForm(flask_wtf.Form):
             formdata=formdata, obj=obj, prefix=prefix, **kwargs
         )
 
-    class Meta():
+    class Meta:
         def bind_field(self, form, unbound_field, options):
             # ensure that all form fields strip() their values,
             # so that we don't get random whitespace at the end
@@ -492,7 +492,7 @@ class CommitteeView(MyModelView):
             return jsonify({"success": False, "reason": reason})
 
 
-class ViewWithFiles():
+class ViewWithFiles:
     """ Mixin to pre-fill inline file forms. """
 
     form_args = {

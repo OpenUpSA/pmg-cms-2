@@ -44,7 +44,7 @@ def increment_filename(filename):
     return "%d/%s" % (counter + 1, rest)
 
 
-class S3Bucket():
+class S3Bucket:
     def __init__(self):
         self._bucket = None
 

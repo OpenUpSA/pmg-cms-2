@@ -1591,7 +1591,7 @@ def question_replies(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
 
     # sort ministers to put President first
-    ministers.sort(key=lambda m: 0 if m["name"] == "President" else m["name"])
+    ministers.sort(key=lambda m: "" if m["name"] == "President" else m["name"])
 
     year_list = list(range(MIN_YEAR, date.today().year + 1))
     year_list.reverse()

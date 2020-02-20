@@ -50,7 +50,7 @@ def pagination_processor():
                 active = "active"
             query_string = ""
             if request.query_string:
-                query_string = "?" + request.query_string
+                query_string = "?" + request.query_string.decode("utf-8")
             s += "<li class='{0}'><a href='{1}/{2}/{4}'>{3}</a></li>".format(
                 active, url, i - 1, i, query_string
             )

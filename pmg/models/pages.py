@@ -6,11 +6,11 @@ from sqlalchemy.orm import validates
 from pmg import app, db
 from .base import resource_slugs, FileLinkMixin
 
-import serializers
+from . import serializers
 
 
 class Redirect(db.Model):
-    __tablename__ = 'redirect'
+    __tablename__ = "redirect"
 
     id = db.Column(db.Integer, primary_key=True)
     nid = db.Column(db.Integer)
@@ -23,12 +23,12 @@ class Redirect(db.Model):
         else:
             target = self.new_url
 
-        return u'<Redirect from %s to %s>' % (self.old_url, target)
+        return u"<Redirect from %s to %s>" % (self.old_url, target)
 
     @classmethod
     def object_for_nid(cls, nid):
-        for cls in resource_slugs.itervalues():
-            if hasattr(cls, 'nid'):
+        for cls in list(resource_slugs.values()):
+            if hasattr(cls, "nid"):
                 obj = cls.query.filter(cls.nid == nid).first()
                 if obj:
                     return obj
@@ -42,7 +42,7 @@ class Redirect(db.Model):
             old_url = old_url[:-1]
 
         # check for /node/1234
-        match = re.match('^/node/(\d+)$', old_url)
+        match = re.match("^/node/(\d+)$", old_url)
         if match:
             nid = match.group(1)
 
@@ -60,31 +60,56 @@ class Redirect(db.Model):
             if obj:
                 dest = obj.url
 
-        if dest and not dest.startswith('http') and not dest.startswith('/'):
-            dest = '/' + dest
+        if dest and not dest.startswith("http") and not dest.startswith("/"):
+            dest = "/" + dest
 
         return dest
 
 
 class Page(db.Model):
     """ A basic CMS page. """
-    __tablename__ = 'page'
+
+    __tablename__ = "page"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
     slug = db.Column(db.String, nullable=False, unique=True, index=True)
     body = db.Column(db.Text)
-    date = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
-    updated_at = db.Column(db.DateTime(timezone=True), server_default=func.now(), onupdate=func.current_timestamp())
+    date = db.Column(
+        db.DateTime(timezone=True),
+        index=True,
+        unique=False,
+        nullable=False,
+        server_default=func.now(),
+    )
+    created_at = db.Column(
+        db.DateTime(timezone=True),
+        index=True,
+        unique=False,
+        nullable=False,
+        server_default=func.now(),
+    )
+    updated_at = db.Column(
+        db.DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.current_timestamp(),
+    )
 
-    files = db.relationship("PageFile", lazy='joined')
-    show_files = db.Column(db.Boolean, nullable=False, default=True, server_default=sql.expression.true())
-    featured = db.Column(db.Boolean(), default=False, server_default=sql.expression.false(), nullable=False, index=True)
+    files = db.relationship("PageFile", lazy="joined")
+    show_files = db.Column(
+        db.Boolean, nullable=False, default=True, server_default=sql.expression.true()
+    )
+    featured = db.Column(
+        db.Boolean(),
+        default=False,
+        server_default=sql.expression.false(),
+        nullable=False,
+        index=True,
+    )
 
-    @validates('slug')
+    @validates("slug")
     def validate_slug(self, key, value):
-        return value.strip('/')
+        return value.strip("/")
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -95,7 +120,17 @@ class PageFile(FileLinkMixin, db.Model):
     __tablename__ = "page_files"
 
     id = db.Column(db.Integer, primary_key=True)
-    page_id = db.Column(db.Integer, db.ForeignKey('page.id', ondelete='CASCADE'), index=True, nullable=False)
-    page = db.relationship('Page')
-    file_id = db.Column(db.Integer, db.ForeignKey('file.id', ondelete="CASCADE"), index=True, nullable=False)
-    file = db.relationship('File', lazy='joined')
+    page_id = db.Column(
+        db.Integer,
+        db.ForeignKey("page.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    page = db.relationship("Page")
+    file_id = db.Column(
+        db.Integer,
+        db.ForeignKey("file.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    file = db.relationship("File", lazy="joined")

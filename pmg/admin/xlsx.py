@@ -1,5 +1,5 @@
 import xlsxwriter
-import StringIO
+import io
 
 
 class XLSXBuilder:
@@ -9,7 +9,7 @@ class XLSXBuilder:
     def from_orgs(self, org_list):
         output, wb = self.new_workbook()
 
-        ws = wb.add_worksheet('Active organisations')
+        ws = wb.add_worksheet("Active organisations")
 
         rows = [["Organisation", "Domain", "Number of active users"]]
         rows += [org[0:3] for org in org_list]
@@ -23,9 +23,9 @@ class XLSXBuilder:
     def from_resultset(self, rows):
         output, wb = self.new_workbook()
 
-        ws = wb.add_worksheet('Results')
+        ws = wb.add_worksheet("Results")
 
-        data = [rows.keys()] + [[r[k] for k in rows.keys()] for r in rows]
+        data = [list(rows.keys())] + [[r[k] for k in list(rows.keys())] for r in rows]
         self.write_table(ws, data)
 
         wb.close()
@@ -34,11 +34,11 @@ class XLSXBuilder:
         return output.read()
 
     def new_workbook(self):
-        output = StringIO.StringIO()
+        output = io.StringIO()
         workbook = xlsxwriter.Workbook(output)
 
-        self.formats['date'] = workbook.add_format({'num_format': 'yyyy/mm/dd'})
-        self.formats['bold'] = workbook.add_format({'bold': True})
+        self.formats["date"] = workbook.add_format({"num_format": "yyyy/mm/dd"})
+        self.formats["bold"] = workbook.add_format({"bold": True})
 
         return output, workbook
 
@@ -47,9 +47,12 @@ class XLSXBuilder:
             keys = rows[0]
             data = rows[1:]
 
-            ws.add_table(0, colnum, rownum + len(rows) - 1, colnum + len(keys) - 1, {
-                'columns': [{'header': k} for k in keys],
-                'data': data,
-            })
+            ws.add_table(
+                0,
+                colnum,
+                rownum + len(rows) - 1,
+                colnum + len(keys) - 1,
+                {"columns": [{"header": k} for k in keys], "data": data,},
+            )
 
         return len(rows) + 1

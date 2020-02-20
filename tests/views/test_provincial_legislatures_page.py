@@ -20,8 +20,7 @@ class TestProvincialLegislaturesPages(PMGLiveServerTestCase):
         Test provincial legislatures page (/provincial-legislatures/)
         """
         self.make_request(
-            "/provincial-legislatures/",
-            follow_redirects=True,
+            "/provincial-legislatures/", follow_redirects=True,
         )
         self.assertIn("Provincial Legislatures", self.html)
         self.assertIn(self.fx.HouseData.western_cape.name, self.html)
@@ -30,10 +29,9 @@ class TestProvincialLegislaturesPages(PMGLiveServerTestCase):
         """
         Test provincial legislatures page (/provincial-legislatures/<province>)
         """
-        slug =  utils.slugify_province(self.fx.HouseData.western_cape.name)
+        slug = utils.slugify_province(self.fx.HouseData.western_cape.name)
         self.make_request(
-            "/provincial-legislatures/%s" % slug,
-            follow_redirects=True,
+            "/provincial-legislatures/%s" % slug, follow_redirects=True,
         )
         self.assertIn("Provincial Legislatures", self.html)
         self.assertIn(self.fx.HouseData.western_cape.name, self.html)
@@ -59,8 +57,7 @@ class TestProvincialLegislaturesPages(PMGLiveServerTestCase):
         slug = utils.slugify_province(self.fx.HouseData.western_cape.name)
         programme = self.fx.DailyScheduleData.schedule_provincial
         self.make_request(
-            "/provincial-legislatures/%s/programmes/" % (slug),
-            follow_redirects=True,
+            "/provincial-legislatures/%s/programmes/" % (slug), follow_redirects=True,
         )
         self.assertIn("Programmes", self.html)
         self.assertIn(programme.title, self.html)

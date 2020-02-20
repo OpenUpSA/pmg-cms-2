@@ -107,12 +107,13 @@ class TestHansardLink(PMGTestCase):
         Test that the match_title function matches all of the bill events 
         provided.
         """
-        path = self.get_absolute_file_path('../data/bill_event_titles.txt')
-        with open(path, mode='r') as event_titles:
+        path = self.get_absolute_file_path("../data/bill_event_titles.txt")
+        with open(path, mode="r") as event_titles:
             for event_title in event_titles:
                 self.assertTrue(
                     match_title(event_title),
-                    "Event title '%s' should be matched." % event_title)
+                    "Event title '%s' should be matched." % event_title,
+                )
 
     def get_absolute_file_path(self, relative_path):
         dir_name = os.path.dirname(__file__)

@@ -1,7 +1,7 @@
 import re
 
 import nltk
-from universal_analytics import Tracker
+from universal_analytics import Tracker, HTTPRequest
 from flask import request
 from flask_security import current_user
 
@@ -48,14 +48,15 @@ def track_pageview(path=None, ignore_bots=True):
         # GA1.2.1760224793.1424413995
         client_id = client_id.split(".", 2)[-1]
 
-    tracker = Tracker.create(ga_id, user_id=user_id, client_id=client_id)
-    tracker.send(
-        "pageview",
-        path,
-        uip=request.access_route[0],
-        referrer=request.referrer or "",
-        userAgent=user_agent,
-    )
+    with HTTPRequest() as http:
+        tracker = Tracker(ga_id, http, user_id=user_id, client_id=client_id)
+        response = tracker.send(
+            "pageview",
+            path,
+            uip=request.access_route[0],
+            referrer=request.referrer or "",
+            userAgent=user_agent,
+        )
 
     return True
 

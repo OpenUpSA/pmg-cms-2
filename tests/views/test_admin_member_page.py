@@ -1,17 +1,14 @@
+from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Member
-from tests.fixtures import (
-    dbfixture, MemberData, UserData, MembershipData
-)
+from tests.fixtures import dbfixture, MemberData, UserData, MembershipData
 
 
 class TestAdminMemberPage(PMGLiveServerTestCase):
     def setUp(self):
         super(TestAdminMemberPage, self).setUp()
 
-        self.fx = dbfixture.data(
-            UserData, MemberData, MembershipData
-        )
+        self.fx = dbfixture.data(UserData, MemberData, MembershipData)
         self.fx.setup()
         self.user = self.fx.UserData.admin
 
@@ -24,9 +21,8 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         """
         Test view admin member page (/admin/member)
         """
-        self.make_request(
-            "/admin/member", self.user, follow_redirects=True)
-        self.assertIn('Members', self.html)
+        self.make_request("/admin/member", self.user, follow_redirects=True)
+        self.assertIn("Members", self.html)
         self.containsMember(self.fx.MemberData.veronica)
         self.containsMember(self.fx.MemberData.laetitia)
         self.containsMember(self.fx.MemberData.not_current_member)
@@ -51,23 +47,21 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         before_count = len(Member.query.all())
         url = "/admin/member/new/?url=%2Fadmin%2Fmember%2F"
         data = {
-            'name': 'New member',
-            'current': 'y',
-            'monitored': 'y',
-            'house': '__None',
-            'party': '__None',
-            'province': '__None',
-            'bio': '',
-            'pa_link': '',
+            "name": "New member",
+            "current": "y",
+            "monitored": "y",
+            "house": "__None",
+            "party": "__None",
+            "province": "__None",
+            "bio": "",
+            "pa_link": "",
         }
-        response = self.make_request(
-            url, self.user, data=data, method="POST")
+        response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
 
-        created_member = Member.query.filter(
-            Member.name == data['name']).scalar()
+        created_member = Member.query.filter(Member.name == data["name"]).scalar()
         self.assertTrue(created_member)
         self.created_objects.append(created_member)
 
@@ -78,11 +72,9 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         before_count = len(Member.query.all())
         url = "/admin/member/action/"
         data = {
-            'url': '/admin/member/',
-            'action': 'delete',
-            'rowid': [
-                str(self.fx.MemberData.veronica.id),
-            ]
+            "url": "/admin/member/",
+            "action": "delete",
+            "rowid": [str(self.fx.MemberData.veronica.id),],
         }
         response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Member.query.all())

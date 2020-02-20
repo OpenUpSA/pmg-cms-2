@@ -8,25 +8,28 @@ from pmg import app
 log = getLogger(__name__)
 
 
-class Sharpspring(object):
-    url = 'http://api.sharpspring.com/pubapi/v1/'
+class Sharpspring:
+    url = "http://api.sharpspring.com/pubapi/v1/"
 
     def __init__(self):
-        self.api_key = app.config['SHARPSPRING_API_KEY']
-        self.api_secret = app.config['SHARPSPRING_API_SECRET']
+        self.api_key = app.config["SHARPSPRING_API_KEY"]
+        self.api_secret = app.config["SHARPSPRING_API_SECRET"]
 
     def subscribeToList(self, user, listId):
         # ensure sharpspring has the email
         details = {
-            'emailAddress': user.email,
+            "emailAddress": user.email,
         }
         if user.organisation:
-            details['companyName'] = user.organisation.name
+            details["companyName"] = user.organisation.name
 
-        resp = self.call('createLeads', {'objects': [details]})
+        resp = self.call("createLeads", {"objects": [details]})
         # 301 means already exists
         # eg: {u'error': [{u'data': [], u'message': u'Entry already exists', u'code': 301}], u'result': {u'creates': [{u'success': False, u'error': {u'data': [], u'message': u'Entry already exists', u'code': 301}}]}, u'id': u'c81a4845d649427381e61f07269c7bbc'} ()
-        if resp['result'] and (resp['result']['creates'][0]['success'] or resp['result']['creates'][0]['error']['code'] == 301):
+        if resp["result"] and (
+            resp["result"]["creates"][0]["success"]
+            or resp["result"]["creates"][0]["error"]["code"] == 301
+        ):
             # all good
             log.info("Lead created.")
         else:
@@ -34,13 +37,16 @@ class Sharpspring(object):
             raise ValueError("Couldn't subscribe to SharpSpring: %s" % resp)
 
         # subscribe to list
-        resp = self.call('addListMemberEmailAddress', {
-            'emailAddress': user.email,
-            'listID': listId,
-        })
+        resp = self.call(
+            "addListMemberEmailAddress", {"emailAddress": user.email, "listID": listId,}
+        )
         # 213 means already subscribed. Note that the response format for this call and the
         # above one differ
-        if not resp['error'] or resp['error']['code'] == 213 or (resp['result'] and resp['result']['creates'][0]['success']):
+        if (
+            not resp["error"]
+            or resp["error"]["code"] == 213
+            or (resp["result"] and resp["result"]["creates"][0]["success"])
+        ):
             # all good
             log.info("Subscribed.")
         else:
@@ -49,18 +55,17 @@ class Sharpspring(object):
 
     def call(self, method, params):
         body = {
-            'id': uuid.uuid4().get_hex(),
-            'method': method,
-            'params': params,
+            "id": uuid.uuid4().get_hex(),
+            "method": method,
+            "params": params,
         }
         log.info("Calling SharpSpring: %s" % body)
 
         resp = requests.post(
             self.url,
-            params={
-                'accountID': self.api_key,
-                'secretKey': self.api_secret,
-            }, json=body)
+            params={"accountID": self.api_key, "secretKey": self.api_secret,},
+            json=body,
+        )
         resp.raise_for_status()
 
         data = resp.json()

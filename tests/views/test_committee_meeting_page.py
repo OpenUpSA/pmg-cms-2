@@ -1,6 +1,6 @@
 from tests import PMGLiveServerTestCase
 from tests.fixtures import dbfixture, HouseData, CommitteeData, CommitteeMeetingData
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 
 class TestCommitteeMeetingPage(PMGLiveServerTestCase):
@@ -19,9 +19,6 @@ class TestCommitteeMeetingPage(PMGLiveServerTestCase):
         Test premium committee meeting page (/committee-meeting/<id>/)
         """
         meeting = self.fx.CommitteeMeetingData.premium_recent
-        self.make_request(
-            "/committee-meeting/%s/"
-            % meeting.id
-        )
+        self.make_request("/committee-meeting/%s/" % meeting.id)
         self.assertIn(meeting.title, self.html)
-        self.assertIn('Follow this committee', self.html)
+        self.assertIn("Follow this committee", self.html)

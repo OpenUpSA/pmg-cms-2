@@ -344,12 +344,13 @@ class CommitteeQuestionData(DataSet):
 
 
 class EventData(DataSet):
-    class arts_bill_event:
+    class arts_bill_event_one:
         date = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         title = "2010 FIFA World Cup South Africa Special Measures Bill [B13-2006]: Department briefing"
         type = "committee-meeting"
         committee = CommitteeData.arts
         house = HouseData.na
+        bills = [BillData.public, BillData.food]
 
     class food_bill_hansard_event:
         date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)

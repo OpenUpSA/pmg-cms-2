@@ -428,7 +428,7 @@ def committee_detail(committee_id):
         fields=["id", "title", "status", "date_of_introduction", "code"],
     )["results"]
 
-    bills.sort(key=lambda b: b["date_of_introduction"], reverse=True)
+    bills.sort(key=lambda b: b["date_of_introduction"] or "", reverse=True)
 
     # If the request came from a Provincial Committee page,
     # pass the slug to the template to build the correct breadcrumbs

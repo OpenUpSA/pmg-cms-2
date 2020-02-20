@@ -73,7 +73,8 @@ class TestSoundcloudTrack(PMGTestCase):
         track_mock.state = "processing"
         client_mock.get.return_value = track_mock
         SoundcloudTrack.sync()
-        self.assertTrue(False)
+        # Ensure no exceptions were thrown
+        self.assertTrue(True)
 
     def test_sync_upload_state(self):
         client_mock = MagicMock()

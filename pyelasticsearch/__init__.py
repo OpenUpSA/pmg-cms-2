@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 from pyelasticsearch.client import ElasticSearch
 from pyelasticsearch.exceptions import (Timeout, ConnectionError,
                                         ElasticHttpError,

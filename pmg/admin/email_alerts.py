@@ -5,155 +5,120 @@ from flask import redirect, request, url_for, flash
 from flask_admin import BaseView, expose
 from flask_mail import Message
 from flask_wtf import Form
-from wtforms import (
-    StringField,
-    TextAreaField,
-    validators,
-    HiddenField,
-    BooleanField,
-    SelectMultipleField,
-)
+from wtforms import StringField, TextAreaField, validators, HiddenField, BooleanField, SelectMultipleField
 from wtforms.widgets import CheckboxInput
 from wtforms.fields.html5 import EmailField
 from sqlalchemy.orm import lazyload
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import count
 
-from pmg.models import (
-    EmailTemplate,
-    User,
-    Committee,
-    user_committee_alerts,
-    CommitteeMeeting,
-    db,
-)
+from pmg.models import EmailTemplate, User, Committee, user_committee_alerts, CommitteeMeeting, db
 from pmg.models.emails import send_sendgrid_email
-from .rbac import RBACMixin
+from rbac import RBACMixin
 
 log = logging.getLogger(__name__)
 
 
 class EmailAlertView(RBACMixin, BaseView):
-    required_roles = ["editor"]
+    required_roles = ['editor']
 
-    @expose("/")
+    @expose('/')
     def index(self):
         templates = db.session.query(EmailTemplate).order_by(EmailTemplate.name).all()
-        return self.render("admin/alerts/index.html", templates=templates)
+        return self.render('admin/alerts/index.html',
+                           templates=templates)
 
-    @expose("/new", methods=["GET", "POST"])
+    @expose('/new', methods=['GET', 'POST'])
     def new(self):
         template = None
-        if request.values.get("template_id"):
-            template = db.session.query(EmailTemplate).get(
-                request.values.get("template_id")
-            )
+        if request.values.get('template_id'):
+            template = db.session.query(EmailTemplate).get(request.values.get('template_id'))
 
         if not template:
-            return redirect(url_for("alerts.index"))
+            return redirect(url_for('alerts.index'))
 
         form = EmailAlertForm(obj=template)
         form.template_id.data = form.template_id.data or template.id
 
         # pull in some values from the querystring
-        for field in ("committee_meeting_id",):
+        for field in ('committee_meeting_id',):
             if field in request.args:
                 getattr(form, field).data = request.args[field]
-        if "committee_ids" in request.args:
-            form.committee_ids.data = [
-                int(i) for i in request.args.getlist("committee_ids")
-            ]
+        if 'committee_ids' in request.args:
+            form.committee_ids.data = [int(i) for i in request.args.getlist('committee_ids')]
 
-        if "prefill" in request.args:
+        if 'prefill' in request.args:
             form.process_substitutions()
 
-        if form.validate_on_submit() and form.previewed.data == "1":
+        if form.validate_on_submit() and form.previewed.data == '1':
             # send it
             form.generate_email()
             if not form.recipients:
-                flash("There are no recipients to send this email to.", "error")
+                flash('There are no recipients to send this email to.', 'error')
             else:
                 form.send_email()
-                flash(
-                    "Your email alert with subject '%s' has been sent to %d recipients."
-                    % (form.message.subject, len(form.recipients))
-                )
-                return redirect(url_for("alerts.index"))
+                flash("Your email alert with subject '%s' has been sent to %d recipients." % (form.message.subject, len(form.recipients)))
+                return redirect(url_for('alerts.index'))
 
         # force a preview before being sent again
-        form.previewed.data = "0"
+        form.previewed.data = '0'
 
-        return self.render("admin/alerts/new.html", form=form)
+        return self.render('admin/alerts/new.html', form=form)
 
-    @expose("/preview", methods=["POST"])
+    @expose('/preview', methods=['POST'])
     def preview(self):
         form = EmailAlertForm()
         if form.validate_on_submit():
             form.generate_email()
-            return self.render("admin/alerts/preview.html", form=form)
+            return self.render('admin/alerts/preview.html', form=form)
 
         else:
-            return ("validation failed", 400)
+            return ('validation failed', 400)
 
-    @expose("/sent", methods=["GET"])
+    @expose('/sent', methods=['GET'])
     def sent(self):
-        return self.render("admin/alerts/sent.html")
+        return self.render('admin/alerts/sent.html')
 
 
 class EmailAlertForm(Form):
-    template_id = HiddenField("template_id", [validators.Required()])
-    previewed = HiddenField("previewed", default="0")
-    subject = StringField("Subject", [validators.Required()])
+    template_id = HiddenField('template_id', [validators.Required()])
+    previewed = HiddenField('previewed', default='0')
+    subject = StringField('Subject', [validators.Required()])
     # This MUST be an email address, the Mandrill API doesn't allow us to do names and emails in one field
-    from_email = EmailField(
-        "From address", [validators.Required()], default="alerts@pmg.org.za"
-    )
-    body = TextAreaField("Content of the alert")
+    from_email = EmailField('From address', [validators.Required()], default='alerts@pmg.org.za')
+    body = TextAreaField('Content of the alert')
 
     # recipient options
-    daily_schedule_subscribers = BooleanField("Daily schedule subscribers")
-    committee_ids = SelectMultipleField(
-        "Committee Subscribers",
-        [validators.Optional()],
-        coerce=int,
-        widget=CheckboxInput,
-    )
+    daily_schedule_subscribers = BooleanField('Daily schedule subscribers')
+    committee_ids = SelectMultipleField('Committee Subscribers', [validators.Optional()], coerce=int, widget=CheckboxInput)
 
     # linked models
-    committee_meeting_id = HiddenField("committee_meeting_id")
+    committee_meeting_id = HiddenField('committee_meeting_id')
 
     def __init__(self, *args, **kwargs):
         super(EmailAlertForm, self).__init__(*args, **kwargs)
-        committee_list = (
-            Committee.query.order_by(Committee.house_id.desc())
-            .order_by(Committee.name)
-            .filter_by(monitored=True)
-            .all()
-        )
+        committee_list = Committee\
+                         .query\
+                         .order_by(Committee.house_id.desc())\
+                         .order_by(Committee.name)\
+                         .filter_by(monitored=True)\
+                         .all()
 
         # count of daily schedule subscribers
-        subs = User.query.filter(
-            User.subscribe_daily_schedule == True, User.confirmed_at != None
-        ).count()  # noqa
+        subs = User.query.filter(User.subscribe_daily_schedule == True, User.confirmed_at != None).count()  # noqa
         self.daily_schedule_subscribers.label.text += " (%d)" % subs
 
         # count subscribers for committees
-        subscriber_counts = {
-            t[0]: t[1]
-            for t in db.session.query(user_committee_alerts.c.committee_id, count(1))
-            .join(User, User.id == user_committee_alerts.c.user_id)
-            .filter(User.confirmed_at != None)
-            .group_by(user_committee_alerts.c.committee_id)
-            .all()
-        }
+        subscriber_counts = {t[0]: t[1]
+                for t in db.session\
+                    .query(user_committee_alerts.c.committee_id,
+                           count(1))\
+                    .join(User, User.id == user_committee_alerts.c.user_id)\
+                    .filter(User.confirmed_at != None)\
+                    .group_by(user_committee_alerts.c.committee_id)\
+                    .all()}
 
-        self.committee_ids.choices = [
-            (
-                c.id,
-                "%s - %s (%d)" % (c.house.name, c.name, subscriber_counts.get(c.id, 0)),
-            )
-            for c in committee_list
-        ]
+        self.committee_ids.choices = [(c.id, "%s - %s (%d)" % (c.house.name, c.name, subscriber_counts.get(c.id, 0))) for c in committee_list]
 
         self.message = None
         self.ad_hoc_mapper = []
@@ -163,7 +128,7 @@ class EmailAlertForm(Form):
 
     @property
     def template(self):
-        if not hasattr(self, "_template"):
+        if not hasattr(self, '_template'):
             self._template = EmailTemplate.query.get(self.template_id.data)
         return self._template
 
@@ -174,7 +139,7 @@ class EmailAlertForm(Form):
 
     def process_substitutions(self):
         committee_meeting = self.committee_meeting
-        committee_meeting.date = committee_meeting.date.strftime("%Y-%m-%d")
+        committee_meeting.date = committee_meeting.date.strftime('%Y-%m-%d')
 
         for field in (self.subject, self.body):
             try:
@@ -200,44 +165,39 @@ class EmailAlertForm(Form):
     def generate_email(self):
         self.recipients = self.get_recipient_users()
         self.message = Message(
-            subject=self.subject.data, sender=self.from_email.data, html=self.body.data
-        )
+            subject=self.subject.data,
+            sender=self.from_email.data,
+            html=self.body.data)
 
     def get_recipient_users(self):
         groups = []
 
         if self.daily_schedule_subscribers.data:
             log.info("Email recipients includes daily schedule subscribers")
-            groups.append(
-                User.query.options(
-                    lazyload(User.organisation), lazyload(User.committee_alerts),
-                )
-                .filter(User.subscribe_daily_schedule == True)
-                .filter(User.confirmed_at != None)
-                .all()
-            )
+            groups.append(User.query
+                    .options(
+                        lazyload(User.organisation),
+                        lazyload(User.committee_alerts),
+                    )\
+                    .filter(User.subscribe_daily_schedule == True)
+                    .filter(User.confirmed_at != None)
+                    .all())
 
         if self.committee_ids.data:
-            log.info(
-                "Email recipients includes subscribers for these committees: %s"
-                % self.committee_ids.data
-            )
-            user_ids = (
-                db.session.query(distinct(user_committee_alerts.c.user_id))
-                .filter(
-                    user_committee_alerts.c.committee_id.in_(self.committee_ids.data)
-                )
-                .all()
-            )
+            log.info("Email recipients includes subscribers for these committees: %s" % self.committee_ids.data)
+            user_ids = db.session\
+                    .query(distinct(user_committee_alerts.c.user_id))\
+                    .filter(user_committee_alerts.c.committee_id.in_(self.committee_ids.data))\
+                    .all()
             user_ids = [u[0] for u in user_ids]
 
-            groups.append(
-                User.query.options(
-                    lazyload(User.organisation), lazyload(User.committee_alerts),
-                )
-                .filter(User.id.in_(user_ids))
-                .filter(User.confirmed_at != None)
-                .all()
-            )
+            groups.append(User.query
+                    .options(
+                        lazyload(User.organisation),
+                        lazyload(User.committee_alerts),
+                    )\
+                    .filter(User.id.in_(user_ids))
+                    .filter(User.confirmed_at != None)
+                    .all())
 
         return set(u for u in chain(*groups))

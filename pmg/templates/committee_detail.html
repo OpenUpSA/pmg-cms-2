@@ -70,7 +70,7 @@
             </table>
           </div>
           <div class="cte-dtl-meetings-list lunr-dict">
-            {% for filter, meetings in filtered_meetings.items() %}
+            {% for filter, meetings in filtered_meetings.iteritems() %}
               {% if filter == starting_filter %}
               <table class="table table-striped" id="m-{{ filter }}">
               {% else %}

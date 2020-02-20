@@ -12,14 +12,15 @@ class TestBillAPI(PMGTestCase):
         """
         Viewing all private member bills
         """
-        res = self.client.get("bill/", base_url="http://api.pmg.test:5000/")
+        res = self.client.get('bill/', base_url='http://api.pmg.test:5000/')
         self.assertEqual(200, res.status_code)
-        self.assertEqual(6, res.json["count"])
+        self.assertEqual(5, res.json['count'])
 
     def test_private_memeber_bill(self):
         """
         Count the total number of private bills
         """
-        res = self.client.get("bill/pmb/", base_url="http://api.pmg.test:5000/")
+        res = self.client.get(
+            'bill/pmb/', base_url='http://api.pmg.test:5000/')
         self.assertEqual(200, res.status_code)
-        self.assertEqual(2, res.json["count"])
+        self.assertEqual(2, res.json['count'])

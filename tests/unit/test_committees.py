@@ -9,6 +9,4 @@ class TestCommittees(PMGTestCase):
 
     def test_get_display_name_for_inactive_committee(self):
         inactive_committee = Committee(name="Communications", active=False)
-        self.assertEqual(
-            "Communications (Inactive)", inactive_committee.get_display_name()
-        )
+        self.assertEqual("Communications (Inactive)", inactive_committee.get_display_name())

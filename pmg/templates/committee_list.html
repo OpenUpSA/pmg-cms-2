@@ -81,7 +81,7 @@
 </div>
 
 <div class="cte-follow-list tab-content cte-list lunr-dict">
-    {% for key, ctype in reg_committees.items() %}
+    {% for key, ctype in reg_committees.iteritems() %}
     {% if key == 'nat' %}
     <div class="active tab-pane row {{ key }} cte-items" id="{{ key }}">
     {% else %}
@@ -131,7 +131,7 @@
     {% endfor %}
 	<div class="tab-pane adhoc cte-items" id="adhoc">
 	    <div class="row">
-		{% for key, ctype in adhoc_committees.items() %}
+		{% for key, ctype in adhoc_committees.iteritems() %}
 		<div class="col-xs-12 col-md-4">
 		    <h3>{{ ctype.name }}</h3>
 		    <ul>
@@ -170,7 +170,7 @@
 
 	<div class="tab-pane prov cte-items" id="prov">
 	    <div class="row prov-row">
-		{% for key, ctype in wc_committees.items() %}
+		{% for key, ctype in wc_committees.iteritems() %}
 		    <div class="col-xs-12 col-md-6 single-prov">
 			<h3>{{ ctype.name }} Parliament</h3>
 			<ul>
@@ -210,7 +210,7 @@
 	    </div>
 	    <hr>
 	    <div class="row prov-row">
-		{% for key, ctype in wc_committees.items() %}
+		{% for key, ctype in wc_committees.iteritems() %}
 		    <div class="col-xs-12 col-md-6 single-prov">
 			<ul>
 			    {% for committee in ctype.committees %}

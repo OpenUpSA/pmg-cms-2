@@ -1,12 +1,16 @@
 from tests import PMGLiveServerTestCase
-from tests.fixtures import dbfixture, MemberData
+from tests.fixtures import (
+    dbfixture, MemberData
+)
 
 
 class TestMemberPage(PMGLiveServerTestCase):
     def setUp(self):
         super(TestMemberPage, self).setUp()
 
-        self.fx = dbfixture.data(MemberData,)
+        self.fx = dbfixture.data(
+            MemberData,
+        )
         self.fx.setup()
 
     def tearDown(self):
@@ -19,8 +23,8 @@ class TestMemberPage(PMGLiveServerTestCase):
         """
         committee = self.fx.MemberData.veronica
         self.make_request("/members/")
-        self.assertIn("Members of Parliament", self.html)
-        self.assertIn("Search for members", self.html)
+        self.assertIn('Members of Parliament', self.html)
+        self.assertIn('Search for members', self.html)
 
         self.check_member(MemberData.veronica)
         self.check_member(MemberData.not_current_member)
@@ -37,10 +41,10 @@ class TestMemberPage(PMGLiveServerTestCase):
 
     def contains_member(self, member):
         self.assertIn(member.name, self.html)
-        if hasattr(member, "profile_pic_url"):
+        if hasattr(member, 'profile_pic_url'):
             self.assertIn(member.profile_pic_url, self.html)
         else:
-            self.assertIn("/static/resources/images/no-profile-pic.svg", self.html)
+            self.assertIn('/static/resources/images/no-profile-pic.svg', self.html)
 
         self.assertIn(member.party.name, self.html)
         self.assertIn(member.house.name, self.html)

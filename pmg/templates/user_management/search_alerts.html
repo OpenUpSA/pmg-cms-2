@@ -1,7 +1,7 @@
 {% if saved_searches %}
   <p class="lead">We'll email you when we find new items for these searches:</p>
 
-  {% for search_phrase, search_alerts in saved_searches.items() %}
+  {% for search_phrase, search_alerts in saved_searches.iteritems() %}
     <div class="grouped-search-alerts">
       <h3 class="search-phrase">{{ search_phrase }}</h3>
       {% for search_alert in search_alerts %}

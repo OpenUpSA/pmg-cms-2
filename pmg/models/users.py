@@ -1,4 +1,3 @@
-from builtins import str
 import datetime
 from dateutil.relativedelta import relativedelta
 from logging import getLogger
@@ -13,7 +12,7 @@ from flask import render_template
 from flask_mail import Message
 
 from pmg import app, db
-from . import serializers
+import serializers
 import pmg.forms as forms
 
 
@@ -28,8 +27,8 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
-    def __str__(self):
-        return str(self.name)
+    def __unicode__(self):
+        return unicode(self.name)
 
 
 def one_year_later():
@@ -50,9 +49,7 @@ class Organisation(db.Model):
     contact = db.Column(db.String(255))
 
     # premium committee subscriptions
-    subscriptions = db.relationship(
-        "Committee", secondary="organisation_committee", passive_deletes=True
-    )
+    subscriptions = db.relationship('Committee', secondary='organisation_committee', passive_deletes=True)
 
     def subscribed_to_committee(self, committee):
         """ Does this organisation have an active subscription to `committee`? """
@@ -61,23 +58,23 @@ class Organisation(db.Model):
     def has_expired(self):
         return (self.expiry is not None) and (datetime.date.today() > self.expiry)
 
-    def __str__(self):
-        return str(self.name)
+    def __unicode__(self):
+        return unicode(self.name)
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
         # send subscriptions back as a dict
         subscription_dict = {}
-        if tmp.get("subscriptions"):
-            for committee in tmp["subscriptions"]:
-                subscription_dict[committee["id"]] = committee.get("name")
-        tmp["subscriptions"] = subscription_dict
+        if tmp.get('subscriptions'):
+            for committee in tmp['subscriptions']:
+                subscription_dict[committee['id']] = committee.get('name')
+        tmp['subscriptions'] = subscription_dict
         # set 'has_expired' flag as appropriate
-        tmp["has_expired"] = self.has_expired()
+        tmp['has_expired'] = self.has_expired()
         return tmp
 
 
-@event.listens_for(Organisation.expiry, "set")
+@event.listens_for(Organisation.expiry, 'set')
 def organisation_expiry_set(target, value, oldvalue, initiator):
     for user in target.users:
         user.expiry = value
@@ -90,7 +87,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     name = db.Column(db.String(255), nullable=True)
-    password = db.Column(db.String(255), default="", server_default="", nullable=False)
+    password = db.Column(db.String(255), default='', server_default='', nullable=False)
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
     confirmed_at = db.Column(db.DateTime(timezone=False))
     last_login_at = db.Column(db.DateTime(timezone=False))
@@ -99,52 +96,26 @@ class User(db.Model, UserMixin):
     current_login_ip = db.Column(db.String(100))
     login_count = db.Column(db.Integer)
     subscribe_daily_schedule = db.Column(db.Boolean(), default=False)
-    created_at = db.Column(
-        db.DateTime(timezone=True),
-        index=True,
-        unique=False,
-        nullable=False,
-        server_default=func.now(),
-    )
-    updated_at = db.Column(
-        db.DateTime(timezone=True),
-        index=True,
-        unique=False,
-        nullable=False,
-        server_default=func.now(),
-        onupdate=func.current_timestamp(),
-    )
+    created_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now())
+    updated_at = db.Column(db.DateTime(timezone=True), index=True, unique=False, nullable=False, server_default=func.now(), onupdate=func.current_timestamp())
     # when does this subscription expire?
     expiry = db.Column(db.Date(), default=one_year_later)
 
-    organisation_id = db.Column(db.Integer, db.ForeignKey("organisation.id"))
-    organisation = db.relationship(
-        "Organisation", backref="users", lazy=False, foreign_keys=[organisation_id]
-    )
+    organisation_id = db.Column(db.Integer, db.ForeignKey('organisation.id'))
+    organisation = db.relationship('Organisation', backref='users', lazy=False, foreign_keys=[organisation_id])
 
     # premium committee subscriptions, in addition to any that the user's organisation might have
-    subscriptions = db.relationship(
-        "Committee", secondary="user_committee", passive_deletes=True
-    )
+    subscriptions = db.relationship('Committee', secondary='user_committee', passive_deletes=True)
 
     # committees that the user chooses to follow
-    following = db.relationship(
-        "Committee", secondary="user_following", passive_deletes=True
-    )
+    following = db.relationship('Committee', secondary='user_following', passive_deletes=True)
 
     # alerts for changes to committees
-    committee_alerts = db.relationship(
-        "Committee",
-        secondary="user_committee_alerts",
-        passive_deletes=True,
-        lazy="joined",
-    )
-    roles = db.relationship(
-        "Role", secondary="roles_users", backref=db.backref("users", lazy="dynamic")
-    )
+    committee_alerts = db.relationship('Committee', secondary='user_committee_alerts', passive_deletes=True, lazy='joined')
+    roles = db.relationship('Role', secondary='roles_users', backref=db.backref('users', lazy='dynamic'))
 
-    def __str__(self):
-        return str(self.email)
+    def __unicode__(self):
+        return unicode(self.email)
 
     def is_confirmed(self):
         return self.confirmed_at is not None
@@ -161,7 +132,7 @@ class User(db.Model, UserMixin):
     def subscribed_to_committee(self, committee):
         """ Does this user have an active subscription to `committee`? """
         # admin users have access to everything
-        if self.has_role("editor"):
+        if self.has_role('editor'):
             return True
 
         # inactive users should go away
@@ -177,53 +148,44 @@ class User(db.Model, UserMixin):
             return True
 
         # now check if our organisation has access
-        return self.organisation and self.organisation.subscribed_to_committee(
-            committee
-        )
+        return self.organisation and self.organisation.subscribed_to_committee(committee)
 
     def gets_alerts_for(self, committee):
         from ..models.resources import Committee
-
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         return committee in self.committee_alerts
 
     def follows(self, committee):
         from ..models.resources import Committee
-
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         return committee in self.following
 
     def get_followed_committee_meetings(self):
         from ..models.resources import CommitteeMeeting
-
         following = CommitteeMeeting.committee_id.in_([f.id for f in self.following])
-        return CommitteeMeeting.query.filter(following).order_by(
-            desc(CommitteeMeeting.date)
-        )
+        return CommitteeMeeting.query.filter(following).order_by(desc(CommitteeMeeting.date))
 
     def follow_committee(self, committee):
         from ..models.resources import Committee
-
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.append(committee)
 
     def unfollow_committee(self, committee):
         from ..models.resources import Committee
-
         if not isinstance(committee, Committee):
             committee = Committee.query.get(committee)
         self.following.remove(committee)
 
-    @validates("organisation")
+    @validates('organisation')
     def validate_organisation(self, key, org):
         if org:
             self.expiry = org.expiry
         return org
 
-    @validates("email")
+    @validates('email')
     def validate_email(self, key, email):
         if email:
             email = email.lower()
@@ -234,103 +196,109 @@ class User(db.Model, UserMixin):
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
-        tmp.pop("password")
-        tmp.pop("last_login_ip")
-        tmp.pop("current_login_ip")
-        tmp.pop("last_login_at")
-        tmp.pop("current_login_at")
-        tmp.pop("confirmed_at")
-        tmp.pop("login_count")
-        tmp["has_expired"] = self.has_expired()
+        tmp.pop('password')
+        tmp.pop('last_login_ip')
+        tmp.pop('current_login_ip')
+        tmp.pop('last_login_at')
+        tmp.pop('current_login_at')
+        tmp.pop('confirmed_at')
+        tmp.pop('login_count')
+        tmp['has_expired'] = self.has_expired()
 
         # send committee alerts back as a dict
         alerts_dict = {}
-        if tmp.get("committee_alerts"):
-            for committee in tmp["committee_alerts"]:
-                alerts_dict[committee["id"]] = committee.get("name")
-        tmp["committee_alerts"] = alerts_dict
+        if tmp.get('committee_alerts'):
+            for committee in tmp['committee_alerts']:
+                alerts_dict[committee['id']] = committee.get('name')
+        tmp['committee_alerts'] = alerts_dict
         return tmp
 
 
 def user_confirmed_handler(sender, user, **kwargs):
     subscribe_to_newsletter(user)
 
-    html = render_template("post_confirm_welcome_email.html")
+    html = render_template('post_confirm_welcome_email.html')
     msg = Message(
         subject="Welcome to the Parliamentary Monitoring Group",
         recipients=[user.email],
         html=html,
     )
-    app.extensions.get("mail").send(msg)
+    app.extensions.get('mail').send(msg)
 
 
 def subscribe_to_newsletter(user):
     """ Add this user to the sharpspring PMG Monitor newsletter mailing list
     """
-    if app.config.get("SHARPSPRING_API_SECRET"):
+    if app.config.get('SHARPSPRING_API_SECRET'):
         from pmg.sharpspring import Sharpspring
-
-        Sharpspring().subscribeToList(user, "310799364")
+        Sharpspring().subscribeToList(user, '310799364')
 
 
 roles_users = db.Table(
-    "roles_users",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("role.id")),
-)
+    'roles_users',
+    db.Column(
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id')),
+    db.Column(
+        'role_id',
+        db.Integer(),
+        db.ForeignKey('role.id')))
 
 organisation_committee = db.Table(
-    "organisation_committee",
+    'organisation_committee',
     db.Column(
-        "organisation_id",
+        'organisation_id',
         db.Integer(),
-        db.ForeignKey("organisation.id", ondelete="CASCADE"),
-    ),
+        db.ForeignKey('organisation.id', ondelete='CASCADE')),
     db.Column(
-        "committee_id", db.Integer(), db.ForeignKey("committee.id", ondelete="CASCADE")
-    ),
-)
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete='CASCADE')))
 
 
 user_committee = db.Table(
-    "user_committee",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id", ondelete="CASCADE")),
+    'user_committee',
     db.Column(
-        "committee_id", db.Integer(), db.ForeignKey("committee.id", ondelete="CASCADE")
-    ),
-)
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 user_following = db.Table(
-    "user_following",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id", ondelete="CASCADE")),
+    'user_following',
     db.Column(
-        "committee_id", db.Integer(), db.ForeignKey("committee.id", ondelete="CASCADE")
-    ),
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
     db.Column(
-        "created_at",
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete="CASCADE")),
+    db.Column(
+        'created_at',
         db.DateTime(timezone=True),
         index=True,
         unique=False,
         nullable=False,
-        server_default=func.now(),
-    ),
-)
+        server_default=func.now()))
 
 user_committee_alerts = db.Table(
-    "user_committee_alerts",
-    db.Column("user_id", db.Integer(), db.ForeignKey("user.id", ondelete="CASCADE")),
+    'user_committee_alerts',
     db.Column(
-        "committee_id", db.Integer(), db.ForeignKey("committee.id", ondelete="CASCADE")
-    ),
-)
+        'user_id',
+        db.Integer(),
+        db.ForeignKey('user.id', ondelete="CASCADE")),
+    db.Column(
+        'committee_id',
+        db.Integer(),
+        db.ForeignKey('committee.id', ondelete="CASCADE")))
 
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(
-    app,
-    user_datastore,
-    confirm_register_form=forms.RegisterForm,
-    send_confirmation_form=forms.SendConfirmationForm,
-)
+security = Security(app, user_datastore, confirm_register_form=forms.RegisterForm, send_confirmation_form=forms.SendConfirmationForm)
 user_confirmed.connect(user_confirmed_handler, app)

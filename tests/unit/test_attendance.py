@@ -1,122 +1,108 @@
 from tests import PMGTestCase
-from pmg.models import (
-    db,
-    CommitteeMeeting,
-    CommitteeMeetingAttendance,
-    Committee,
-    House,
-    Province,
-    Party,
-    Member,
-)
+from pmg.models import db, CommitteeMeeting, CommitteeMeetingAttendance, Committee, House, Province, Party, Member
 
 
 class TestCommitteeMeetingAttendance(PMGTestCase):
     def setUp(self):
         super(TestCommitteeMeetingAttendance, self).setUp()
-        province = Province(name="Western Cape")
+        province = Province(name='Western Cape')
         db.session.add(province)
-        party = Party(name="Global Party")
+        party = Party(name='Global Party')
         db.session.add(party)
-        house = House(name="National Assembly", sphere="national", name_short="na")
+        house = House(
+            name='National Assembly', sphere='national', name_short='na')
         db.session.add(house)
         db.session.commit()
 
-        self.committee = committee = Committee(name="Arts and Culture", house=house)
+        self.committee = committee = Committee(
+            name='Arts and Culture', house=house)
         db.session.add(committee)
         db.session.commit()
 
         old_parliament_meeting = CommitteeMeeting(
-            title="Jan Arts 1", date="2019-01-01", committee=committee
-        )
+            title='Jan Arts 1', date='2019-01-01', committee=committee)
         db.session.add(old_parliament_meeting)
         old_parliament_meeting_two = CommitteeMeeting(
-            title="Feb Arts 2", date="2019-02-01", committee=committee
-        )
+            title='Feb Arts 2', date='2019-02-01', committee=committee)
         db.session.add(old_parliament_meeting_two)
 
         new_parliament_meeting = CommitteeMeeting(
-            title="Arts 2", date="2019-06-01", committee=committee
-        )
+            title='Arts 2', date='2019-06-01', committee=committee)
         db.session.add(new_parliament_meeting)
 
         future_parliament_meeting_one = CommitteeMeeting(
-            title="Arts 2020", date="2020-02-01", committee=committee
-        )
+            title='Arts 2020', date='2020-02-01', committee=committee)
         future_parliament_meeting_two = CommitteeMeeting(
-            title="Arts 2020", date="2020-07-01", committee=committee
-        )
+            title='Arts 2020', date='2020-07-01', committee=committee)
         db.session.add(future_parliament_meeting_one)
         db.session.add(future_parliament_meeting_two)
 
         db.session.commit()
 
         jabu = Member(
-            name="Jabu", current=True, party=party, house=house, province=province
-        )
+            name='Jabu',
+            current=True,
+            party=party,
+            house=house,
+            province=province)
         mike = Member(
-            name="Mike", current=True, party=party, house=house, province=province
-        )
+            name='Mike',
+            current=True,
+            party=party,
+            house=house,
+            province=province)
         db.session.add(jabu)
         db.session.add(mike)
         db.session.commit()
 
         attendance_one_jabu = CommitteeMeetingAttendance(
-            attendance="P",
+            attendance='P',
             member=jabu,
             meeting=old_parliament_meeting,
-            created_at="2019-08-01",
-        )
+            created_at='2019-08-01')
         db.session.add(attendance_one_jabu)
         attendance_one_mike = CommitteeMeetingAttendance(
-            attendance="P",
+            attendance='P',
             member=mike,
             meeting=old_parliament_meeting,
-            created_at="2019-01-01",
-        )
+            created_at='2019-01-01')
         db.session.add(attendance_one_mike)
 
         feb_attend_jabu = CommitteeMeetingAttendance(
-            attendance="A",
+            attendance='A',
             member=jabu,
             meeting=old_parliament_meeting_two,
-            created_at="2019-02-01",
-        )
+            created_at='2019-02-01')
         db.session.add(feb_attend_jabu)
         feb_attend_mike = CommitteeMeetingAttendance(
-            attendance="A",
+            attendance='A',
             member=mike,
             meeting=old_parliament_meeting_two,
-            created_at="2019-02-01",
-        )
+            created_at='2019-02-01')
         db.session.add(feb_attend_mike)
 
         attendance_two_jabu = CommitteeMeetingAttendance(
-            attendance="P",
+            attendance='P',
             member=jabu,
             meeting=new_parliament_meeting,
-            created_at="2019-08-01",
-        )
+            created_at='2019-08-01')
         db.session.add(attendance_two_jabu)
         attendance_two_mike = CommitteeMeetingAttendance(
-            attendance="A",
+            attendance='A',
             member=mike,
             meeting=new_parliament_meeting,
-            created_at="2019-08-01",
-        )
+            created_at='2019-08-01')
         db.session.add(attendance_two_mike)
         attendance_three_mike = CommitteeMeetingAttendance(
-            attendance="A",
+            attendance='A',
             member=mike,
             meeting=future_parliament_meeting_one,
-            created_at="2020-08-01",
-        )
+            created_at='2020-08-01')
         attendance_four_mike = CommitteeMeetingAttendance(
-            attendance="P",
+            attendance='P',
             member=mike,
             meeting=future_parliament_meeting_two,
-            created_at="2020-08-01",
-        )
+            created_at='2020-08-01')
         db.session.add(attendance_three_mike)
         db.session.add(attendance_four_mike)
         db.session.commit()
@@ -126,63 +112,54 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         new data will show up on the page requesting "current" and NOT on "historical
         old data will show up on the page requesting "historical" and NOT on "current"
         """
-        committee = Committee.query.filter_by(name="Arts and Culture").first()
+        committee = Committee.query.filter_by(name='Arts and Culture').first()
         current_attendance = CommitteeMeetingAttendance.committee_attendence_trends(
-            committee.id, "current"
-        )
+            committee.id, 'current')
         historical_attendance = CommitteeMeetingAttendance.committee_attendence_trends(
-            committee.id, "historical"
-        )
+            committee.id, 'historical')
 
         self.assertEqual(
-            [(2019.0, 1, 0.5, 2.0), (2020.0, 2, 0.5, 1.0)], current_attendance
-        )
-        self.assertEqual([(2019.0, 2, 0.5, 2.0)], historical_attendance)
+            [(2019.0, 1L, 0.5, 2.0), (2020.0, 2L, 0.5, 1.0)], current_attendance)
+        self.assertEqual([(2019.0, 2L, 0.5, 2.0)], historical_attendance)
 
     def test_committee_attendance_summary(self):
         """
         checking that the correct number of rows are returned from a attendance summary
         """
         current_attendance = CommitteeMeetingAttendance.summary()
-        historical_attendance = CommitteeMeetingAttendance.summary("historical")
+        historical_attendance = CommitteeMeetingAttendance.summary(
+            "historical")
         self.assertEqual(
             [
-                (2, "A", 2020.0, 1, 1),
-                (2, "P", 2020.0, 1, 1),
-                (1, "P", 2019.0, 1, 1),
-                (2, "A", 2019.0, 1, 1),
-            ],
-            current_attendance,
-        )
-        self.assertEqual(
-            [
-                (1, "A", 2019.0, 1, 1),
-                (1, "P", 2019.0, 1, 1),
-                (2, "A", 2019.0, 1, 1),
-                (2, "P", 2019.0, 1, 1),
-            ],
-            historical_attendance,
-        )
+                (2, 'A', 2020.0, 1, 1L),
+                (2, 'P', 2020.0, 1, 1L),
+                (1, 'P', 2019.0, 1, 1L),
+                (2, 'A', 2019.0, 1, 1L)
+            ], current_attendance)
+        self.assertEqual([(1, 'A', 2019.0, 1, 1L),
+                          (1, 'P', 2019.0, 1, 1L),
+                          (2, 'A', 2019.0, 1, 1L),
+                          (2, 'P', 2019.0, 1, 1L)], historical_attendance)
 
     def test_annual_attendance_trends(self):
-        trends = CommitteeMeetingAttendance.annual_attendance_trends(to_year=2020)
+        trends = CommitteeMeetingAttendance.annual_attendance_trends(
+            to_year=2020)
 
         expected = [
             # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (1, u"na", 2019, 1, 0.5, 2.0),
-            (1, u"na", 2020, 2, 0.5, 1.0),
+            (1, u'na', 2019, 1L, 0.5, 2.0),
+            (1, u'na', 2020, 2L, 0.5, 1.0),
         ]
 
         self.assertEqual(expected, trends)
 
     def test_annual_attendance_trends_historical(self):
         trends = CommitteeMeetingAttendance.annual_attendance_trends(
-            to_year=2019, period="historical"
-        )
+            to_year=2019, period='historical')
 
         expected = [
             # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (self.committee.id, u"na", 2019, 2, 0.5, 2.0),
+            (self.committee.id, u'na', 2019, 2L, 0.5, 2.0),
         ]
 
         self.assertEqual(expected, trends)

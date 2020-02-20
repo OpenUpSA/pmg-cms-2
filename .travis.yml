@@ -1,29 +1,16 @@
-jobs:
-  include:
-    - stage: black
-      language: python
-      install:
-        - pip install black==19.10b0
-      script:
-        - black --check --diff app.py bin config pmg tests
-    - stage: test
-      addons:
-        hosts:
-          - pmg.test
-      services:
-        - docker
-      script:
-        - "docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests"
-        - "docker-compose run --rm web python setup_dev_database.py"
-        - "docker-compose run --rm web python app.py db stamp head"
-        - "docker-compose run --rm web python bin/search.py --reindex all"
-        - "docker-compose up -d"
-        - bin/wait-for-app.sh
-        - curl -f http://pmg.test:5000 | grep "Featured Content"
+addons:
+  hosts:
+    - pmg.test
+services:
+  - docker
+script:
+  - "docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests"
+  - "docker-compose run --rm web python setup_dev_database.py"
+  - "docker-compose run --rm web python app.py db stamp head"
+  - "docker-compose run --rm web python bin/search.py --reindex all"
+  - "docker-compose up -d"
+  - bin/wait-for-app.sh
+  - curl -f http://pmg.test:5000 | grep "Featured Content"
 
-        # Run codecov passing appropriate codecov.io CI environment variables to container
-        - "docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov"
-
-stages:
-  - black
-  - test
+  # Run codecov passing appropriate codecov.io CI environment variables to container
+  - "docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov"

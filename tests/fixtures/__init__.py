@@ -75,6 +75,10 @@ class MinisterData(DataSet):
         id = 2
         name = "Minister of Transport "
 
+    class president:
+        id = 3
+        name = "President"
+
 
 class CommitteeData(DataSet):
     class communications:

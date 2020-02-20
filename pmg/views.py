@@ -934,7 +934,9 @@ def calls_for_comments(page=0):
     count = call_for_comment_list["count"]
     num_pages = int(math.ceil(float(count) / float(per_page)))
     calls_for_comments = sorted(
-        call_for_comment_list["results"], key=lambda x: x["end_date"], reverse=True
+        call_for_comment_list["results"],
+        key=lambda x: x["end_date"] or "",
+        reverse=True,
     )
 
     open_calls = [c for c in calls_for_comments if not c["closed"] and c["end_date"]]

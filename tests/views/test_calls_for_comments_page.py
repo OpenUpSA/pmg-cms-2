@@ -21,4 +21,3 @@ class TestCallsForCommentsPage(PMGLiveServerTestCase):
         call_for_comment = self.fx.CallForCommentData.arts_call_for_comment_one
         self.make_request("/calls-for-comments/")
         self.assertIn(call_for_comment.title, self.html)
-        self.assertTrue(False)

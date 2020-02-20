@@ -1783,7 +1783,7 @@ def docs(path, dir=""):
     try:
         utils.track_pageview()
     except Exception as e:
-        logger.error("Error tracking pageview: %s" % e.message, exc_info=e)
+        logger.error("Error tracking pageview: %s" % e, exc_info=e)
 
     remote = app.config["STATIC_HOST"] + dir + path
 

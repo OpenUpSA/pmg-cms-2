@@ -12,15 +12,15 @@ class TestFilesPage(PMGLiveServerTestCase):
         super(TestFilesPage, self).setUp()
         # self.app.config.set("GOOGLE_ANALYTICS_ID", 'test-id')
 
-    @patch.object(Tracker, 'send', mock_send)
-    def test_questions_file_page(self):
+    # @patch.object(Tracker, 'send', mock_send)
+    @patch.object(Tracker, 'send')
+    def test_questions_file_page(self, mock_tracker):
         """
         Test email alerts page (/questions/<path>)
         """
         path = "test_file.pdf"
         response = self.make_request(f"/questions/{path}", follow_redirects=False)
-        mock_tracker.assert_called()
+        mock_tracker.assert_called_with('pageview', '/questions/test_file.pdf', referrer='', uip='127.0.0.1', userAgent='werkzeug/0.10.1')
         self.assertEqual(302, response.status_code)
-        print(response.location)
         static_host = self.app.config.get("STATIC_HOST")
         self.assertEqual(response.location, f'{static_host}questions/{path}')

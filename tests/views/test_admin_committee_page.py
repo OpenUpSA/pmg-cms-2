@@ -1,17 +1,14 @@
+from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Committee
-from tests.fixtures import (
-    dbfixture, UserData, CommitteeData, MembershipData
-)
+from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
 
 
 class TestAdminCommitteePage(PMGLiveServerTestCase):
     def setUp(self):
         super(TestAdminCommitteePage, self).setUp()
 
-        self.fx = dbfixture.data(
-            UserData, CommitteeData, MembershipData
-        )
+        self.fx = dbfixture.data(UserData, CommitteeData, MembershipData)
         self.fx.setup()
         self.user = self.fx.UserData.admin
 
@@ -24,9 +21,8 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         """
         Test view admin committee page (/admin/committee)
         """
-        self.make_request(
-            "/admin/committee", self.user, follow_redirects=True)
-        self.assertIn('Committees', self.html)
+        self.make_request("/admin/committee", self.user, follow_redirects=True)
+        self.assertIn("Committees", self.html)
         self.containsCommittee(self.fx.CommitteeData.communications)
         self.containsCommittee(self.fx.CommitteeData.arts)
         self.containsCommittee(self.fx.CommitteeData.constitutional_review)
@@ -43,20 +39,22 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         before_count = len(Committee.query.all())
         url = "/admin/committee/new/?url=%2Fadmin%2Fcommittee%2F"
         data = {
-            'name': 'New committee',
-            'active': 'y',
-            'monitored': 'y',
-            'house': str(self.fx.HouseData.na.id),
-            'minister': '__None',
-            'about': '',
-            'contact_details': '',
+            "name": "New committee",
+            "active": "y",
+            "monitored": "y",
+            "house": str(self.fx.HouseData.na.id),
+            "minister": "__None",
+            "about": "",
+            "contact_details": "",
         }
         response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())
         self.assertEqual(302, response.status_code)
         self.assertLess(before_count, after_count)
 
-        created_committee = Committee.query.filter(Committee.name == data['name']).scalar()
+        created_committee = Committee.query.filter(
+            Committee.name == data["name"]
+        ).scalar()
         self.assertTrue(created_committee)
         self.created_objects.append(created_committee)
 
@@ -67,11 +65,9 @@ class TestAdminCommitteePage(PMGLiveServerTestCase):
         before_count = len(Committee.query.all())
         url = "/admin/committee/action/"
         data = {
-            'url': '/admin/committee/',
-            'action': 'delete',
-            'rowid': [
-                str(self.fx.CommitteeData.communications.id),
-            ]
+            "url": "/admin/committee/",
+            "action": "delete",
+            "rowid": [str(self.fx.CommitteeData.communications.id),],
         }
         response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Committee.query.all())

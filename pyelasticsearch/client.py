@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
+from builtins import str
+from builtins import filter
+from builtins import range
 
 from datetime import datetime
 from operator import itemgetter
@@ -15,7 +17,7 @@ try:
     from urllib.parse import urlencode, quote_plus
 except ImportError:
     # PY2
-    from urllib import urlencode, quote_plus
+    from urllib.parse import urlencode, quote_plus
 
 import requests
 import simplejson as json  # for use_decimal
@@ -98,7 +100,7 @@ def es_kwargs(*args_to_convert):
     return decorator
 
 
-class ElasticSearch(object):
+class ElasticSearch():
     """
     An object which manages connections to elasticsearch and acts as a
     go-between for API calls to it
@@ -224,7 +226,7 @@ class ElasticSearch(object):
         # We do our own retrying rather than using urllib3's; we want to retry
         # a different node in the cluster if possible, not the same one again
         # (which may be down).
-        for attempt in xrange(self.max_retries + 1):
+        for attempt in range(self.max_retries + 1):
             server_url, was_dead = self.servers.get()
             url = server_url + path
             self.logger.debug(
@@ -495,9 +497,9 @@ class ElasticSearch(object):
             http://www.elasticsearch.org/guide/reference/api/multi-get.html
         """
         doc_template = dict(
-            filter(
+            list(filter(
                 itemgetter(1),
-                [('_index', index), ('_type', doc_type), ('fields', fields)]))
+                [('_index', index), ('_type', doc_type), ('fields', fields)])))
 
         docs = []
         for id in ids:
@@ -1001,7 +1003,7 @@ class JsonEncoder(json.JSONEncoder):
         if iso:
             return iso
         if not PY3 and isinstance(value, str):
-            return unicode(value, errors='replace')  # TODO: Be stricter.
+            return str(value, errors='replace')  # TODO: Be stricter.
         if isinstance(value, set):
             return list(value)
         return super(JsonEncoder, self).default(value)

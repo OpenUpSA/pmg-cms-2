@@ -96,6 +96,14 @@ source env.localmail
 
     docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests
 
+### Code formatting
+
+We use [Black](https://github.com/psf/black) to format our code. You can install it using
+`pip install black` and run it with:
+
+    black app.py bin config pmg tests
+
+
 ### Deployment instructions
 
 Deployment is to dokku, a Heroku-like environment. To deploy, simply push to the git remote:

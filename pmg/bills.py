@@ -19,72 +19,73 @@ ICONS = {
 
 
 def get_location(event):
-    if event.get('type') in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
+    if event.get("type") in ["bill-signed", "bill-act-commenced", "bill-enacted"]:
         return {
-            'name': 'Office of the President',
-            'class': 'president',
+            "name": "Office of the President",
+            "class": "president",
         }
 
-    if event.get('house'):
+    if event.get("house"):
         return {
-            'name': event['house']['name'],
-            'class': event['house']['short_name'],
+            "name": event["house"]["name"],
+            "class": event["house"]["short_name"],
         }
 
-    if event.get('committee'):
-        if 'house' in event['committee']:
+    if event.get("committee"):
+        if "house" in event["committee"]:
             return {
-                'name': event['committee']['house']['name'],
-                'class': event['committee']['house']['short_name'],
+                "name": event["committee"]["house"]["name"],
+                "class": event["committee"]["house"]["short_name"],
             }
 
         return {
-            'name': event['committee']['name'],
-            'url': url_for('committee_detail', committee_id=event['committee']['id']),
-            'class': '',
+            "name": event["committee"]["name"],
+            "url": url_for("committee_detail", committee_id=event["committee"]["id"]),
+            "class": "",
         }
 
-    return {'name': 'Unknown', 'class': ''}
+    return {"name": "Unknown", "class": ""}
 
 
 def get_agent(event, bill):
     info = None
 
-    if event.get('type') in ['bill-signed', 'bill-act-commenced', 'bill-enacted']:
+    if event.get("type") in ["bill-signed", "bill-act-commenced", "bill-enacted"]:
         info = {
-            'name': 'The President',
-            'type': 'president',
+            "name": "The President",
+            "type": "president",
         }
 
-    elif event.get('type') == 'bill-introduced':
+    elif event.get("type") == "bill-introduced":
         info = {
-            'name': bill['introduced_by'] or (bill.get('place_of_introduction') or {}).get('name'),
-            'type': 'member',
+            "name": bill["introduced_by"]
+            or (bill.get("place_of_introduction") or {}).get("name"),
+            "type": "member",
         }
 
-    elif event.get('member'):
+    elif event.get("member"):
         info = {
-            'name': event['member']['name'],
-            'type': 'member',
-            'url': url_for('member', member_id=event['member']['id'])
+            "name": event["member"]["name"],
+            "type": "member",
+            "url": url_for("member", member_id=event["member"]["id"]),
         }
 
-    elif event.get('committee'):
+    elif event.get("committee"):
         info = {
-            'name': event['committee']['name'],
-            'type': 'committee',
-            'url': url_for('committee_detail', committee_id=event['committee']['id'])
+            "name": event["committee"]["name"],
+            "type": "committee",
+            "url": url_for("committee_detail", committee_id=event["committee"]["id"]),
         }
 
-    elif event.get('house'):
+    elif event.get("house"):
         info = {
-            'name': event['house']['name'],
-            'type': 'house',
+            "name": event["house"]["name"],
+            "type": "house",
         }
     else:
-        info = {'name': 'Unknown', 'type': 'unknown'}
+        info = {"name": "Unknown", "type": "unknown"}
 
-    info['icon'] = ICONS[info['type']]
+    info["icon"] = ICONS[info["type"]]
 
     return info
 
@@ -93,21 +94,26 @@ def bill_history(bill):
     """ Work out the history of a bill and return a description of it. """
     history = []
 
-    events = bill.get('events', [])
-    events.sort(key=lambda e: [
-        iso8601.parse_date(e['date']),
-        get_location(e),
-        get_agent(e, bill)])
+    events = bill.get("events", [])
+    events.sort(
+        key=lambda e: [
+            iso8601.parse_date(e["date"]),
+            get_location(e),
+            get_agent(e, bill),
+        ]
+    )
 
     for location, location_events in groupby(events, get_location):
         location_history = []
 
-        for agent, agent_events in groupby(location_events, lambda e: get_agent(e, bill)):
-            info = {'events': list(agent_events)}
+        for agent, agent_events in groupby(
+            location_events, lambda e: get_agent(e, bill)
+        ):
+            info = {"events": list(agent_events)}
             info.update(agent)
             location_history.append(info)
 
-        info = {'events': location_history}
+        info = {"events": location_history}
         info.update(location)
         history.append(info)
 
@@ -120,26 +126,26 @@ def match_title(event_title):
     Match bill title against the following possible titles
     """
     bill_titles = [
-        'bill amended and passed by ncop',
-        'bill passed and amended by ncop',
-        'bill passed and amended by the ncop',
-        'bill passed and referred to the ncop',
-        'bill passed and sent to the president for assent',
-        'bill passed and submitted to the ncop',
-        'bill passed by both',
-        'bill passed by na',
-        'bill passed by national assembly',
-        'bill passed by national council of provinces',
-        'bill passed by ncop',
-        'bill passed by parliament',
-        'bill passed by the national assembly',
-        'bill passed by the national council of provinces',
-        'bill passed by the ncop',
-        'bill passed with proposed amendments',
-        'bill revived on this date',
-        'the ncop rescinded',
-        'bill remitted',
-        'bill revived on this date',
+        "bill amended and passed by ncop",
+        "bill passed and amended by ncop",
+        "bill passed and amended by the ncop",
+        "bill passed and referred to the ncop",
+        "bill passed and sent to the president for assent",
+        "bill passed and submitted to the ncop",
+        "bill passed by both",
+        "bill passed by na",
+        "bill passed by national assembly",
+        "bill passed by national council of provinces",
+        "bill passed by ncop",
+        "bill passed by parliament",
+        "bill passed by the national assembly",
+        "bill passed by the national council of provinces",
+        "bill passed by the ncop",
+        "bill passed with proposed amendments",
+        "bill revived on this date",
+        "the ncop rescinded",
+        "bill remitted",
+        "bill revived on this date",
     ]
     event_title_lower = event_title.strip().lower()
     for title in bill_titles:
@@ -168,15 +174,17 @@ def hansard_linking(bill_history):
     for class_history in bill_history:
         for event_history in class_history["events"]:
             if event_history["type"] == "house":
-                bill_events = [e for e in event_history["events"]
-                               if e['type'] != 'plenary' and match_title(e["title"])]
-                hansard_events = [e for e in event_history["events"]
-                                  if e["type"] == "plenary"]
+                bill_events = [
+                    e
+                    for e in event_history["events"]
+                    if e["type"] != "plenary" and match_title(e["title"])
+                ]
+                hansard_events = [
+                    e for e in event_history["events"] if e["type"] == "plenary"
+                ]
                 for bill_event in bill_events:
                     for hansard_event in hansard_events:
-                        if match_dates(
-                            hansard_event["date"], bill_event["date"]
-                        ):
+                        if match_dates(hansard_event["date"], bill_event["date"]):
                             bill_event["hansard"] = {"id": hansard_event["id"]}
                             break
     return bill_history
@@ -195,7 +203,10 @@ def load_parliamentary_days():
 
     This file can be updated from a spreadsheet using bin/load_parliamentary_days.py
     """
-    with open(os.path.join(os.path.dirname(__file__), "../data/parliament-sitting-days.txt"), "r") as f:
+    with open(
+        os.path.join(os.path.dirname(__file__), "../data/parliament-sitting-days.txt"),
+        "r",
+    ) as f:
         lines = f.readlines()
         dates = [datetime.date(*(int(x) for x in d.split("-"))) for d in lines]
         return sorted(dates)

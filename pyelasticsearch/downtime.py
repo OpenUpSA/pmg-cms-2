@@ -1,3 +1,4 @@
+
 from collections import deque
 from contextlib import contextmanager
 import random
@@ -5,7 +6,7 @@ from threading import Lock
 from time import time
 
 
-class DowntimePronePool(object):
+class DowntimePronePool():
     """
     A thread-safe bucket of servers (or other things) that may have downtime.
 

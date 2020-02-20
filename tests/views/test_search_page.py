@@ -18,7 +18,7 @@ class TestSearchPage(PMGLiveServerTestCase):
     @patch.object(ElasticSearch, "search")
     def __call__(self, result=None, search_mock=None):
         search_mock.return_value = {
-            u"hits": {u"hits": [], u"total": 1, u"max_score": 1.1129572},
+            u"hits": {u"hits": [], u"total": 25, u"max_score": 1.1129572},
             u"_shards": {u"successful": 5, u"failed": 1, u"total": 5},
             u"took": 167,
             u"aggregations": {
@@ -48,7 +48,7 @@ class TestSearchPage(PMGLiveServerTestCase):
                             },
                         ]
                     },
-                    u"doc_count": 1,
+                    u"doc_count": 25,
                 },
             },
             u"timed_out": False,

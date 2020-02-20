@@ -14,7 +14,8 @@ class TestCommitteeMeetingAttendanceExcelExport(PMGTestCase):
         super(TestCommitteeMeetingAttendanceExcelExport, self).tearDown()
 
     def test_get_committee_meeting_attendance_xlsx_smoke_test(self):
-        res = self.client.get("committee-meeting-attendance/data.xlsx",
+        res = self.client.get(
+            "committee-meeting-attendance/data.xlsx",
             base_url="http://api.pmg.test:5000/",
         )
         self.assertEqual(200, res.status_code)

@@ -1,10 +1,12 @@
 from nose.tools import *  # noqa
 import datetime
 from unittest.mock import MagicMock, patch, mock_open
+from soundcloud import Client
 
 from pmg.models.soundcloud_track import SoundcloudTrack
 from pmg.models import db, File, Event, EventFile
 from tests import PMGTestCase
+from requests.exceptions import HTTPError
 
 
 class TestSoundcloudTrack(PMGTestCase):
@@ -58,6 +60,19 @@ class TestSoundcloudTrack(PMGTestCase):
         self.assertEquals(1, query.count())
         self.assertIn(self.file, query.all())
         self.assertEquals(SoundcloudTrack.get_unstarted_count(query), 1)
+
+    @patch(
+        "pmg.models.soundcloud_track.Client",
+        side_effect=HTTPError(
+            "500 Server Error: Internal Server Error for url: https://api.soundcloud.com/tracks/345302324?oauth_token=1-265188-164&client_id=43b75"
+        ),
+    )
+    def test_sync_with_500_error(self, mock_client):
+        client_mock = MagicMock()
+        track_mock = MagicMock()
+        track_mock.state = "processing"
+        client_mock.get.return_value = track_mock
+        self.assertRaises(HTTPError, SoundcloudTrack.sync)
 
     def test_sync_upload_state(self):
         client_mock = MagicMock()

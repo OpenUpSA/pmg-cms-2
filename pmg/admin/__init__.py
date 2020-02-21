@@ -672,7 +672,6 @@ class CommitteeMeetingView(EventView):
         "body": {"class": "pmg_ckeditor"},
         "summary": {"class": "pmg_ckeditor"},
     }
-    form_widget_args = {"body": {"class": "ckeditor"}, "summary": {"class": "ckeditor"}}
     form_ajax_refs = {"bills": {"fields": ("title",), "page_size": 50}}
     inline_models = [
         InlineFile(EventFile),

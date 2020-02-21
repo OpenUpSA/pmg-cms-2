@@ -148,7 +148,7 @@ class SoundcloudTrack(db.Model):
             cls.sync_upload_state(client)
             cls.handle_failed(client)
         except HTTPError as e:
-            if e.message == SOUNDCLOUD_AUTH_500_MSG:
+            if str(e) == SOUNDCLOUD_AUTH_500_MSG:
                 logging.error(
                     "Server Error when authenticating with Soundcloud.", exc_info=True
                 )

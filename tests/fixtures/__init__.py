@@ -240,6 +240,13 @@ class CallForCommentData(DataSet):
         body = "The Bill seeks to provide for: - regulation of feed and pet food, - regulation of feed ingredients used in the manufacturing of feed and pet food,"
         summary = "The Department of Agriculture, Forestry and Fisheries has published the draft Feeds and Pet Food Bill, and is asking you to comment."
 
+    class communications_call_for_comment_one:
+        date = datetime.datetime(2020, 2, 14, 0, 0, 0, tzinfo=pytz.utc)
+        title = "Public Procurement Bill"
+        committee = CommitteeData.communications
+        start_date = datetime.datetime(2020, 1, 30, 0, 0, 0, tzinfo=pytz.utc)
+        body = "The draft Bill aims to create a single regulatory framework for public procurement"
+
 
 class TabledCommitteeReportData(DataSet):
     class arts_tabled_committee_report_one:

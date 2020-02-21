@@ -34,7 +34,7 @@ class XLSXBuilder:
         return output.read()
 
     def new_workbook(self):
-        output = io.StringIO()
+        output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output)
 
         self.formats["date"] = workbook.add_format({"num_format": "yyyy/mm/dd"})

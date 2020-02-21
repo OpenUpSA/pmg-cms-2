@@ -374,14 +374,14 @@ class EventData(DataSet):
     class identical_date_bill_event1:
         date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         title = "Hansard event 2"
-        type = "committee-meeting"
+        type = "bill-signed"
         house = HouseData.na
         bills = [BillData.identical_date_events]
 
     class identical_date_bill_event2:
         date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         title = "Hansard event 2"
-        type = "committee-meeting"
+        type = "bill-introduced"
         house = HouseData.na
         bills = [BillData.identical_date_events]
 

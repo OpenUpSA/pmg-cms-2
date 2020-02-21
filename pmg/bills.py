@@ -48,7 +48,7 @@ def get_location(event):
 
 
 def get_agent(event, bill):
-    info = None
+    info = {}
 
     if event.get("type") in ["bill-signed", "bill-act-commenced", "bill-enacted"]:
         info = {
@@ -98,8 +98,8 @@ def bill_history(bill):
     events.sort(
         key=lambda e: [
             iso8601.parse_date(e["date"]),
-            get_location(e),
-            get_agent(e, bill),
+            get_location(e).get("name", ""),
+            get_agent(e, bill).get("name", ""),
         ]
     )
 

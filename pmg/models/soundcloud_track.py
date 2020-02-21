@@ -11,7 +11,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 SOUNDCLOUD_ARTWORK_PATH = "pmg/static/resources/images/logo-artwork.png"
-SOUNDCLOUD_AUTH_500_MSG = "500 Server Error: Internal Server Error for url"
+SOUNDCLOUD_AUTH_500_MSG = (
+    "500 Server Error: Internal Server Error for url:"
+    " https://api.soundcloud.com/oauth2/token"
+)
 UNFINISHED_STATES = [
     "storing",
     "stored",
@@ -145,7 +148,7 @@ class SoundcloudTrack(db.Model):
             cls.sync_upload_state(client)
             cls.handle_failed(client)
         except HTTPError as e:
-            if SOUNDCLOUD_AUTH_500_MSG in str(e):
+            if str(e) == SOUNDCLOUD_AUTH_500_MSG:
                 logging.error(
                     "Server Error when authenticating with Soundcloud.", exc_info=True
                 )

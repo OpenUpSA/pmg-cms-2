@@ -221,6 +221,14 @@ class BillData(DataSet):
         title = "Test Draft Bill"
         type = BillTypeData.draft
 
+    class identical_date_events:
+        year = 2019
+        title = "Bill with multiple events"
+        type = BillTypeData.section_74
+        introduced_by = "Minister of sorting"
+        date_of_introduction = datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        status = BillStatusData.current
+
 
 class CallForCommentData(DataSet):
     class arts_call_for_comment_one:
@@ -362,6 +370,20 @@ class EventData(DataSet):
         type = "plenary"
         house = HouseData.na
         bills = [BillData.food]
+
+    class identical_date_bill_event1:
+        date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = "Hansard event 2"
+        type = "committee-meeting"
+        house = HouseData.na
+        bills = [BillData.identical_date_events]
+
+    class identical_date_bill_event2:
+        date = datetime.datetime(2020, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
+        title = "Hansard event 2"
+        type = "committee-meeting"
+        house = HouseData.na
+        bills = [BillData.identical_date_events]
 
 
 class FeaturedData(DataSet):

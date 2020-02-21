@@ -44,13 +44,24 @@ class TestBillsPages(PMGLiveServerTestCase):
 
     def test_bill_page(self):
         """
-        Test bill page (/bills/<id>)
+        Test bill page (/bill/<id>)
         """
         bill = self.fx.BillData.food
         self.make_request("/bill/%d/" % bill.id, follow_redirects=True)
         self.assertIn(bill.type.name, self.html)
         # Check if "na" stage is in page
         self.assertIn("stage2", self.html)
+        # Check if plenary event is shown in Bill History
+        self.assertIn("Bill history", self.html)
+        self.assertIn("National Assembly", self.html)
+
+    def test_bill_identical_date_events_page(self):
+        """
+        Test bill page (/bill/<id>)
+        """
+        bill = self.fx.BillData.identical_date_events
+        self.make_request("/bill/%d/" % bill.id, follow_redirects=True)
+
         # Check if plenary event is shown in Bill History
         self.assertIn("Bill history", self.html)
         self.assertIn("National Assembly", self.html)
@@ -71,7 +82,7 @@ class TestBillsPages(PMGLiveServerTestCase):
 
     def test_draft_bills_page(self):
         """
-        Test draft bills page (/bills/draft/) redirects to current year's 
+        Test draft bills page (/bills/draft/) redirects to current year's
         draft bills page.
         """
         response = self.make_request("/bills/draft/", follow_redirects=False)

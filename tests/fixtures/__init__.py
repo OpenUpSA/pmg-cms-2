@@ -500,6 +500,7 @@ class OrganisationData(DataSet):
         expiry = datetime.datetime.utcnow() + datetime.timedelta(days=365)
         contact = "pmg@pmg.com"
         subscriptions = [CommitteeData.arts]
+        users = [UserData.admin]
 
 
 class MembershipTypeData(DataSet):

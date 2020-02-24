@@ -3,6 +3,7 @@ from unittest.mock import patch
 from pmg.sharpspring import Sharpspring
 from tests import PMGTestCase
 from tests.fixtures import dbfixture, UserData, OrganisationData
+from requests import HTTPError
 
 
 class MockResponse:
@@ -11,7 +12,8 @@ class MockResponse:
         self.status_code = status_code
 
     def raise_for_status(self):
-        pass
+        if 400 <= self.status_code < 500 or 500 <= self.status_code < 600:
+            raise HTTPError()
 
     def json(self):
         return self.json_data
@@ -28,7 +30,7 @@ def get_sharpspring_call_success(*args, **kwargs):
 
 
 def get_sharpspring_call_fail_create_lead(*args, **kwargs):
-    return {"result": {"creates": [{"success": False, "error": {"code": 500}}]}}
+    return {"result": {"creates": [{"success": False, "error": {"code": 302}}]}}
 
 
 def get_sharpspring_call_fail_add_list_member(method, params):
@@ -36,8 +38,8 @@ def get_sharpspring_call_fail_add_list_member(method, params):
         return {"result": {"creates": [{"success": True,}]}, "error": False}
     else:
         return {
-            "result": {"creates": [{"success": False, "error": {"code": 500}}]},
-            "error": {"code": 500},
+            "result": {"creates": [{"success": False, "error": {"code": 302}}]},
+            "error": {"code": 302},
         }
 
 
@@ -100,3 +102,10 @@ class TestSharpspring(PMGTestCase):
 
         sharpspring = Sharpspring()
         self.assertRaises(ValueError, sharpspring.subscribeToList, user, "1234")
+
+    @patch("pmg.sharpspring.requests.post", return_value=MockResponse({}, 500))
+    def test_subscribe_to_list_server_fail(self, sharpspring_call_mock):
+        user = self.fx.UserData.admin
+
+        sharpspring = Sharpspring()
+        self.assertRaises(HTTPError, sharpspring.subscribeToList, user, "1234")

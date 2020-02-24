@@ -3,10 +3,6 @@ from unittest.mock import patch
 from pmg.sharpspring import Sharpspring
 from tests import PMGTestCase
 from tests.fixtures import dbfixture, UserData, OrganisationData
-from pmg.models import User, Organisation
-
-
-SHARPSRING_URL = "http://api.sharpspring.com/pubapi/v1/"
 
 
 class MockResponse:

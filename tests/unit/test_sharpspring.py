@@ -88,7 +88,7 @@ class TestSharpspring(PMGTestCase):
     @patch.object(
         Sharpspring, "call", return_value=get_sharpspring_call_fail_create_lead(),
     )
-    def test_subscribe_to_list_fail(self, sharpspring_call_mock):
+    def test_subscribe_to_list_create_lead_fail(self, sharpspring_call_mock):
         user = self.fx.UserData.admin
 
         sharpspring = Sharpspring()
@@ -97,7 +97,7 @@ class TestSharpspring(PMGTestCase):
     @patch.object(
         Sharpspring, "call", side_effect=get_sharpspring_call_fail_add_list_member,
     )
-    def test_subscribe_to_list_fail(self, sharpspring_call_mock):
+    def test_subscribe_to_list_add_member_fail(self, sharpspring_call_mock):
         user = self.fx.UserData.admin
 
         sharpspring = Sharpspring()

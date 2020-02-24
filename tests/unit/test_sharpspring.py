@@ -13,4 +13,4 @@ class TestSharpspring(PMGTestCase):
             "companyName": "Test Company",
         }
         sharpspring.call("createLeads", {"objects": [details]})
-        post_mock.assertCalled()
+        post_mock.assert_called()

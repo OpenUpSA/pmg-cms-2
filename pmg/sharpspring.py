@@ -55,7 +55,7 @@ class Sharpspring:
 
     def call(self, method, params):
         body = {
-            "id": uuid.uuid4().get_hex(),
+            "id": uuid.uuid4().hex,
             "method": method,
             "params": params,
         }

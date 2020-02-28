@@ -211,8 +211,15 @@ class BillData(DataSet):
         title = "Children's Amendment Bill"
         type = BillTypeData.private_member_bill_77
 
+    class bill_with_none_number:
+        year = 2019
+        number = None
+        title = "Bill with None number"
+        type = BillTypeData.section_75
+
     class sport:
         year = 2019
+        number = 1
         title = "2010 FIFA World Cup South Africa Special Measures Bill"
         type = BillTypeData.section_75
 

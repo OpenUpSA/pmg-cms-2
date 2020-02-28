@@ -104,6 +104,19 @@ class TestBillsPages(PMGLiveServerTestCase):
         bill = self.fx.BillData.draft
         self.assertIn(bill.title, self.html)
 
+    def test_bills_page_for_year(self):
+        """
+        Test bills page for a year (/bills/<year>).
+        """
+        year = 2019
+        response = self.make_request(
+            "/bills/all/year/%d/" % year, follow_redirects=True
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertIn(self.fx.BillData.bill_with_none_number.title, self.html)
+        self.assertIn(self.fx.BillData.sport.title, self.html)
+        self.assertIn(self.fx.BillData.identical_date_events.title, self.html)
+
     def test_bills_explained_page(self):
         response = self.make_request("/bills/explained/", follow_redirects=True)
         self.assertEqual(200, response.status_code)

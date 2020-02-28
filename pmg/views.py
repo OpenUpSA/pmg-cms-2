@@ -270,7 +270,9 @@ def bills(bill_type, year=None):
 
     bills = load_from_api(api_url, return_everything=True, params=params)["results"]
 
-    bills.sort(key=lambda b: [-b["year"], b["code"][0], b.get("number", 0), b["title"]])
+    bills.sort(
+        key=lambda b: [-b["year"], b["code"][0], b.get("number") or 0, b["title"]]
+    )
 
     status_dict = {
         "na": ("in progress", "label-primary"),

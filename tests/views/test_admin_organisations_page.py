@@ -83,11 +83,30 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
 
     def test_admin_update_organisation_with_the_same_subscriptions(self):
         """
-        Test admin update organisation (/admin/organisation/edit)
+        Test admin update organisation and keep its subscriptions
+        the same (/admin/organisation/edit).
         """
         url = "/admin/organisation/edit/?id=%d"
         organisation = self.fx.OrganisationData.pmg
         self.create_organisation_data["subscriptions"] = self.fx.CommitteeData.arts.id
+        response = self.make_request(
+            url % organisation.id,
+            self.user,
+            data=self.create_organisation_data,
+            method="POST",
+            follow_redirects=True,
+        )
+
+    def test_admin_update_organisation_with_new_subscriptions(self):
+        """
+        Test admin update organisation with new subscriptions 
+        (/admin/organisation/edit).
+        """
+        url = "/admin/organisation/edit/?id=%d"
+        organisation = self.fx.OrganisationData.pmg
+        self.create_organisation_data[
+            "subscriptions"
+        ] = self.fx.CommitteeData.communications.id
         response = self.make_request(
             url % organisation.id,
             self.user,

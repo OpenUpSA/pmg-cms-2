@@ -80,3 +80,18 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
             url % organisation.id, self.user, follow_redirects=True,
         )
         self.assertIn(organisation.name, self.html)
+
+    def test_admin_update_organisation_with_the_same_subscriptions(self):
+        """
+        Test admin update organisation (/admin/organisation/edit)
+        """
+        url = "/admin/organisation/edit/?id=%d"
+        organisation = self.fx.OrganisationData.pmg
+        self.create_organisation_data["subscriptions"] = self.fx.CommitteeData.arts.id
+        response = self.make_request(
+            url % organisation.id,
+            self.user,
+            data=self.create_organisation_data,
+            method="POST",
+            follow_redirects=True,
+        )

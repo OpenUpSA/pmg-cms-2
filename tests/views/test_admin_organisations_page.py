@@ -69,3 +69,14 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
         ).scalar()
         self.assertTrue(created_organisation)
         self.created_objects.append(created_organisation)
+
+    def test_admin_organisation_view_edit_page(self):
+        """
+        Test admin view edit organisation page (/admin/organisation/edit)
+        """
+        url = "/admin/organisation/edit/?id=%d"
+        organisation = self.fx.OrganisationData.pmg
+        self.make_request(
+            url % organisation.id, self.user, follow_redirects=True,
+        )
+        self.assertIn(organisation.name, self.html)

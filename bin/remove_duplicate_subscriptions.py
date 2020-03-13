@@ -5,6 +5,8 @@ import os
 import sys
 import csv
 
+from sqlalchemy import func
+
 file_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(os.path.abspath(os.path.join(file_path, os.pardir)))
 
@@ -13,15 +15,19 @@ from pmg import db
 from pmg.models.users import organisation_committee
 
 
-def get_subscriptions():
+def remove_duplicate_subscriptions(commit=False):
     subscription_groups = (
-        db.session.query(organisation_committee)
+        db.session.query(organisation_committee, func.count(organisation_committee.c.organisation_id).label('count'))
         .group_by(organisation_committee.c.committee_id)
         .group_by(organisation_committee.c.organisation_id)
         .all()
     )
     for subscription_group in subscription_groups:
-        # Delete all
+        # If there's only a single record, we don't need to delete anything
+        if subscription_group.count == 1:
+            continue
+        # Delete all records
+        # We need to delete all of them because the table doesn't have a primary key
         print(
             f"Deleting: Committee: {subscription_group.committee_id}, Organisation: {subscription_group.organisation_id}"
         )
@@ -36,7 +42,7 @@ def get_subscriptions():
             )
             .delete(synchronize_session=False)
         )
-        # Create new
+        # Create single new record to replace the deleted duplicate records
         print(
             f"Inserting: Committee: {subscription_group.committee_id}, Organisation: {subscription_group.organisation_id}"
         )
@@ -45,8 +51,15 @@ def get_subscriptions():
             organisation_id=subscription_group.organisation_id,
         )
         db.session.execute(insert)
-    db.session.commit()
+
+    if commit:
+        print("Committing changes to database.")
+        db.session.commit()
 
 
 if __name__ == "__main__":
-    get_subscriptions()
+    parser = argparse.ArgumentParser(description="Delete duplicate subscriptions (committee_organsation)")
+    parser.add_argument("--commit", help="Commit deletions to database", default=False, action='store_true')
+    args = parser.parse_args()
+
+    remove_duplicate_subscriptions(commit=args.commit)

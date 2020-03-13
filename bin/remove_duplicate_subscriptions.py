@@ -17,7 +17,10 @@ from pmg.models.users import organisation_committee
 
 def remove_duplicate_subscriptions(commit=False):
     subscription_groups = (
-        db.session.query(organisation_committee, func.count(organisation_committee.c.organisation_id).label('count'))
+        db.session.query(
+            organisation_committee,
+            func.count(organisation_committee.c.organisation_id).label("count"),
+        )
         .group_by(organisation_committee.c.committee_id)
         .group_by(organisation_committee.c.organisation_id)
         .all()
@@ -58,8 +61,15 @@ def remove_duplicate_subscriptions(commit=False):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Delete duplicate subscriptions (committee_organsation)")
-    parser.add_argument("--commit", help="Commit deletions to database", default=False, action='store_true')
+    parser = argparse.ArgumentParser(
+        description="Delete duplicate subscriptions (committee_organsation)"
+    )
+    parser.add_argument(
+        "--commit",
+        help="Commit deletions to database",
+        default=False,
+        action="store_true",
+    )
     args = parser.parse_args()
 
     remove_duplicate_subscriptions(commit=args.commit)

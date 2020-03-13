@@ -289,6 +289,7 @@ organisation_committee = db.Table(
     db.Column(
         "committee_id", db.Integer(), db.ForeignKey("committee.id", ondelete="CASCADE")
     ),
+    db.UniqueConstraint("organisation_id", "committee_id"),
 )
 
 

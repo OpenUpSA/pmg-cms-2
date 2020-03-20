@@ -1,9 +1,5 @@
-from unittest.mock import patch
-
-from pmg.sharpspring import Sharpspring
 from tests import PMGTestCase
 from tests.fixtures import dbfixture, CommitteeData, OrganisationData
-from requests import HTTPError
 from pmg.models.users import organisation_committee
 from pmg.models import db
 from bin.remove_duplicate_subscriptions import remove_duplicate_subscriptions
@@ -12,7 +8,12 @@ from bin.remove_duplicate_subscriptions import remove_duplicate_subscriptions
 class TestRemoveDuplicateSubscriptions(PMGTestCase):
     def setUp(self):
         super().setUp()
-
+        # Remove uniqueness-constraint temporarily because we'll be running
+        # this script before the constraint has been added
+        db.engine.execute(
+            "ALTER TABLE organisation_committee DROP CONSTRAINT organisation_committee_organisation_id_key;"
+        )
+        # Create the fixtures
         self.fx = dbfixture.data(CommitteeData, OrganisationData)
         self.fx.setup()
 
@@ -29,7 +30,7 @@ class TestRemoveDuplicateSubscriptions(PMGTestCase):
         )
         db.session.execute(insert)
 
-        # # Create a non-duplicate subscription
+        # Create a non-duplicate subscription
         insert = organisation_committee.insert().values(
             committee_id=self.fx.CommitteeData.constitutional_review.id,
             organisation_id=organisation.id,
@@ -39,7 +40,8 @@ class TestRemoveDuplicateSubscriptions(PMGTestCase):
         # Run the command
         remove_duplicate_subscriptions()
 
-        # Check that only one of each subscription now exists
+        # Check that only one of each subscription now exists (i.e. duplicates
+        # have been removed).
         c = (
             db.session.query(organisation_committee)
             .filter(

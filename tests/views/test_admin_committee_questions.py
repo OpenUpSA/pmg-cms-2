@@ -15,7 +15,7 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         self.fx.setup()
         self.user = self.fx.UserData.admin
 
-    def test_upload_committee_question_document(self):
+    def test_upload_committee_question_document_with_old_format(self):
         """
         Upload committee question document (/admin/committee-question/upload)
         """
@@ -34,8 +34,18 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
                 follow_redirects=True,
             )
         self.assertEqual(200, response.status_code)
-        # TODO: check fields were parsed correctly
-        # TODO: delete created objects
+
+        expected_contents = [
+            "NW190",  # document name
+            "Whether her Office has initiated the drafting of a Bill that seeks to protect and promote the rights",  # question
+            "Minister in The Presidency for Women, Youth and Persons with Disabilities",  # minister
+            "Mr S Ngcobo",  # asked by
+            "The Department is in the process of preparing the drafting of a Bill which will be submitted to Cabinet",  # answer
+        ]
+        for contents in expected_contents:
+            self.assertIn(
+                contents, self.html,
+            )
 
     def get_absolute_file_path(self, relative_path):
         dir_name = os.path.dirname(__file__)

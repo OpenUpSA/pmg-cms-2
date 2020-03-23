@@ -3,7 +3,7 @@ from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Committee
 from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
-from werkzeug.datastructures import FileStorage
+from flask import escape
 from io import BytesIO
 
 
@@ -45,6 +45,37 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         for contents in expected_contents:
             self.assertIn(
                 contents, self.html,
+            )
+
+    def test_upload_committee_question_document_with_new_format(self):
+        """
+        Upload committee question document (/admin/committee-question/upload)
+        """
+        url = "/admin/committee-question/upload"
+        data = {}
+        path = self.get_absolute_file_path("../data/RNW104-2020-02-28.docx")
+        with open(path, "rb") as f:
+            data["file"] = (f, "RNW104-2020-02-28.docx")
+            response = self.make_request(
+                url,
+                self.user,
+                data=data,
+                method="POST",
+                headers={"Referer": "/admin/committee-question/"},
+                content_type="multipart/form-data",
+                follow_redirects=True,
+            )
+        self.assertEqual(200, response.status_code)
+
+        expected_contents = [
+            "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department",  # question
+            "The Minister of Public Works and Infrastructure",  # minister
+            "Ms S J Graham",  # asked by
+            "The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential",  # answer
+        ]
+        for contents in expected_contents:
+            self.assertIn(
+                escape(contents), self.html,
             )
 
     def get_absolute_file_path(self, relative_path):

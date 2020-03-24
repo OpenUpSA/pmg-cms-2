@@ -2,7 +2,6 @@ import os
 from urllib.parse import urlparse, parse_qs
 from builtins import str
 from tests import PMGLiveServerTestCase
-from unittest import skip
 from pmg.models import db, Committee, CommitteeQuestion
 from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
 from flask import escape
@@ -52,6 +51,8 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             follow_redirects=True,
         )
 
+        self.assertEqual(200, response.status_code)
+
         expected_contents = [
             "NW190",  # document name
             "Whether her Office has initiated the drafting of a Bill that seeks to protect and promote the rights",  # question
@@ -68,7 +69,6 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         question = CommitteeQuestion.query.get(created_question_id)
         self.created_objects.append(question)
 
-    @skip("Only test old format for now")
     def test_upload_committee_question_document_with_new_format(self):
         """
         Upload committee question document (/admin/committee-question/upload)
@@ -85,9 +85,22 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
                 method="POST",
                 headers={"Referer": "/admin/committee-question/"},
                 content_type="multipart/form-data",
-                follow_redirects=True,
             )
+        self.assertEqual(302, response.status_code)
+
+        response_url = urlparse(response.location)
+        response_query = parse_qs(response_url.query)
+        self.assertIn("id", response_query, "Question ID must be in response query")
+        created_question_id = int(response_query["id"][0])
+
+        response = self.make_request(
+            "%s?%s" % (response_url.path, response_url.query),
+            self.user,
+            follow_redirects=True,
+        )
+
         self.assertEqual(200, response.status_code)
+
 
         expected_contents = [
             "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department",  # question

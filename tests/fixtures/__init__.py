@@ -87,7 +87,7 @@ class MinisterData(DataSet):
 
     class minister_of_public_works:
         id = 5
-        name = "The Minister of Public Works and Infrastructure"
+        name = "Minister of Public Works and Infrastructure"
 
 
 class CommitteeData(DataSet):

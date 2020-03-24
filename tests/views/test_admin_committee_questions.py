@@ -112,7 +112,7 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department in the Lephalale Local Municipality which are (aa) vacant, (bb) occupied and (cc) earmarked for disposal and (b) total amount does her department owe the municipality in outstanding rates and services?",
         )
         self.assertEqual(
-            question.minister.name, "The Minister of Public Works and Infrastructure",
+            question.minister.name, "Minister of Public Works and Infrastructure",
         )
         self.assertEqual(question.asked_by_name, "Ms S J Graham")
         self.assertEqual(

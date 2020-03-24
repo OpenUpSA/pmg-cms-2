@@ -1,6 +1,7 @@
 import os
 from builtins import str
 from tests import PMGLiveServerTestCase
+from unittest import skip
 from pmg.models import db, Committee
 from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
 from flask import escape
@@ -47,6 +48,7 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
                 contents, self.html,
             )
 
+    @skip("Only test old format for now")
     def test_upload_committee_question_document_with_new_format(self):
         """
         Upload committee question document (/admin/committee-question/upload)

@@ -79,6 +79,10 @@ class MinisterData(DataSet):
         id = 3
         name = "President"
 
+    class minister_in_presidency_for_women:
+        id = 4
+        name = "Minister in The Presidency for Women, Youth and Persons with Disabilities"
+
 
 class CommitteeData(DataSet):
     class communications:

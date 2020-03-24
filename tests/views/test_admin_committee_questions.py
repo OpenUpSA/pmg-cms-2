@@ -53,20 +53,25 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
 
         self.assertEqual(200, response.status_code)
 
-        expected_contents = [
-            "NW190",  # document name
-            "Whether her Office has initiated the drafting of a Bill that seeks to protect and promote the rights",  # question
-            "Minister in The Presidency for Women, Youth and Persons with Disabilities",  # minister
-            "Mr S Ngcobo",  # asked by
-            "The Department is in the process of preparing the drafting of a Bill which will be submitted to Cabinet",  # answer
-        ]
-        for contents in expected_contents:
-            self.assertIn(
-                contents, self.html,
-            )
+        # Test that the question that was created contains the correct data
+        question = CommitteeQuestion.query.get(created_question_id)
+
+        self.assertEqual(
+            question.question,
+            "Whether her Office has initiated the drafting of a Bill that seeks to protect and promote the rights of persons with disabilities; if not, (a) why not and (b) what steps does her Office intend taking in this regard; if so, on what date does she envisage that the Bill will be introduced in the National Assembly?",
+        )
+        self.assertEqual(
+            question.minister.name,
+            "Minister in The Presidency for Women, Youth and Persons with Disabilities",
+        )
+        self.assertEqual(question.asked_by_name, "Mr S Ngcobo")
+        self.assertEqual(
+            question.answer,
+            "<p>Yes</p><p>(b) The Department is in the process of preparing the drafting of a Bill which will be submitted to Cabinet for approval before it will be tabled in Parliament during the 2021/2022 financial year.</p>",
+        )
+        self.assertEqual(question.code, "NW190")
 
         # Delete the question that was created
-        question = CommitteeQuestion.query.get(created_question_id)
         self.created_objects.append(question)
 
     def test_upload_committee_question_document_with_new_format(self):
@@ -101,9 +106,8 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
 
         self.assertEqual(200, response.status_code)
 
-
         expected_contents = [
-            "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department",  # question
+            'name="question">What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department',  # question
             "The Minister of Public Works and Infrastructure",  # minister
             "Ms S J Graham",  # asked by
             "The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential",  # answer

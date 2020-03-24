@@ -113,6 +113,10 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
                 escape(contents), self.html,
             )
 
+        # Delete the question that was created
+        question = CommitteeQuestion.query.get(created_question_id)
+        self.created_objects.append(question)
+
     def get_absolute_file_path(self, relative_path):
         dir_name = os.path.dirname(__file__)
         return os.path.join(dir_name, relative_path)

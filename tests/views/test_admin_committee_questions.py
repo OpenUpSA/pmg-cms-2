@@ -103,22 +103,25 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             self.user,
             follow_redirects=True,
         )
-
         self.assertEqual(200, response.status_code)
 
-        expected_contents = [
-            'name="question">What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department',  # question
-            "The Minister of Public Works and Infrastructure",  # minister
-            "Ms S J Graham",  # asked by
-            "The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential",  # answer
-        ]
-        for contents in expected_contents:
-            self.assertIn(
-                escape(contents), self.html,
-            )
+        # Test that the question that was created contains the correct data
+        question = CommitteeQuestion.query.get(created_question_id)
+        self.assertEqual(
+            question.question,
+            "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department in the Lephalale Local Municipality which are (aa) vacant, (bb) occupied and (cc) earmarked for disposal and (b) total amount does her department owe the municipality in outstanding rates and services?",
+        )
+        self.assertEqual(
+            question.minister.name, "The Minister of Public Works and Infrastructure",
+        )
+        self.assertEqual(question.asked_by_name, "Ms S J Graham")
+        self.assertEqual(
+            question.answer,
+            "<p><strong>The Minister of Public Works and</strong><strong> Infrastructure: </strong></p><ol><li>The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential properties (ii) one business erven (iii) 132 government buildings and (iv) 5 agricultural properties.  DPWI informed me that (aa) 8 land parcels are vacant and (bb) only one property is unutilised. </li></ol><p>(cc)  DPWI has not earmarked any properties for disposal in the Lephalale Local Municipality.</p><ol><li>In August 2019 the Department started a Government Debt Project engaging directly with municipalities and Eskom to verify and reconcile accounts and the project. DPWI, on behalf of client departments, owed the Lephalale Local Municipality, as per accounts received on 17 February 2020, R 334,989.69 which relates current consumption. </li></ol>",
+        )
+        self.assertEqual(question.code, "NW104")
 
         # Delete the question that was created
-        question = CommitteeQuestion.query.get(created_question_id)
         self.created_objects.append(question)
 
     def get_absolute_file_path(self, relative_path):

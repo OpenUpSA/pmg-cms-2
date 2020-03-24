@@ -1,8 +1,9 @@
 import os
+from urllib.parse import urlparse, parse_qs
 from builtins import str
 from tests import PMGLiveServerTestCase
 from unittest import skip
-from pmg.models import db, Committee
+from pmg.models import db, Committee, CommitteeQuestion
 from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
 from flask import escape
 from io import BytesIO
@@ -37,9 +38,19 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
                 method="POST",
                 headers={"Referer": "/somethingelse"},
                 content_type="multipart/form-data",
-                follow_redirects=True,
             )
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(302, response.status_code)
+
+        response_url = urlparse(response.location)
+        response_query = parse_qs(response_url.query)
+        self.assertIn("id", response_query, "Question ID must be in response query")
+        created_question_id = int(response_query["id"][0])
+
+        response = self.make_request(
+            "%s?%s" % (response_url.path, response_url.query),
+            self.user,
+            follow_redirects=True,
+        )
 
         expected_contents = [
             "NW190",  # document name
@@ -52,6 +63,10 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             self.assertIn(
                 contents, self.html,
             )
+
+        # Delete the question that was created
+        question = CommitteeQuestion.query.get(created_question_id)
+        self.created_objects.append(question)
 
     @skip("Only test old format for now")
     def test_upload_committee_question_document_with_new_format(self):

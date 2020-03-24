@@ -16,6 +16,11 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         self.fx.setup()
         self.user = self.fx.UserData.admin
 
+    def tearDown(self):
+        self.delete_created_objects()
+        self.fx.teardown()
+        super().tearDown()
+
     def test_upload_committee_question_document_with_old_format(self):
         """
         Upload committee question document (/admin/committee-question/upload)

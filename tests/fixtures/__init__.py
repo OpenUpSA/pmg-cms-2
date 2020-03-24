@@ -81,7 +81,9 @@ class MinisterData(DataSet):
 
     class minister_in_presidency_for_women:
         id = 4
-        name = "Minister in The Presidency for Women, Youth and Persons with Disabilities"
+        name = (
+            "Minister in The Presidency for Women, Youth and Persons with Disabilities"
+        )
 
     class minister_of_public_works:
         id = 5

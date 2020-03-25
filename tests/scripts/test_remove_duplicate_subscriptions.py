@@ -19,6 +19,7 @@ class TestRemoveDuplicateSubscriptions(PMGTestCase):
 
     def tearDown(self):
         # Add the uniqueness constraint back
+        db.session.commit()
         db.engine.execute(
             "ALTER TABLE organisation_committee ADD CONSTRAINT organisation_committee_organisation_id_key UNIQUE (organisation_id, committee_id);"
         )

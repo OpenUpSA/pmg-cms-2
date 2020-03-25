@@ -1028,7 +1028,7 @@ class CommitteeQuestion(ApiResource, db.Model):
         try:
             self.parse_question_text(text)
         except ValueError as e:
-            logger.warn(e.message)
+            logger.warn(e)
             self.question = text
 
         self.parse_answer_html(html)

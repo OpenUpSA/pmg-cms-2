@@ -903,9 +903,7 @@ class CommitteeQuestionView(MyModelView):
             flash("Successfully imported from %s" % (file_data.filename,))
             return redirect(get_url(".edit_view", id=question.id, url=return_url))
         except ValueError as e:
-            flash(
-                "Couldn't import from %s: %s" % (file_data.filename, e.message), "error"
-            )
+            flash("Couldn't import from %s: %s" % (file_data.filename, e), "error")
             return redirect(return_url)
 
     def frontend_url(self, model):

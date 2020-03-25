@@ -1,3 +1,9 @@
+"""
+Once-off script to be run before the migration to introduce an uniqueness 
+constraint on commitee_id and organisation_id in the committee_organsation 
+table is run. This script will delete all duplicate committee_organisation
+entries and insert one new record instead.
+"""
 #!/bin/env python
 
 import argparse
@@ -29,7 +35,7 @@ def remove_duplicate_subscriptions(commit=False):
         # If there's only a single record, we don't need to delete anything
         if subscription_group.count == 1:
             continue
-        # Delete all records
+        # Delete all of the duplicate subscriptions
         # We need to delete all of them because the table doesn't have a primary key
         print(
             f"Deleting: Committee: {subscription_group.committee_id}, Organisation: {subscription_group.organisation_id}"

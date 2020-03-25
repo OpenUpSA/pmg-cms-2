@@ -8,6 +8,11 @@ from bin.remove_duplicate_subscriptions import remove_duplicate_subscriptions
 class TestRemoveDuplicateSubscriptions(PMGTestCase):
     def setUp(self):
         super().setUp()
+        # Remove uniqueness-constraint temporarily because we'll be running
+        # this script before the constraint has been added
+        db.engine.execute(
+            "ALTER TABLE organisation_committee DROP CONSTRAINT organisation_committee_organisation_id_key;"
+        )
         # Create the fixtures
         self.fx = dbfixture.data(CommitteeData, OrganisationData)
         self.fx.setup()

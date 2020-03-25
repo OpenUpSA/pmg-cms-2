@@ -17,6 +17,14 @@ class TestRemoveDuplicateSubscriptions(PMGTestCase):
         self.fx = dbfixture.data(CommitteeData, OrganisationData)
         self.fx.setup()
 
+    def tearDown(self):
+        # Add the uniqueness constraint back
+        db.engine.execute(
+            "ALTER TABLE organisation_committee ADD CONSTRAINT organisation_committee_organisation_id_key UNIQUE (organisation_id, committee_id);"
+        )
+        self.fx.teardown()
+        super().tearDown()
+
     def test_run_remove_duplicate_subscriptions(self):
         organisation = self.fx.OrganisationData.pmg
 

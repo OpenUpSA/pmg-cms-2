@@ -8,7 +8,7 @@ from tests.fixtures import dbfixture, UserData, OrganisationData, CommitteeData
 
 class TestAdminOrganisationsPage(PMGLiveServerTestCase):
     def setUp(self):
-        super(TestAdminOrganisationsPage, self).setUp()
+        super().setUp()
 
         self.fx = dbfixture.data(UserData, OrganisationData, CommitteeData)
         self.fx.setup()
@@ -24,9 +24,14 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
         }
 
     def tearDown(self):
-        self.delete_created_objects()
+        # Delete the subscription created
+        arts = Committee.query.get(self.fx.CommitteeData.arts.id)
+        self.organisation_result.subscriptions = [arts]
+        db.session.add(self.organisation_result)
+        db.session.commit()
+
         self.fx.teardown()
-        super(TestAdminOrganisationsPage, self).tearDown()
+        super().tearDown()
 
     def test_admin_organisations_page(self):
         """
@@ -82,14 +87,16 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
         )
         self.assertIn(organisation.name, self.html)
 
-    def test_admin_update_organisation_with_the_same_subscriptions(self):
+    def test_admin_update_organisation(self):
         """
         Test admin update organisation and keep its subscriptions
         the same (/admin/organisation/edit).
         """
         url = "/admin/organisation/edit/?id=%d"
         organisation = self.fx.OrganisationData.pmg
-        self.create_organisation_data["subscriptions"] = self.fx.CommitteeData.arts.id
+        self.create_organisation_data[
+            "subscriptions"
+        ] = self.fx.CommitteeData.communications.id
         response = self.make_request(
             url % organisation.id,
             self.user,
@@ -97,3 +104,11 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
             method="POST",
             follow_redirects=True,
         )
+        self.assertEqual(200, response.status_code)
+        self.organisation_result = Organisation.query.get(organisation.id)
+        self.assertEqual(len(self.organisation_result.subscriptions), 1)
+        self.assertEqual(
+            self.organisation_result.subscriptions[0].id,
+            self.fx.CommitteeData.communications.id,
+        )
+        self.assertEqual(self.organisation_result.name, "Test organisation")

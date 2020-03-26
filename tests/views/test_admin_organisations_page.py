@@ -24,12 +24,6 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
         }
 
     def tearDown(self):
-        # Delete the subscription created
-        arts = Committee.query.get(self.fx.CommitteeData.arts.id)
-        self.organisation_result.subscriptions = [arts]
-        db.session.add(self.organisation_result)
-        db.session.commit()
-
         self.fx.teardown()
         super().tearDown()
 
@@ -112,3 +106,9 @@ class TestAdminOrganisationsPage(PMGLiveServerTestCase):
             self.fx.CommitteeData.communications.id,
         )
         self.assertEqual(self.organisation_result.name, "Test organisation")
+
+        # Delete the subscription created
+        arts = Committee.query.get(self.fx.CommitteeData.arts.id)
+        self.organisation_result.subscriptions = [arts]
+        db.session.add(self.organisation_result)
+        db.session.commit()

@@ -231,7 +231,7 @@ class File(db.Model):
     origname = db.Column(db.String(255))
     description = db.Column(db.String(255))
     playtime = db.Column(db.String(10))
-    event_files = db.relationship("EventFile", lazy=True)
+    event_files = db.relationship("EventFile", lazy=True, cascade="all, delete")
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

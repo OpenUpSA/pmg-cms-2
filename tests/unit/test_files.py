@@ -1,8 +1,29 @@
 from tests import PMGTestCase
 import datetime
 import pytz
+from mock import patch
 from pmg.models import db, CommitteeMeeting, Event, EventFile, File, House, Committee
 from tests.fixtures import dbfixture, CommitteeData, CommitteeMeetingData, EventData
+
+
+class MockS3Key:
+    def delete():
+        return True
+
+
+class MockS3Bucket:
+    def get_key(*args, **kwargs):
+        return MockS3Key()
+
+
+class MockS3:
+    bucket = MockS3Bucket()
+
+    def upload_file(*args, **kwargs):
+        return True
+
+    def delete():
+        return True
 
 
 class TestFiles(PMGTestCase):
@@ -26,7 +47,8 @@ class TestFiles(PMGTestCase):
         db.session.commit()
         self.file_id = self.file.id
 
-    def test_delete_file_when_linked_to_meeting(self):
+    @patch("pmg.models.resources.s3_bucket", return_value=MockS3())
+    def test_delete_file_when_linked_to_meeting(self, mock_s3_bucket_key):
         # When we delete the file, the event should be deleted too, but
         # the meeting shouldn't be deleted
         db.session.delete(self.file)

@@ -5,17 +5,16 @@ from pmg.models import db, CommitteeMeeting, Event, EventFile, File, House, Comm
 from tests.fixtures import dbfixture, CommitteeData, CommitteeMeetingData, EventData
 
 
-# TODO: might have to mock S3
 class TestFiles(PMGTestCase):
     def setUp(self):
         super().setUp()
-        self.house = House(name="National Assembly", name_short="NA", sphere="national")
+        self.house = House(name="Test House", name_short="TH", sphere="national")
         self.committee = Committee(
-            name="Communications", house=self.house, premium=True
+            name="Test Committee", house=self.house, premium=True
         )
         self.committee_meeting = CommitteeMeeting(
             date=datetime.datetime(2019, 1, 1, 0, 0, 0, tzinfo=pytz.utc),
-            title="Public meeting One",
+            title="Test meeting",
             committee=self.committee,
         )
         self.file = File(file_path="test-path.pdf")

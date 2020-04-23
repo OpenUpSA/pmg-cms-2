@@ -49,7 +49,7 @@ class TestFiles(PMGTestCase):
 
     @patch("pmg.models.resources.s3_bucket", return_value=MockS3())
     def test_delete_file_when_linked_to_meeting(self, mock_s3_bucket_key):
-        # When we delete the file, the event_file many-to-many join table entries for the file 
+        # When we delete the file, the event_file many-to-many join table entries for the file
         # should also be deleted but the meeting (event) should not be deleted
         db.session.delete(self.file)
         db.session.commit()

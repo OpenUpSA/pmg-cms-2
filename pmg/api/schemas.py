@@ -1,6 +1,5 @@
 from marshmallow import fields
 from marshmallow_polyfield import PolyField
-from marshmallow.fields import LocalDateTime
 
 from pmg import ma
 from pmg.models import (
@@ -141,7 +140,6 @@ class CommitteeMeetingSchema(ma.ModelSchema):
     summary = fields.Method("get_summary")
     files = fields.Nested("FileSchema", attribute="api_files", many=True)
     bills = fields.Nested("BillSchema", many=True, exclude=["events", "versions"])
-    date = fields.LocalDateTime(attribute="date")
     _links = ma.Hyperlinks(
         {
             "self": AbsoluteUrlFor("api2.committee_meetings", id="<id>"),

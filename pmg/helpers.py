@@ -10,9 +10,12 @@ from flask import request, url_for
 from pmg import app
 from pmg.ga import get_ga_events
 from pmg.forms import CorrectThisPageForm
+import pytz
 
 
 logger = logging.getLogger(__name__)
+
+SAST = pytz.FixedOffset(120)
 
 
 @app.context_processor
@@ -79,7 +82,7 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
         # as an reporting axis
         format = "%Y-%m"
 
-    return d.strftime(format)
+    return d.astimezone(SAST).strftime(format)
 
 
 @app.template_filter("member_url")

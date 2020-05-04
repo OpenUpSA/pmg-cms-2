@@ -38,14 +38,10 @@ class TestAdminCommitteeMeetings(PMGLiveServerTestCase):
         self.assertIn(meeting_data["title"], self.html)
         self.assertIn(meeting_data["date"], self.html)
 
-        # Save the meeting again without changing the date 
+        # Save the meeting again without changing the date
         # to check that the date doesn't change
         response = self.make_request(
-            url % meeting.id,
-            self.user,
-            data={},
-            method="POST",
-            follow_redirects=True,
+            url % meeting.id, self.user, data={}, method="POST", follow_redirects=True,
         )
         self.assertIn(meeting_data["title"], self.html)
         self.assertIn(meeting_data["date"], self.html)

@@ -544,6 +544,7 @@ class EventView(ViewWithFiles, MyModelView):
 
     form_excluded_columns = ("type",)
     column_exclude_list = ("type",)
+    column_formatters = {"date": lambda v, c, model, n: model.date.astimezone(SAST)}
 
     def on_form_prefill(self, form, id):
         super().on_form_prefill(form, id)

@@ -135,7 +135,9 @@ class CommitteeMeetingData(DataSet):
         committee = CommitteeData.arts
 
     class premium_recent:
-        date = datetime.datetime(THIS_YEAR, 11, 5, 0, 0, 0, tzinfo=pytz.FixedOffset(120))
+        date = datetime.datetime(
+            THIS_YEAR, 11, 5, 0, 0, 0, tzinfo=pytz.FixedOffset(120)
+        )
         title = "Premium meeting recent"
         committee = CommitteeData.communications
 

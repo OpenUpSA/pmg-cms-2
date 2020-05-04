@@ -545,6 +545,11 @@ class EventView(ViewWithFiles, MyModelView):
     form_excluded_columns = ("type",)
     column_exclude_list = ("type",)
 
+    def on_form_prefill(self, form, id):
+        super().on_form_prefill(form, id)
+        # Display date in South African time
+        form.date.data = form.date.object_data.astimezone(SAST)
+
     def __init__(self, model, session, **kwargs):
         self.type = kwargs.pop("type")
         super(EventView, self).__init__(model, session, **kwargs)

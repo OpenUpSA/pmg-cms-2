@@ -3,4 +3,4 @@ version: '3'
 services:
   web:
     environment:
-      - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg_test?client_encoding=utf8
+      - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg_test?client_encoding=utf8&options=-c%20timezone%3DAfrica%2FJohannesburg

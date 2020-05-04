@@ -17,8 +17,11 @@ logger = logging.getLogger('alembic.env')
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from flask import current_app
-config.set_main_option('sqlalchemy.url',
-                       current_app.config.get('SQLALCHEMY_DATABASE_URI').replace("%", "%%"))
+
+# Replace %s with %%s so that Alembic doesn't think the URL-encoded values
+# are interpolation values
+database_uri = current_app.config.get('SQLALCHEMY_DATABASE_URI').replace("%", "%%")
+config.set_main_option('sqlalchemy.url', database_uri)
 target_metadata = current_app.extensions['migrate'].db.metadata
 
 # other values from the config, defined by the needs of env.py,

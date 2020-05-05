@@ -10,9 +10,12 @@ from flask import request, url_for
 from pmg import app
 from pmg.ga import get_ga_events
 from pmg.forms import CorrectThisPageForm
+import pytz
 
 
 logger = logging.getLogger(__name__)
+
+SAST = pytz.timezone("Africa/Johannesburg")
 
 
 @app.context_processor
@@ -68,6 +71,9 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
         d = dateutil.parser.parse(iso_str)
     else:
         d = iso_str
+
+    if isinstance(d, datetime):
+        d = d.astimezone(SAST)
 
     format = "%d %b %Y"
     if format_option == "long":

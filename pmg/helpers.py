@@ -72,6 +72,9 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
     else:
         d = iso_str
 
+    if isinstance(d, datetime):
+        d = d.astimezone(SAST)
+
     format = "%d %b %Y"
     if format_option == "long":
         format = "%d %B %Y"
@@ -82,7 +85,7 @@ def _jinja2_filter_datetime(iso_str, format_option=None):
         # as an reporting axis
         format = "%Y-%m"
 
-    return d.astimezone(SAST).strftime(format)
+    return d.strftime(format)
 
 
 @app.template_filter("member_url")

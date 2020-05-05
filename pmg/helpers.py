@@ -15,7 +15,7 @@ import pytz
 
 logger = logging.getLogger(__name__)
 
-SAST = pytz.FixedOffset(120)
+SAST = pytz.timezone("Africa/Johannesburg")
 
 
 @app.context_processor

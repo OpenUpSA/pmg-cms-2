@@ -169,11 +169,6 @@ def remove_search(id):
     return ""
 
 
-@app.context_processor
-def inject_user_following():
-    return get_megamenu()
-
-
 def get_megamenu():
     user_following = None
     recent_meetings = None

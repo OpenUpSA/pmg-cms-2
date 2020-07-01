@@ -232,7 +232,7 @@
 
 	{% if current_user.is_authenticated() %}
 	<div class="tab-pane row cte-list-user-following" id="user-following">
-	    {% if user_follows_committees %}
+	    {% if current_user.following %}
             {% for column in current_user.following|slice(2) %}
             <ul class="col-xs-12 col-sm-6">
 		{% for committee in column %}

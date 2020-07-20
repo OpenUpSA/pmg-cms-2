@@ -124,6 +124,57 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         # Delete the question that was created
         self.created_objects.append(question)
 
+    def test_upload_committee_question_document_with_navigable_string_error(self):
+        """
+        Upload committee question document (/admin/committee-question/upload)
+        """
+        url = "/admin/committee-question/upload"
+        data = {}
+        path = self.get_absolute_file_path("../data/RNW1153-200619.docx")
+        with open(path, "rb") as f:
+            data["file"] = (f, "RNW1153-200619.docx")
+            response = self.make_request(
+                url,
+                self.user,
+                data=data,
+                method="POST",
+                headers={"Referer": "/admin/committee-question/"},
+                content_type="multipart/form-data",
+            )
+        self.assertEqual(302, response.status_code)
+
+        response_url = urlparse(response.location)
+        response_query = parse_qs(response_url.query)
+        self.assertIn("id", response_query, "Question ID must be in response query")
+        created_question_id = int(response_query["id"][0])
+
+        response = self.make_request(
+            "%s?%s" % (response_url.path, response_url.query),
+            self.user,
+            follow_redirects=True,
+        )
+        self.assertEqual(200, response.status_code)
+
+        # Test that the question that was created contains the correct data
+        question = CommitteeQuestion.query.get(created_question_id)
+        self.assertIn(
+            "(1)Whether, with reference to her reply to question 937 on 4 June 2020",
+            question.question,
+        )
+        self.assertEqual(
+            question.minister.name,
+            "Minister in The Presidency for Women, Youth and Persons with Disabilities",
+        )
+        self.assertEqual(question.asked_by_name, "Ms T Breedt")
+        self.assertIn(
+            "There were no deviations from the standard supply chain management procedures",
+            question.answer,
+        )
+        self.assertEqual(question.code, "NW1153")
+
+        # Delete the question that was created
+        self.created_objects.append(question)
+
     def get_absolute_file_path(self, relative_path):
         dir_name = os.path.dirname(__file__)
         return os.path.join(dir_name, relative_path)

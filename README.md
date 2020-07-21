@@ -137,7 +137,7 @@ Sensitive or environment-specific configuration variables are set as environment
 * SOUNDCLOUD_PERIOD_MINUTES=5
 * MAX_SOUNDCLOUD_BATCH=10
 * S3_BUCKET=pmg-assets
-* STATIC_HOST=https://static.pmg.org.za or http://pmg-assets.s3-website-eu-west-1.amazonaws.com/
+* STATIC_HOST=https://static.pmg.org.za/ or http://pmg-assets.s3-website-eu-west-1.amazonaws.com/
 
 
 ### Reindexing for Search

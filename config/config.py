@@ -50,8 +50,10 @@ MAX_SOUNDCLOUD_BATCH = int(env.get("MAX_SOUNDCLOUD_BATCH", "1"))
 MAX_SOUNDCLOUD_RETRIES = int(env.get("MAX_SOUNDCLOUD_RETRIES", "3"))
 SOUNDCLOUD_PERIOD_MINUTES = env.get("SOUNDCLOUD_PERIOD_MINUTES", "5")
 
-S3_BUCKET = "pmg-assets"
-STATIC_HOST = "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
+S3_BUCKET = env.get("S3_BUCKET", "pmg-assets")
+STATIC_HOST = env.get(
+    "STATIC_HOST", "http://%s.s3-website-eu-west-1.amazonaws.com/" % S3_BUCKET
+)
 UPLOAD_PATH = "/tmp/pmg_upload/"
 
 if DEBUG:

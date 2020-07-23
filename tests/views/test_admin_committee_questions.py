@@ -27,7 +27,9 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         """
         url = "/admin/committee-question/upload"
         data = {}
-        path = self.get_absolute_file_path("../data/committee_questions/RNW190-200303.docx")
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW190-200303.docx"
+        )
         with open(path, "rb") as f:
             data["file"] = (f, "RNW190-200303.docx")
             response = self.make_request(
@@ -80,7 +82,9 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         """
         url = "/admin/committee-question/upload"
         data = {}
-        path = self.get_absolute_file_path("../data/committee_questions/RNW104-2020-02-28.docx")
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW104-2020-02-28.docx"
+        )
         with open(path, "rb") as f:
             data["file"] = (f, "RNW104-2020-02-28.docx")
             response = self.make_request(
@@ -130,7 +134,9 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         """
         url = "/admin/committee-question/upload"
         data = {}
-        path = self.get_absolute_file_path("../data/committee_questions/RNW1153-200619.docx")
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW1153-200619.docx"
+        )
         with open(path, "rb") as f:
             data["file"] = (f, "RNW1153-200619.docx")
             response = self.make_request(

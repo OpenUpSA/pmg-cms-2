@@ -27,7 +27,9 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         """
         url = "/admin/committee-question/upload"
         data = {}
-        path = self.get_absolute_file_path("../data/RNW190-200303.docx")
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW190-200303.docx"
+        )
         with open(path, "rb") as f:
             data["file"] = (f, "RNW190-200303.docx")
             response = self.make_request(
@@ -80,7 +82,9 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         """
         url = "/admin/committee-question/upload"
         data = {}
-        path = self.get_absolute_file_path("../data/RNW104-2020-02-28.docx")
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW104-2020-02-28.docx"
+        )
         with open(path, "rb") as f:
             data["file"] = (f, "RNW104-2020-02-28.docx")
             response = self.make_request(
@@ -120,6 +124,59 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             "<p><strong>The Minister of Public Works and</strong><strong> Infrastructure: </strong></p><ol><li>The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential properties (ii) one business erven (iii) 132 government buildings and (iv) 5 agricultural properties.  DPWI informed me that (aa) 8 land parcels are vacant and (bb) only one property is unutilised. </li></ol><p>(cc)  DPWI has not earmarked any properties for disposal in the Lephalale Local Municipality.</p><ol><li>In August 2019 the Department started a Government Debt Project engaging directly with municipalities and Eskom to verify and reconcile accounts and the project. DPWI, on behalf of client departments, owed the Lephalale Local Municipality, as per accounts received on 17 February 2020, R 334,989.69 which relates current consumption. </li></ol>",
         )
         self.assertEqual(question.code, "NW104")
+
+        # Delete the question that was created
+        self.created_objects.append(question)
+
+    def test_upload_committee_question_document_with_navigable_string_error(self):
+        """
+        Upload committee question document (/admin/committee-question/upload)
+        """
+        url = "/admin/committee-question/upload"
+        data = {}
+        path = self.get_absolute_file_path(
+            "../data/committee_questions/RNW1153-200619.docx"
+        )
+        with open(path, "rb") as f:
+            data["file"] = (f, "RNW1153-200619.docx")
+            response = self.make_request(
+                url,
+                self.user,
+                data=data,
+                method="POST",
+                headers={"Referer": "/admin/committee-question/"},
+                content_type="multipart/form-data",
+            )
+        self.assertEqual(302, response.status_code)
+
+        response_url = urlparse(response.location)
+        response_query = parse_qs(response_url.query)
+        self.assertIn("id", response_query, "Question ID must be in response query")
+        created_question_id = int(response_query["id"][0])
+
+        response = self.make_request(
+            "%s?%s" % (response_url.path, response_url.query),
+            self.user,
+            follow_redirects=True,
+        )
+        self.assertEqual(200, response.status_code)
+
+        # Test that the question that was created contains the correct data
+        question = CommitteeQuestion.query.get(created_question_id)
+        self.assertIn(
+            "(1)Whether, with reference to her reply to question 937 on 4 June 2020",
+            question.question,
+        )
+        self.assertEqual(
+            question.minister.name,
+            "Minister in The Presidency for Women, Youth and Persons with Disabilities",
+        )
+        self.assertEqual(question.asked_by_name, "Ms T Breedt")
+        self.assertIn(
+            "There were no deviations from the standard supply chain management procedures",
+            question.answer,
+        )
+        self.assertEqual(question.code, "NW1153")
 
         # Delete the question that was created
         self.created_objects.append(question)

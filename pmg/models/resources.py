@@ -11,7 +11,8 @@ import pytz
 
 from sqlalchemy import desc, func, sql, case, cast, Float, Integer, text
 from sqlalchemy.sql.expression import nullslast
-from sqlalchemy.orm import backref, joinedload, validates
+from sqlalchemy.orm import backref, joinedload, validates, column_property
+from sqlalchemy import case, literal_column, and_
 
 from flask import url_for
 from flask_sqlalchemy import models_committed
@@ -1459,6 +1460,12 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
         db.Integer, db.ForeignKey("member.id", ondelete="CASCADE"), nullable=False
     )
     member = db.relationship("Member", lazy=False)
+    non_member = column_property(
+        case(
+            [(Membership.member_id == None, literal_column("FALSE"))],
+            else_=literal_column("TRUE"),
+        )
+    ) # XXX: Membership needs to be outerjoined for this to work
 
     ATTENDANCE_CODES = {
         "A": "Absent",
@@ -1483,17 +1490,22 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        from sqlalchemy import and_
-        from sqlalchemy import case, literal_column
-        non_member = case([(Membership.member_id == None, literal_column("FALSE"))], else_=literal_column("TRUE"))
-        return db.session.query(cls, non_member)\
-            .join(CommitteeMeeting)\
+        # from sqlalchemy import and_
+        # from sqlalchemy import case, literal_column
+        # non_member = case([(Membership.member_id == None, literal_column("FALSE"))], else_=literal_column("TRUE"))
+        # return db.session.query(cls, non_member)\
+        #     .join(CommitteeMeeting)\
+        #     .outerjoin(Membership, and_(
+        #         Membership.member_id==cls.member_id,
+        #         Membership.committee_id==CommitteeMeeting.committee_id
+        #     ))\
+        #     .order_by(CommitteeMeeting.date.desc())
+        return cls.query.join(CommitteeMeeting)\
             .outerjoin(Membership, and_(
-                Membership.member_id==cls.member_id, 
+                Membership.member_id==cls.member_id,
                 Membership.committee_id==CommitteeMeeting.committee_id
             ))\
             .order_by(CommitteeMeeting.date.desc())
-        # return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
     @classmethod
     def summary(cls, period=None):

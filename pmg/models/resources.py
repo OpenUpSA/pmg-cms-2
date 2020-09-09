@@ -1483,7 +1483,17 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def list(cls):
-        return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
+        from sqlalchemy import and_
+        from sqlalchemy import case, literal_column
+        non_member = case([(Membership.member_id == None, literal_column("FALSE"))], else_=literal_column("TRUE"))
+        return db.session.query(cls, non_member)\
+            .join(CommitteeMeeting)\
+            .outerjoin(Membership, and_(
+                Membership.member_id==cls.member_id, 
+                Membership.committee_id==CommitteeMeeting.committee_id
+            ))\
+            .order_by(CommitteeMeeting.date.desc())
+        # return cls.query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
 
     @classmethod
     def summary(cls, period=None):

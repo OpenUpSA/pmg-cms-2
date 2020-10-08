@@ -31,11 +31,9 @@ def sync_soundcloud():
 
 
 def schedule(scheduler):
-    # from pmg import app
-
-    # Schedule background task for sending saved search alerts every
-    # day at 3am (UTC)
     jobs = [
+        # Schedule background task for sending saved search alerts every
+        # day at 3am (UTC)
         scheduler.add_job(
             "pmg.tasks:send_saved_search_alerts",
             "cron",

@@ -82,7 +82,7 @@ To delete the database for a completely fresh setup, run:
 
     docker-compose down --volumes
 
-To run the task scheduler:
+To start the task scheduler, run:
 
     docker-compose run --rm web python app.py start_scheduler
 

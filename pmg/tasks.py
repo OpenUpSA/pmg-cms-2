@@ -75,8 +75,7 @@ class StartScheduler(Command):
     def run(self):
         if not current_app.config["RUN_PERIODIC_TASKS"]:
             log.info(
-                "Not running task scheduler because RUN_PERIODIC_TASKS is %s"
-                % current_app.config["RUN_PERIODIC_TASKS"]
+                "Not starting task scheduler because RUN_PERIODIC_TASKS is not 'true'"
             )
             return
 

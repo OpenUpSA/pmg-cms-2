@@ -192,11 +192,21 @@ assets.register(
 class StartScheduler(Command):
     """
     Start APScheduler and queue scheduled tasks.
+
+    Run with ``python app.py start_scheduler``.
     """
 
     def run(self):
+        if not app.config["RUN_PERIODIC_TASKS"]:
+            logger.info(
+                "Not running task scheduler because RUN_PERIODIC_TASKS is %s"
+                % app.config["RUN_PERIODIC_TASKS"]
+            )
+            return
+
         from apscheduler.schedulers.blocking import BlockingScheduler
         from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+        import pmg.tasks
 
         scheduler = BlockingScheduler(
             {
@@ -209,17 +219,10 @@ class StartScheduler(Command):
             }
         )
 
-        # if we don't do this in a separate thread, we hang trying to connect to the db
-        import pmg.tasks
-
         try:
-            # Thread(target=pmg.tasks.schedule).start()
-            if app.config["RUN_PERIODIC_TASKS"]:
-                pmg.tasks.schedule(scheduler)
-                scheduler.start()
-            else:
-                # TODO: logging
-                pass
+            pmg.tasks.schedule(scheduler)
+            logger.info("Starting scheduler. Press Ctrl-C to exit.")
+            scheduler.start()
         except (KeyboardInterrupt, SystemExit):
             pass
 

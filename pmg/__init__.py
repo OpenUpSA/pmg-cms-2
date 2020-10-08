@@ -220,6 +220,7 @@ class StartScheduler(Command):
         )
 
         try:
+            logger.info("Scheduling tasks...")
             pmg.tasks.schedule(scheduler)
             logger.info("Starting scheduler. Press Ctrl-C to exit.")
             scheduler.start()

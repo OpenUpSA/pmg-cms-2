@@ -5,6 +5,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_script import Command
 from flask_caching import Cache
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
@@ -187,28 +188,41 @@ assets.register(
     ),
 )
 
-# background tasks
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from threading import Thread
 
-scheduler = BackgroundScheduler(
-    {
-        "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
-        "apscheduler.executors.default": {
-            "class": "apscheduler.executors.pool:ThreadPoolExecutor",
-            "max_workers": "2",
-        },
-        "apscheduler.timezone": "UTC",
-    }
-)
-if app.config["RUN_PERIODIC_TASKS"]:
-    scheduler.start()
+class StartScheduler(Command):
+    """
+    Start APScheduler and queue scheduled tasks.
+    """
 
-# if we don't do this in a separate thread, we hang trying to connect to the db
-import pmg.tasks
+    def run(self):
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 
-Thread(target=pmg.tasks.schedule).start()
+        scheduler = BlockingScheduler(
+            {
+                "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
+                "apscheduler.executors.default": {
+                    "class": "apscheduler.executors.pool:ThreadPoolExecutor",
+                    "max_workers": "2",
+                },
+                "apscheduler.timezone": "UTC",
+            }
+        )
+
+        # if we don't do this in a separate thread, we hang trying to connect to the db
+        import pmg.tasks
+
+        try:
+            # Thread(target=pmg.tasks.schedule).start()
+            if app.config["RUN_PERIODIC_TASKS"]:
+                pmg.tasks.schedule(scheduler)
+                scheduler.start()
+            else:
+                # TODO: logging
+                pass
+        except (KeyboardInterrupt, SystemExit):
+            pass
+
 
 from . import helpers
 from . import views

@@ -27,9 +27,8 @@ def sync_soundcloud():
         SoundcloudTrack.sync()
 
 
-def schedule():
+def schedule(scheduler):
     from pmg import app
-    from pmg import scheduler
 
     # Schedule background task for sending saved search alerts every
     # day at 3am (UTC)

@@ -1,4 +1,5 @@
-from pmg import app, StartScheduler
+from pmg import app
+from pmg.tasks import StartScheduler
 from pmg.models.soundcloud_track import SoundcloudTrack
 from flask_script import Server, Manager
 from flask_migrate import MigrateCommand

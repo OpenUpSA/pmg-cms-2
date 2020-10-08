@@ -1,3 +1,6 @@
+from flask import current_app
+from flask_script import Command
+from pmg import db
 import logging
 
 log = logging.getLogger(__name__)
@@ -28,7 +31,7 @@ def sync_soundcloud():
 
 
 def schedule(scheduler):
-    from pmg import app
+    # from pmg import app
 
     # Schedule background task for sending saved search alerts every
     # day at 3am (UTC)
@@ -55,8 +58,47 @@ def schedule(scheduler):
             id="sync-soundcloud",
             replace_existing=True,
             coalesce=True,
-            minute="*/" + app.config["SOUNDCLOUD_PERIOD_MINUTES"],
+            minute="*/" + current_app.config["SOUNDCLOUD_PERIOD_MINUTES"],
         ),
     ]
     for job in jobs:
         log.info("Scheduled task: %s" % job)
+
+
+class StartScheduler(Command):
+    """
+    Start APScheduler and queue scheduled tasks.
+
+    Run with ``python app.py start_scheduler``.
+    """
+
+    def run(self):
+        if not current_app.config["RUN_PERIODIC_TASKS"]:
+            log.info(
+                "Not running task scheduler because RUN_PERIODIC_TASKS is %s"
+                % current_app.config["RUN_PERIODIC_TASKS"]
+            )
+            return
+
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+        import pmg.tasks
+
+        scheduler = BlockingScheduler(
+            {
+                "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
+                "apscheduler.executors.default": {
+                    "class": "apscheduler.executors.pool:ThreadPoolExecutor",
+                    "max_workers": "2",
+                },
+                "apscheduler.timezone": "UTC",
+            }
+        )
+
+        try:
+            log.info("Scheduling tasks...")
+            pmg.tasks.schedule(scheduler)
+            log.info("Starting scheduler. Press Ctrl-C to exit.")
+            scheduler.start()
+        except (KeyboardInterrupt, SystemExit):
+            pass

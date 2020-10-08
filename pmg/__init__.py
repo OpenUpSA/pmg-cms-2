@@ -5,7 +5,6 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from flask_script import Command
 from flask_caching import Cache
 from flask_wtf.csrf import CsrfProtect
 from flask_mail import Mail
@@ -187,45 +186,6 @@ assets.register(
         output="javascript/admin.%(version)s.js",
     ),
 )
-
-
-class StartScheduler(Command):
-    """
-    Start APScheduler and queue scheduled tasks.
-
-    Run with ``python app.py start_scheduler``.
-    """
-
-    def run(self):
-        if not app.config["RUN_PERIODIC_TASKS"]:
-            logger.info(
-                "Not running task scheduler because RUN_PERIODIC_TASKS is %s"
-                % app.config["RUN_PERIODIC_TASKS"]
-            )
-            return
-
-        from apscheduler.schedulers.blocking import BlockingScheduler
-        from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-        import pmg.tasks
-
-        scheduler = BlockingScheduler(
-            {
-                "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
-                "apscheduler.executors.default": {
-                    "class": "apscheduler.executors.pool:ThreadPoolExecutor",
-                    "max_workers": "2",
-                },
-                "apscheduler.timezone": "UTC",
-            }
-        )
-
-        try:
-            logger.info("Scheduling tasks...")
-            pmg.tasks.schedule(scheduler)
-            logger.info("Starting scheduler. Press Ctrl-C to exit.")
-            scheduler.start()
-        except (KeyboardInterrupt, SystemExit):
-            pass
 
 
 from . import helpers

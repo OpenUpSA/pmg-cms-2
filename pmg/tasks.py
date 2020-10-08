@@ -1,3 +1,5 @@
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from flask import current_app
 from flask_script import Command
 from pmg import db
@@ -77,10 +79,6 @@ class StartScheduler(Command):
             )
             return
 
-        from apscheduler.schedulers.blocking import BlockingScheduler
-        from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-        import pmg.tasks
-
         scheduler = BlockingScheduler(
             {
                 "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
@@ -94,7 +92,7 @@ class StartScheduler(Command):
 
         try:
             log.info("Scheduling tasks...")
-            pmg.tasks.schedule(scheduler)
+            schedule(scheduler)
             log.info("Starting scheduler. Press Ctrl-C to exit.")
             scheduler.start()
         except (KeyboardInterrupt, SystemExit):

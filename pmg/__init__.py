@@ -187,28 +187,6 @@ assets.register(
     ),
 )
 
-# background tasks
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from threading import Thread
-
-scheduler = BackgroundScheduler(
-    {
-        "apscheduler.jobstores.default": SQLAlchemyJobStore(engine=db.engine),
-        "apscheduler.executors.default": {
-            "class": "apscheduler.executors.pool:ThreadPoolExecutor",
-            "max_workers": "2",
-        },
-        "apscheduler.timezone": "UTC",
-    }
-)
-if app.config["RUN_PERIODIC_TASKS"]:
-    scheduler.start()
-
-# if we don't do this in a separate thread, we hang trying to connect to the db
-import pmg.tasks
-
-Thread(target=pmg.tasks.schedule).start()
 
 from . import helpers
 from . import views

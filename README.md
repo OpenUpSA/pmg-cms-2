@@ -82,6 +82,10 @@ To delete the database for a completely fresh setup, run:
 
     docker-compose down --volumes
 
+To start the task scheduler, run:
+
+    docker-compose run --rm web python app.py start_scheduler
+
 ### Developing email features
 
 Run [a local mock SMTP server](http://nilhcem.com/FakeSMTP/index.html) on port 2525

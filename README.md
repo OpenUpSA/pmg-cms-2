@@ -154,6 +154,12 @@ This isn't normally necessary as the search index is updated as items are create
 It can be useful when the index has become out of date. Search functionality will fail while the indexing
 is in progress. Re-indexing takes about 10 minutes.
 
+## Task scheduler
+
+Dokku won't automatically start the task scheduler process. To start it, run:
+
+    dokku ps:scale pmg worker=1
+
 ### Database migration
 
 We use [Flask-Migrate](https://flask-migrate.readthedocs.org/en/latest/) and [Alembic](https://alembic.readthedocs.org/en/latest/) for applying changes to the data model. To setup a migration script:

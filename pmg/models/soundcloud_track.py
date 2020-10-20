@@ -150,9 +150,7 @@ class SoundcloudTrack(db.Model):
                 cls.sync_upload_state(client)
                 cls.handle_failed(client)
             else:
-                logging.info(
-                    "No audio files to upload to SoundCloud."
-                )
+                logging.info("No audio files to upload to SoundCloud.")
         except HTTPError as e:
             if str(e) == SOUNDCLOUD_AUTH_500_MSG:
                 logging.error(

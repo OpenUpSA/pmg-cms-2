@@ -52,14 +52,14 @@ def schedule(scheduler):
             coalesce=True,
             hour=2,
         ),
-        # scheduler.add_job(
-        #     sync_soundcloud,
-        #     "cron",
-        #     id="sync-soundcloud",
-        #     replace_existing=True,
-        #     coalesce=True,
-        #     minute="*/" + current_app.config["SOUNDCLOUD_PERIOD_MINUTES"],
-        # ),
+        scheduler.add_job(
+            sync_soundcloud,
+            "cron",
+            id="sync-soundcloud",
+            replace_existing=True,
+            coalesce=True,
+            minute="*/" + current_app.config["SOUNDCLOUD_PERIOD_MINUTES"],
+        ),
     ]
     for job in jobs:
         log.info("Scheduled task: %s" % job)

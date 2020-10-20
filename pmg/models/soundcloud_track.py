@@ -122,12 +122,7 @@ class SoundcloudTrack(db.Model):
             logger.info("SoundCloud track %s state is now [%s]" % (self, self.state))
 
     @classmethod
-    def upload_files(cls, client):
-        q = cls.get_unstarted_query()
-        logging.info(
-            "Audio files yet to be uploaded to SoundCloud: %d"
-            % cls.get_unstarted_count(q)
-        )
+    def upload_files(cls, client, q):
         batch = cls.get_unstarted_batch(q)
         # Rollback this transaction - it was just to gather candidates for upload
         db.session.rollback()
@@ -138,15 +133,26 @@ class SoundcloudTrack(db.Model):
     @classmethod
     def sync(cls):
         try:
-            client = Client(
-                client_id=app.config["SOUNDCLOUD_APP_KEY_ID"],
-                client_secret=app.config["SOUNDCLOUD_APP_KEY_SECRET"],
-                username=app.config["SOUNDCLOUD_USERNAME"],
-                password=app.config["SOUNDCLOUD_PASSWORD"],
-            )
-            cls.upload_files(client)
-            cls.sync_upload_state(client)
-            cls.handle_failed(client)
+            q = cls.get_unstarted_query()
+            unstarted_count = cls.get_unstarted_count(q)
+            if unstarted_count > 0:
+                logging.info(
+                    "Audio files yet to be uploaded to SoundCloud: %d"
+                    % cls.get_unstarted_count(q)
+                )
+                client = Client(
+                    client_id=app.config["SOUNDCLOUD_APP_KEY_ID"],
+                    client_secret=app.config["SOUNDCLOUD_APP_KEY_SECRET"],
+                    username=app.config["SOUNDCLOUD_USERNAME"],
+                    password=app.config["SOUNDCLOUD_PASSWORD"],
+                )
+                cls.upload_files(client, q)
+                cls.sync_upload_state(client)
+                cls.handle_failed(client)
+            else:
+                logging.info(
+                    "No audio files to upload to SoundCloud."
+                )
         except HTTPError as e:
             if str(e) == SOUNDCLOUD_AUTH_500_MSG:
                 logging.error(

@@ -28,8 +28,9 @@ def sync_soundcloud():
     from pmg import app
     from pmg.models.soundcloud_track import SoundcloudTrack
 
-    with app.app_context():
-        SoundcloudTrack.sync()
+    pass
+    # with app.app_context():
+    #    SoundcloudTrack.sync()
 
 
 def schedule(scheduler):

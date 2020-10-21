@@ -58,7 +58,7 @@ def schedule(scheduler):
             id="sync-soundcloud",
             replace_existing=True,
             coalesce=True,
-            minute="*/" + current_app.config["SOUNDCLOUD_PERIOD_MINUTES"],
+            hour="*/" + current_app.config["SOUNDCLOUD_PERIOD_HOURS"],
         ),
     ]
     for job in jobs:

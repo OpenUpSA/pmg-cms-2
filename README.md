@@ -138,7 +138,7 @@ Sensitive or environment-specific configuration variables are set as environment
 * SOUNDCLOUD_APP_KEY_SECRET
 * SOUNDCLOUD_USERNAME
 * SOUNDCLOUD_PASSWORD
-* SOUNDCLOUD_PERIOD_MINUTES=5
+* SOUNDCLOUD_PERIOD_HOURS=6
 * MAX_SOUNDCLOUD_BATCH=10
 * S3_BUCKET=pmg-assets
 * STATIC_HOST=https://static.pmg.org.za/ or http://pmg-assets.s3-website-eu-west-1.amazonaws.com/

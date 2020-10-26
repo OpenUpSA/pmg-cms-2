@@ -204,7 +204,7 @@ class SoundcloudTrack(db.Model):
             try:
                 track.sync_state(client)
             except Exception as e:
-                logger.error("Soundcloud sync_state failed with: %s" % e)
+                logger.error("Soundcloud sync_state failed for %s with: %s" % (track.uri, e))
 
     @classmethod
     def handle_failed(cls, client):

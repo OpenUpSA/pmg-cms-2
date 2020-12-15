@@ -29,7 +29,7 @@
 
   <p>Business, government and other users need to subscribe to access meeting reports of these 13 National Assembly committees.</p>
 
-  <div id="freepremium" class="alert alert-success" role="alert">Access to meeting reports for premium committees from before 2018 is freely accessible to everyone.</div>
+  <div id="freepremium" class="alert alert-success" role="alert">Access to meeting reports for premium committees from before {{ free_before_date.year }} is freely accessible to everyone.</div>
 
   {% if current_user and current_user.organisation %}
     {% if current_user.organisation.has_expired() %}

@@ -99,8 +99,8 @@ SENDGRID_TRANSACTIONAL_TEMPLATE_ID = "2ef9656f-db37-4072-9ed8-449368b73617"
 MAIL_SERVER = env.get("MAIL_SERVER", "smtp.sendgrid.com")
 MAIL_PORT = int(env.get("MAIL_PORT", "465"))
 MAIL_USE_SSL = env.get("MAIL_USE_SSL", "true") == "true"
-MAIL_USERNAME = "pmg-website"
-MAIL_PASSWORD = env.get("MAIL_PASSWORD")
+MAIL_USERNAME = env.get("MAIL_USERNAME", "apikey")
+MAIL_PASSWORD = env.get("MAIL_PASSWORD", SENDGRID_API_KEY)
 MAIL_DEFAULT_SENDER = '"PMG Subscriptions" <subscribe@pmg.org.za>'
 
 # Flask-Security config

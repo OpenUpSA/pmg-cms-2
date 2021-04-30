@@ -100,7 +100,7 @@ tzlocal==1.2
 unicodecsv==0.14.1
 Unidecode==0.4.21
 universal-analytics-python3==1.0.1
-urllib3==1.25.7
+urllib3==1.25.8
 watchdog==0.8.3
 webassets==2.0
 Werkzeug==0.10.1

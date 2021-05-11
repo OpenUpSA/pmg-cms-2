@@ -201,8 +201,15 @@ from pmg.api.v2 import api as api_v2
 
 app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
 
-import flask_security
-app.add_url_rule('/user/forgot-password/', 'forgot-password-slash-hack', flask_security.views.forgot_password)
 
-for rule in app.url_map.iter_rules():
-    print(rule)
+# Add additional URL rules for the forgot-password flow including trailing slash
+# after forgot-password because the double-slash is being trimmed to a single
+# slash by some clients, while other clients will at least temporarily be
+# expecting support for the trailing slash (cached 301 redirect)
+# or double slash (emails that have been sent with the double slash).
+# (possibly) https://docs.microsoft.com/en-us/outlook/troubleshoot/message-body/url-multiple-slashes-become-single-slash
+
+import flask_security
+
+app.add_url_rule('/user/forgot-password/', 'forgot-password-slash-hack', flask_security.views.forgot_password)
+app.add_url_rule('/user/forgot-password//<token>', 'reset-password-slash-hack', flask_security.views.reset_password)

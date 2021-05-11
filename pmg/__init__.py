@@ -92,12 +92,12 @@ original_send = mail.send
 def send_email_with_sendgrid(message):
     extra_headers = {
         "filters": {
-            "templates": {
-                "settings": {
-                    "enable": "1",
-                    "template_id": app.config["SENDGRID_TRANSACTIONAL_TEMPLATE_ID"],
-                }
-            },
+            # "templates": {
+            #     "settings": {
+            #         "enable": "1",
+            #         "template_id": app.config["SENDGRID_TRANSACTIONAL_TEMPLATE_ID"],
+            #     }
+            # },
             "ganalytics": {
                 "settings": {
                     "enable": "1",

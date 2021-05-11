@@ -200,3 +200,9 @@ app.register_blueprint(api_v1, subdomain="api")
 from pmg.api.v2 import api as api_v2
 
 app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
+
+import flask_security
+app.add_url_rule('/user/forgot-password/', 'forgot-password-slash-hack', flask_security.views.forgot_password)
+
+for rule in app.url_map.iter_rules():
+    print(rule)

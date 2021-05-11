@@ -116,7 +116,7 @@ SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 SECURITY_LOGIN_URL = "/login/"
 SECURITY_LOGOUT_URL = "/logout/"
 SECURITY_CHANGE_URL = "/change-password/"
-SECURITY_RESET_URL = "/forgot-password/"
+SECURITY_RESET_URL = "/forgot-password" # Trailing slash here was causing double slash in URLs in emails
 SECURITY_REGISTER_URL = "/register/"
 
 # Flask-Security email subject lines

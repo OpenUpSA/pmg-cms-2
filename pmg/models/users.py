@@ -253,7 +253,6 @@ class User(db.Model, UserMixin):
 
 
 def user_confirmed_handler(sender, user, **kwargs):
-    subscribe_to_newsletter(user)
 
     html = render_template("post_confirm_welcome_email.html")
     msg = Message(
@@ -262,15 +261,6 @@ def user_confirmed_handler(sender, user, **kwargs):
         html=html,
     )
     app.extensions.get("mail").send(msg)
-
-
-def subscribe_to_newsletter(user):
-    """ Add this user to the sharpspring PMG Monitor newsletter mailing list
-    """
-    if app.config.get("SHARPSPRING_API_SECRET"):
-        from pmg.sharpspring import Sharpspring
-
-        Sharpspring().subscribeToList(user, "310799364")
 
 
 roles_users = db.Table(

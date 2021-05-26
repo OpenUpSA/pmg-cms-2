@@ -1,0 +1,22 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run tests
+        run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
+
+      # Run codecov passing appropriate codecov.io CI environment variables to container
+      - name: Upload coverage data to codecov.io
+        run: "docker-compose run --rm `bash <(curl -s https://codecov.io/env)` app codecov"
+        if: ${{ always() }}

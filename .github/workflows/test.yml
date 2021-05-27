@@ -18,6 +18,8 @@ jobs:
         run: docker-compose run --rm web python setup_dev_database.py
       - name: Stamp Head
         run: docker-compose run --rm web python app.py db stamp head
+      - name: Reindex All
+        run: docker-compose run --rm web python bin/search.py --reindex all
       - name: Docker compose up
         run: docker-compose up -d
       - name: Test content

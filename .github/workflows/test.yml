@@ -20,3 +20,8 @@ jobs:
         run: docker-compose run --rm web python app.py db stamp head
       - name: Docker compose up
         run: docker-compose up -d
+      - name: Test content
+        run: curl -f http://pmg.test:5000 | grep "Featured Content"
+      # Run codecov passing appropriate codecov.io CI environment variables to container
+      - name: codecov
+        run: docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov

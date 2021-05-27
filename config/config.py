@@ -116,7 +116,9 @@ SECURITY_TOKEN_AUTHENTICATION_HEADER = "Authentication-Token"
 SECURITY_LOGIN_URL = "/login/"
 SECURITY_LOGOUT_URL = "/logout/"
 SECURITY_CHANGE_URL = "/change-password/"
-SECURITY_RESET_URL = "/forgot-password" # Trailing slash here was causing double slash in URLs in emails
+SECURITY_RESET_URL = (
+    "/forgot-password"  # Trailing slash here was causing double slash in URLs in emails
+)
 SECURITY_REGISTER_URL = "/register/"
 
 # Flask-Security email subject lines
@@ -135,10 +137,6 @@ SECURITY_REGISTERABLE = True
 SECURITY_RECOVERABLE = True
 SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
-
-# SharpSpring mailing lists
-SHARPSPRING_API_KEY = env.get("SHARPSPRING_API_KEY")
-SHARPSPRING_API_SECRET = env.get("SHARPSPRING_API_SECRET")
 
 SERVER_NAME = env.get("SERVER_NAME", "pmg.test:5000")
 FRONTEND_HOST = env.get("FRONTEND_HOST", "http://pmg.test:5000/")

@@ -211,5 +211,13 @@ app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
 
 import flask_security
 
-app.add_url_rule('/user/forgot-password/', 'forgot-password-slash-hack', flask_security.views.forgot_password)
-app.add_url_rule('/user/forgot-password//<token>', 'reset-password-slash-hack', flask_security.views.reset_password)
+app.add_url_rule(
+    "/user/forgot-password/",
+    "forgot-password-slash-hack",
+    flask_security.views.forgot_password,
+)
+app.add_url_rule(
+    "/user/forgot-password//<token>",
+    "reset-password-slash-hack",
+    flask_security.views.reset_password,
+)

@@ -12,5 +12,5 @@ jobs:
  
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: Run test
         run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests

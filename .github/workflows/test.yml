@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
  
     steps:
+      # Set up Python 3.6 environment
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7.9"
+
       - uses: actions/checkout@v2
       - name: Run test
         run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests

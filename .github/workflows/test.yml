@@ -22,8 +22,12 @@ jobs:
         run: docker-compose run --rm web python bin/search.py --reindex all
       - name: Docker compose up
         run: docker-compose up -d
-      # - name: Test content
-      #  run: curl -f http://pmg.test:5000 | grep "Featured Content"
+      - name: Test content
+        uses: wei/curl@v1
+        with:
+          args: -f http://pmg.test:5000 | grep "Featured Content"
+
+      # run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container
       - name: codecov
         run: docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov

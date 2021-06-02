@@ -22,6 +22,8 @@ jobs:
         run: docker-compose run --rm web python bin/search.py --reindex all
       - name: Docker compose up
         run: docker-compose up -d
+      - name: Wait for app
+        run: bin/wait-for-app.sh
       - name: Test content
         uses: wei/curl@v1
         with:

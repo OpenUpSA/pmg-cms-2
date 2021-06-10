@@ -8,7 +8,9 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
     def setUp(self):
         super(TestAdminMemberPage, self).setUp()
 
-        self.fx = dbfixture.data(UserData, MemberData, MembershipData)
+        self.fx = dbfixture.data(
+            UserData, MemberData, MembershipData, CommitteeMeetingAttendanceData
+        )
         self.fx.setup()
         self.user = self.fx.UserData.admin
 

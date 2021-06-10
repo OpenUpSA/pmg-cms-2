@@ -95,4 +95,4 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         self.assertEqual(200, response.status_code)
         self.assertIn("Attendance", self.html)
         self.assertIn("Attendance code", self.html)
-        self.assertIn('Public meeting 2020 one"', self.html)
+        self.assertIn('Public meeting Two"', self.html)

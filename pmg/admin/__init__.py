@@ -847,6 +847,45 @@ class MemberView(MyModelView):
             tmp.from_upload(file_data)
             model.profile_pic_url = tmp.file_path
 
+    @expose("/attendance/")
+    def attendance(self):
+        """
+        """
+        mem_id = request.args.get("id")
+        cls = CommitteeMeetingAttendance
+        year = func.date_part("year", CommitteeMeeting.date).label("year")
+        meeting_date = func.date(CommitteeMeeting.date).label("meeting_date")
+        mem_attendance_list = (
+            db.session.query(
+                Committee.name,
+                meeting_date,
+                CommitteeMeeting.title,
+                cls.attendance,
+                cls.alternate_member,
+                cls.meeting_id,
+            )
+            .select_from(cls)
+            .join(CommitteeMeeting)
+            .join(Committee, Committee.id == CommitteeMeeting.committee_id)
+            .group_by(
+                cls.member_id,
+                cls.attendance,
+                cls.meeting_id,
+                Committee.name,
+                CommitteeMeeting.title,
+                meeting_date,
+                year,
+                cls.alternate_member,
+            )
+            .order_by(year.desc(), cls.member_id)
+            .all()
+        )
+
+        return self.render(
+            "admin/member_committee_attendance_list.html",
+            mem_attendance_list=mem_attendance_list,
+        )
+
 
 class CommitteeQuestionView(MyModelView):
     list_template = "admin/committee_question_list.html"

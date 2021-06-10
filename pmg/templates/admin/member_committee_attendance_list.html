@@ -1,0 +1,52 @@
+{% extends 'admin/my_base.html' %}
+{% block body %}
+{% block navlinks %}
+  <ul class="nav nav-tabs">
+    <li>
+        <a href="/admin/member">{{ _gettext('List') }}</a>
+    </li>
+    {%- if admin_view.can_create -%}
+    <li>
+        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+    </li>
+    {%- endif -%}
+    {%- if admin_view.can_edit -%}
+    <li>
+        <a href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+    </li>
+    {%- endif -%}
+    <li class="active">
+        <a href="javascript:void(0)">{{ _gettext('Attendance') }}</a>
+    </li>
+  </ul>
+{% endblock %}
+  {% block details_search %}
+    <div class="input-group fa_filter_container col-lg-6">
+      <span class="input-group-addon">{{ _gettext('Filter') }}</span>
+      <input id="fa_filter" type="text" class="form-control">
+    </div>
+  {% endblock %}
+    <div class="row">
+      <table class="table table-bordered table-striped">
+        <tr>
+          <th>Committe name</th>
+          <th>Meeting date</th>
+          <th>Meeting title</th>
+          <th>Attendance code</th>
+          <th>Alternate member</th>
+        </tr>
+        {% for mem in mem_attendance_list %}
+          <tr>
+            <td>{% if mem[0] %}{{ mem[0] }}{% endif %}</td>
+            <td>{% if mem[1] %}{{ mem[1] }}{% endif %}</td>
+            <td>{% if mem[2] %}{{ mem[2] }}{% endif %}</td>
+            <td>{% if mem[3] %}{{ mem[3] }}{% endif %}</td>
+            <td>{% if mem[4] %}{{ mem[4] }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+

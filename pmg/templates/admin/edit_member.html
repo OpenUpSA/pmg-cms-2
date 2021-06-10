@@ -13,3 +13,24 @@
 </div>
 {{ super() }}
 {% endblock %}
+
+{% block navlinks %}
+  <ul class="nav nav-tabs">
+    <li>
+        <a href="{{ return_url }}">{{ _gettext('List') }}</a>
+    </li>
+    {%- if admin_view.can_create -%}
+    <li>
+        <a href="{{ get_url('.create_view', url=return_url) }}">{{ _gettext('Create') }}</a>
+    </li>
+    {%- endif -%}
+    {%- if admin_view.can_edit -%}
+    <li class="active">
+        <a href="{{ get_url('.edit_view', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Edit') }}</a>
+    </li>
+    {%- endif -%}
+    <li>
+        <a href="{{ get_url('.attendance', id=request.args.get('id'), url=return_url) }}">{{ _gettext('Attendance') }}</a>
+    </li>
+  </ul>
+{% endblock %}

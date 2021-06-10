@@ -87,12 +87,12 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         """
 
         attendance_url = "/admin/member/attendance/"
-        member_id = '?id={}'.format(str(self.fx.MemberData.veronica.id))
+        member_id = "?id={}".format(str(self.fx.MemberData.veronica.id))
         rest_of_url = "&url=%2Fadmin%2Fmember%2F"
-        url = '{}{}{}'.format(attendance_url, member_id, rest_of_url)
+        url = "{}{}{}".format(attendance_url, member_id, rest_of_url)
 
         response = self.make_request(url, self.user, method="GET")
         self.assertEqual(200, response.status_code)
-        self.assertIn('Attendance', self.html)
-        self.assertIn('Attendance code', self.html)
+        self.assertIn("Attendance", self.html)
+        self.assertIn("Attendance code", self.html)
         self.assertIn('Public meeting 2020 one"', self.html)

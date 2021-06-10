@@ -1,7 +1,13 @@
 from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Member
-from tests.fixtures import dbfixture, MemberData, UserData, MembershipData
+from tests.fixtures import (
+    dbfixture,
+    MemberData,
+    UserData,
+    MembershipData,
+    CommitteeMeetingAttendanceData,
+)
 
 
 class TestAdminMemberPage(PMGLiveServerTestCase):

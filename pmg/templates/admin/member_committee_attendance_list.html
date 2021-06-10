@@ -39,7 +39,7 @@
           <tr>
             <td>{% if mem[0] %}{{ mem[0] }}{% endif %}</td>
             <td>{% if mem[1] %}{{ mem[1] }}{% endif %}</td>
-            <td>{% if mem[2] %}{{ mem[2] }}{% endif %}</td>
+            <td>{% if mem[2] %}<a href="{{url_for('committee_meeting',event_id=mem[5])}}">{{ mem[2] }}</a>{% endif %}</td>
             <td>{% if mem[3] %}{{ mem[3] }}{% endif %}</td>
             <td>{% if mem[4] %}{{ mem[4] }}{% endif %}</td>
           </tr>

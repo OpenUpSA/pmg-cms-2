@@ -12,6 +12,9 @@ jobs:
  
     steps:
       - uses: actions/checkout@v2
+
+      - name: Add host
+        run: echo "127.0.0.1 pmg.test" | sudo tee -a /etc/hosts
       - name: Run test
         run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
       - name: Setup Dev Database
@@ -28,6 +31,10 @@ jobs:
         uses: wei/curl@v1
         with:
           args: http://pmg.test:5000
+
+      # Log output in case issues occurred where this can help us debug quicly
+      - run: docker-compose logs db elasticsearch
+        if: ${{ always() }}
 
       # run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container

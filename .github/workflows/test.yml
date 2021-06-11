@@ -9,26 +9,25 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
  
     steps:
       - uses: actions/checkout@v2
 
-      - name: Add host
+      - name: Add hosts
         run: echo "127.0.0.1 pmg.test" | sudo tee -a /etc/hosts
-      - name: Run test
+      - name: Run tests
         run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
       - name: Setup Dev Database
         run: docker-compose run --rm web python setup_dev_database.py
-      - name: Stamp Head
+      - name: Setup the database Stamp Head
         run: docker-compose run --rm web python app.py db stamp head
-      - name: Reindex All
+      - name: Setup the database Search Reindex All
         run: docker-compose run --rm web python bin/search.py --reindex all
-      - name: Docker compose up
+      - name: Start the server
         run: docker-compose up -d
       - name: Wait for app
         run: bin/wait-for-app.sh
-      - name: Test content
+      - name: "Smoke test demo data check that a typical request returns the data in demodata"
         run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container
       - name: codecov

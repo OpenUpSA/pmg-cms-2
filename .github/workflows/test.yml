@@ -29,9 +29,7 @@ jobs:
       - name: Wait for app
         run: bin/wait-for-app.sh
       - name: Test content
-      #  run: wget --retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --tries=10 -O- http://pmg.test:5000 | grep "Featured Content"
-
-      run: curl -f http://pmg.test:5000 | grep "Featured Content"
+        run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container
       - name: codecov
         run: docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov

@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Add host
-        run: echo "127.0.0.1 pmg.test:5000" | sudo tee -a /etc/hosts
+        run: echo "127.0.0.1 pmg.test" | sudo tee -a /etc/hosts
       - name: Run test
         run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
       - name: Setup Dev Database
@@ -29,9 +29,9 @@ jobs:
       - name: Wait for app
         run: bin/wait-for-app.sh
       - name: Test content
-        run: wget --retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --tries=10 -O- http://pmg.test:5000 | grep "Featured Content"
+      #  run: wget --retry-connrefused --waitretry=1 --read-timeout=10 --timeout=10 --tries=10 -O- http://pmg.test:5000 | grep "Featured Content"
 
-      # run: curl -f http://pmg.test:5000 | grep "Featured Content"
+      run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container
       - name: codecov
         run: docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov

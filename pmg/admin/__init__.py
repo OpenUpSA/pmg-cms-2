@@ -852,39 +852,47 @@ class MemberView(MyModelView):
         """
         """
         mem_id = request.args.get("id")
-        cls = CommitteeMeetingAttendance
-        year = func.date_part("year", CommitteeMeeting.date).label("year")
-        meeting_date = func.date(CommitteeMeeting.date).label("meeting_date")
-        mem_attendance_list = (
-            db.session.query(
-                Committee.name,
-                meeting_date,
-                CommitteeMeeting.title,
-                cls.attendance,
-                cls.alternate_member,
-                cls.meeting_id,
-            )
-            .select_from(cls)
-            .join(CommitteeMeeting)
-            .join(Committee, Committee.id == CommitteeMeeting.committee_id)
-            .group_by(
-                cls.member_id,
-                cls.attendance,
-                cls.meeting_id,
-                Committee.name,
-                CommitteeMeeting.title,
-                meeting_date,
-                year,
-                cls.alternate_member,
-            )
-            .order_by(year.desc(), cls.member_id)
-            .all()
-        )
+        url = '/admin/committeemeetingattendance/?member_id={0}'.format(mem_id)
+        return redirect(url)
 
-        return self.render(
-            "admin/member_committee_attendance_list.html",
-            mem_attendance_list=mem_attendance_list,
-        )
+
+class MemberCommitteeMeetingAttendanceView(MyModelView):
+    column_list = (
+        "meeting.committee.name",
+        "meeting.date",
+        "meeting.title",
+        "attendance",
+        "alternate_member",
+    )
+    column_labels = {
+            "meeting.date": "Meeting date",
+            "meeting.title": "Meeting title",
+            "meeting.committee.name": "Committee name",
+            "attendance": "Attendance code"
+    }
+    column_searchable_list = ("attendance",)
+    column_default_sort = ("meeting_id", True)
+    column_filters = ["meeting.date", "meeting.committee"]
+    column_formatters = {
+        "meeting.committee.name": lambda v, c, m, n:
+            Markup("<a href='%s'>%s</a>" % (url_for("committee_meeting", event_id=m.meeting_id), m.meeting.committee.name),),
+        "meeting.date": lambda v, c, m, n: m.meeting.date.date().isoformat(),
+    }
+
+    def is_visible(self):
+        return False
+
+    def get_query(self):
+        return self._extend_query(super(MemberCommitteeMeetingAttendanceView, self).get_query())
+
+    def get_count_query(self):
+        return self._extend_query(super(MemberCommitteeMeetingAttendanceView, self).get_count_query())
+
+    def _extend_query(self, query):
+        member_id = request.args.get("member_id")
+        if member_id is None:
+            abort(400, "Member required")
+        return query.filter(CommitteeMeetingAttendance.member_id == member_id)
 
 
 class CommitteeQuestionView(MyModelView):
@@ -1623,6 +1631,12 @@ admin.add_view(
 # ---------------------------------------------------------------------------------
 # Members
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint="member"))
+admin.add_view(
+    MemberCommitteeMeetingAttendanceView(
+        CommitteeMeetingAttendance,
+        db.session, name="Member Committee Meeting Attendances",
+        endpoint="committeemeetingattendance"),
+    )
 
 # ---------------------------------------------------------------------------------
 # Reports

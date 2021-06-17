@@ -47,6 +47,7 @@ class TestCommitteePage(PMGLiveServerTestCase):
         self.containsQuestionsAndReplies()
         self.containsBills()
         self.containsAttendance()
+        self.assertIn("Attendance Methodology", self.html)
 
     def test_committee_page_write_to_committee_facet(self):
         """

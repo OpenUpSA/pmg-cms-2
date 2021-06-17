@@ -182,11 +182,13 @@ class TestAttendanceOverview(PMGLiveServerTestCase):
         self.assertIn(SINCE_FORMAT % 2020, self.html)
         self.assertIn(ATTENDANCE_FORMAT % "50.0", self.html)
         self.assertIn(CHANGE_FORMAT % "-50.0", self.html)
+        self.assertIn("Attendance Methodology", self.html)
 
     def test_archived_attendance_overview(self):
         self.make_request("/archived-attendance-overview")
         self.assertIn(HEADING_FORMAT % 2019, self.html)
         self.assertIn("Arts and Culture", self.html)
+        self.assertIn("Attendance Methodology", self.html)
         self.assertIn("50%", self.html)
         self.assertIn(NUM_MEETINGS_FORMAT % 2, self.html)
 

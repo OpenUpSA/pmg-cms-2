@@ -856,23 +856,24 @@ class MemberView(MyModelView):
         return redirect(url)
 
 
-class MemberCommitteeMeetingAttendanceView(MyModelView):
+class CommitteeMeetingAttendanceView(MyModelView):
     column_list = (
         "meeting.committee.name",
         "meeting.date",
         "meeting.title",
         "attendance",
         "alternate_member",
+        "member.name",
     )
     column_labels = {
         "meeting.date": "Meeting date",
         "meeting.title": "Meeting title",
         "meeting.committee.name": "Committee name",
         "attendance": "Attendance code",
+        "member.name": "Member",
     }
-    column_searchable_list = ("attendance",)
-    column_default_sort = ("meeting_id", True)
-    column_filters = ["meeting.date", "meeting.committee"]
+    column_searchable_list = ("attendance", "member.name")
+    column_filters = ["meeting.date", "attendance", "meeting.committee"]
     column_formatters = {
         "meeting.committee.name": lambda v, c, m, n: Markup(
             "<a href='%s'>%s</a>"
@@ -884,23 +885,20 @@ class MemberCommitteeMeetingAttendanceView(MyModelView):
         "meeting.date": lambda v, c, m, n: m.meeting.date.date().isoformat(),
     }
 
-    def is_visible(self):
-        return False
-
     def get_query(self):
         return self._extend_query(
-            super(MemberCommitteeMeetingAttendanceView, self).get_query()
+            super(CommitteeMeetingAttendanceView, self).get_query()
         )
 
     def get_count_query(self):
         return self._extend_query(
-            super(MemberCommitteeMeetingAttendanceView, self).get_count_query()
+            super(CommitteeMeetingAttendanceView, self).get_count_query()
         )
 
     def _extend_query(self, query):
         member_id = request.args.get("member_id")
         if member_id is None:
-            abort(400, "Member required")
+            return query
         return query.filter(CommitteeMeetingAttendance.member_id == member_id)
 
 
@@ -1641,11 +1639,12 @@ admin.add_view(
 # Members
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint="member"))
 admin.add_view(
-    MemberCommitteeMeetingAttendanceView(
+    CommitteeMeetingAttendanceView(
         CommitteeMeetingAttendance,
         db.session,
-        name="Member Committee Meeting Attendances",
+        name="Committee Meeting Attendances",
         endpoint="committeemeetingattendance",
+        category="Committees",
     ),
 )
 

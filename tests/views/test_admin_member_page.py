@@ -1,14 +1,22 @@
 from builtins import str
 from tests import PMGLiveServerTestCase
 from pmg.models import db, Member
-from tests.fixtures import dbfixture, MemberData, UserData, MembershipData
+from tests.fixtures import (
+    dbfixture,
+    MemberData,
+    UserData,
+    MembershipData,
+    CommitteeMeetingAttendanceData,
+)
 
 
 class TestAdminMemberPage(PMGLiveServerTestCase):
     def setUp(self):
         super(TestAdminMemberPage, self).setUp()
 
-        self.fx = dbfixture.data(UserData, MemberData, MembershipData)
+        self.fx = dbfixture.data(
+            UserData, MemberData, MembershipData, CommitteeMeetingAttendanceData
+        )
         self.fx.setup()
         self.user = self.fx.UserData.admin
 
@@ -80,3 +88,26 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         after_count = len(Member.query.all())
         self.assertEqual(302, response.status_code)
         self.assertGreater(before_count, after_count)
+
+    def test_admin_member_committee_meeting_attendance(self):
+        """
+        Lists member committee meeting attendance
+        """
+
+        url = "/admin/committeemeetingattendance/"
+        response = self.make_request(url, self.user, method="GET")
+        self.assertEqual(200, response.status_code)
+        self.assertIn("Attendance", self.html)
+        self.assertIn("Attendance code", self.html)
+        self.assertIn("Public meeting Two", self.html)
+
+        attendance_url = "/admin/committeemeetingattendance/"
+        member_id = "?id={}".format(str(self.fx.MemberData.veronica.id))
+        rest_of_url = "&url=%2Fadmin%2Fmember%2F"
+        url = "{}{}{}".format(attendance_url, member_id, rest_of_url)
+
+        response = self.make_request(url, self.user, method="GET")
+        self.assertEqual(200, response.status_code)
+        self.assertIn("Attendance", self.html)
+        self.assertIn("Attendance code", self.html)
+        self.assertIn("Public meeting Two", self.html)

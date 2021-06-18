@@ -847,6 +847,68 @@ class MemberView(MyModelView):
             tmp.from_upload(file_data)
             model.profile_pic_url = tmp.file_path
 
+    @expose("/attendance/")
+    def attendance(self):
+        """
+        """
+        mem_id = request.args.get("id")
+        url = "/admin/committeemeetingattendance/?member_id={0}".format(mem_id)
+        return redirect(url)
+
+
+class CommitteeMeetingAttendanceView(MyModelView):
+    can_delete = False
+    can_edit = False
+
+    column_list = (
+        "meeting.committee.name",
+        "meeting.date",
+        "meeting.title",
+        "attendance",
+        "alternate_member",
+        "member.name",
+    )
+    column_labels = {
+        "meeting.date": "Meeting date",
+        "meeting.title": "Meeting title",
+        "meeting.committee.name": "Committee name",
+        "attendance": "Attendance code",
+        "member.name": "Member",
+    }
+    column_searchable_list = ("member.name",)
+    column_filters = [
+        "meeting.date",
+        "attendance",
+        "alternate_member",
+        "meeting.committee",
+    ]
+    column_formatters = {
+        "meeting.committee.name": lambda v, c, m, n: Markup(
+            "<a href='%s'>%s</a>"
+            % (
+                url_for("committee_meeting", event_id=m.meeting_id),
+                m.meeting.committee.name,
+            ),
+        ),
+        "meeting.date": lambda v, c, m, n: m.meeting.date.date().isoformat(),
+    }
+
+    def get_query(self):
+        return self._extend_query(
+            super(CommitteeMeetingAttendanceView, self).get_query()
+        )
+
+    def get_count_query(self):
+        return self._extend_query(
+            super(CommitteeMeetingAttendanceView, self).get_count_query()
+        )
+
+    def _extend_query(self, query):
+        member_id = request.args.get("member_id")
+        if member_id is None:
+            return query
+        return query.filter(CommitteeMeetingAttendance.member_id == member_id)
+
 
 class CommitteeQuestionView(MyModelView):
     list_template = "admin/committee_question_list.html"
@@ -1584,6 +1646,15 @@ admin.add_view(
 # ---------------------------------------------------------------------------------
 # Members
 admin.add_view(MemberView(Member, db.session, name="Members", endpoint="member"))
+admin.add_view(
+    CommitteeMeetingAttendanceView(
+        CommitteeMeetingAttendance,
+        db.session,
+        name="Committee Meeting Attendances",
+        endpoint="committeemeetingattendance",
+        category="Committees",
+    ),
+)
 
 # ---------------------------------------------------------------------------------
 # Reports

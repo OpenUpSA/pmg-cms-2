@@ -857,6 +857,9 @@ class MemberView(MyModelView):
 
 
 class CommitteeMeetingAttendanceView(MyModelView):
+    can_delete = False
+    can_edit = False
+
     column_list = (
         "meeting.committee.name",
         "meeting.date",
@@ -876,8 +879,8 @@ class CommitteeMeetingAttendanceView(MyModelView):
     column_filters = [
         "meeting.date",
         "attendance",
-        "meeting.committee",
         "alternate_member",
+        "meeting.committee",
     ]
     column_formatters = {
         "meeting.committee.name": lambda v, c, m, n: Markup(

@@ -94,13 +94,20 @@ class TestAdminMemberPage(PMGLiveServerTestCase):
         Lists member committee meeting attendance
         """
 
-        attendance_url = "/admin/member/attendance/"
+        url = "/admin/committeemeetingattendance/"
+        response = self.make_request(url, self.user, method="GET")
+        self.assertEqual(200, response.status_code)
+        self.assertIn("Attendance", self.html)
+        self.assertIn("Attendance code", self.html)
+        self.assertIn("Public meeting Two", self.html)
+
+        attendance_url = "/admin/committeemeetingattendance/"
         member_id = "?id={}".format(str(self.fx.MemberData.veronica.id))
         rest_of_url = "&url=%2Fadmin%2Fmember%2F"
         url = "{}{}{}".format(attendance_url, member_id, rest_of_url)
 
         response = self.make_request(url, self.user, method="GET")
-        self.assertEqual(302, response.status_code)
+        self.assertEqual(200, response.status_code)
         self.assertIn("Attendance", self.html)
         self.assertIn("Attendance code", self.html)
         self.assertIn("Public meeting Two", self.html)

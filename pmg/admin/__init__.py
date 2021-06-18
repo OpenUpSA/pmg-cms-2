@@ -872,7 +872,7 @@ class CommitteeMeetingAttendanceView(MyModelView):
         "attendance": "Attendance code",
         "member.name": "Member",
     }
-    column_searchable_list = ("attendance", "member.name")
+    column_searchable_list = ("member.name",)
     column_filters = ["meeting.date", "attendance", "meeting.committee"]
     column_formatters = {
         "meeting.committee.name": lambda v, c, m, n: Markup(

@@ -895,9 +895,20 @@ class CommitteeMeetingAttendanceView(MyModelView):
             super(CommitteeMeetingAttendanceView, self).get_query()
         )
 
+    def get_count_query(self):
+        return self._extend_count_query(
+            super(CommitteeMeetingAttendanceView, self).get_count_query()
+        )
+
     def _extend_query(self, query):
         member_id = request.args.get("member_id")
         query = query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
+        if member_id is None:
+            return query
+        return query.filter(CommitteeMeetingAttendance.member_id == member_id)
+
+    def _extend_count_query(self, query):
+        member_id = request.args.get("member_id")
         if member_id is None:
             return query
         return query.filter(CommitteeMeetingAttendance.member_id == member_id)

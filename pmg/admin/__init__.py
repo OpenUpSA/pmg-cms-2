@@ -883,12 +883,9 @@ class CommitteeMeetingAttendanceView(MyModelView):
         "meeting.committee",
     ]
     column_formatters = {
-        "meeting.committee.name": lambda v, c, m, n: Markup(
+        "meeting.title": lambda v, c, m, n: Markup(
             "<a href='%s'>%s</a>"
-            % (
-                url_for("committee_meeting", event_id=m.meeting_id),
-                m.meeting.committee.name,
-            ),
+            % (url_for("committee_meeting", event_id=m.meeting_id), m.meeting.title,),
         ),
         "meeting.date": lambda v, c, m, n: m.meeting.date.date().isoformat(),
     }
@@ -898,13 +895,9 @@ class CommitteeMeetingAttendanceView(MyModelView):
             super(CommitteeMeetingAttendanceView, self).get_query()
         )
 
-    def get_count_query(self):
-        return self._extend_query(
-            super(CommitteeMeetingAttendanceView, self).get_count_query()
-        )
-
     def _extend_query(self, query):
         member_id = request.args.get("member_id")
+        query = query.join(CommitteeMeeting).order_by(CommitteeMeeting.date.desc())
         if member_id is None:
             return query
         return query.filter(CommitteeMeetingAttendance.member_id == member_id)

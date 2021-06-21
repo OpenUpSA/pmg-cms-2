@@ -4,6 +4,7 @@ from flask import current_app
 from flask_script import Command
 from pmg import db
 import logging
+import re
 
 log = logging.getLogger(__name__)
 
@@ -97,3 +98,25 @@ class StartScheduler(Command):
             scheduler.start()
         except (KeyboardInterrupt, SystemExit):
             pass
+
+
+class PreviousWebsiteFiles(Command):
+    def run(self):
+        from pmg import app
+        from pmg.models.resources import CommitteeMeeting
+
+        with app.app_context():
+            links = (
+                CommitteeMeeting.query.filter(CommitteeMeeting.body.like("%appendix%"))
+                .limit(20)
+                .all()
+            )
+            link_list = []
+            for link in links:
+                urls = re.findall(r'href=[\'"]?([^\'" >]+)', link.body)
+                urls = [i for i in urls if "appendix" in i]
+                link_list.extend(urls)
+                print("Found %s links for %s" % (len(urls), link.title))
+                print()
+
+            print(link_list)

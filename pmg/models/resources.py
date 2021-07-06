@@ -796,39 +796,11 @@ class Committee(ApiResource, db.Model):
 
         return best[0] if best else None
 
-    def reset_active(self):
-        """ Set this cte as (in)active based on recent meetings.
-        Generally only used for ad-hoc committees.
-        """
-        # get most recent meeting
-        meeting = (
-            CommitteeMeeting.query.filter(CommitteeMeeting.committee == self)
-            .order_by(desc(CommitteeMeeting.date))
-            .first()
-        )
-
-        now = datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
-        threshold = now - datetime.timedelta(days=self.AD_HOC_INACTIVE_DAYS)
-
-        self.active = meeting is not None and meeting.date >= threshold
-        self.last_active_year = meeting.date.year if meeting else None
-
     def __str__(self):
         tmp = self.name
         if self.house:
             tmp = self.house.name_short + " " + tmp
         return str(tmp)
-
-    @classmethod
-    def update_active_committees(cls):
-        """ Task to periodically mark ad-hoc committees as (in)active based
-        on recent meetings.
-        """
-        ctes = cls.query.filter(cls.ad_hoc == True).all()  # noqa
-        for cte in ctes:
-            cte.reset_active()
-            db.session.add(cte)
-        db.session.commit()
 
 
 class Membership(db.Model):

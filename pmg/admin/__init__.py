@@ -691,11 +691,6 @@ class CommitteeMeetingView(EventView):
             if getattr(model, attr):
                 setattr(model, attr, getattr(model, attr).replace(tzinfo=SAST))
 
-        if model.committee.ad_hoc:
-            # reset the active flag on this ad-hoc committee?
-            self.session.flush()
-            model.committee.reset_active()
-
 
 class HansardView(EventView):
     column_list = (

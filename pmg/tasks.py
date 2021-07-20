@@ -16,14 +16,6 @@ def send_saved_search_alerts():
         SavedSearch.send_all_alerts()
 
 
-def update_active_committees():
-    from pmg import app
-    from pmg.models import Committee
-
-    with app.app_context():
-        Committee.update_active_committees()
-
-
 def sync_soundcloud():
     from pmg import app
     from pmg.models.soundcloud_track import SoundcloudTrack
@@ -43,14 +35,6 @@ def schedule(scheduler):
             replace_existing=True,
             coalesce=True,
             hour=3,
-        ),
-        scheduler.add_job(
-            update_active_committees,
-            "cron",
-            id="update-active-committees",
-            replace_existing=True,
-            coalesce=True,
-            hour=2,
         ),
         scheduler.add_job(
             sync_soundcloud,

@@ -1,3 +1,11 @@
+"""
+    Python script to find broken links from a csv file and try match the filenames
+    to existing backup files
+
+    Example Usage: python index.py --csv input.csv --out output.csv
+
+    Outputs a csv with meeting_id, url, filesystem_paths, possible_duplicate columns
+"""
 import argparse
 import csv
 import glob

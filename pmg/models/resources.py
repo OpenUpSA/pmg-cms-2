@@ -281,7 +281,7 @@ class File(db.Model):
         else:
             self.file_path = s3_bucket.upload_file(path, filename)
 
-    def from_file_blob(self, f_path):
+    def from_file_blob(self, f_path, t_path):
         self.title = filename = os.path.basename(f_path)
         file_mimetype = magic.from_file(f_path, mime=True)
         self.file_mime = file_mimetype
@@ -289,7 +289,7 @@ class File(db.Model):
         if app.debug:
             self.file_path = f_path
         else:
-            self.file_path = s3_bucket.upload_file(f_path, filename)
+            self.file_path = s3_bucket.upload_file(t_path, filename)
 
     def open(self):
         # Ugly hack for local testing

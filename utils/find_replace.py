@@ -17,7 +17,7 @@ from pmg import app, db
 from pmg.models.resources import CommitteeMeeting, EventFile, File
 
 
-def create_logger():
+def create_logger(args):
     logging.basicConfig(level=logging.INFO, filemode="a", encoding="utf-8")
     formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
     logger = logging.getLogger(__name__)
@@ -46,13 +46,12 @@ def upload_file(path):
         temp_path = os.path.join(temp_dir, os.path.basename(path))
         shutil.copyfile(path, temp_path)
         file = File()
-        file.from_file_blob(temp_path)
-        file.file_path = path
+        file.from_file_blob(path, temp_path)
         return file
 
 
 def process_and_upload_files(args):
-    logger = create_logger()
+    logger = create_logger(args)
     csv_row = namedtuple(
         "Row",
         "meeting_id previous_url previous_filesystem_path new_file_url file_id event_file_id",
@@ -110,7 +109,7 @@ def write_to_csv(csv_path, rows):
 
 
 def main(args):
-    logger = create_logger()
+    logger = create_logger(args)
     logger.info("Started")
     write_to_csv(args.out, process_and_upload_files(args))
     logger.info("Finished")

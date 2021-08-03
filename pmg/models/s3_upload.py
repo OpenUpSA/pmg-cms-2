@@ -80,9 +80,7 @@ class S3Bucket:
         except Exception as e:
             logger.error("Cannot upload file to S3. Removing file from disk.")
             # remove file from disc
-            # We kinda need to deactivate this during this process
-            #  because if something happens during upload, the file will be deleted
-            # os.remove(path)
+            os.remove(path)
             raise e
 
         # remove file from disc

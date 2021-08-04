@@ -7,6 +7,8 @@ import os
 import re
 import base64
 import tempfile
+
+import magic
 import pytz
 
 from sqlalchemy import desc, func, sql, case, cast, Float, Integer, text
@@ -278,6 +280,16 @@ class File(db.Model):
             self.file_path = path
         else:
             self.file_path = s3_bucket.upload_file(path, filename)
+
+    def from_file_blob(self, f_path, t_path):
+        self.title = filename = os.path.basename(f_path)
+        file_mimetype = magic.from_file(f_path, mime=True)
+        self.file_mime = file_mimetype
+        self.file_bytes = os.stat(f_path).st_size
+        if app.debug:
+            self.file_path = f_path
+        else:
+            self.file_path = s3_bucket.upload_file(t_path, filename)
 
     def open(self):
         # Ugly hack for local testing

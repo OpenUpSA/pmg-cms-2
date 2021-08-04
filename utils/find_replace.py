@@ -1,7 +1,7 @@
 """
     Python script to upload and replace broken links with new ones.
 
-    Example Usage: python utils/find_replace.py --csv input.csv --out output.csv
+    Example Usage: python utils/find_replace.py --csv data/input.csv --out data/output.csv --logfile data/output.log
 
     Outputs a csv with meeting_id previous_url previous_filesystem_path new_file_url file_id event_file_id columns
 """
@@ -64,11 +64,10 @@ def process_and_upload_files(args):
         if not meeting:
             logger.error("Could not find meeting {}".format(meeting_id))
             continue
-        new_file_url = ""
+        new_file_url = None
         try:
-            with app.app_context():
-                file = upload_file(filesystem_path)
-                new_file_url = file.url
+            file = upload_file(filesystem_path)
+            new_file_url = file.url
         except FileNotFoundError:
             logger.error(
                 f"Could not find file {filesystem_path} for meeting id: {meeting_id}, {new_file_url}"
@@ -125,4 +124,6 @@ if __name__ == "__main__":
     )
     parser.add_argument("--logfile", required=True, help="path to logfile")
     args = parser.parse_args()
-    main(args)
+
+    with app.app_context():
+        main(args)

@@ -1155,6 +1155,13 @@ class InlineBillEventsForm(InlineFormAdmin):
         "Bill remitted",
         "Bill revived on this date",
     ]
+    ALLOWED_BILL_UPDATED_TITLES = [
+        "Bill rejected",
+        "The NA granted permission",
+        "The NCOP granted permission",
+        "Bill lapsed",
+        "Bill withdrawn"
+    ]
     form_columns = (
         "id",
         "date",
@@ -1169,8 +1176,9 @@ class InlineBillEventsForm(InlineFormAdmin):
             "description": '<div><a href="#" class="help-event-title">'
             '<i class="fa fa-icon fa-fw fa-chevron-right"></i>Help?</a>'
             '<div class="help-event-title-content">When event type is "Bill passed", '
+            'event title must be one of: <ul>%s</ul>When event type is "Bill updated", '
             "event title must be one of: <ul>%s</ul></div></div>"
-            % "".join(("<li>%s</li>" % title for title in ALLOWED_BILL_PASSED_TITLES))
+            % ("".join(("<li>%s</li>" % title for title in ALLOWED_BILL_PASSED_TITLES)), "".join(("<li>%s</li>" % title for title in ALLOWED_BILL_UPDATED_TITLES)))
         },
     }
 

@@ -146,6 +146,11 @@ def match_title(event_title):
         "the ncop rescinded",
         "bill remitted",
         "bill revived on this date",
+        "bill rejected",
+        "the NA granted permission",
+        "the NCOP granted permission",
+        "bill lapsed",
+        "bill withdrawn"
     ]
     event_title_lower = event_title.strip().lower()
     for title in bill_titles:

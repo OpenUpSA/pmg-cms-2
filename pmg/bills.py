@@ -146,9 +146,10 @@ def match_title(event_title):
         "the ncop rescinded",
         "bill remitted",
         "bill revived on this date",
+        "the na rescinded",
         "bill rejected",
-        "the NA granted permission",
-        "the NCOP granted permission",
+        "the na granted permission",
+        "the ncop granted permission",
         "bill lapsed",
         "bill withdrawn"
     ]

@@ -1156,6 +1156,7 @@ class InlineBillEventsForm(InlineFormAdmin):
         "Bill revived on this date",
     ]
     ALLOWED_BILL_UPDATED_TITLES = [
+        "The NA rescinded its decision to pass Bill",
         "Bill rejected",
         "The NA granted permission",
         "The NCOP granted permission",

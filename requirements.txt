@@ -103,7 +103,7 @@ universal-analytics-python3==1.0.1
 urllib3==1.25.7
 watchdog==0.8.3
 webassets==2.0
-Werkzeug==0.10.1
+Werkzeug==2.2.3
 WTForms==2.0.2
 xlrd==1.0.0
 XlsxWriter==0.6.6

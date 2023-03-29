@@ -241,3 +241,34 @@ class EmailAlertForm(Form):
             )
 
         return set(u for u in chain(*groups))
+
+class SubscriptionsView(BaseView):
+
+    @expose('/')
+    def index(self):
+        committee_list = (
+            Committee.query.order_by(Committee.house_id.desc())
+            .order_by(Committee.name)
+            .filter_by(monitored=True)
+            .all()
+        )
+
+        subscriber_counts = {
+            t[0]: t[1]
+            for t in db.session.query(user_committee_alerts.c.committee_id, count(1))
+            .join(User, User.id == user_committee_alerts.c.user_id)
+            .filter(User.confirmed_at != None)
+            .group_by(user_committee_alerts.c.committee_id)
+            .all()
+        }
+
+        committee_ids = [
+            (
+                c.id,
+                "%s - %s : %d" % (c.house.name, c.name, subscriber_counts.get(c.id, 0)),
+            )
+            for c in committee_list
+        ]
+
+        return self.render('admin/alerts/subscriptions.html', committee_ids=committee_ids)
+    

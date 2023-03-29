@@ -1,0 +1,65 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    {{ super() }}
+
+    <h2 id="header-page">Subscription Stats</h1>
+
+    <div>
+        <canvas id="subscriptions"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    const ctx = document.getElementById('subscriptions');
+
+    var committees = {{ committee_ids|tojson }}
+
+
+    labels = committees.map(function (item) {
+        return item[1].split(': ')[0];
+    });
+
+    values = committees.map(function (item) {
+        return item[1].split(': ')[1];
+    });
+
+    const data = {
+        labels: labels,
+        datasets: [{
+            label: 'subscribers',
+            data: values,
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: data,
+        options: {
+            indexAxis: 'y',
+            elements: {
+                bar: {
+                    borderWidth: 2,
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false,
+                    position: 'right',
+                },
+                title: {
+                    display: true,
+                    text: ''
+                }
+            }
+        },
+      };
+
+    new Chart(ctx, config);
+    </script>
+
+
+{% endblock body %}

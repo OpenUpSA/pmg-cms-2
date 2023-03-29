@@ -35,6 +35,7 @@ from pmg.models import *  # noqa
 import pmg.utils
 from .xlsx import XLSXBuilder
 from .email_alerts import EmailAlertView
+from .email_alerts import SubscriptionsView
 from .rbac import RBACMixin
 from .reports import ReportView
 from . import widgets

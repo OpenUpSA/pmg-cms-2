@@ -1651,9 +1651,7 @@ admin.add_view(
         endpoint="email-templates",
     )
 )
-admin.add_view(
-    SubscriptionsView(category="Email Alerts", name="Alert Counts", endpoint="subscriptions")
-)
+
 
 # ---------------------------------------------------------------------------------
 # Members
@@ -1677,4 +1675,7 @@ admin.add_view(
     UsageReportView(
         name="User usage report", endpoint="usage_report", category="Reports"
     )
+)
+admin.add_view(
+    SubscriptionsView(category="Reports", name="Alert Counts", endpoint="subscriptions")
 )

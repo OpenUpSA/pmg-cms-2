@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}Search results | PMG{% endblock %}
+
+{% block page %}
+
+<div class="row search-box">
+  <div class="col-sm-6 col-sm-offset-3">
+    {% if not q %}
+      <h2>Search PMG</h2>
+    {% endif %}
+    <form class="search-page-form pull-right" role="search" action="/search">
+      {% if q %}
+        <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
+        <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
+        <input type="hidden" name="filter[type]" value="{{ filters.type }}">
+        <input type="hidden" name="filter[committee]" value="{{ filters.committee }}">
+      {% endif %}
+
+      <div class="input-group">
+        <input type="text" class="form-control" name="q" placeholder="What are you looking for?" value="{{q}}">
+        <span class="input-group-btn">
+          <input type="submit" class="btn btn-success" onclick="form.submit()" value="Search" />
+        </span>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% if q %}
+  <div class="row">
+    <div class="col-sm-3">
+      {% block top_links %}
+        <div class="hidden-xs hidden-sm">
+          <h4>Refine your search</h4>
+        </div>
+        <form>
+          <input type="hidden" name="q" value="{{ q }}">
+          <input type="hidden" name="filter[start_date]" value="{{ filters.start_date }}">
+          <input type="hidden" name="filter[end_date]" value="{{ filters.end_date }}">
+          <input type="hidden" name="filter[type]" value="{{ filters.type }}">
+          {% include 'committee_select.html' %}
+        </form>
+
+        <div class="panel visible-xs visible-sm">
+          <a class="btn btn-primary form-control" type="button" data-toggle="collapse" href="#filter">
+            Refine your search <span class="caret"></span>
+          </a>
+          <div id="filter" class="panel-collapse collapse">
+            <div class="panel-body">
+              {% include "_filter_type_options.html" %}
+              {% include "_filter_year_options.html" %}
+            </div>
+          </div>
+        </div>
+
+        <div class="list-group hidden-xs hidden-sm">
+          {% include "_filter_type_options.html" %}
+        </div>
+
+        <div class="list-group hidden-xs hidden-sm">
+          {% include "_filter_year_options.html" %}
+        </div>
+      {% endblock %}
+    </div>
+
+    <div class="col-sm-9">
+      <div class="row search-head">
+        <div class="col-sm-8">
+          <div class="search-summary">
+            <h2 class="search-q">{{ q }}</h2>
+            {% if search.friendly_data_type %}
+              <p>in <b>{{ search.friendly_data_type }}</b></p>
+            {% endif %}
+
+            {% if search.filtered_committee_name %}
+              <p>for <b>{{ search.filtered_committee_name }}</b></p>
+            {% endif %}
+
+            <h5>{{ search.hits }} matches</h5>
+
+            {% if suggest_phrase %}
+            <p class="tip"><strong>Tip:</strong> Try searching for <a href="{{ suggest_phrase_url }}">{{ suggest_phrase }}</a> for more specific results.</p>
+            {% endif %}
+            {% if suggest_broader %}
+            <p class="tip"><strong>Tip:</strong> Try using other words related to what you are searching for.</p>
+            {% endif %}
+          </div>
+        </div>
+        {% if current_user.is_authenticated() %}
+          <div class="col-sm-4">
+            <div class="email-alert-box create-alert {% if saved_search %} hidden {% endif %}">
+              <p>
+                <a class="btn btn-info" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
+              </p>
+                Get free email alerts when we add new information that match this search.
+            </div>
+
+            <div class="email-alert-box remove-alert {% if not saved_search %} hidden {% endif %}">
+              <p>
+                <a class="btn btn-warning" type="button" data-id="{{ saved_search.id }}">Remove alert</a>
+              </p>
+              We'll send you email alerts for this search. <a href="{{ url_for('email_alerts') }}">Manage alerts</a>.
+            </div>
+          </div>
+        {% else %}
+          <div class="col-sm-4">
+            <div class="email-alert-box create-alert-anon">
+              <p>
+                <a class="btn btn-default disabled" type="button" data-q="{{ q }}" data-type="{{ filters.type }}" data-committee="{{ filters.committee }}">Create alert</a>
+              </p>
+                <a href="{{ url_for('security.login', next=request.full_path) }}">Log in</a> or <a href="{{ url_for('security.register', next=request.full_path) }}"> create an account </a> to get free email alerts when we add new information that match this search.
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <ul class="list-unstyled item-list search-list">
+        {% for result in search.results %}
+        <li>
+          {% include result._type + '_stub.html' %}
+        </li>
+        {% endfor %}
+      </ul>
+
+      {% include 'pagination.html' %}
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

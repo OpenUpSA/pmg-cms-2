@@ -271,3 +271,4 @@ class SubscriptionsView(BaseView):
         ]
 
         return self.render('admin/alerts/subscriptions.html', committee_ids=committee_ids)
+    

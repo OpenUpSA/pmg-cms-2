@@ -99,7 +99,7 @@ def load_from_api(
     }
 
     # add auth header
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         headers["Authentication-Token"] = current_user.get_auth_token()
 
     try:

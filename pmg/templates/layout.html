@@ -46,7 +46,7 @@
   {% block head_meta %}{% endblock %}
 </head>
 
-<body class="{{ request.endpoint }} {% if current_user.is_authenticated() %}logged-in{% else %}not-logged-in{% endif %}">
+<body class="{{ request.endpoint }} {% if current_user.is_authenticated %}logged-in{% else %}not-logged-in{% endif %}">
   <div id="wrapper">
     {% block content %}
     {% endblock content %}
@@ -66,7 +66,7 @@
   ga('create', '{{ config['GOOGLE_ANALYTICS_ID'] }}', 'auto');
 
   {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
-  {% if current_user.is_authenticated() %}
+  {% if current_user.is_authenticated %}
     {% if current_user.organisation %}
     ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
     {% else %}

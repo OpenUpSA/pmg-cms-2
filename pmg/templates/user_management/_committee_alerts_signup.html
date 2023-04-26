@@ -1,6 +1,6 @@
 {% if committee.active %}
 {% if committee.id != 0 %}
-  {% if current_user.is_authenticated() %}
+  {% if current_user.is_authenticated %}
     <div class="cte-signup-box email-alert-box text-center">
       {% if current_user.follows(committee.id) %}
       <form class="cte-follow-committee" action="{{ url_for('user_unfollow_committee', committee_id=committee.id) }}" method="POST">

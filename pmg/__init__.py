@@ -50,7 +50,7 @@ cache = Cache(
 
 
 def should_skip_cache(request, current_user):
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         if app.config["DEBUG_CACHE"]:
             logger.debug("cached value ALLOWED for %r", request.url)
         return False

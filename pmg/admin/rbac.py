@@ -16,7 +16,7 @@ class RBACMixin:
         if not self.require_authentication:
             return True
 
-        if not current_user.is_active() or not current_user.is_authenticated():
+        if not current_user.is_active or not current_user.is_authenticated:
             return False
 
         if all(current_user.has_role(r) for r in self.required_roles):
@@ -29,7 +29,7 @@ class RBACMixin:
         Override builtin _handle_view in order to redirect users when a view is not accessible.
         """
         if not self.is_accessible():
-            if current_user.is_authenticated():
+            if current_user.is_authenticated:
                 # permission denied
                 abort(403)
             else:

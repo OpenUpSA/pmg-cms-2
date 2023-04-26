@@ -495,7 +495,7 @@ class CommitteeMeeting(Event):
                 return True
 
             # must be authenticated
-            if not current_user.is_authenticated():
+            if not current_user.is_authenticated:
                 return False
 
             if not current_user.is_confirmed():

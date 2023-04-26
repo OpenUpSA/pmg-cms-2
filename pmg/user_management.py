@@ -20,7 +20,7 @@ def email_alerts():
     """
     next_url = request.values.get("next", "")
 
-    if current_user.is_authenticated() and request.method == "POST":
+    if current_user.is_authenticated and request.method == "POST":
         ids = request.form.getlist("committees")
         current_user.committee_alerts = Committee.query.filter(
             Committee.id.in_(ids)
@@ -42,7 +42,7 @@ def email_alerts():
     committees = load_from_api(
         "v2/committees", return_everything=True, params={"monitored": True}
     )["results"]
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         subscriptions = set(c.id for c in current_user.committee_alerts)
     else:
         subscriptions = set()
@@ -57,7 +57,7 @@ def email_alerts():
             provincial_committees[house_name].append(committee)
 
     saved_searches = defaultdict(list)
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         for ss in current_user.saved_searches:
             saved_searches[ss.search].append(ss)
 
@@ -74,7 +74,7 @@ def email_alerts():
 
 @app.route("/user/committee/alerts/add/<int:committee_id>", methods=["POST"])
 def user_add_committee_alert(committee_id):
-    if current_user.is_authenticated() and request.method == "POST":
+    if current_user.is_authenticated and request.method == "POST":
         current_user.committee_alerts.append(Committee.query.get(committee_id))
         db.session.commit()
         ga_event("user", "add-alert", "cte-alert-box")
@@ -85,7 +85,7 @@ def user_add_committee_alert(committee_id):
 
 @app.route("/user/committee/alerts/remove/<int:committee_id>", methods=["POST"])
 def user_remove_committee_alert(committee_id):
-    if current_user.is_authenticated() and request.method == "POST":
+    if current_user.is_authenticated and request.method == "POST":
         current_user.committee_alerts.remove(Committee.query.get(committee_id))
         db.session.commit()
         ga_event("user", "remove-alert", "cte-alert-box")
@@ -96,7 +96,7 @@ def user_remove_committee_alert(committee_id):
 
 @app.route("/user/follow/committee/<int:committee_id>", methods=["POST"])
 def user_follow_committee(committee_id):
-    if current_user.is_authenticated() and request.method == "POST":
+    if current_user.is_authenticated and request.method == "POST":
         follow_committee(committee_id)
 
     return redirect(request.headers.get("referer", "/"))
@@ -104,7 +104,7 @@ def user_follow_committee(committee_id):
 
 @app.route("/user/unfollow/committee/<int:committee_id>", methods=["POST"])
 def user_unfollow_committee(committee_id):
-    if current_user.is_authenticated() and request.method == "POST":
+    if current_user.is_authenticated and request.method == "POST":
         committee = Committee.query.get(committee_id)
 
         if committee in current_user.following:
@@ -121,7 +121,7 @@ def user_unfollow_committee(committee_id):
 
 @app.route("/user/megamenu/")
 def user_megamenu():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return render_template("_megamenu.html", **get_megamenu())
     else:
         abort(404)
@@ -174,7 +174,7 @@ def get_megamenu():
     recent_meetings = None
     user_follows_committees = False
 
-    if current_user and current_user.is_authenticated():
+    if current_user and current_user.is_authenticated:
         user_following = sorted(current_user.following, key=lambda cte: cte.name)[:20]
         if user_following:
             user_follows_committees = True

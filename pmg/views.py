@@ -50,6 +50,7 @@ from . import utils
 from .helpers import _jinja2_filter_datetime as pretty_date
 from .user_management import follow_committee
 
+
 LEGACY_DOMAINS = set(
     [
         "new.pmg.org.za",
@@ -74,7 +75,7 @@ def page_not_found(error):
     dest = Redirect.for_url(request.path)
     if dest:
         return redirect(dest, code=302)
-
+    
     return render_template("404.html"), 404
 
 
@@ -120,7 +121,7 @@ def redirect_legacy_domains():
 
 @app.before_request
 def update_last_login():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         # keep track of the last visit
         current_user.update_current_login()
 
@@ -668,11 +669,11 @@ def committees():
         else:
             committees_type = reg_committees
 
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             user_following = current_user.following
 
             # Check if user is following committee
-            if current_user.is_authenticated() and committee["id"] in [
+            if current_user.is_authenticated and committee["id"] in [
                 ufc.id for ufc in user_following
             ]:
                 committee["followed"] = True
@@ -813,9 +814,10 @@ def committee_meeting(event_id):
             + pretty_date(event["date"], "long")
             + "."
         )
+    
+    
 
-    return (
-        render_template(
+    return render_template(
             "committee_meeting.html",
             event=event,
             committee=event["committee"],
@@ -826,8 +828,7 @@ def committee_meeting(event_id):
             content_date=event["date"],
             social_summary=social_summary,
             admin_edit_url=admin_url("committee-meeting", event_id),
-            SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"],
-        ),
+            SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"]
     )
 
 
@@ -1688,7 +1689,7 @@ def search(page=0):
         return url_for("search", q=q, **args)
 
     saved_search = None
-    if not current_user.is_anonymous():
+    if not current_user.is_anonymous:
         saved_search = SavedSearch.find(
             current_user,
             q,

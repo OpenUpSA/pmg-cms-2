@@ -50,7 +50,7 @@
       <li>Public education institutions</li>
     </ul>
 
-    {% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+    {% if current_user.is_authenticated and not current_user.is_confirmed() %}
       <div class="row">
         <div class="col-sm-12">
           <div class="alert alert-info">

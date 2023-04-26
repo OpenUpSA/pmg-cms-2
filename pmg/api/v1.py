@@ -33,7 +33,7 @@ def load_user():
     login_mechanisms = {
         "token": lambda: _check_token(),
         "basic": lambda: _check_http_auth(),
-        "session": lambda: current_user.is_authenticated(),
+        "session": lambda: current_user.is_authenticated,
     }
 
     def wrapper(fn):
@@ -104,7 +104,7 @@ def api_resource(resource_id, base_query):
     status_code = 200
     if resource == "committee-meeting":
         if not resource.check_permission():
-            if current_user.is_anonymous():
+            if current_user.is_anonymous:
                 status_code = 401  # Unauthorized, i.e. authentication is required
             else:
                 status_code = 403  # Forbidden, i.e. the user is not subscribed
@@ -247,7 +247,7 @@ def old_admin():
 @load_user()
 def user():
     """ Info on the currently logged in user. """
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         raise ApiException(401, "not authenticated")
 
     user = serializers.to_dict(current_user)

@@ -41,11 +41,11 @@ funcsigs==0.4
 gevent==1.4.0
 greenlet==0.4.15
 gunicorn==19.9.0
-h11==0.9.0
+h11==0.11.0
 h2==3.1.1
 hpack==3.0.0
 hstspreload==2020.2.1
-httpx==0.11.1
+httpx==0.23.0
 humanize==0.5.1
 hyperframe==5.2.0
 idna==2.8
@@ -84,7 +84,7 @@ python-http-client==1.2.3
 python-slugify==3.0.2
 pytz==2015.6
 PyYAML==5.3
-requests==2.22.0
+requests==2.23.0
 rfc3986==1.3.2
 sendgrid==2.2.1
 sentry-sdk==0.9.1

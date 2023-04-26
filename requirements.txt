@@ -45,7 +45,7 @@ h11==0.9.0
 h2==3.1.1
 hpack==3.0.0
 hstspreload==2020.2.1
-httpx==0.11.1
+httpx==0.23.0
 humanize==0.5.1
 hyperframe==5.2.0
 idna==2.8

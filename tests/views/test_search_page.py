@@ -15,6 +15,8 @@ class TestSearchPage(PMGLiveServerTestCase):
         self.fx.teardown()
         super(TestSearchPage, self).tearDown()
 
+    
+
     @patch.object(ElasticSearch, "search")
     def __call__(self, result=None, search_mock=None):
         search_mock.return_value = {
@@ -56,6 +58,7 @@ class TestSearchPage(PMGLiveServerTestCase):
         super(TestSearchPage, self).__call__(result)
 
     def test_search_page(self):
+        
         search_term = "content"
         self.make_request("/search/?q=%s" % search_term)
         self.assertIn(search_term, self.html)

@@ -4,7 +4,7 @@ import logging
 from flask import redirect, request, url_for, flash
 from flask_admin import BaseView, expose
 from flask_mail import Message
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from wtforms import (
     StringField,
     TextAreaField,
@@ -100,7 +100,7 @@ class EmailAlertView(RBACMixin, BaseView):
         return self.render("admin/alerts/sent.html")
 
 
-class EmailAlertForm(Form):
+class EmailAlertForm(FlaskForm):
     template_id = HiddenField("template_id", [validators.Required()])
     previewed = HiddenField("previewed", default="0")
     subject = StringField("Subject", [validators.Required()])

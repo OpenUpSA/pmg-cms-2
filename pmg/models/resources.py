@@ -19,7 +19,7 @@ from flask import url_for
 from flask_sqlalchemy import models_committed
 from flask_security import current_user
 
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from za_parliament_scrapers.questions import QuestionAnswerScraper
 
 from pmg import app, db

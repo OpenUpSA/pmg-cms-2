@@ -1,4 +1,4 @@
-{% if current_user.is_authenticated() %}
+{% if current_user.is_authenticated %}
   <a href="{{ url_for('email_alerts') }}">
     <div class="banner-card first">
       <h4>Manage committee meeting alerts</h4>

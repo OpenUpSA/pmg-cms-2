@@ -1,6 +1,6 @@
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <input type="hidden" name="next" value="{{ request.url }}">
-{% if current_user.is_authenticated() %}
+{% if current_user.is_authenticated %}
 {% if committee.followed %}
 <input type="checkbox" checked />
 {% else %}

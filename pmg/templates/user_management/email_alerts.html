@@ -5,7 +5,7 @@
 {% block page %}
   <h1>Free Email Alerts</h1>
 
-  {% if not current_user.is_authenticated() %}
+  {% if not current_user.is_authenticated %}
     <div class="row">
       <div class="col-sm-5 col-sm-offset-4">
         <div class="alert alert-info">
@@ -25,7 +25,7 @@
       </div>
     </div>
   {% endif %}
-  {% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+  {% if current_user.is_authenticated and not current_user.is_confirmed() %}
     <div class="row">
       <div class="col-sm-5 col-sm-offset-4">
         <div class="alert alert-info">
@@ -47,11 +47,11 @@
 
   <p class="lead">Which email alerts should we send to you?</p>
 
-  {% if current_user.is_authenticated() and after_signup %}
+  {% if current_user.is_authenticated and after_signup %}
     <a href="{{ next_url }}" class="btn btn-default">I'll do this later</a>
   {% endif %}
 
-  <fieldset{% if current_user.is_authenticated() and not current_user.is_confirmed() %} disabled{% endif %}>
+  <fieldset{% if current_user.is_authenticated and not current_user.is_confirmed() %} disabled{% endif %}>
     <ul class="list-unstyled daily-schedule">
       <li class="checkbox">
         <label>

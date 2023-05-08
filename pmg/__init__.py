@@ -6,7 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_caching import Cache
-from flask_wtf.csrf import CsrfProtect
+from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
 
@@ -50,7 +50,7 @@ cache = Cache(
 
 
 def should_skip_cache(request, current_user):
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         if app.config["DEBUG_CACHE"]:
             logger.debug("cached value ALLOWED for %r", request.url)
         return False
@@ -77,7 +77,7 @@ db.metadata.naming_convention = {
     "pk": "pk_%(table_name)s",
 }
 migrate = Migrate(app, db, transaction_per_migration=True)
-csrf = CsrfProtect(app)
+csrf = CSRFProtect(app)
 mail = Mail(app)
 ma = Marshmallow(app)
 

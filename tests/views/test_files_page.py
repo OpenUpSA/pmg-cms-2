@@ -17,7 +17,7 @@ class TestFilesPage(PMGLiveServerTestCase):
             "/questions/test_file.pdf",
             referrer="",
             uip="127.0.0.1",
-            userAgent="werkzeug/0.10.1",
+            userAgent="werkzeug/2.0.0",
         )
         self.assertEqual(302, response.status_code)
         static_host = self.app.config.get("STATIC_HOST")

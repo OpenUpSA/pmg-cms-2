@@ -46,7 +46,10 @@ class PMGLiveServerTestCase(LiveServerTestCase):
             self._post_teardown()
             self._terminate_live_server()
 
+    
+
     def _spawn_live_server(self):
+
         self._process = None
 
         worker = lambda app, port: app.run(port=port, use_reloader=False, threaded=True)
@@ -56,6 +59,8 @@ class PMGLiveServerTestCase(LiveServerTestCase):
         )
 
         self._process.start()
+
+        self._port_value = multiprocessing.Value("i", self.port)
 
         # We must wait for the server to start listening, but give up
         # after a specified maximum timeout

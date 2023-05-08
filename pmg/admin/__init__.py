@@ -1327,6 +1327,7 @@ class FileView(MyModelView):
         "description",
         "file_path",
         "file_mime",
+        "file_bytes",
         rules.Container("rules.staticfield", SizeRule(), label="Size"),
         rules.Container("rules.staticfield", UrlRule(), label="URL"),
     ]

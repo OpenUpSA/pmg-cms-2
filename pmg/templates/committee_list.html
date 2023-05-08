@@ -24,7 +24,7 @@
             <a class="tab-switch-prov" href="#prov" data-toggle="tab">Western Cape Parliament</a>
 	</li>
 	{% endif %}
-	{% if current_user.is_authenticated() %}
+	{% if current_user.is_authenticated %}
 	<li class="following">
             <a href="#user-following" data-toggle="tab"><span class="hidden-sm">Committees you follow</span><span class="visible-sm">Following</span></a>
 	</li>
@@ -41,7 +41,7 @@
 	{% if wc_committees %}
 	<option data-toggle="tab" data-target="#prov" value="#prov">Western Cape Parliament committees</option>
 	{% endif %}
-	{% if current_user.is_authenticated() %}
+	{% if current_user.is_authenticated %}
 	<option data-toggle="tab" data-target="#user-following" value="#user-following">Committees you follow</option>
 	{% endif %}
     </select>
@@ -56,7 +56,7 @@
     </div>
     <div class="col-xs-12 col-sm-6 col-md-4 col-md-offset-4 legend">
 	<ul>
-            {% if current_user.is_authenticated() %}
+            {% if current_user.is_authenticated %}
             <li>
 		<span class="follow"><i class="fa fa-check-circle"></i> Follow committees to receive email alerts</span>
             </li>
@@ -144,7 +144,7 @@
 				    {% endif %}
 				    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 				    <input type="hidden" name="next" value="{{ request.url }}">
-				    {% if current_user.is_authenticated() %}
+				    {% if current_user.is_authenticated %}
 				    {% if committee.followed %}
 				    <input type="checkbox" checked />
 				    {% else %}
@@ -153,7 +153,7 @@
 				    <label>
 					{% endif %}
 					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if committee.last_active_year %} <span class="text-muted">({{ committee.last_active_year }})</span>{% endif %}
-					{% if current_user.is_authenticated() %}
+					{% if current_user.is_authenticated %}
 				    </label>
 				    {% endif %}
 				</form>
@@ -184,7 +184,7 @@
 					{% endif %}
 					<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 					<input type="hidden" name="next" value="{{ request.url }}">
-					{% if current_user.is_authenticated() %}
+					{% if current_user.is_authenticated %}
 					    {% if committee.followed %}
 						<input type="checkbox" checked />
 					    {% else %}
@@ -193,7 +193,7 @@
 					    <label>
 					{% endif %}
 					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">{{ committee.name }}</a>{% if committee.last_active_year %} <span class="text-muted">({{ committee.last_active_year }})</span>{% endif %}
-					{% if current_user.is_authenticated() %}
+					{% if current_user.is_authenticated %}
 					    </label>
 					{% endif %}
 						</form>
@@ -230,7 +230,7 @@
 	    </div>
 	</div>
 
-	{% if current_user.is_authenticated() %}
+	{% if current_user.is_authenticated %}
 	<div class="tab-pane row cte-list-user-following" id="user-following">
 	    {% if current_user.following %}
             {% for column in current_user.following|slice(2) %}

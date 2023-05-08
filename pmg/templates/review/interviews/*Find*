@@ -1,9 +1,0 @@
-  /home/lunga/code/openup/pmg-cms-2/pmg/templates/review/statistics/:
-  find . \( -name \*.html \) -ls
-*   2495818     20 -rw-rw-r--   1 lunga    lunga       12100 Apr 25 13:59 2019Review_Questions.html
-*   2495798     24 -rw-rw-r--   1 lunga    lunga       14503 Apr 25 13:52 2019Review_Performance.html
-*   2495797     24 -rw-rw-r--   1 lunga    lunga       12727 Apr 25 13:40 2019Review_Agenda.html
-*   2495796     20 -rw-rw-r--   1 lunga    lunga       10079 Apr 25 13:39 2019Review_Activity.html
-*   2495824     24 -rw-rw-r--   1 lunga    lunga       15439 Apr 25 14:02 2019Review_Turnover.html
-  
-  find finished at Thu Apr 25 16:08:50

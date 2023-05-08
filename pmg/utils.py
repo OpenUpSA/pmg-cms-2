@@ -41,7 +41,7 @@ def track_pageview(path=None, ignore_bots=True):
         return False
 
     path = path or request.path
-    user_id = current_user.id if current_user.is_authenticated() else None
+    user_id = current_user.id if current_user.is_authenticated else None
 
     client_id = request.cookies.get("_ga")
     if client_id:

@@ -1,4 +1,4 @@
-{% if current_user.is_authenticated() and not current_user.is_confirmed() %}
+{% if current_user.is_authenticated and not current_user.is_confirmed() %}
 <div class="confirm-email">
   <div class="container">
     <i class="fa fa-fw fa-envelope-open" aria-hidden="true"></i> Thank you for signing up! <b>We've sent you an email, please confirm your email address</b> by following the link provided. <a href="{{ url_for('security.send_confirmation') }}">Didn't receive an email?</a>
@@ -46,7 +46,7 @@
           </div>
           <hr>
           <ul class="nav navbar-nav">
-            {% if current_user.is_authenticated() %}
+            {% if current_user.is_authenticated %}
               <li class="account">
                 <i class="fa fa-user"></i><b> {{ current_user.email }} </b>
               </li>
@@ -77,7 +77,7 @@
 
       <div class="col-sm-6 col-md-4 hidden-xs pull-right">
         <ul class="nav navbar-nav pull-right">
-          {% if current_user.is_authenticated() %}
+          {% if current_user.is_authenticated %}
             {% if admin_edit_url %}
               {% for role in current_user.roles %}
                 {% if role.name == 'editor' %}

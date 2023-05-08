@@ -98,7 +98,7 @@ source env.localmail
 
 ### Running tests
 
-    docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests
+    docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests --exe -v
 
 ### Code formatting
 

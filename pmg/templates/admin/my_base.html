@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block access_control %}
-  {% if not current_user.is_anonymous() %}
+  {% if not current_user.is_anonymous %}
   <ul class="nav navbar-nav navbar-right">
     <li><a class="nav-link" href="{{ url_for_security('logout') }}">Logout</a></li>
   </ul>

@@ -26,7 +26,7 @@ SQLALCHEMY_ECHO = False
 # that is changed to use sqlalchemy events
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-SQLALCHEMY_POOL_SIZE = 30
+SQLALCHEMY_POOL_SIZE = int(env.get("SQLALCHEMY_POOL_SIZE", "10"))
 
 RESULTS_PER_PAGE = 50
 # The V2 API can support much higher volumes because callers

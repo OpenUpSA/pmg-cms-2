@@ -2,6 +2,7 @@ version: '3'
 
 services:
   web:
+    hostname: web
     build:
       context: .
       dockerfile: Dockerfile-dev

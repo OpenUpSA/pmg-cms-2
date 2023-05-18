@@ -196,12 +196,10 @@ from . import admin
 from pmg.api.v1 import api as api_v1
 
 app.register_blueprint(api_v1, subdomain="api")
-app.register_blueprint(api_v1, subdomain="internal-api")
 
 from pmg.api.v2 import api as api_v2
 
 app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
-app.register_blueprint(api_v2, subdomain="internal-api", url_prefix="/v2")
 
 
 # Add additional URL rules for the forgot-password flow including trailing slash

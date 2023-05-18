@@ -96,7 +96,6 @@ def load_from_api(
 
     headers = {
         "Host": API_HOST,
-        "X-APISOURCE": "local",
     }
 
     logger.debug("Headers: %s" % headers)

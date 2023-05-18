@@ -10,9 +10,9 @@ import urllib3
 
 from pmg import app
 
-API_URL = "http://172.17.0.2:5000/"
+API_URL = "http://127.0.0.1:5000/"
 # Fake host header because API bluebrints expect to be subdomain of SERVER_NAME.
-API_HOST = "api." + app.config["SERVER_NAME"]
+API_HOST = "internal-api." + app.config["SERVER_NAME"]
 
 # timeout connecting and reading from remote host
 TIMEOUTS = urllib3.Timeout(connect=3.05, read=10)

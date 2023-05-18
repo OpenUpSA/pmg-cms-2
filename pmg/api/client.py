@@ -10,7 +10,7 @@ import urllib3
 
 from pmg import app
 
-API_URL = "http://127.0.0.1:5000/"
+API_URL = "http://0.0.0.0:5000/"
 # Fake host header because API bluebrints expect to be subdomain of SERVER_NAME.
 API_HOST = "api." + app.config["SERVER_NAME"]
 
@@ -97,6 +97,8 @@ def load_from_api(
     headers = {
         "Host": API_HOST,
     }
+
+    logger.debug("Headers: %s" % headers)
 
     # add auth header
     if current_user.is_authenticated:

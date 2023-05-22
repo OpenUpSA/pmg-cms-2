@@ -84,7 +84,7 @@ python-http-client==1.2.3
 python-slugify==3.0.2
 pytz==2015.6
 PyYAML==5.4
-requests==2.23.0
+requests==2.31.0
 rfc3986==1.3.2
 sendgrid==2.2.1
 sentry-sdk==0.9.1

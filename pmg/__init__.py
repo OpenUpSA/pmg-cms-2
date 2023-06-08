@@ -1,3 +1,12 @@
+import flask_security
+from pmg.api.v2 import api as api_v2
+from pmg.api.v1 import api as api_v1
+from . import admin
+from . import user_management
+from . import views
+from . import helpers
+from webassets.filter.pyscss import PyScss
+from flask_assets import Environment, Bundle
 import logging
 import logging.config
 import os
@@ -19,7 +28,11 @@ env = os.environ.get("FLASK_ENV", "development")
 
 SENTRY_DSN = os.environ.get("SENTRY_DSN", None)
 if SENTRY_DSN:
-    sentry_sdk.init(dsn=SENTRY_DSN, integrations=[FlaskIntegration()])
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=os.environ.get("SENTRY_TRACES_SAMPLE_RATE", 0.5),
+        integrations=[FlaskIntegration()])
+
 
 app = Flask(__name__, static_folder="static")
 app.config.from_pyfile("../config/config.py")
@@ -115,7 +128,6 @@ def send_email_with_sendgrid(message):
 app.extensions.get("mail").send = send_email_with_sendgrid
 
 # setup assets
-from flask_assets import Environment, Bundle
 
 assets = Environment(app)
 assets.url_expire = False
@@ -123,7 +135,6 @@ assets.debug = app.debug
 # source files
 assets.load_path = ["%s/static" % app.config.root_path]
 
-from webassets.filter.pyscss import PyScss
 
 assets.register(
     "css",
@@ -188,16 +199,8 @@ assets.register(
 )
 
 
-from . import helpers
-from . import views
-from . import user_management
-from . import admin
-
-from pmg.api.v1 import api as api_v1
-
 app.register_blueprint(api_v1, subdomain="api")
 
-from pmg.api.v2 import api as api_v2
 
 app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
 
@@ -209,7 +212,6 @@ app.register_blueprint(api_v2, subdomain="api", url_prefix="/v2")
 # or double slash (emails that have been sent with the double slash).
 # (possibly) https://docs.microsoft.com/en-us/outlook/troubleshoot/message-body/url-multiple-slashes-become-single-slash
 
-import flask_security
 
 app.add_url_rule(
     "/user/forgot-password/",

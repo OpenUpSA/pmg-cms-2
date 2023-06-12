@@ -117,11 +117,13 @@
 		    <ul class="col-xs-12 col-sm-6">
 			{% for committee in column %}
 			    {% if not committee.active %}
-				<li class="committee item" data-id="{{ committee.id }}" data-following="true">
-				    <label>
-					<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name"><span class="text-muted">{{ committee.name }}</span></a>
-				    </label>
-				</li>
+					{% if committee.name != 'PMG Mail' %}
+						<li class="committee item" data-id="{{ committee.id }}" data-following="true">
+							<label>
+							<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name"><span class="text-muted">{{ committee.name }}</span></a>
+							</label>
+						</li>
+					{% endif %}
 			    {% endif %}
 			{% endfor %}
 		    </ul>
@@ -215,13 +217,13 @@
 			<ul>
 			    {% for committee in ctype.committees %}
 				{% if not committee.active %}
-				    <li>
+					<li>
 					<label>
-					    <a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">
+						<a href="{{ url_for('committee_detail', committee_id=committee.id) }}" class="name">
 						<span class="text-muted">{{ committee.name }}</span>
-					    </a>
+						</a>
 					</label>
-				    </li>
+					</li>
 				{% endif %}
 			    {% endfor %}
 			</ul>

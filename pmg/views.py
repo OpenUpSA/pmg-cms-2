@@ -1804,8 +1804,10 @@ def docs(path, dir=""):
 
 @app.route("/correct-this-page", methods=["POST"])
 def correct_this_page():
+
     form = forms.CorrectThisPageForm(request.form)
-    if form.validate_on_submit():
+    # if form.validate_on_submit():
+    if form.validate():
         msg = Message(
             "Correct This Page feedback",
             recipients=["correct@pmg.org.za"],

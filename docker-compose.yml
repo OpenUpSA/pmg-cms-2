@@ -15,6 +15,7 @@ services:
     environment:
       - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200
+      - SENTRY_DSN=https://15f79f6945ff4d4f8ac103e6a9c2f26d@sentry.io/1489874
     ports:
       - "5000:5000"
     command: python app.py runserver

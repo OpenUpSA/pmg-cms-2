@@ -57,48 +57,51 @@
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
 
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ config['GOOGLE_ANALYTICS_ID'] }}"></script>
   <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  ga('create', '{{ config['GOOGLE_ANALYTICS_ID'] }}', 'auto');
+    gtag('config', '{{ config['GOOGLE_ANALYTICS_ID'] }}');
+  </script>
 
+  <script>
+
+  
   {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
   {% if current_user.is_authenticated %}
     {% if current_user.organisation %}
-    ga('set', 'dimension1', '{{ current_user.organisation.domain }}');
+    gtag('set', {'dimension1': '{{ current_user.organisation.domain }}'});
     {% else %}
-    ga('set', 'dimension1', '(none)');
+    gtag('set', {'dimension1': '(none)'});
     {% endif %}
   {% endif %}
 
   {# record content date? #}
   {% if content_date is defined and content_date %}
-  ga('set', 'dimension2', '{{ content_date|pretty_date("ga") }}');
+  gtag('set', {'dimension2': '{{ content_date|pretty_date("ga") }}'});
   {% endif %}
 
   {# link this hit to a committee? #}
   {% if committee is defined and committee.id and committee.name %}
-  ga('set', 'dimension3', '{{ committee.id }} - {{ committee.name }}');
+  gtag('set', {'dimension3': '{{ committee.id }} - {{ committee.name }}'});
   {% endif %}
 
   {# track the 'via' parameter? #}
   {% if via_tag %}
-  ga('set', 'dimension4', '{{ via_tag }}');
+  gtag('set', {'dimension4': '{{ via_tag }}'});
   {% endif %}
 
-
-  ga('send', 'pageview');
+  gtag('event', 'page_view');
 
   {% for cat, action, label, value in get_ga_events() %}
-  ga('send', 'event', '{{ cat }}', '{{ action }}'
+  gtag('event', '{{ action }}', { 'event_category': '{{ cat }}'
       {%if label -%}
         , '{{ label }}'
         {% if value -%}
           , {{ value }}
-        {%endif%}{%endif%});
+        {%endif%}{%endif%} });
   {% endfor %}
   </script>
 

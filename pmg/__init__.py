@@ -9,6 +9,7 @@ from flask_caching import Cache
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
 from flask_marshmallow import Marshmallow
+from flask_debugtoolbar import DebugToolbarExtension
 
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -225,3 +226,5 @@ app.add_url_rule(
     "reset-password-slash-hack",
     flask_security.views.reset_password,
 )
+
+toolbar = DebugToolbarExtension(app)

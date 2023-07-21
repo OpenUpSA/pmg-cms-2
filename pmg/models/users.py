@@ -91,6 +91,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     name = db.Column(db.String(255), nullable=True)
     password = db.Column(db.String(255), default="", server_default="", nullable=False)
+    fs_uniquifier = db.Column(db.String(64), nullable=True, server_default="")
     active = db.Column(db.Boolean(), default=True, server_default=sql.expression.true())
     confirmed_at = db.Column(db.DateTime(timezone=False))
     last_login_at = db.Column(db.DateTime(timezone=False))

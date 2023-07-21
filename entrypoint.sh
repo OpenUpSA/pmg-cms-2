@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-python app.py start_scheduler &
+#python app.py start_scheduler &
 gunicorn --workers $GUNICORN_WORKERS \
     --worker-class gevent \
     --timeout $GUNICORN_TIMEOUT \

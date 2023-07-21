@@ -26,7 +26,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY --link . .
+COPY . .
 RUN chown -R appuser:appuser /app
 
 USER appuser

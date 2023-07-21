@@ -32,7 +32,7 @@ flask-marshmallow==0.7.0
 Flask-Migrate==2.7.0
 Flask-Principal==0.4.0
 Flask-Script==2.0.5
-Flask-Security-Too==3.3.0
+Flask-Security-Too==4.1.0
 Flask-SQLAlchemy==2.1
 Flask-Testing==0.8.1
 Flask-WTF==1.0.0

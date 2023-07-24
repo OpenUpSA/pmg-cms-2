@@ -32,7 +32,3 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 5000
-
-ENV GUNICORN_WORKERS 1
-
-#ENTRYPOINT ["/tini", "--"]

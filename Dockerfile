@@ -33,4 +33,6 @@ USER appuser
 
 EXPOSE 5000
 
+ARG GUNICORN_WORKERS
+
 #ENTRYPOINT ["/tini", "--"]

@@ -33,4 +33,4 @@ USER appuser
 
 EXPOSE 5000
 
-ENTRYPOINT ["/tini", "--"]
+#ENTRYPOINT ["/tini", "--"]

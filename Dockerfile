@@ -1,7 +1,6 @@
 FROM python:3.7.17-slim-bullseye
 
 ENV PYTHONUNBUFFERED=1 \
-    TINI_VERSION=v0.19.0 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
@@ -17,9 +16,6 @@ RUN set -ex \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-
-ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
-RUN chmod +x /tini
 
 WORKDIR /app
 

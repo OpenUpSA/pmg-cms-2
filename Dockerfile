@@ -33,4 +33,4 @@ USER appuser
 
 EXPOSE 8000
 
-ENTRYPOINT ["/tini", "--", "/app/entrypoint.sh"]
+#ENTRYPOINT ["/tini", "--", "/app/entrypoint.sh"]

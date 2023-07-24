@@ -31,6 +31,6 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
-EXPOSE 8000
+EXPOSE 5000
 
 #ENTRYPOINT ["/tini", "--", "/app/entrypoint.sh"]

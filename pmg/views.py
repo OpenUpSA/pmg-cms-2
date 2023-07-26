@@ -139,7 +139,10 @@ def classify_attachments(files):
 
     return audio, related
 
-
+@cache.memoize(
+    make_name=lambda fname: cache_key(request),
+    unless=lambda: should_skip_cache(request, current_user),
+)
 def get_featured_content():
     info = {}
 

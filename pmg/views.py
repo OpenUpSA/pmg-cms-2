@@ -139,7 +139,7 @@ def classify_attachments(files):
 
     return audio, related
 
-
+@cache.cached(timeout=10800, key_prefix="get_featured_content")
 def get_featured_content():
     info = {}
 

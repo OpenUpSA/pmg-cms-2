@@ -2,7 +2,7 @@ version: '3'
 
 services:
   redis:
-    image: redis:7.0.12
+    image: redis:5.0.14
     ports:
       - "6379:6379"
     healthcheck:
@@ -26,7 +26,7 @@ services:
       - .:/app
     environment:
       - FLASK_DEBUG_CACHE=true
-      - CACHE_REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
       - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200
     ports:

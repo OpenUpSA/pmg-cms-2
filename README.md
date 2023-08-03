@@ -49,13 +49,13 @@ If you want to contribute to the code, please fork the repository, make your cha
 ### Local setup
 Build the necessary services:
 
-    docker-compose build
+    docker compose build
 
 Setup the database:
 
-    docker-compose run --rm web python setup_dev_database.py
-    docker-compose run --rm web python app.py db stamp head
-    docker-compose run --rm web python bin/search.py --reindex all
+    docker compose run web python setup_dev_database.py
+    docker compose run web python app.py db stamp head
+    docker compose run web python bin/search.py --reindex all
 
 Add the following lines to your .hosts file:
 
@@ -64,7 +64,7 @@ Add the following lines to your .hosts file:
 
 Start the server:
 
-    docker-compose up
+    docker compose up
 
 You should now see it running at [http://pmg.test:5000/](http://pmg.test:5000/) and [http://api.pmg.test:5000/](http://api.pmg.test:5000/).
 
@@ -75,16 +75,16 @@ You can login with:
 
 Each time you pull in changes that might contain database changes:
 
-    docker-compose run --rm web python app.py db migrate
-    docker-compose run --rm web python app.py db upgrade
+    docker compose run web python app.py db migrate
+    docker compose run web python app.py db upgrade
 
 To delete the database for a completely fresh setup, run:
 
-    docker-compose down --volumes
+    docker compose down --volumes
 
 To start the task scheduler, run:
 
-    docker-compose run --rm web python app.py start_scheduler
+    docker compose run web python app.py start_scheduler
 
 ### Developing email features
 
@@ -98,7 +98,7 @@ source env.localmail
 
 ### Running tests
 
-    docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests --exe -v
+    docker compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests tests --exe -v
 
 ### Code formatting
 

@@ -7,6 +7,7 @@ DEBUG = env.get("FLASK_ENV", "development") != "production"
 TEST = env.get("FLASK_ENV") == "test"
 
 DEBUG_CACHE = env.get("FLASK_DEBUG_CACHE", "false") == "true"
+CACHE_REDIS_URL = env.get("CACHE_REDIS_URL", "redis://redis:6379/0")
 
 RUN_PERIODIC_TASKS = env.get("RUN_PERIODIC_TASKS") == "true"
 

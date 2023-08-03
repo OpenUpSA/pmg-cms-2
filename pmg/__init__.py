@@ -41,13 +41,14 @@ logger = logging.getLogger(__name__)
 if app.config["DEBUG"] and not app.config["DEBUG_CACHE"]:
     cache_type = "null"
 else:
-    cache_type = "filesystem"
+    cache_type = "RedisCache"
+
 
 cache = Cache(
     app,
     config={
         "CACHE_TYPE": cache_type,
-        "CACHE_DIR": "/tmp/pmg-cache",
+        'CACHE_REDIS_URL': app.config["CACHE_REDIS_URL"],
         "CACHE_DEFAULT_TIMEOUT": 60 * 60,
     },
 )

@@ -1,6 +1,17 @@
 version: '3'
 
 services:
+  redis:
+    image: redis:5.0.14
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - redis-data:/data
   web:
     hostname: web
     build:
@@ -10,9 +21,12 @@ services:
     depends_on:
       - postgres
       - elastic
+      - redis
     volumes:
       - .:/app
     environment:
+      - FLASK_DEBUG_CACHE=true
+      - REDIS_URL=redis://redis:6379/0
       - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200
     ports:
@@ -48,3 +62,4 @@ services:
 volumes:
   db-data:
   es-data:
+  redis-data:

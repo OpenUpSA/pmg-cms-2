@@ -12,7 +12,6 @@ chardet==3.0.4
 Click==7.1.2
 codecov==2.1.13
 coverage==5.0.3
-#cryptography==2.8
 cssselect==0.9.1
 defusedxml==0.6.0
 docopt==0.4.0
@@ -105,6 +104,5 @@ WTForms==2.0.2
 xlrd==1.0.0
 XlsxWriter==0.6.6
 xlwt==1.3.0
-# Heroku (thus dokku) recomments editable if from git and relying on on upstream changes
-# https://devcenter.heroku.com/articles/python-pip#git-backed-distributions
+redis==3.5.3
 -e git+https://github.com/Code4SA/za-parliament-scrapers.git@ba77a50d4fc8e83a158328fdea581e143c7631ab#egg=za_parliament_scrapers

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 urllib3.disable_warnings()
 
 # thread-safe connection pool
-http = urllib3.ProxyManager(API_URL, timeout=TIMEOUTS, maxsize=3)
+http = urllib3.PoolManager(timeout=TIMEOUTS, maxsize=3)
 
 
 class ApiException(HTTPException):
@@ -84,9 +84,7 @@ def load_from_api(
     query_str = resource_name
     if resource_id:
         query_str += "/" + str(resource_id)
-    if not v2:
-        query_str += "/"
-
+    
     if page:
         params["page"] = str(page)
     if fields:

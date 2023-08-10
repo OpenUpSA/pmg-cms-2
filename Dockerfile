@@ -13,6 +13,7 @@ RUN set -ex \
     && apt-get install -y libpq-dev \
     && apt-get install -y git \
     && apt-get install -y libmagic1 \
+    && apt-get install -y vim curl \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*

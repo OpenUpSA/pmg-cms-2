@@ -84,6 +84,8 @@ def load_from_api(
     query_str = resource_name
     if resource_id:
         query_str += "/" + str(resource_id)
+    if not v2:
+        query_str += "/"
     
     if page:
         params["page"] = str(page)

@@ -4,6 +4,10 @@
 
 
   <script>
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+
     {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
     {% if current_user.is_authenticated %}
       {% if current_user.organisation %}
@@ -47,13 +51,6 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-W7T6ZWH7');</script>
   <!-- End Google Tag Manager -->
-
-  
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-  </script>
-
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">

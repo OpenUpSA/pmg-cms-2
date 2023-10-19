@@ -2,6 +2,44 @@
 <html lang="en">
 <head>
 
+
+  <script>
+    {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
+    {% if current_user.is_authenticated %}
+      {% if current_user.organisation %}
+      gtag('set', {'dimension1': '{{ current_user.organisation.domain }}'});
+      {% else %}
+      gtag('set', {'dimension1': '(none)'});
+      {% endif %}
+    {% endif %}
+  
+    {# record content date? #}
+    {% if content_date is defined and content_date %}
+    gtag('set', {'dimension2': '{{ content_date|pretty_date("ga") }}'});
+    {% endif %}
+  
+    {# link this hit to a committee? #}
+    {% if committee is defined and committee.id and committee.name %}
+    gtag('set', {'dimension3': '{{ committee.id }} - {{ committee.name }}'});
+    {% endif %}
+  
+    {# track the 'via' parameter? #}
+    {% if via_tag %}
+    gtag('set', {'dimension4': '{{ via_tag }}'});
+    {% endif %}
+  
+  
+    {% for cat, action, label, value in get_ga_events() %}
+    gtag('event', '{{ action }}', { 'event_category': '{{ cat }}'
+        {%if label -%}
+          , '{{ label }}'
+          {% if value -%}
+            , {{ value }}
+          {%endif%}{%endif%} });
+    {% endfor %}
+    </script>
+
+
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -9,6 +47,13 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-W7T6ZWH7');</script>
   <!-- End Google Tag Manager -->
+
+  
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+  </script>
+
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -74,46 +119,6 @@
   {% assets "js" %}
     <script type="text/javascript" src="{{ ASSET_URL }}"></script>
   {% endassets %}
-
-
-  <script>
-
-
-  
-  {# write the user's org domain as a GA dimension, see https://support.google.com/analytics/answer/2709828?hl=en #}
-  {% if current_user.is_authenticated %}
-    {% if current_user.organisation %}
-    gtag('set', {'dimension1': '{{ current_user.organisation.domain }}'});
-    {% else %}
-    gtag('set', {'dimension1': '(none)'});
-    {% endif %}
-  {% endif %}
-
-  {# record content date? #}
-  {% if content_date is defined and content_date %}
-  gtag('set', {'dimension2': '{{ content_date|pretty_date("ga") }}'});
-  {% endif %}
-
-  {# link this hit to a committee? #}
-  {% if committee is defined and committee.id and committee.name %}
-  gtag('set', {'dimension3': '{{ committee.id }} - {{ committee.name }}'});
-  {% endif %}
-
-  {# track the 'via' parameter? #}
-  {% if via_tag %}
-  gtag('set', {'dimension4': '{{ via_tag }}'});
-  {% endif %}
-
-
-  {% for cat, action, label, value in get_ga_events() %}
-  gtag('event', '{{ action }}', { 'event_category': '{{ cat }}'
-      {%if label -%}
-        , '{{ label }}'
-        {% if value -%}
-          , {{ value }}
-        {%endif%}{%endif%} });
-  {% endfor %}
-  </script>
 
   {% endblock %}
   </div>

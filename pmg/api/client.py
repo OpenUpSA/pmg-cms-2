@@ -100,10 +100,6 @@ def load_from_api(
 
     logger.debug("Headers: %s" % headers)
 
-    # add auth header
-    if current_user.is_authenticated:
-        headers["Authentication-Token"] = current_user.get_auth_token()
-
     try:
         response = http.request(
             "GET", API_URL + query_str, headers=headers, fields=params

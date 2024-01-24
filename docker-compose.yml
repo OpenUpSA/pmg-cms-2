@@ -29,6 +29,8 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200
+      - GOOGLE_ANALYTICS_ID=G-XN8MJJNSEE
+      - GOOGLE_TAG_MANAGER_ID=GTM-MMCNPLT6
     ports:
       - "5000:5000"
     command: python app.py runserver

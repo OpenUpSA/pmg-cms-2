@@ -49,7 +49,7 @@
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-W7T6ZWH7');</script>
+  })(window,document,'script','dataLayer','{{ config["GOOGLE_TAG_MANAGER_ID"] }}');</script>
   <!-- End Google Tag Manager -->
 
   <meta charset="utf-8">
@@ -102,7 +102,7 @@
 <body class="{{ request.endpoint }} {% if current_user.is_authenticated %}logged-in{% else %}not-logged-in{% endif %}">
   
   <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W7T6ZWH7"
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config["GOOGLE_TAG_MANAGER_ID"] }}"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
   

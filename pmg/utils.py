@@ -32,7 +32,7 @@ def track_pageview(path=None, ignore_bots=True):
     """ User Google Analytics to track this pageview. """
     from pmg import app
 
-    ga_id = app.config.get("GOOGLE_ANALYTICS_ID")
+    ga_id = app.config["GOOGLE_ANALYTICS_ID"]
     if not ga_id:
         return False
 

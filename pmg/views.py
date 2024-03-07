@@ -1786,7 +1786,7 @@ def docs(path, dir=""):
 
     # report to google analytics
     try:
-        utils.track_pageview()
+        utils.track_file_download()
     except Exception as e:
         logger.error("Error tracking pageview: %s" % e, exc_info=e)
 

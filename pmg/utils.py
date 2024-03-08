@@ -65,18 +65,21 @@ def track_pageview(path=None, ignore_bots=True):
 def track_file_download():
     from pmg import app
 
+    ga_url = "https://www.google-analytics.com/mp/collect"
     ga_id = app.config.get("GOOGLE_ANALYTICS_ID")
-    api_secret = ""
+    api_secret = app.config.get("GOOGLE_ANALYTICS_API_SECRET")
     client_id = request.cookies.get("_ga")
 
     user_agent = request.user_agent.string
     path = path or request.path
 
-    url = f"https://www.google-analytics.com/debug/mp/collect?measurement_id={ga_id}&api_secret={api_secret}"
+    url = f"{ga_url}?measurement_id={ga_id}&api_secret={api_secret}"
     payload = {
         "client_id": client_id,
         "non_personalized_ads": "false",
-        "events": [{"name": "file_download", "params": {"userAgent": user_agent, "path":path}}],
+        "events": [
+            {"name": "file_download", "params": {"userAgent": user_agent, "path": path}}
+        ],
     }
     requests.post(url, data=json.dumps(payload), verify=True)
 

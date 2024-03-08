@@ -71,7 +71,7 @@ def track_file_download():
     client_id = request.cookies.get("_ga")
 
     user_agent = request.user_agent.string
-    path = path or request.path
+    path = request.path
 
     url = f"{ga_url}?measurement_id={ga_id}&api_secret={api_secret}"
     payload = {

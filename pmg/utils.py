@@ -4,7 +4,8 @@ import nltk
 from universal_analytics import Tracker, HTTPRequest
 from flask import request
 from flask_security import current_user
-
+import requests
+import json
 
 # Useragents that are bots
 BOTS_RE = re.compile("(bot|spider|cloudfront|slurp)", re.I)
@@ -29,7 +30,7 @@ def levenshtein(first, second, transpositions=False):
 
 
 def track_pageview(path=None, ignore_bots=True):
-    """ User Google Analytics to track this pageview. """
+    """User Google Analytics to track this pageview."""
     from pmg import app
 
     ga_id = app.config["GOOGLE_ANALYTICS_ID"]
@@ -61,9 +62,32 @@ def track_pageview(path=None, ignore_bots=True):
     return True
 
 
+def track_file_download():
+    from pmg import app
+
+    ga_url = "https://www.google-analytics.com/mp/collect"
+    ga_id = app.config.get("GOOGLE_ANALYTICS_ID")
+    api_secret = app.config.get("GOOGLE_ANALYTICS_API_SECRET")
+    client_id = request.cookies.get("_ga")
+
+    user_agent = request.user_agent.string
+    path = request.path
+
+    url = f"{ga_url}?measurement_id={ga_id}&api_secret={api_secret}"
+    payload = {
+        "client_id": client_id,
+        "non_personalized_ads": "false",
+        "events": [
+            {"name": "file_download", "params": {"userAgent": user_agent, "path": path}}
+        ],
+    }
+    requests.post(url, data=json.dumps(payload), verify=True)
+
+    return True
+
+
 def externalise_url(url):
-    """ Externalise a URL based on the request scheme and host.
-    """
+    """Externalise a URL based on the request scheme and host."""
     from pmg import app
 
     if url.startswith("http"):

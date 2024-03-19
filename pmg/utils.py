@@ -72,7 +72,9 @@ def track_file_download():
     client_id = request.cookies.get("_ga")
 
     path = request.path
-    file_name, file_extension = os.path.splitext(path)
+    last_slash_index = path.rfind("/")
+    file_dir = path[:last_slash_index]
+    page_location = f"{request.url_root}{file_dir[1:]}"
 
     url = f"{ga_url}?measurement_id={ga_id}&api_secret={api_secret}"
     payload = {
@@ -82,9 +84,11 @@ def track_file_download():
             {
                 "name": "file_download",
                 "params": {
-                    "file_extension": file_extension.replace(".", ""),
-                    "file_name": file_name,
+                    "file_extension": path.split(".")[-1],
+                    "file_name": path,
                     "link_url": request.url,
+                    "page_location": page_location,
+                    "page_referrer": request.referrer,
                 },
             }
         ],

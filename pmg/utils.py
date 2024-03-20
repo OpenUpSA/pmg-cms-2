@@ -6,6 +6,7 @@ from flask import request
 from flask_security import current_user
 import requests
 import json
+import os
 
 # Useragents that are bots
 BOTS_RE = re.compile("(bot|spider|cloudfront|slurp)", re.I)
@@ -70,15 +71,26 @@ def track_file_download():
     api_secret = app.config.get("GOOGLE_ANALYTICS_API_SECRET")
     client_id = request.cookies.get("_ga")
 
-    user_agent = request.user_agent.string
     path = request.path
+    last_slash_index = path.rfind("/")
+    file_dir = path[:last_slash_index]
+    page_location = f"{request.url_root}{file_dir[1:]}"
 
     url = f"{ga_url}?measurement_id={ga_id}&api_secret={api_secret}"
     payload = {
         "client_id": client_id,
         "non_personalized_ads": "false",
         "events": [
-            {"name": "file_download", "params": {"userAgent": user_agent, "path": path}}
+            {
+                "name": "file_download",
+                "params": {
+                    "file_extension": path.split(".")[-1],
+                    "file_name": path,
+                    "link_url": request.url,
+                    "page_location": page_location,
+                    "page_referrer": request.referrer,
+                },
+            }
         ],
     }
     requests.post(url, data=json.dumps(payload), verify=True)

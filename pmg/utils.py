@@ -6,7 +6,7 @@ from flask import request
 from flask_security import current_user
 import requests
 import json
-import os
+from sentry_sdk import capture_message
 
 # Useragents that are bots
 BOTS_RE = re.compile("(bot|spider|cloudfront|slurp)", re.I)
@@ -93,6 +93,7 @@ def track_file_download():
             }
         ],
     }
+    capture_message(f"File download: {path}", payload)
     requests.post(url, data=json.dumps(payload), verify=True)
 
     return True

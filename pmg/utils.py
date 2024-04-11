@@ -45,10 +45,7 @@ def track_pageview(path=None, ignore_bots=True):
     path = path or request.path
     user_id = current_user.id if current_user.is_authenticated else None
 
-    client_id = request.cookies.get("_ga")
-    if client_id:
-        # GA1.2.1760224793.1424413995
-        client_id = client_id.split(".", 2)[-1]
+    client_id = "server"
 
     with HTTPRequest() as http:
         tracker = Tracker(ga_id, http, user_id=user_id, client_id=client_id)
@@ -93,7 +90,7 @@ def track_file_download():
             }
         ],
     }
-    capture_message(f"File download: {path}", payload)
+    capture_message(f"File download: {path}", "info", payload)
     requests.post(url, data=json.dumps(payload), verify=True)
 
     return True

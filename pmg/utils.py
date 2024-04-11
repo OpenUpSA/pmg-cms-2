@@ -89,7 +89,7 @@ def track_file_download():
                     "link_url": request.url,
                     "page_location": page_location,
                     "page_referrer": request.referrer,
-                    "source": "Python"
+                    "server_source": "Python"
                 },
             }
         ],

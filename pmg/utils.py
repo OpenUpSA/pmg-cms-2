@@ -88,7 +88,7 @@ def track_file_download():
                     "file_name": path,
                     "link_url": request.url,
                     "page_location": page_location,
-                    "page_referrer": request.referrer,
+                    "page_referrer": f"{request.referrer}",
                     "server_source": "Python"
                 },
             }

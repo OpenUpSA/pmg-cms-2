@@ -96,7 +96,7 @@ def track_file_download():
     }
     response = requests.post(url, data=json.dumps(payload), verify=True)
     payload["status_code"] = response.status_code
-    capture_message(f"File download: {path}", payload)
+    #capture_message(f"File download: {path}", payload)
 
     return True
 

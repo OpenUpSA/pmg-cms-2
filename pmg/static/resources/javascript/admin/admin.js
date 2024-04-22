@@ -6,6 +6,7 @@ $(function() {
       autoGrow_minHeight: 200,
       autoGrow_maxHeight: 600,
       disallowedContent: 'a[!name]',
+      allowedContent: true
     });
   });
 });

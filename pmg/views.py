@@ -2014,7 +2014,7 @@ def pr6_articles(slug):
     )
 
 @app.route("/6th-parliament-review/interviews/<slug>", methods=["GET"])
-def pr6_articles(slug):
+def pr6_interviews(slug):
     slug = Page().validate_slug(None, slug)
     post = Page.query.filter(Page.slug == slug).first()
     if not post:
@@ -2026,7 +2026,7 @@ def pr6_articles(slug):
     )
 
 @app.route("/6th-parliament-review/statistics/<slug>", methods=["GET"])
-def pr6_articles(slug):
+def pr6_statistics(slug):
     slug = Page().validate_slug(None, slug)
     post = Page.query.filter(Page.slug == slug).first()
     if not post:

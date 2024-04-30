@@ -1999,7 +1999,19 @@ def stats_review(stat):
 
 @app.route("/6th-parliament-review", methods=["GET"])
 def pr6():
-    return render_template("pr6/landing.html")
+    articles = Page.query.filter(Page.slug.like('%pr6-articles-%'))
+    interviews = Page.query.filter(Page.slug.like('%pr6-interviews-%'))
+    stats = Page.query.filter(Page.slug.like('%pr6-statistics-%'))
+
+    articles = articles.all()
+    interviews = interviews.all()
+    stats = stats.all()
+    
+    return render_template("pr6/landing.html", 
+        articles=articles,
+        interviews=interviews,
+        stats=stats
+    )
 
 @app.route("/6th-parliament-review/articles/<slug>", methods=["GET"])
 def pr6_articles(slug):

@@ -58,6 +58,8 @@
     border: 1px solid rgba(0,0,0,0.05);
     border-radius: 5px;
     padding: 1em;
+    height: 100%;
+    margin-bottom: 1em;
 }
 
 .pr6-interviews article {
@@ -78,7 +80,7 @@
     font-size: 12px;
 }
 
-.pr6-articles article p, .pr6-interviews article p, .pr6-statistics article p {
+.pr6-articles article .article-intro, .pr6-interviews article .article-intro, .pr6-statistics article .article-intro {
     margin-top: 1em;
     font-size: 14px;
 }
@@ -216,6 +218,7 @@
   .pr6-row .col-4 {
     flex: 0 0 33.33333333%;
     max-width: 33.33333333%;
+    margin-bottom: 1.5em;
   }
   
   .pr6-row .col-5 {

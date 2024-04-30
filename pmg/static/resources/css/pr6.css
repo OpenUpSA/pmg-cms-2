@@ -99,6 +99,10 @@
   text-transform: uppercase;
 }
 
+.full-article .article-title {
+  display: none;
+}
+
 
 .full-article .article-intro {
   font-size: 20px;
@@ -118,9 +122,49 @@
   text-align: justify;
 }
 
-.full-article .article-extra {
+.full-article .article-content blockquote {
+  float: left;
+  width: 300px;
+  color: #f05532;
+  position: relative;
+  font-size: 1.4em;
+  padding-left: 2em;
+  margin: 1em;
+  line-height: 1.3em;
+}
+
+
+.full-article .article-content blockquote.right {
+  float: right;
+  border-left: none;
+  border-right: 5px solid #eee;
+}
+
+.full-article .article-content blockquote.full {
+  float: none;
+  width: 100%;
+  margin: 2em 0;
+}
+
+
+
+.full-article .article-content h3 {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.full-article .article-content h4 {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+
+
+.full-article .article-extra, .full-article .article-footnotes {
   font-size: 14px;
   margin: 2em 0;
+  border-top: 1px solid #ccc;
+  padding-top: 2em;
 }
 
 

@@ -34,29 +34,23 @@
 
             <h2 class="pr6-section-title">ARTICLES</h2>
 
+           
+
             <section class="pr6-articles">
                 <div class="pr6-row">
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="/6th-parliament-review/articles/article">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
+                    {% for article in articles %}
+                        <div class="col-4">
+                            <article>
+                                <h3><a href="/6th-parliament-review/articles/{{article.slug}}">{{article.title}}</a></h3>
+                                {{article.body|
+                                    replace('<div class="article-content">','<div style="display: none">')|
+                                        replace('<div class="article-footnotes">','<div style="display: none">')|
+                                            replace('<div class="article-title">','<div style="display: none">')|
+                                                replace('<div class="article-extra">','<div style="display: none">')|
+                                            safe|truncate}}
+                            </article>
+                        </div>
+                    {% endfor %}
                 </div>
             </section>
 
@@ -68,57 +62,44 @@
 
             <section class="pr6-interviews">
                 <div class="pr6-row">
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
+                    {% for interview in interviews %}
+                        <div class="col-4">
+                            <article>
+                                <h3><a href="/6th-parliament-review/interviews/{{interview.slug}}">{{interview.title}}</a></h3>
+                                {{interview.body|
+                                    replace('<div class="article-content">','<div style="display: none">')|
+                                        replace('<div class="article-footnotes">','<div style="display: none">')|
+                                            replace('<div class="article-title">','<div style="display: none">')|
+                                                replace('<div class="article-extra">','<div style="display: none">')|
+                                            safe|truncate}}
+                            </article>
+                        </div>
+                    {% endfor %}
                 </div>
             </section>
+
 
             <!-- STATISTICS -->
 
             <h2 class="pr6-section-title">STATISTICS</h2>
 
+           
+
             <section class="pr6-statistics">
                 <div class="pr6-row">
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
-                    <div class="col-4">
-                        <article>
-                            <h3><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></h3>
-                            <span class="article-meta">By Author Name</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius.</p>
-                        </article>
-                    </div>
+                    {% for stat in stats %}
+                        <div class="col-4">
+                            <article>
+                                <h3><a href="/6th-parliament-review/interviews/{{interview.slug}}">{{stat.title}}</a></h3>
+                                {{stat.body|
+                                    replace('<div class="article-content">','<div style="display: none">')|
+                                        replace('<div class="article-footnotes">','<div style="display: none">')|
+                                            replace('<div class="article-title">','<div style="display: none">')|
+                                                replace('<div class="article-extra">','<div style="display: none">')|
+                                            safe|truncate}}
+                            </article>
+                        </div>
+                    {% endfor %}
                 </div>
             </section>
 

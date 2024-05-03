@@ -29,7 +29,7 @@
 .pr6-page-container {
     background-color: #fff;
     border-radius: 42px 42px 0 0;
-    padding: 2em 3em;
+    padding: 2em 2em;
     position: relative;
     top: -100px;
 }
@@ -85,13 +85,7 @@
     font-size: 14px;
 }
 
-.full-article h1 {
-  font-size: 40px;
-  line-height: 1.3em;
-  text-align: center;
-  padding: 0 3em;
-  margin: 0 0 0.8em 0;
-}
+
 
 .full-article .article-meta {
   font-size: 18px;
@@ -99,29 +93,72 @@
   text-align: center;
   margin: 0 0 1em 0;
   text-transform: uppercase;
+  font-weight: bold;
 }
 
 .full-article .article-title {
-  display: none;
+  font-size: 40px;
+  line-height: 1.3em;
+  text-align: center;
+  padding: 0 3em;
+  margin: 0 0 0.8em 0;
 }
 
 
 .full-article .article-intro {
   font-size: 20px;
-  padding: 0 3em;
+  padding: 0 2em;
   text-align: center;
   margin: 2em 0 3em;
+  color: #333;
+}
+
+.full-article .bio {
+  background-color: rgba(248, 245, 236,0.6);
+  padding: 1.5em;
+  border-radius: 5px;
+  margin: 0 0 1em 0;
+  color: #333;
+  line-height: 1.5em;
 }
 
 .full-article .article-content {
   font-size: 16px;
   line-height: 1.4em;
-  padding: 0 4em;
+  padding: 0 2em;
+  
 }
 
 .full-article .article-content p {
   margin-bottom: 2em;
   text-align: justify;
+  color: #666;
+  line-height: 1.5em;
+}
+
+.full-article .article-content ul {
+  margin-bottom: 2em;
+}
+
+.full-article .article-content li {
+  color: #666;
+  line-height: 1.5em;
+}
+
+.full-article .article-content p.quote {
+  padding-left: 2em;
+
+}
+
+.full-article .article-content p.first-par::first-letter {
+  float: left;
+  line-height: 50px;
+  font-size: 70px;
+  font-family: Montserrat;
+  color: #fff;
+  background-color: rgb(130, 186, 165);
+  padding: 5px;
+  margin: 5px 10px 0 0;
 }
 
 .full-article .article-content blockquote {
@@ -169,6 +206,66 @@
   padding-top: 2em;
 }
 
+.full-article .article-extra, .full-article .article-footnotes p {
+  color: #666;
+}
+
+
+.full-article .flourish-embed {
+  margin: 2em 0 3em 0;
+}
+
+
+.full-article sup {
+  font-weight: bold;
+  color: #F05532;
+  position: relative;
+  cursor: pointer;
+}
+
+.full-article sup .fn {
+  position: absolute;
+  background: #f8f5ec;
+  border-radius: 5px;
+  padding: 1em;
+  font-size: 11px;
+  width: 200px;
+  box-shadow: 10px 10px 10px rgba(0,0,0,0.1);
+  top: 1em;
+  left: 1em;
+  color: #333;
+  line-height: 1.2em;
+  text-align: left;
+  font-weight: normal;
+
+}
+
+.article-image {
+  margin: 1em 0 2em;
+}
+
+.article-image.article-image-full {
+  width: 100%;
+}
+
+.full-article .article-image img {
+  display: block;
+  width: 100%;
+}
+
+.article-image .caption {
+  font-size: 0.8em;
+  color: #333;
+  margin: 1em 0;
+}
+
+.full-article .info-block {
+  padding: 2em 2em 1em;
+  text-align: center;
+  margin: 2em 0 3em;
+  color: #333;
+  background: #f8f5ec;
+}
 
 /* Design Elements */
 
@@ -182,6 +279,54 @@
 
 .pr6-design-element img {
   width: 100%
+}
+
+
+
+/* Sidebar */
+
+.sidebar {
+  margin-top: 1em;
+  background: rgba(123, 190, 160,0.05);
+  border-radius: 5px;
+  padding: 1em;
+}
+
+.sidebar h3 {
+  background-image: url('/static/resources/images/pr6/dots1.png');
+  background-repeat: no-repeat;
+  background-size: 40px;
+  padding: 0 0 0 40px;
+  text-transform: uppercase;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 1.5em;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 1em 0 2em;
+}
+
+.sidebar ul li {
+  margin-bottom: 1em;
+}
+
+.sidebar ul li a {
+  display: block;
+  transition: all 0.3s;
+  color: #333;
+}
+
+.sidebar ul li a:hover {
+  text-decoration: none;
+  padding-left: 0.4em;
+}
+
+.sidebar ul li a span {
+  font-weight: bold;
+  color: #F05532;
 }
 
 

@@ -3,6 +3,7 @@
 {% block title %}6th Parliament Review | PMG{% endblock %}
 
 {% block page %}
+
 <link rel="stylesheet" href="/static/resources/css/pr6.css">
 
 
@@ -11,9 +12,9 @@
     <div class="header">
         <div class="header-container">
             <div class="header-content">
-                <img class="pr6-title" src="/static/resources/images/pr6/title.png" alt="6th Parliament Review Logo"/>
+                <img class="pr6-title" src="/static/resources/images/pr6/title.png" alt="6th Parliament Review Logo" />
             </div>
-        </div>    
+        </div>
     </div>
 
     <div class="container">
@@ -21,11 +22,13 @@
             <div class="pr6-row pr6-intro">
                 <div class="col-7">
                     <h2>A comprehensive overview with commentary, data and interviews</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies varius. Suspendisse iaculis, augue sit amet bibendum pretium, nibh arcu gravida ligula, eget accumsan nisl est sit amet augue.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam interdum magna a purus ultricies
+                        varius. Suspendisse iaculis, augue sit amet bibendum pretium, nibh arcu gravida ligula, eget
+                        accumsan nisl est sit amet augue.</p>
                     <div class="hr"></div>
                 </div>
                 <div class="col-5 text-right">
-                    <img src="/static/resources/images/pr6/pr6-design1.png"/>
+                    <img src="/static/resources/images/pr6/pr6-design1.png" />
                 </div>
             </div>
 
@@ -34,27 +37,71 @@
 
             <h2 class="pr6-section-title">ARTICLES</h2>
 
-           
+
 
             <section class="pr6-articles">
                 <div class="pr6-row">
-                    {% for article in articles %}
-                        <div class="col-4">
-                            <article>
-                                <h3><a href="/6th-parliament-review/articles/{{article.slug}}">{{article.title}}</a></h3>
-                                {{article.body|
-                                    replace('<div class="article-content">','<div style="display: none">')|
-                                        replace('<div class="article-footnotes">','<div style="display: none">')|
-                                            replace('<div class="article-title">','<div style="display: none">')|
-                                                replace('<div class="article-extra">','<div style="display: none">')|
-                                            safe|truncate}}
-                            </article>
-                        </div>
-                    {% endfor %}
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/ben-cronin">The Sixth Parliament and the Budget Process: Lessons for the Seventh Parliament</a></h3>
+                            <div class="article-meta">By Ben Cronin</div>
+                            <div class="article-intro">Parliament's budget process faces challenges, including public participation, fiscal framework ambiguity, capacity constraints, and constitutional obligations.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/pam-saxby">Post-pandemic: live-streaming Committee meetings</a></h3>
+                            <div class="article-meta">By Pam Saxby</div>
+                            <div class="article-intro">Post-pandemic, Parliament should consistently livestream and upload committee meetings, ensuring public access to proceedings and documents.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/michael-atkins">Looking ahead at the Electoral Reform Consultation Panel process ahead of the Seventh Parliament</a></h3>
+                            <div class="article-meta">By Michael Atkins</div>
+                            <div class="article-intro">The Electoral Act of 1998 continued the pure proportional representation system of government at the national and provincial levels in South Africa, as was used in the inaugural democratic elections in 1994.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/martin-nicol">The committee system and the need for reform</a></h3>
+                            <div class="article-meta">By Martin Nicol</div>
+                            <div class="article-intro">Parliamentary committee system reforms needed to improve oversight, accountability after state capture revelations.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/devi-pillay">Parliamentary oversight: Reflections on the Sixth Parliament & Lessons for the Seventh Parliament</a></h3>
+                            <div class="article-meta">By Devi Pillay</div>
+                            <div class="article-intro">Enhancing parliamentary oversight: Lessons from the Sixth Parliament for strengthening accountability.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/kevin-deveaux">Parliamentary Autonomy in South Africa – Lessons from Select Countries</a></h3>
+                            <div class="article-meta">By Kevin deveaux</div>
+                            <div class="article-intro">Parliamentary autonomy critical for effective oversight, facing challenges in South Africa.</div>
+                        </article>
+                    </div>
+
+                    <div class="col-4">
+                        <article>
+                            <h3><a href="/6th-parliament-review/articles/kevin-deveaux">Reflections on the state of Democracy and Parliament</a></h3>
+                            <div class="article-meta">By Judith February</div>
+                            <div class="article-intro">South Africa's Sixth Parliament had accountability highs and lows, failing at effective oversight.</div>
+                        </article>
+                    </div>
+
                 </div>
             </section>
 
-            
+
 
             <!-- INTERVIEWS -->
 
@@ -62,19 +109,9 @@
 
             <section class="pr6-interviews">
                 <div class="pr6-row">
-                    {% for interview in interviews %}
-                        <div class="col-4">
-                            <article>
-                                <h3><a href="/6th-parliament-review/interviews/{{interview.slug}}">{{interview.title}}</a></h3>
-                                {{interview.body|
-                                    replace('<div class="article-content">','<div style="display: none">')|
-                                        replace('<div class="article-footnotes">','<div style="display: none">')|
-                                            replace('<div class="article-title">','<div style="display: none">')|
-                                                replace('<div class="article-extra">','<div style="display: none">')|
-                                            safe}}
-                            </article>
-                        </div>
-                    {% endfor %}
+
+                    
+
                 </div>
             </section>
 
@@ -83,30 +120,20 @@
 
             <h2 class="pr6-section-title">STATISTICS</h2>
 
-           
+
 
             <section class="pr6-statistics">
                 <div class="pr6-row">
-                    {% for stat in stats %}
-                        <div class="col-4">
-                            <article>
-                                <h3><a href="/6th-parliament-review/interviews/{{interview.slug}}">{{stat.title}}</a></h3>
-                                {{stat.body|
-                                    replace('<div class="article-content">','<div style="display: none">')|
-                                        replace('<div class="article-footnotes">','<div style="display: none">')|
-                                            replace('<div class="article-title">','<div style="display: none">')|
-                                                replace('<div class="article-extra">','<div style="display: none">')|
-                                            safe}}
-                            </article>
-                        </div>
-                    {% endfor %}
+
+                    
+
                 </div>
             </section>
 
         </div>
 
 
-        
+
 
     </div>
 

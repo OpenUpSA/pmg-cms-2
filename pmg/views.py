@@ -1999,55 +1999,12 @@ def stats_review(stat):
 
 @app.route("/6th-parliament-review", methods=["GET"])
 def pr6():
-    articles = Page.query.filter(Page.slug.like('%pr6-articles-%'))
-    interviews = Page.query.filter(Page.slug.like('%pr6-interviews-%'))
-    stats = Page.query.filter(Page.slug.like('%pr6-statistics-%'))
+    return render_template("pr6/landing.html")
 
-    articles = articles.all()
-    interviews = interviews.all()
-    stats = stats.all()
-    
-    return render_template("pr6/landing.html", 
-        articles=articles,
-        interviews=interviews,
-        stats=stats
-    )
+@app.route("/6th-parliament-review/<section>/<slug>", methods=["GET"])
+def pr6_articles(section,slug):
+    return render_template("pr6/article.html",section=section, article=slug)
 
-@app.route("/6th-parliament-review/articles/<slug>", methods=["GET"])
-def pr6_articles(slug):
-    slug = Page().validate_slug(None, slug)
-    post = Page.query.filter(Page.slug == slug).first()
-    if not post:
-        abort(404)
-   
-    return render_template(
-        "pr6/article.html",
-        post=post
-    )
-
-@app.route("/6th-parliament-review/interviews/<slug>", methods=["GET"])
-def pr6_interviews(slug):
-    slug = Page().validate_slug(None, slug)
-    post = Page.query.filter(Page.slug == slug).first()
-    if not post:
-        abort(404)
-   
-    return render_template(
-        "pr6/article.html",
-        post=post
-    )
-
-@app.route("/6th-parliament-review/statistics/<slug>", methods=["GET"])
-def pr6_statistics(slug):
-    slug = Page().validate_slug(None, slug)
-    post = Page.query.filter(Page.slug == slug).first()
-    if not post:
-        abort(404)
-   
-    return render_template(
-        "pr6/article.html",
-        post=post
-    )
 
 
 # Test to make sure sentry is working

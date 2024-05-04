@@ -43,27 +43,47 @@
                             {% if article in article_templates %}
                                 {% include article_templates[article] %}
                             {% else %}
-                                <p>Article not found</p>
+                                {% include 'pr6/_404.html' %}
                             {% endif %}
                         
                         
                         {% elif section == 'interviews' %}
                             {% set interview_templates = {
-                                'brett-heron': 'pr6/interviews/interview-brett-heron.html',
+                                'brett-herron': 'pr6/interviews/interview-brett-herron.html',
                                 'ff-plus': 'pr6/interviews/interview-ff-plus.html',
                                 'ganief-hendricks': 'pr6/interviews/interview-ganief-hendricks.html',
                                 'jane-mananiso': 'pr6/interviews/interview-jane-mananiso.html',
-                                'sukers': 'pr6/interviews/interview-s-sukers.html',
+                                'marie-sukers': 'pr6/interviews/interview-marie-sukers.html',
                                 'seiso-mohai': 'pr6/interviews/interview-seiso-mohai.html',
                                 'shaik-emam': 'pr6/interviews/interview-shaik-emam.html',
-                                'zungulua': 'pr6/interviews/interview-zungula.html',
+                                'vuyo-zungula': 'pr6/interviews/interview-zungula.html',
+                                'wynand-boshoff': 'pr6/interviews/interview-wynand-boshoff.html',
+                                'tamarin-breedt': 'pr6/interviews/interview-tamarin-breedt.html',
+
                             } %}
                             
-                            {% if interview in interview_templates %}
-                                {% include interview_templates[interview] %}
+                            {% if article in interview_templates %}
+                                {% include interview_templates[article] %}
                             {% else %}
-                                <p>Interview not found</p>
+                                {% include 'pr6/_404.html' %}
                             {% endif %}
+
+                        {% elif section == 'statistics' %}
+                            {% set statistics_templates = {
+                                'attendance': 'pr6/statistics/attendance.html',
+                                'bills': 'pr6/statistics/bills.html',
+                                'committee-activities': 'pr6/statistics/committee-activities.html',
+                                'plenary-activities': 'pr6/statistics/plenary-activities.html',
+                                'turnover': 'pr6/statistics/turnover.html',
+                                'written-questions': 'pr6/statistics/written-questions.html',
+                            } %}
+                            
+                            {% if article in statistics_templates %}
+                                {% include statistics_templates[article] %}
+                            {% else %}
+                                {% include 'pr6/_404.html' %}
+                            {% endif %}
+
                         {% endif %}
 
 

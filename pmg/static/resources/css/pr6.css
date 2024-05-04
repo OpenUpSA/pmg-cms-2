@@ -226,7 +226,7 @@
 
 
 
-.full-article .article-extra, .full-article .article-footnotes {
+.full-article .article-extra, .full-article .article-footnotes, .full-article .disclaimer {
   font-size: 14px;
   margin: 2em 0;
   border-top: 1px solid #ccc;

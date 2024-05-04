@@ -60,10 +60,24 @@
     padding: 1em;
     height: 100%;
     margin-bottom: 1em;
+    transition: all 0.5s;
+}
+
+.pr6-articles article a {
+  display: block;
 }
 
 .pr6-interviews article {
     background-color: #f3f8f6;
+}
+
+.pr6-interviews article img {
+  display: block;
+  margin: 0 0 1.5em 0;
+  filter: grayscale(100%);
+  border-radius: 5px;
+  overflow: hidden;
+  opacity: 0.8;
 }
 
 .pr6-statistics article {
@@ -78,11 +92,24 @@
 
 .pr6-articles article .article-meta, .pr6-interviews article .article-meta, .pr6-statistics article .article-meta {
     font-size: 12px;
+    color: #333;
+    font-weight: bold
 }
 
 .pr6-articles article .article-intro, .pr6-interviews article .article-intro, .pr6-statistics article .article-intro {
     margin-top: 1em;
     font-size: 14px;
+    color: #333;
+}
+
+.pr6-articles article:hover, .pr6-interviews article:hover, .pr6-statistics article:hover {
+    background-color: #f8f5ec;
+    transform: translateY(-5px);
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
+}
+
+.pr6-articles article a:hover, .pr6-interviews article a:hover, .pr6-statistics article a:hover {
+    text-decoration: none;
 }
 
 
@@ -267,6 +294,27 @@
   background: #f8f5ec;
 }
 
+.full-article .interview-party {
+  text-align: center;
+  margin: 2em 0 3em;
+  font-weight: bold;
+}
+
+.full-article .interview-pa-link {
+  text-align: center;
+  margin: 2em 0 3em;
+  font-weight: bold;
+}
+
+.full-article .profile-pic {
+  width: 200px;
+  border-radius: 5px;
+  float: left;
+  margin: 0 2em 1em 0;
+  overflow: hidden;
+  box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
+}
+
 /* Design Elements */
 
 .pr6-design-element2 {
@@ -358,6 +406,7 @@
   .pr6-row .col-3 {
     flex: 0 0 25%;
     max-width: 25%;
+    margin-bottom: 1.5em;
   }
   
   .pr6-row .col-4 {

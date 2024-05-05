@@ -70,12 +70,14 @@
 
                         {% elif section == 'statistics' %}
                             {% set statistics_templates = {
+                                'written-questions': 'pr6/statistics/written-questions.html',
+                                'plenary-sessions': 'pr6/statistics/plenary-sessions.html',
                                 'attendance': 'pr6/statistics/attendance.html',
                                 'bills': 'pr6/statistics/bills.html',
                                 'committee-activities': 'pr6/statistics/committee-activities.html',
-                                'plenary-activities': 'pr6/statistics/plenary-activities.html',
+                                
                                 'turnover': 'pr6/statistics/turnover.html',
-                                'written-questions': 'pr6/statistics/written-questions.html',
+                                
                             } %}
                             
                             {% if article in statistics_templates %}

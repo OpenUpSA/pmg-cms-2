@@ -78,6 +78,7 @@
   border-radius: 5px;
   overflow: hidden;
   opacity: 0.8;
+  width: 100%;
 }
 
 .pr6-statistics article {
@@ -460,6 +461,24 @@
     content: "";
     display: table;
     clear: both;
+  }
+
+  /* on table: */
+
+  @media screen and (max-width: 768px) {
+    .pr6-row {
+      display: block;
+    }
+  
+    .pr6-row [class^="col-"] {
+      margin-bottom: 1.5em;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .hide-sm {
+      display: none;
+    }
   }
 
   /* Typography & General */

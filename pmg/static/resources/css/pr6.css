@@ -316,6 +316,11 @@
   box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
 }
 
+.full-article .article-content .indent {
+  padding-left: 3em;
+
+}
+
 /* Design Elements */
 
 .pr6-design-element2 {

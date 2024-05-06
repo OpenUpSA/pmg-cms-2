@@ -45,8 +45,17 @@
     margin: 2em 0 1.5em;
 }
 
+.pr6-intro p:first-child {
+  margin-top: 0;
+}
+
+.pr6-intro p.smaller {
+    font-size: 14px;
+    margin: 1em 0 2em;
+}
+
 .pr6-intro img {
-    width: 230px;
+    width: 100%;
 }
 
 .pr6-section-title {

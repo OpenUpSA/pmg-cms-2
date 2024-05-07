@@ -277,6 +277,69 @@
 
 }
 
+
+.full-article .recommendation-block {
+  background: #f8f5ec;
+  padding: 2em;
+  border-radius: 5px;
+  margin: 2em 0;
+  position: relative;
+
+  text-align: justify;
+  color: #666;
+  line-height: 1.5em;
+}
+
+.full-article .recommendation-number {
+  position: absolute;
+  top: -0.5em;
+  left: -0.5em;
+  padding: 0.1em 0.2em 0.1em;
+  border-radius: 50%;
+  background: #666;
+  color: #fff;
+  font-weight: bold;
+  width: 1.5em;
+  height: 1.5em;
+  text-align: center;
+}
+
+.full-article .recommendation {
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 1.5em 0;
+}
+
+
+
+.full-article .addressed, .full-article .ongoing {
+  position: absolute;
+  top: -0.5em;
+  right: -0.5em;
+  transform: rotate(10deg);
+  font-size: 0.8em;
+
+}
+
+.full-article .addressed::after {
+  content: "Addressed";
+  text-transform: uppercase;
+  background-color: #00b78e;
+  color: #fff;
+  padding: 0.5em;
+  border-radius: 5px;
+}
+
+.full-article .ongoing::after {
+  content: "Ongoing";
+  text-transform: uppercase;
+  background-color: #f1a201;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 0.5em;
+}
+
 .article-image {
   margin: 1em 0 2em;
 }

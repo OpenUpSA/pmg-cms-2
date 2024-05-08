@@ -393,15 +393,16 @@
 
 }
 
-.full-article .bills-table {
+.full-article .bills-table, .full-article .attendance-table {
   margin: 2em 0;
+  width: 100%;
 }
 
-.full-article .bills-table th {
+.full-article .bills-table th, .full-article .attendance-table th {
   background: #eee;
 }
 
-.full-article .bills-table td, .full-article .bills-table th {
+.full-article .bills-table td, .full-article .bills-table th, .full-article .attendance-table td, .full-article .attendance-table th {
   font-size: 0.8em;
   padding: 0.2em;
   color: #333;

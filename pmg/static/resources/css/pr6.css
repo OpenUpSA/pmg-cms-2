@@ -393,6 +393,21 @@
 
 }
 
+.full-article .bills-table {
+  margin: 2em 0;
+}
+
+.full-article .bills-table th {
+  background: #eee;
+}
+
+.full-article .bills-table td, .full-article .bills-table th {
+  font-size: 0.8em;
+  padding: 0.2em;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
 /* Design Elements */
 
 .pr6-design-element2 {

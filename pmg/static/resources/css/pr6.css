@@ -10,18 +10,16 @@
 
 .pr6-section .header {
     background-color: #f8f5ec;
-    height: 350px;
+    height: 500px;
+    background: url('/static/resources/images/pr6/header.jpg');
+    background-size: cover;
+    background-position: center center;
+  
 }
 
-.header-container {
-    background: url('/static/resources/images/pr6/header.jpg');
-    background-position: center center;
-    background-repeat: no-repeat;
-    height: 100%;
-}
 
 .pr6-title {
-    width: 350px;
+    width: 400px;
     margin: 0 auto;
     display: block;
 }
@@ -31,7 +29,7 @@
     border-radius: 42px 42px 0 0;
     padding: 2em 2em;
     position: relative;
-    top: -100px;
+    top: -250px;
 }
 
 .pr6-intro h2 {
@@ -589,3 +587,39 @@
     color: #F05532;
   }
   
+
+  /* Special Thanks */
+
+  .special-thanks {
+    text-align: center;
+    margin: 3em 0;
+    background-color: rgba(228, 204, 168, 0.2);
+    border: 1px solid rgba(0,0,0,0.1);
+    padding: 2em;
+    border-radius: 5px;
+  }
+
+  .special-thanks h3 {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 0 0 1em 0;
+    color: #2e5f89;
+    text-transform: uppercase;
+  }
+
+  .special-thanks p {
+    font-weight: bold;
+    margin: 2em 0;
+  }
+
+
+  .special-thanks .logos a {
+    display: inline-block;
+    margin: 0 0.8em;
+
+
+  }
+
+  .special-thanks .logos a img {
+    display: block;
+  }

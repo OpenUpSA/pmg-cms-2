@@ -357,12 +357,18 @@
   margin: 1em 0;
 }
 
+
+
 .full-article .info-block {
   padding: 2em 2em 1em;
   text-align: center;
   margin: 2em 0 3em;
   color: #333;
   background: #f8f5ec;
+}
+
+.info-block.text-left li {
+  text-align: left;
 }
 
 .full-article .interview-party {
@@ -391,20 +397,26 @@
 
 }
 
-.full-article .bills-table, .full-article .attendance-table {
+.full-article .bills-table, .full-article .attendance-table, .full-article .sessions-table {
   margin: 2em 0;
   width: 100%;
 }
 
-.full-article .bills-table th, .full-article .attendance-table th {
+.full-article .bills-table th, .full-article .attendance-table th, .full-article .sessions-table th {
   background: #eee;
 }
 
-.full-article .bills-table td, .full-article .bills-table th, .full-article .attendance-table td, .full-article .attendance-table th {
+.full-article .bills-table td, .full-article .bills-table th, .full-article .attendance-table td, .full-article .attendance-table th, .full-article .sessions-table th, .full-article .sessions-table td{
   font-size: 0.8em;
   padding: 0.2em;
   color: #333;
   border: 1px solid #ccc;
+}
+
+.caption {
+  font-size: 0.8em;
+  color: #333;
+  margin: 1em 0
 }
 
 /* Design Elements */

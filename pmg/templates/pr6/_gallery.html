@@ -1,0 +1,49 @@
+
+<link rel='stylesheet' href='/static/resources/javascript/vendor/unitegallery/unite-gallery.css' type='text/css' /> 
+<link rel='stylesheet' href='/static/resources/javascript/vendor/unitegallery/default/ug-theme-default.css' type='text/css' /> 
+
+
+<div id="gallery" style="display:none;">
+		
+    <img alt="Zondo Commission" src="/static/resources/images/pr6/gallery/zondo1.png"
+        data-image="/static/resources/images/pr6/gallery/zondo1.png"
+        data-description="Zondo Commission">
+    <img alt="New Speaker" src="/static/resources/images/pr6/gallery/new-speaker.jpg"
+        data-image="/static/resources/images/pr6/gallery/new-speaker.jpg"
+        data-description="New Speaker">
+    <img alt="Phala Phala" src="/static/resources/images/pr6/gallery/phala-phala.png"
+        data-image="/static/resources/images/pr6/gallery/phala-phala.png"
+        data-description="Phala Phala">
+    <img alt="Fire at parliament" src="/static/resources/images/pr6/gallery/fire.png"
+        data-image="/static/resources/images/pr6/gallery/fire.png"
+        data-description="Fire at parliament">
+    <img alt="Covid-19" src="/static/resources/images/pr6/gallery/covid-1.png"
+        data-image="/static/resources/images/pr6/gallery/covid-1.png"
+        data-description="Covid-19">
+    <img alt="Impeachment Inquiry" src="/static/resources/images/pr6/gallery/impeachment-inquiry.png"
+        data-image="/static/resources/images/pr6/gallery/impeachment-inquiry.png"
+        data-description="Impeachment Inquiry"> 
+    <img alt="Public Hearings" src="/static/resources/images/pr6/gallery/public-hearings.png"
+        data-image="/static/resources/images/pr6/gallery/public-hearings.png"
+        data-description="Public Hearings"> 
+
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-1.11.1.min.js"
+  crossorigin="anonymous"></script>
+
+<script type='text/javascript' src='/static/resources/javascript/vendor/unitegallery/unitegallery.js'></script> 
+<script type='text/javascript' src='/static/resources/javascript/vendor/unitegallery/ug-theme-tiles.js'></script> 
+
+
+<script>
+    (function($) {
+      $(document).ready(function() {
+        $("#gallery").unitegallery({
+            gallery_theme: "tiles",
+            tiles_type: "justified"		
+        });
+      });
+    })(jQuery);
+  </script>

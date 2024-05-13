@@ -80,12 +80,17 @@
 
 .pr6-interviews article img {
   display: block;
-  margin: 0 0 1.5em 0;
+  margin: 0 1em 1.5em 0;
   filter: grayscale(100%);
   border-radius: 5px;
   overflow: hidden;
   opacity: 0.8;
-  width: 100%;
+  width: 30%;
+  float: left;
+}
+
+.pr6-interviews article > div {
+  float: right
 }
 
 .pr6-statistics article {

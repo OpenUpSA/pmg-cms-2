@@ -80,6 +80,14 @@
     height: 100%;
     margin-bottom: 1em;
     transition: all 0.5s;
+    position: relative;
+}
+
+.pr6-articles article .article-dots, .pr6-statistics article .article-dots {
+  position: absolute;
+  width: 15%;
+  bottom: 5px;
+  right: 5px;
 }
 
 .pr6-articles article a {

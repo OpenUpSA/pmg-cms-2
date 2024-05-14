@@ -72,6 +72,29 @@
   
 }
 
+.pr6-menu {
+  
+  font-size: 1.2em;
+}
+
+.pr6-menu ul {
+  padding: 0;
+  margin: 0;
+}
+
+.pr6-menu li {
+  display: inline-block;
+  margin: 0 1em 0 0;
+  text-transform: uppercase;
+  padding: 0;
+  font-weight: bold;
+}
+
+.pr6-menu a:hover {
+  text-decoration: none;
+}
+
+
 .pr6-articles article, .pr6-interviews article, .pr6-statistics article {
     background-color: #fbfaf5;
     border: 1px solid rgba(0,0,0,0.05);

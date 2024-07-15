@@ -477,6 +477,8 @@ class CommitteeMeeting(Event):
     __mapper_args__ = {"polymorphic_identity": "committee-meeting"}
     actual_start_time = db.Column(db.Time(timezone=True))
     actual_end_time = db.Column(db.Time(timezone=True))
+    scheduled_start_time = db.Column(db.Time(timezone=True))
+    scheduled_end_time = db.Column(db.Time(timezone=True))
     pmg_monitor = db.Column(db.String(255))
 
     attendance = db.relationship(

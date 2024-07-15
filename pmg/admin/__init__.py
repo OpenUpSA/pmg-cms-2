@@ -673,7 +673,13 @@ class CommitteeMeetingView(EventView):
         "body",
         "files",
         rules.FieldSet(
-            ["actual_start_time", "actual_end_time", "attendance"],
+            [
+                "actual_start_time",
+                "actual_end_time",
+                "scheduled_start_time",
+                "scheduled_end_time",
+                "attendance",
+            ],
             "Member Attendance Record",
         ),
     )

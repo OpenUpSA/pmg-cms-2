@@ -25,7 +25,7 @@ from wtforms.validators import data_required
 from sqlalchemy import func
 from sqlalchemy.sql.expression import or_, and_
 from sqlalchemy import exc
-from jinja2 import Markup
+from markupsafe import Markup
 import humanize
 import psycopg2
 import flask_wtf

@@ -27,7 +27,7 @@ from sqlalchemy.sql.expression import or_, and_
 from sqlalchemy import exc
 from markupsafe import Markup
 import humanize
-import psycopg2
+import datetime
 import flask_wtf
 
 from pmg import app, db
@@ -42,7 +42,7 @@ from . import widgets
 
 logger = logging.getLogger(__name__)
 
-SAST = psycopg2.tz.FixedOffsetTimezone(offset=120, name=None)
+SAST = datetime.timezone(offset=datetime.timedelta(0), name="SAST")
 
 
 def strip_filter(value):
@@ -54,7 +54,7 @@ def strip_filter(value):
 # Our base form extends flask_wtf.Form to get CSRF support,
 # and adds the _obj property required by Flask Admin
 class BaseForm(flask_wtf.Form):
-    def __init__(self, formdata=None, obj=None, prefix=u"", **kwargs):
+    def __init__(self, formdata=None, obj=None, prefix="", **kwargs):
         self._obj = obj
         super(BaseForm, self).__init__(
             formdata=formdata, obj=obj, prefix=prefix, **kwargs
@@ -156,9 +156,9 @@ class UsageReportView(RBACMixin, BaseView):
         builder = XLSXBuilder()
         xlsx = builder.from_orgs(users)
         resp = make_response(xlsx)
-        resp.headers[
-            "Content-Type"
-        ] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        resp.headers["Content-Type"] = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
         resp.headers["Content-Disposition"] = "attachment;filename=" + filename
         return resp
 
@@ -193,7 +193,7 @@ class MyModelView(RBACMixin, ModelView):
         return None
 
     def alert_url(self, model):
-        """ If we support sending an email alert about this model, what's the URL? """
+        """If we support sending an email alert about this model, what's the URL?"""
         if model.id and hasattr(model, "alert_template"):
             template = model.alert_template
             if template:
@@ -210,8 +210,7 @@ class MyModelView(RBACMixin, ModelView):
         pass
 
     def get_export_columns(self):
-        """ Export all columns by default.
-        """
+        """Export all columns by default."""
         return self.get_column_names(
             only_columns=self.scaffold_list_columns(),
             excluded_columns=self.column_export_exclude_list,
@@ -321,7 +320,9 @@ class UserView(MyModelView):
             "query_factory": Committee.premium_for_select,
             "widget": widgets.CheckboxSelectWidget(multiple=True),
         },
-        "confirmed_at": {"widget": wtforms_widgets.TextInput(),},
+        "confirmed_at": {
+            "widget": wtforms_widgets.TextInput(),
+        },
     }
     form_widget_args = {
         "confirmed_at": {"readonly": True},
@@ -451,7 +452,9 @@ class CommitteeView(MyModelView):
     )
     column_default_sort = (Committee.name, False)
     column_searchable_list = ("name",)
-    column_formatters = dict(memberships=macro("render_membership_count"),)
+    column_formatters = dict(
+        memberships=macro("render_membership_count"),
+    )
     form_columns = (
         "name",
         "ad_hoc",
@@ -494,7 +497,7 @@ class CommitteeView(MyModelView):
 
 
 class ViewWithFiles:
-    """ Mixin to pre-fill inline file forms. """
+    """Mixin to pre-fill inline file forms."""
 
     form_args = {
         "files": {"widget": widgets.InlineFileWidget()},
@@ -507,7 +510,7 @@ class ViewWithFiles:
 
 
 class InlineFile(InlineFormAdmin):
-    """ Inline file admin for all views that allow file attachments.
+    """Inline file admin for all views that allow file attachments.
     It allows the user to choose an existing file to link as
     an attachment, or upload a new one. It also allows the user
     to edit the title of an already-attached file.
@@ -520,7 +523,12 @@ class InlineFile(InlineFormAdmin):
     column_labels = {
         "file": "Existing file",
     }
-    form_ajax_refs = {"file": {"fields": ("title", "file_path"), "page_size": 10,}}
+    form_ajax_refs = {
+        "file": {
+            "fields": ("title", "file_path"),
+            "page_size": 10,
+        }
+    }
 
     def postprocess_form(self, form_class):
         # add a field for handling the file upload
@@ -591,9 +599,9 @@ class AttendanceMemberAjaxModelLoader(QueryAjaxModelLoader):
             return None
 
         if model.house:
-            model_unicode = u"%s (%s)" % (model.name, model.house.name)
+            model_unicode = "%s (%s)" % (model.name, model.house.name)
         else:
-            model_unicode = u"%s" % model.name
+            model_unicode = "%s" % model.name
         return (getattr(model, self.pk), model_unicode)
 
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
@@ -601,7 +609,7 @@ class AttendanceMemberAjaxModelLoader(QueryAjaxModelLoader):
         # Only show currently active members
         query = query.filter(Member.current == True)
 
-        filters = (field.ilike(u"%%%s%%" % term) for field in self._cached_fields)
+        filters = (field.ilike("%%%s%%" % term) for field in self._cached_fields)
         query = query.filter(or_(*filters))
 
         if self.order_by:
@@ -845,8 +853,7 @@ class MemberView(MyModelView):
 
     @expose("/attendance/")
     def attendance(self):
-        """
-        """
+        """ """
         mem_id = request.args.get("id")
         url = "/admin/committeemeetingattendance/?member_id={0}".format(mem_id)
         return redirect(url)
@@ -881,7 +888,10 @@ class CommitteeMeetingAttendanceView(MyModelView):
     column_formatters = {
         "meeting.title": lambda v, c, m, n: Markup(
             "<a href='%s'>%s</a>"
-            % (url_for("committee_meeting", event_id=m.meeting_id), m.meeting.title,),
+            % (
+                url_for("committee_meeting", event_id=m.meeting_id),
+                m.meeting.title,
+            ),
         ),
         "meeting.date": lambda v, c, m, n: m.meeting.date.date().isoformat(),
     }
@@ -950,7 +960,10 @@ class CommitteeQuestionView(MyModelView):
         "answer": {"class": "pmg_ckeditor"},
     }
     form_ajax_refs = {
-        "source_file": {"fields": ("title", "file_path"), "page_size": 10,},
+        "source_file": {
+            "fields": ("title", "file_path"),
+            "page_size": 10,
+        },
         "asked_by_member": {"fields": ("name",), "page_size": 25},
     }
     inline_models = [InlineFile(CommitteeQuestionFile)]
@@ -1162,7 +1175,7 @@ class InlineBillEventsForm(InlineFormAdmin):
         "The NA granted permission",
         "The NCOP granted permission",
         "Bill lapsed",
-        "Bill withdrawn"
+        "Bill withdrawn",
     ]
     form_columns = (
         "id",
@@ -1180,7 +1193,14 @@ class InlineBillEventsForm(InlineFormAdmin):
             '<div class="help-event-title-content">When event type is "Bill passed", '
             'event title must be one of: <ul>%s</ul>When event type is "Bill updated", '
             "event title must be one of: <ul>%s</ul></div></div>"
-            % ("".join(("<li>%s</li>" % title for title in ALLOWED_BILL_PASSED_TITLES)), "".join(("<li>%s</li>" % title for title in ALLOWED_BILL_UPDATED_TITLES)))
+            % (
+                "".join(
+                    ("<li>%s</li>" % title for title in ALLOWED_BILL_PASSED_TITLES)
+                ),
+                "".join(
+                    ("<li>%s</li>" % title for title in ALLOWED_BILL_UPDATED_TITLES)
+                ),
+            )
         },
     }
 
@@ -1223,7 +1243,7 @@ class BillHouseAjaxModelLoader(QueryAjaxModelLoader):
     def get_list(self, term, offset=0, limit=DEFAULT_PAGE_SIZE):
         query = self.session.query(self.model)
 
-        filters = list((field.ilike(u"%%%s%%" % term) for field in self._cached_fields))
+        filters = list((field.ilike("%%%s%%" % term) for field in self._cached_fields))
         query = query.filter(or_(*filters))
         query = query.filter(and_(House.sphere == "national"))
 
@@ -1293,9 +1313,11 @@ class FileView(MyModelView):
     column_default_sort = "file_path"
     column_labels = {"file_bytes": "Size"}
     column_formatters = {
-        "file_bytes": lambda v, c, m, n: "-"
-        if m.file_bytes is None
-        else Markup("<nobr>%s</nobr>" % humanize.naturalsize(m.file_bytes)),
+        "file_bytes": lambda v, c, m, n: (
+            "-"
+            if m.file_bytes is None
+            else Markup("<nobr>%s</nobr>" % humanize.naturalsize(m.file_bytes))
+        ),
     }
 
     class SizeRule(rules.BaseRule):

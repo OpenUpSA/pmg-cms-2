@@ -54,7 +54,7 @@ jdcal==1.4.1
 Jinja2==3.1.4
 python_magic==0.4.24
 Mako==1.0.2
-mammoth==0.3.23
+mammoth==1.8.0
 MarkupSafe==2.0.0
 marshmallow==2.16.3
 marshmallow-polyfield==3.1
@@ -69,7 +69,7 @@ passlib==1.7.1
 pathlib==1.0.1
 pathtools==0.1.2
 pbr==1.8.1
-psycopg2==2.7.3.2
+psycopg2==2.9.9
 pycparser==2.19
 pycryptodome==3.19.1
 pyelasticsearch==0.7.1
@@ -105,4 +105,4 @@ xlrd==1.0.0
 XlsxWriter==0.6.6
 xlwt==1.3.0
 redis==3.5.3
--e git+https://github.com/Code4SA/za-parliament-scrapers.git@ba77a50d4fc8e83a158328fdea581e143c7631ab#egg=za_parliament_scrapers
+-e git+https://github.com/Code4SA/za-parliament-scrapers.git@1fe8b9612f44f55485ff0a3b98c418dfdbc71694#egg=za_parliament_scrapers

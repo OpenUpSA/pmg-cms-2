@@ -3,7 +3,7 @@ from flask_admin.form import RenderTemplateWidget
 from wtforms import widgets, fields
 from wtforms.widgets.core import html_params, HTMLString
 from wtforms.compat import text_type
-from cgi import escape
+import html
 
 
 class CheckboxSelectWidget(widgets.Select):
@@ -30,7 +30,7 @@ class CheckboxSelectWidget(widgets.Select):
             options["checked"] = True
         return HTMLString(
             '<div class="checkbox"><label><input %s> %s</label></div>'
-            % (html_params(**options), escape(text_type(label)))
+            % (html_params(**options), html.escape(text_type(label)))
         )
 
 

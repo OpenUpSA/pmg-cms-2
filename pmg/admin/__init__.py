@@ -27,7 +27,7 @@ from sqlalchemy.sql.expression import or_, and_
 from sqlalchemy import exc
 from markupsafe import Markup
 import humanize
-import datetime
+import pytz
 import flask_wtf
 
 from pmg import app, db
@@ -42,7 +42,7 @@ from . import widgets
 
 logger = logging.getLogger(__name__)
 
-SAST = datetime.timezone(offset=datetime.timedelta(0), name="SAST")
+SAST = pytz.timezone("Africa/Johannesburg")
 
 
 def strip_filter(value):

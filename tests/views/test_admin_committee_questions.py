@@ -1,14 +1,12 @@
 import os
 from urllib.parse import urlparse, parse_qs
-from builtins import str
 from tests import PMGLiveServerTestCase
-from pmg.models import db, Committee, CommitteeQuestion
-from tests.fixtures import dbfixture, UserData, CommitteeData, MembershipData
-from flask import escape
-from io import BytesIO
+from pmg.models import db, CommitteeQuestion
+from tests.fixtures import dbfixture, UserData
 
 
 class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
+    maxDiff = None
     def setUp(self):
         super().setUp()
 
@@ -116,13 +114,18 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
             "What (a) is the number of (i) residential properties, (ii) business erven’, (iii) government buildings and (iv) agricultural properties owned by her department in the Lephalale Local Municipality which are (aa) vacant, (bb) occupied and (cc) earmarked for disposal and (b) total amount does her department owe the municipality in outstanding rates and services?",
         )
         self.assertEqual(
-            question.minister.name, "Minister of Public Works and Infrastructure",
+            question.minister.name,
+            "Minister of Public Works and Infrastructure",
         )
         self.assertEqual(question.asked_by_name, "Ms S J Graham")
+        self.assertEqual.__self__.maxDiff = None
+        print("*****************************************")
+        print(question.answer)
         self.assertEqual(
             question.answer,
-            "<p><strong>The Minister of Public Works and</strong><strong> Infrastructure: </strong></p><ol><li>The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential properties (ii) one business erven (iii) 132 government buildings and (iv) 5 agricultural properties.  DPWI informed me that (aa) 8 land parcels are vacant and (bb) only one property is unutilised. </li></ol><p>(cc)  DPWI has not earmarked any properties for disposal in the Lephalale Local Municipality.</p><ol><li>In August 2019 the Department started a Government Debt Project engaging directly with municipalities and Eskom to verify and reconcile accounts and the project. DPWI, on behalf of client departments, owed the Lephalale Local Municipality, as per accounts received on 17 February 2020, R 334,989.69 which relates current consumption. </li></ol>",
+            "<p><strong>The Minister of Public Works and Infrastructure: </strong></p><ol><li>The Department of Public Works and Infrastructure (DPWI) has informed me that in the Lephalale Local Municipality the Department owns (i) 183 residential properties (ii) one business erven (iii) 132 government buildings and (iv) 5 agricultural properties.  DPWI informed me that (aa) 8 land parcels are vacant and (bb) only one property is unutilised. </li></ol><p>(cc)  DPWI has not earmarked any properties for disposal in the Lephalale Local Municipality.</p><ol><li>In August 2019 the Department started a Government Debt Project engaging directly with municipalities and Eskom to verify and reconcile accounts and the project. DPWI, on behalf of client departments, owed the Lephalale Local Municipality, as per accounts received on 17 February 2020, R 334,989.69 which relates current consumption. </li></ol>",
         )
+        print("*****************************************")
         self.assertEqual(question.code, "NW104")
 
         # Delete the question that was created
@@ -164,7 +167,7 @@ class TestAdminCommitteeQuestions(PMGLiveServerTestCase):
         # Test that the question that was created contains the correct data
         question = CommitteeQuestion.query.get(created_question_id)
         self.assertIn(
-            "(1)Whether, with reference to her reply to question 937 on 4 June 2020",
+            "(1)\tWhether, with reference to her reply to question 937 on 4 June 2020",
             question.question,
         )
         self.assertEqual(

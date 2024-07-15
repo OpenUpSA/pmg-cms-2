@@ -10,7 +10,7 @@ from tests.fixtures import (
     HouseData,
     BillTypeData,
 )
-from flask import escape
+import html
 
 
 class TestAdminBillPage(PMGLiveServerTestCase):
@@ -74,16 +74,14 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         url = "/admin/bill/new"
         response = self.make_request(url, self.user, follow_redirects=True)
 
-        self.assertIn(escape("Help?"), self.html)
+        self.assertIn(html.escape("Help?"), self.html)
         self.assertIn(
-            escape('When event type is "Bill passed", event title must be one of'),
+            "When event type is &#34;Bill passed&#34;, event title must be one of",
             self.html,
         )
         self.assertIn(
-            escape(
-                "Bill passed by the National Assembly and transmitted to the "
-                "NCOP for concurrence"
-            ),
+            "Bill passed by the National Assembly and transmitted to the "
+            "NCOP for concurrence",
             self.html,
         )
 
@@ -96,7 +94,9 @@ class TestAdminBillPage(PMGLiveServerTestCase):
         data = {
             "url": "/admin/bill/",
             "action": "delete",
-            "rowid": [str(self.fx.BillData.food.id),],
+            "rowid": [
+                str(self.fx.BillData.food.id),
+            ],
         }
         response = self.make_request(url, self.user, data=data, method="POST")
         after_count = len(Bill.query.all())
@@ -105,7 +105,7 @@ class TestAdminBillPage(PMGLiveServerTestCase):
 
     def test_admin_delete_bill(self):
         """
-        Delete a bill on the admin interface 
+        Delete a bill on the admin interface
         (/admin/bill/delete/)
         """
         before_count = len(Bill.query.all())

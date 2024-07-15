@@ -46,7 +46,7 @@ hstspreload==2020.2.1
 httpx==0.23.0
 humanize==0.5.1
 hyperframe==5.2.0
-idna==2.8
+idna==3.7
 inflection==0.2.1
 iso8601==0.1.12
 itsdangerous==2.0

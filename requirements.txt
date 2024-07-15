@@ -69,7 +69,7 @@ passlib==1.7.1
 pathlib==1.0.1
 pathtools==0.1.2
 pbr==1.8.1
-psycopg2==2.7.3.2
+psycopg2==2.9.9
 pycparser==2.19
 pycryptodome==3.19.1
 pyelasticsearch==0.7.1

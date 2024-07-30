@@ -1,0 +1,8 @@
+{
+    "cron": [
+        {
+            "command": "curl api.pmg.org.za/v2/bill-tracker/update/ > /var/log/cron-bill-tracker",
+            "schedule": "0 1 * * *"
+        }
+    ]
+}

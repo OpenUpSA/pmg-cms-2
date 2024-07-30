@@ -29,6 +29,7 @@ services:
       - ES_SERVER=http://elastic:9200
       - GOOGLE_ANALYTICS_ID=G-XN8MJJNSEE
       - GOOGLE_TAG_MANAGER_ID=GTM-MMCNPLT6
+      - RUN_PERIODIC_TASKS=true
     ports:
       - "5000:5000"
     command: python app.py runserver

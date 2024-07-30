@@ -3,6 +3,7 @@ from flask_security import current_user
 from sqlalchemy import desc
 from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast
+from pmg.bill_tracker import produce_bill_tracker_json
 
 from pmg import cache, cache_key, should_skip_cache
 from pmg.models import (
@@ -256,6 +257,13 @@ def bill_tracker():
     # Return background-worker produced static JSON file from pmg/static/bill-tracker.json
     try:
         with open("pmg/static/bill-tracker.json", "r") as f:
-            return f.read() 
+            return f.read()
     except FileNotFoundError:
         return abort(404)
+
+
+@api.route("/bill-tracker/update")
+def bill_tracker_update():
+    # Update the bill-tracker.json file
+    produce_bill_tracker_json()
+    return "/v2/bill-tracker JSON updated"

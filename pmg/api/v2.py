@@ -252,17 +252,17 @@ def daily_schedules(id=None):
         return api_list_items(DailySchedule.list(), DailyScheduleSchema)
 
 
-@api.route("/bill-tracker")
+@api.route("/bill-tracker/")
 def bill_tracker():
     # Return background-worker produced static JSON file from pmg/static/bill-tracker.json
     try:
         with open("pmg/static/bill-tracker.json", "r") as f:
             return f.read()
     except FileNotFoundError:
-        return abort(404)
+        return abort(500)
 
 
-@api.route("/bill-tracker/update")
+@api.route("/bill-tracker/update/")
 def bill_tracker_update():
     # Update the bill-tracker.json file
     produce_bill_tracker_json()

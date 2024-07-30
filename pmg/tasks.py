@@ -4,6 +4,7 @@ from flask import current_app
 from flask_script import Command
 from pmg import db
 import logging
+import datetime
 
 log = logging.getLogger(__name__)
 
@@ -24,6 +25,14 @@ def sync_soundcloud():
         SoundcloudTrack.sync()
 
 
+def produce_bill_tracker_json():
+    from pmg import app
+    from pmg.bill_tracker import produce_bill_tracker_json
+
+    with app.app_context():
+        produce_bill_tracker_json()
+
+
 def schedule(scheduler):
     jobs = [
         # Schedule background task for sending saved search alerts every
@@ -35,6 +44,15 @@ def schedule(scheduler):
             replace_existing=True,
             coalesce=True,
             hour=3,
+        ),
+        scheduler.add_job(
+            "pmg.tasks:produce_bill_tracker_json",
+            "cron",
+            id="produce-bill-tracker-json",
+            replace_existing=True,
+            coalesce=True,
+            hour=1,
+            next_run_time=datetime.datetime.now(),
         ),
         scheduler.add_job(
             sync_soundcloud,

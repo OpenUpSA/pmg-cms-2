@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   redis:
     image: redis:5.0.14
@@ -48,7 +46,7 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
-      - "5431:5432"
+      - "5433:5432"
 
   elastic:
     image: elastic

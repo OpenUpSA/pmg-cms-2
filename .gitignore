@@ -55,3 +55,5 @@ pmg/static/stylesheets/
 bin/*.csv
 src/
 .vscode
+
+pmg/static/bill-tracker.json

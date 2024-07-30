@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-sm-8 post-list">
       {% include '_social_sharing.html' %}
-      <h1>That week in Parliament</h1>
+      <h1>Blog</h1>
       {% if 'year' in filters or 'month' in filters %}
       <h4>Showing posts from: 
         <span class="current-filter">{{filters['month']}} {{filters['year']}}
@@ -39,7 +39,6 @@
       {% endfor %}
     </div>
     <div class="col-sm-4 blog-info">
-      {% include '_blog_infobox.html' %}
       {% include '_blog_archive.html' %}
     </div>
   </div>

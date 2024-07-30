@@ -53,8 +53,7 @@ class TestBlogPages(PMGLiveServerTestCase):
         self.contains_archive()
 
     def contains_template_text(self):
-        self.assertIn("That week in Parliament", self.html)
-        self.assertIn("About this blog", self.html)
+        self.assertIn("Blog", self.html)
         self.assertIn("Blog Archive", self.html)
 
     def contains_posts(self, posts):

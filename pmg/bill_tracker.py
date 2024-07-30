@@ -3,7 +3,7 @@ import datetime
 from pmg.models.resources import Bill
 
 
-# Simple export of bill data to pmg/static/bill-tracker.json run by APScheduler every morning at 1am
+# Simple export of bill data to pmg/static/bill-tracker.json
 def produce_bill_tracker_json():
     bills = []
     for bill in Bill.query.order_by(Bill.year).limit(1000000000).all():

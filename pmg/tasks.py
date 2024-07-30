@@ -17,14 +17,6 @@ def send_saved_search_alerts():
         SavedSearch.send_all_alerts()
 
 
-def sync_soundcloud():
-    from pmg import app
-    from pmg.models.soundcloud_track import SoundcloudTrack
-
-    with app.app_context():
-        SoundcloudTrack.sync()
-
-
 def schedule(scheduler):
     jobs = [
         # Schedule background task for sending saved search alerts every
@@ -36,14 +28,6 @@ def schedule(scheduler):
             replace_existing=True,
             coalesce=True,
             hour=3,
-        ),
-        scheduler.add_job(
-            sync_soundcloud,
-            "cron",
-            id="sync-soundcloud",
-            replace_existing=True,
-            coalesce=True,
-            hour="*/" + current_app.config["SOUNDCLOUD_PERIOD_HOURS"],
         ),
     ]
     for job in jobs:

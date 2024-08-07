@@ -1,2 +1,4 @@
 User-agent: *
-Crawl-delay: 5
+Disallow: /user/
+Disallow: /mailreporter/
+Crawl-delay: 120

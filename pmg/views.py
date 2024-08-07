@@ -1,3 +1,4 @@
+import os
 from builtins import range
 import logging
 from datetime import datetime, date, timedelta
@@ -19,6 +20,7 @@ from flask import (
     redirect,
     Response,
     jsonify,
+    send_from_directory
 )
 from flask_security import current_user
 from flask_mail import Message
@@ -2005,7 +2007,10 @@ def pr6():
 def pr6_articles(section,slug):
     return render_template("pr6/article.html",section=section, article=slug)
 
-
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 # Test to make sure sentry is working
 @app.route("/debug-sentry")

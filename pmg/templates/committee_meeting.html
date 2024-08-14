@@ -5,7 +5,9 @@
 
 {% block committee_breadcrumb %}
   {{ super() }}
-  <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+  {% if committee %}
+    <li><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></li>
+    {% endif %}
 {% endblock %}
 
 {% block javascript %}
@@ -20,7 +22,9 @@
       {% if event.premium_but_free %}
         <div class="premium-but-free"><i class="fa fa-fw fa-unlock-alt" aria-hidden="true"></i> This premium content has been made freely available</div>
       {% endif %}
+      {% if committee %}
       <h4><a href="{{ url_for('committee_detail', committee_id=committee.id) }}">{{ committee.name }}</a></h4>
+      {% endif %}
       {% if event.date %}
         <h5 class="date">{{ event.date | pretty_date("long") }}</h5>
       {% endif %}

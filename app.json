@@ -4,5 +4,8 @@
             "command": "curl https://api.pmg.org.za/v2/bill-tracker/update/",
             "schedule": "@daily"
         }
-    ]
+    ],
+    "scripts": {
+        "postdeploy": "curl https://api.pmg.org.za/v2/bill-tracker/update/"
+    }
 }

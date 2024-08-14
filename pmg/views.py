@@ -799,10 +799,14 @@ def committee_meeting(event_id):
     ) + sorted(
         [a for a in attendance if not a["chairperson"]], key=sorter
     )  # noqa
+    if event["committee"]:
+        event_committee_name = event["committee"]["name"]
+    else:
+        event_committee_name = "[UNKNOWN COMMITTEE]"
     if event["chairperson"]:
         social_summary = (
             "A meeting of the "
-            + event["committee"]["name"]
+            + event_committee_name
             + " committee held on "
             + pretty_date(event["date"], "long")
             + ", lead by "
@@ -811,7 +815,7 @@ def committee_meeting(event_id):
     else:
         social_summary = (
             "A meeting of the "
-            + event["committee"]["name"]
+            + event_committee_name
             + " committee held on "
             + pretty_date(event["date"], "long")
             + "."

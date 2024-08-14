@@ -604,7 +604,7 @@ def committee_question(question_id):
     if question["asked_by_name"]:
         asked_by_name = question["asked_by_name"]
     else:
-        asked_by_name = ""
+        asked_by_name = "[UNKNOWN]"
     social_summary = (
         "A question to the "
         + question["question_to_name"]

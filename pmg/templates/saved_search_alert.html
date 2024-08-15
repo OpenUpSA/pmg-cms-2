@@ -1,0 +1,32 @@
+<p>
+Hello,
+</p>
+
+<p>
+We found <b>{{ results|length }} recently updated item{% if results|length > 1 %}s{% endif %}</b> for your search
+<a href="{{ search.url(_external=True) }}">{{ search.search }}</a>{%
+if search.content_type %} in {{ search.friendly_content_type }}{% endif %}:
+</p>
+
+<ul>
+{% for result in results %}
+    <li style="padding-bottom: 1em">
+    <h4><a href="{{ result._source.url }}">{{ result._source.title }}</a> - {{ result._source.date|pretty_date }}</h4>
+    {% if result.highlight %}
+    <p>
+        {% if result.highlight.description %}
+        {{ result.highlight.description|search_snippet(mark='b')|ellipse|safe }}
+        {% elif result.highlight.fulltext %}
+        {{ result.highlight.fulltext|search_snippet(mark='b')|ellipse|safe }}
+        {% elif result.highlight.attachments %}
+        {{ result.highlight.attachments|search_snippet(mark='b')|ellipse|safe }}
+        {% endif %}
+    </p>
+    {% endif %}
+    </li>
+{% endfor %}
+</ul>
+
+<p>
+Click here to <a href="{{ url_for('email_alerts', _external=True) }}">manage your email alerts</a>.
+</p>

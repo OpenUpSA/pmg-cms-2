@@ -152,13 +152,13 @@
     {% for version in bill.versions %}
     <div role="tabpanel" class="tab-pane {% if loop.first %}active{% endif %}" id="bill-version-{{ version.id }}" data-url="{{ version.file.url }}">
       <div class="clearfix">
-        <a href="{{ version.file.url }}" class="btn btn-default pull-right"><i class="fa fa-file-text"></i> Download ({{ version.file.file_bytes | filesizeformat }})</a>
+        <a href="{{ version.file.url }}" class="btn btn-default pull-right"><i class="fa fa-file-text"></i> Download{% if (version.file.file_bytes) %} ({{ (version.file.file_bytes | filesizeformat) }}) {% endif %}</a>
         <h4>{{ version.title }}</h4>
       </div>
 
       {% if version.file.file_mime == "application/pdf" %}
         <div class="bill-version-wrapper">
-          <button class="btn btn-primary load-pdf">Show PDF ({{ version.file.file_bytes | filesizeformat }})</button>
+          <button class="btn btn-primary load-pdf">Show PDF{% if (version.file.file_bytes) %} ({{ (version.file.file_bytes | filesizeformat) }}){% endif %}</button>
         </div>
       {% else %}
         <p class="alert alert-info"><i>A preview of this file is not available. Please download it instead.</i></p>

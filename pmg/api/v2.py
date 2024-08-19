@@ -4,6 +4,8 @@ from sqlalchemy import desc
 from sqlalchemy.orm import defer, noload
 from sqlalchemy.sql.expression import nullslast
 from pmg.bill_tracker import produce_bill_tracker_json
+from pmg import app
+import requests
 
 from pmg import cache, cache_key, should_skip_cache
 from pmg.models import (
@@ -265,3 +267,10 @@ def bill_tracker():
 def bill_tracker_update():
     produce_bill_tracker_json()
     return "/v2/bill-tracker JSON updated"
+
+
+@api.route("/elasticsearch-health")
+def elasticsearch_health():
+    r = requests.get("%s/_cluster/health?pretty=true" % app.config["ES_SERVER"])
+    r.raise_for_status()
+    return r.json()

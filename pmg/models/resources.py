@@ -187,7 +187,10 @@ class Bill(ApiResource, db.Model):
         if not version:
             # don't return None
             return []
-        return base64.encodestring(version.file.get_bytes())
+        try:
+            return base64.encodestring(version.file.get_bytes())
+        except AttributeError as e:
+            return []
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

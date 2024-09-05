@@ -1,8 +1,13 @@
 {
+    "scripts": {
+        "dokku": {
+            "postdeploy": "curl https://api.pmg.org.za/v2/bill-tracker/update/"
+        }
+    },
     "cron": [
         {
-            "command": "curl api.pmg.org.za/v2/bill-tracker/update/ > /var/log/cron-bill-tracker",
-            "schedule": "0 1 * * *"
+            "command": "curl https://api.pmg.org.za/v2/bill-tracker/update/",
+            "schedule": "@daily"
         }
     ]
 }

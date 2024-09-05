@@ -23,7 +23,7 @@ services:
     volumes:
       - .:/app
     environment:
-      - FLASK_DEBUG_CACHE=true
+      - FLASK_DEBUG_CACHE=false
       - REDIS_URL=redis://redis:6379/0
       - SQLALCHEMY_DATABASE_URI=postgresql://pmg:pmg@postgres/pmg?client_encoding=utf8
       - ES_SERVER=http://elastic:9200

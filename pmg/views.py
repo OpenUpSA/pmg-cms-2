@@ -20,7 +20,7 @@ from flask import (
     redirect,
     Response,
     jsonify,
-    send_from_directory
+    send_from_directory,
 )
 from flask_security import current_user
 from flask_mail import Message
@@ -77,7 +77,7 @@ def page_not_found(error):
     dest = Redirect.for_url(request.path)
     if dest:
         return redirect(dest, code=302)
-    
+
     return render_template("404.html"), 404
 
 
@@ -113,7 +113,7 @@ def shortcircuit_wget():
 
 @app.before_request
 def redirect_legacy_domains():
-    """ Redirect legacy domains to the primary domain. """
+    """Redirect legacy domains to the primary domain."""
     parts = urlparse(request.url)
     if parts.netloc in LEGACY_DOMAINS:
         parts = list(parts)
@@ -129,7 +129,7 @@ def update_last_login():
 
 
 def classify_attachments(files):
-    """ Return an (audio_files, related_docs) tuple. """
+    """Return an (audio_files, related_docs) tuple."""
     audio = []
     related = []
 
@@ -140,6 +140,7 @@ def classify_attachments(files):
             related.append(f)
 
     return audio, related
+
 
 @cache.cached(timeout=10800, key_prefix="get_featured_content")
 def get_featured_content():
@@ -415,15 +416,19 @@ def committee_detail(committee_id):
     current_attendance_summary = CommitteeMeetingAttendance.committee_attendence_trends(
         committee_id, "current"
     )
-    historical_attendance_summary = CommitteeMeetingAttendance.committee_attendence_trends(
-        committee_id, "historical"
+    historical_attendance_summary = (
+        CommitteeMeetingAttendance.committee_attendence_trends(
+            committee_id, "historical"
+        )
     )
 
     if current_attendance_summary and committee["house"]["short_name"] != "Joint":
         year = current_attendance_summary[-1].year
         cte = Committee.query.get(committee_id)
-        attendance_rank = CommitteeMeetingAttendance.annual_attendance_rank_for_committee(
-            cte, int(year)
+        attendance_rank = (
+            CommitteeMeetingAttendance.annual_attendance_rank_for_committee(
+                cte, int(year)
+            )
         )
     else:
         attendance_rank = None
@@ -596,18 +601,28 @@ def attendance_overview():
 
 @app.route("/committee-question/<int:question_id>/")
 def committee_question(question_id):
-    """ Display a single committee question.
-    """
+    """Display a single committee question."""
     question = load_from_api("v2/minister-questions", question_id)["result"]
     minister = question["minister"]
-    committee = minister.get("committee", {"house": {}, "id": 0})
+    if minister:
+        committee = minister.get("committee", {"house": {}, "id": 0})
+    else:
+        committee = None
+    if question["question_to_name"]:
+        question_to_name = question["question_to_name"]
+    else:
+        question_to_name = "[UNKNOWN]"
+    if question["asked_by_name"]:
+        asked_by_name = question["asked_by_name"]
+    else:
+        asked_by_name = "[UNKNOWN]"
     social_summary = (
         "A question to the "
-        + question["question_to_name"]
+        + question_to_name
         + ", asked on "
         + pretty_date(question["date"], "long")
         + " by "
-        + question["asked_by_name"]
+        + asked_by_name
     )
 
     return render_template(
@@ -799,10 +814,14 @@ def committee_meeting(event_id):
     ) + sorted(
         [a for a in attendance if not a["chairperson"]], key=sorter
     )  # noqa
+    if event["committee"]:
+        event_committee_name = event["committee"]["name"]
+    else:
+        event_committee_name = "[UNKNOWN COMMITTEE]"
     if event["chairperson"]:
         social_summary = (
             "A meeting of the "
-            + event["committee"]["name"]
+            + event_committee_name
             + " committee held on "
             + pretty_date(event["date"], "long")
             + ", lead by "
@@ -811,26 +830,24 @@ def committee_meeting(event_id):
     else:
         social_summary = (
             "A meeting of the "
-            + event["committee"]["name"]
+            + event_committee_name
             + " committee held on "
             + pretty_date(event["date"], "long")
             + "."
         )
-    
-    
 
     return render_template(
-            "committee_meeting.html",
-            event=event,
-            committee=event["committee"],
-            audio=audio,
-            related_docs=related_docs,
-            attendance=attendance,
-            premium_committees=premium_committees,
-            content_date=event["date"],
-            social_summary=social_summary,
-            admin_edit_url=admin_url("committee-meeting", event_id),
-            SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"]
+        "committee_meeting.html",
+        event=event,
+        committee=event["committee"],
+        audio=audio,
+        related_docs=related_docs,
+        attendance=attendance,
+        premium_committees=premium_committees,
+        content_date=event["date"],
+        social_summary=social_summary,
+        admin_edit_url=admin_url("committee-meeting", event_id),
+        SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"],
     )
 
 
@@ -1114,8 +1131,7 @@ def gazette(gazette_id):
 
 @app.route("/members/")
 def members():
-    """ All MPs.
-    """
+    """All MPs."""
     members = load_from_api("v2/members", return_everything=True)["results"]
 
     # partition by house
@@ -1999,18 +2015,25 @@ def stats_review(stat):
     }
     return render_template(stat_group[stat])
 
+
 @app.route("/6th-parliament-review", methods=["GET"])
 def pr6():
     return render_template("pr6/landing.html")
 
-@app.route("/6th-parliament-review/<section>/<slug>", methods=["GET"])
-def pr6_articles(section,slug):
-    return render_template("pr6/article.html",section=section, article=slug)
 
-@app.route('/favicon.ico')
+@app.route("/6th-parliament-review/<section>/<slug>", methods=["GET"])
+def pr6_articles(section, slug):
+    return render_template("pr6/article.html", section=section, article=slug)
+
+
+@app.route("/favicon.ico")
 def favicon():
-    return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon",
+    )
+
 
 # Test to make sure sentry is working
 @app.route("/debug-sentry")

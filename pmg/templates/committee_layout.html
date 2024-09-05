@@ -39,20 +39,6 @@
         {% endblock %}
       </header>
 
-      <!-- 7th parliament changed committees. Link to the old committees -->
-      <div class="renamed-committee-links">
-        {% if committee.id == 95 %}
-          This committee was previously part of <strong>Agriculture, Land Reform and Rural Development</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/37/">Agriculture</a></strong> committee.
-        {% endif %}
-        {% if committee.id == 23 %}
-          This committee was previously part of <strong>Higher Education, Science and Innovation</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/64/">Higher Education</a></strong> committee.
-        {% endif %}
-        {% if committee.id == 40 %}
-          This committee was previously part of <strong>Justice and Correctional Services</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/38/">Justice and Constitutional Development</a></strong> committee.
-        {% endif %}
-      </div>
-      <!-- end link to old committee -->
-
       <div class="committee-page">
         {% block committee_page %}
         {% endblock %}

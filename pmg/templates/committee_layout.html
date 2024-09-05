@@ -29,7 +29,7 @@
 {% block page %}
   <div class="row">
     <div class="col-sm-8">
-      <header class="committee-header">
+      <header class="committee-header mb-3">
         {% block committee_title %}
           {% if committee %}
           <div class="row">
@@ -45,23 +45,24 @@
           {% else %}
           <h4 class="light-red">{{ committee.house.name }} Committee</h4>
           {% endif %}
-          <div class="{% if not committee.about %}no-about{% endif %}">{% include '_social_sharing.html' %}</div>
-          {% endif %}
+          <div class="{% if not committee.about %}no-about{% endif %} mb-2">{% include '_social_sharing.html' %}</div>
         {% endblock %}
       </header>
 
       <!-- 7th parliament changed committees. Link to the old committees -->
-      <div class="renamed-committee-links">
-        {% if committee.id == 95 %}
-          This committee was previously part of <strong>Agriculture, Land Reform and Rural Development</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/37/">Agriculture</a></strong> committee.
-        {% endif %}
-        {% if committee.id == 23 %}
-          This committee was previously part of <strong>Higher Education, Science and Innovation</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/64/">Higher Education</a></strong> committee.
-        {% endif %}
-        {% if committee.id == 40 %}
-          This committee was previously part of <strong>Justice and Correctional Services</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/38/">Justice and Constitutional Development</a></strong> committee.
-        {% endif %}
-      </div>
+      {% if committee.about %}
+        <div class="renamed-committee-links">
+          {% if committee.id == 95 %}
+            This committee was previously part of <strong>Agriculture, Land Reform and Rural Development</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/37/">Agriculture</a></strong> committee.
+          {% endif %}
+          {% if committee.id == 23 %}
+            This committee was previously part of <strong>Higher Education, Science and Innovation</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/64/">Higher Education</a></strong> committee.
+          {% endif %}
+          {% if committee.id == 40 %}
+            This committee was previously part of <strong>Justice and Correctional Services</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/38/">Justice and Constitutional Development</a></strong> committee.
+          {% endif %}
+        </div>
+      {% endif %}
       <!-- end link to old committee -->
 
       <div class="committee-page">

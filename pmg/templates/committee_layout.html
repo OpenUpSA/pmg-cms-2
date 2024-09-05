@@ -6,12 +6,14 @@
 <ol class="breadcrumb">
   {% block committee_breadcrumb %}
   {% if not from_page %}
-  <li><a href="{{ url_for('committees') }}">Committees</a></li>
-  <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
+    <li><a href="{{ url_for('committees') }}">Committees</a></li>
+    {% if committee %}
+        <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
+    {% endif %}
   {% else %}
-  <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
-  <li><a href="{{ url_for('provincial_legislatures_detail', slug=from_page) }}">{{ committee.house.name }}</a></li>
-  <li><a href="{{ url_for('provincial_committees', slug=from_page) }}">Committees</a></li>
+    <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
+    <li><a href="{{ url_for('provincial_legislatures_detail', slug=from_page) }}">{{ committee.house.name }}</a></li>
+    <li><a href="{{ url_for('provincial_committees', slug=from_page) }}">Committees</a></li>
   {% endif %}
   {% endblock %}
 </ol>

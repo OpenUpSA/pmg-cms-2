@@ -1,25 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}
-  {% if committee %}
-    {{ committee.name }} | 
-  {% endif %}
-  PMG
-{% endblock %}
+{% block title %}{{ committee.name }} | PMG{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
   {% block committee_breadcrumb %}
   {% if not from_page %}
   <li><a href="{{ url_for('committees') }}">Committees</a></li>
-    {% if committee %}
-    <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
-    {% endif %}
+  <li><a href="/committees#{% if committee.house.sphere == 'provincial' %}prov{% elif committee.ad_hoc %}adhoc{% else %}{{ committee.house.short_name }}{% endif %}">{{ committee.house.name }}</a></li>
   {% else %}
   <li><a href="{{ url_for('provincial_legislatures_list') }}">Provincial Legislatures</a></li>
-    {% if committee %}
-    <li><a href="{{ url_for('provincial_legislatures_detail', slug=from_page) }}">{{ committee.house.name }}</a></li>
-    {% endif %}
+  <li><a href="{{ url_for('provincial_legislatures_detail', slug=from_page) }}">{{ committee.house.name }}</a></li>
   <li><a href="{{ url_for('provincial_committees', slug=from_page) }}">Committees</a></li>
   {% endif %}
   {% endblock %}
@@ -29,9 +20,8 @@
 {% block page %}
   <div class="row">
     <div class="col-sm-8">
-      <header class="committee-header mb-3">
+      <header class="committee-header">
         {% block committee_title %}
-          {% if committee %}
           <div class="row">
               {% if not committee.premium %}
               <h1 class="col-xs-12 committee-name">{{ committee.name }}</h1>
@@ -45,24 +35,22 @@
           {% else %}
           <h4 class="light-red">{{ committee.house.name }} Committee</h4>
           {% endif %}
-          <div class="{% if not committee.about %}no-about{% endif %} mb-2">{% include '_social_sharing.html' %}</div>
+          <div class="{% if not committee.about %}no-about{% endif %}">{% include '_social_sharing.html' %}</div>
         {% endblock %}
       </header>
 
       <!-- 7th parliament changed committees. Link to the old committees -->
-      {% if committee.about %}
-        <div class="renamed-committee-links">
-          {% if committee.id == 95 %}
-            This committee was previously part of <strong>Agriculture, Land Reform and Rural Development</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/37/">Agriculture</a></strong> committee.
-          {% endif %}
-          {% if committee.id == 23 %}
-            This committee was previously part of <strong>Higher Education, Science and Innovation</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/64/">Higher Education</a></strong> committee.
-          {% endif %}
-          {% if committee.id == 40 %}
-            This committee was previously part of <strong>Justice and Correctional Services</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/38/">Justice and Constitutional Development</a></strong> committee.
-          {% endif %}
-        </div>
-      {% endif %}
+      <div class="renamed-committee-links">
+        {% if committee.id == 95 %}
+          This committee was previously part of <strong>Agriculture, Land Reform and Rural Development</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/37/">Agriculture</a></strong> committee.
+        {% endif %}
+        {% if committee.id == 23 %}
+          This committee was previously part of <strong>Higher Education, Science and Innovation</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/64/">Higher Education</a></strong> committee.
+        {% endif %}
+        {% if committee.id == 40 %}
+          This committee was previously part of <strong>Justice and Correctional Services</strong>.<br/>Historical meetings are available in the <strong><a href="/committee/38/">Justice and Constitutional Development</a></strong> committee.
+        {% endif %}
+      </div>
       <!-- end link to old committee -->
 
       <div class="committee-page">

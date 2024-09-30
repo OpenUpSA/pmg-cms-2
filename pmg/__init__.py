@@ -3,6 +3,7 @@ import logging.config
 import os
 
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_caching import Cache
@@ -26,6 +27,7 @@ if SENTRY_DSN:
         integrations=[FlaskIntegration()])
 
 app = Flask(__name__, static_folder="static")
+CORS(app)
 app.config.from_pyfile("../config/config.py")
 
 # setup logging

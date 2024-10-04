@@ -14,3 +14,5 @@ User-agent: OAI-SearchBot
 Disallow: /
 User-agent: GPTBot
 Disallow: /
+User-agent: meta-externalagent
+Disallow: /

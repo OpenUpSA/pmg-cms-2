@@ -1,4 +1,16 @@
 User-agent: *
+Crawl-delay: 120
 Disallow: /user/
 Disallow: /mailreporter/
-Crawl-delay: 120
+User-agent: Amazonbot
+Disallow: /
+User-agent: Bytespider
+Disallow: /
+User-Agent: PerplexityBot
+Disallow: /
+User-agent: ClaudeBot
+Disallow: /
+User-agent: OAI-SearchBot
+Disallow: /
+User-agent: GPTBot
+Disallow: /

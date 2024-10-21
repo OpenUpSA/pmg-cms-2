@@ -1,0 +1,98 @@
+/*/kuntana/*/
+/*/*/*/*/*      Observability
+Detect, identify, and resolve operational issues across your applications and infrastructure
+OpenSearch platform for observability applications hero banner.
+OpenSearch offers developers, IT administrators, site reliability engineers, and DevOps teams a comprehensive open-source observability solution that is cost conscious and highly scalable. You can use OpenSearch observability tools to detect, diagnose, and remedy issues that affect the performance, scalability, or availability of your software or infrastructure. A common open-standards-based schema coupled with a Piped Processing Language (PPL) optimized for observability use cases simplifies correlation and analysis of logs, metrics, and trace telemetry to support fast time to resolution and a better experience for your end users.
+
+Resolve issues quickly
+Shorten the time needed to resolve production issues that can impact the customer experience.
+From data to insight
+Manage, explore, and get insights from massive volumes of complex data.
+Open standards
+Use open standards to build a cost-conscious, state-of-the-art observability stack with no vendor lock-in.
+Key Features
+Log monitoring
+Perform comprehensive monitoring using tools like log tail, log surround, log patterns, and log-based metrics.
+
+Service topology
+Visualize system components with service-level rate, errors, and duration (RED) metrics analysis.
+
+Application analytics
+Analyze application-specific data, including application-level availability tracking.
+
+Rich language support
+Perform rich data analysis with observability-specific query support using PPL.
+
+OpenTelemetry support
+Correlate metrics, traces, and logs through OpenTelemetry-based schemas and semantic conventions.
+
+Integrations
+Create out-of-the-box analysis and dashboards for common log types like AWS CloudTrail, Nginx, and popular databases.
+
+Ingestion pipelines
+Manage observability data collections cost efficiently and at scale with built-in transformations, routing, sampling, and anomaly detection provided by Data Prepper ingestion tools.
+
+Anomaly detection
+Detect anomalies and analyze streaming data with rich transformation and aggregation.
+
+Use Cases
+Observability
+Performance monitoring
+Use trace analytics to detect issues with service latency and trigger alerts when conditions are met.
+Troubleshooting
+Troubleshoot services and perform root cause analysis by correlating key metrics with trace and log data.
+Advanced log analysis
+Use auto-generated log patterns to detect outlier events in log data.
+Monitor application health
+Monitor the service-level objectives of your applications using built-in application analytics.
+Anomaly detection
+Automatically detect anomalous behavior in incoming data in near real time.
+Capacity planning
+Obtain actionable insights related to system capacity, performance, and stability.
+Security forensics
+Use PPL to investigate suspicious events in log data.
+Getting Started
+To learn more about OpenSearch observability tools and start gaining actionable insights, visit Observability and Simple Schema for Observability in our documentation.
+
+Download OpenSearch
+Check Out Github
+OpenSearch Project Org
+Featured Resources
+The New Stack
+How OpenSearch Visualizes Jaeger's Distributed Tracing
+Thu, May 11th, 2023
+YouTube
+Jaeger Tracing with Aiven
+Thu, Sep 21, 2023
+Search
+OpenSearch Observability with NGINX Logs Integration - KubeCon Europe - April 2023
+Thu, Sep 21, 2023
+Resources
+Learn More
+Documentation
+Join Our Community
+Forum
+Slack
+OpenSearch is a community-driven, Apache 2.0-licensed open source search and analytics suite that makes it easy to ingest, search, visualize, and analyze data.
+
+Copyright © Contributors to the OpenSearch Project, which has been established as OpenSearch Project a Series of LF Projects, LLC. For web site terms of use and other project policies please see https://lfprojects.org. For the OpenSearch Trademark Policy please see https://opensearch.org/trademark-brand-policy.html.
+Participate
+Code of Conduct
+Forum
+Project Repo
+Community Repo
+Meetup
+Connect
+Partners
+Become a Partner
+Find a Partner
+Resources
+About
+FAQ
+Release Schedule
+Maintenance Policy
+Documentation
+Getting Started
+Testimonials
+Trademark & Brand
+Privacy_policy.html 

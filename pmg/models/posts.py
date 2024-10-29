@@ -28,7 +28,7 @@ class Post(ApiResource, db.Model):
         nullable=False,
         server_default=func.now(),
     )
-    files = db.relationship("PostFile", lazy="joined")
+    files = db.relationship("PostFile", lazy="joined", cascade="all, delete-orphan")
     created_at = db.Column(
         db.DateTime(timezone=True),
         index=True,

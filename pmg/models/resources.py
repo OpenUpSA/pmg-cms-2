@@ -131,7 +131,7 @@ class BillStatus(db.Model):
         return cls.query.filter(cls.name.in_(["na", "ncop", "president"])).all()
 
     def __str__(self):
-        return u"%s (%s)" % (self.description, self.name)
+        return "%s (%s)" % (self.description, self.name)
 
 
 class Bill(ApiResource, db.Model):
@@ -142,6 +142,7 @@ class Bill(ApiResource, db.Model):
         ),
         {},
     )
+    __mapper_args__ = {"confirm_deleted_rows": False}
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(250), nullable=False)
@@ -180,7 +181,7 @@ class Bill(ApiResource, db.Model):
 
     @property
     def latest_version_for_indexing(self):
-        """ ElasticSearch-friendly indexing the version PDFs.
+        """ElasticSearch-friendly indexing the version PDFs.
         See https://github.com/elastic/elasticsearch-mapper-attachments
         """
         version = self.latest_version
@@ -252,7 +253,7 @@ class File(db.Model):
 
     @property
     def url(self):
-        """ The friendly URL a user can use to download this file. """
+        """The friendly URL a user can use to download this file."""
         if self.file_path.startswith("/"):  # For dev upload paths
             path = self.file_path[1:]
         else:
@@ -263,7 +264,7 @@ class File(db.Model):
         return url_for("docs", path=path, _scheme=scheme, _external=True)
 
     def from_upload(self, file_data):
-        """ Handle a POST-based file upload and use it as the content for this file. """
+        """Handle a POST-based file upload and use it as the content for this file."""
         if not allowed_file(file_data.filename):
             raise Exception("File type not allowed.")
 
@@ -313,7 +314,7 @@ class File(db.Model):
         key.delete()
 
     def get_bytes(self):
-        """ Raw bytes for this file. """
+        """Raw bytes for this file."""
         key = s3_bucket.bucket.get_key(self.file_path)
         return key.get_contents_as_string()
 
@@ -322,8 +323,8 @@ class File(db.Model):
 
     def __str__(self):
         if self.title:
-            return u"%s (%s)" % (self.title, self.file_path)
-        return u"%s" % self.file_path
+            return "%s (%s)" % (self.title, self.file_path)
+        return "%s" % self.file_path
 
 
 # TODO: change to use normal sqlalchemy events, then set SQLALCHEMY_TRACK_MODIFICATIONS to False in the config
@@ -342,7 +343,7 @@ def delete_file_from_s3(sender, changes):
 
 
 class Event(ApiResource, db.Model):
-    """ An event is a generic model which represents an event that took
+    """An event is a generic model which represents an event that took
     place in Parliament at a certain time and may have rich content associated
     with it.
     """
@@ -404,7 +405,7 @@ class Event(ApiResource, db.Model):
     )
 
     BILL_MENTION_RE = re.compile(
-        u"bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d+)", re.IGNORECASE
+        "bill[, ]*\[(B|PMB)\s*(\d+)(\s*[a-z])?[\s–-]+(\d+)", re.IGNORECASE
     )
 
     def to_dict(self, include_related=False):
@@ -491,7 +492,7 @@ class CommitteeMeeting(Event):
     )
 
     def check_permission(self):
-        """ Does the current user have permission to view this committee meeting?
+        """Does the current user have permission to view this committee meeting?
 
         Premium committee meetings from 2016 and later require a subscription.
         """
@@ -526,8 +527,7 @@ class CommitteeMeeting(Event):
         return EmailTemplate.query.filter(EmailTemplate.name == "Minute alert").first()
 
     def api_files(self):
-        """ Hide summary field for non-premium subscribers
-        """
+        """Hide summary field for non-premium subscribers"""
         if self.check_permission():
             return [f.file for f in self.files]
         return []
@@ -613,6 +613,7 @@ class MembershipType(db.Model):
 class Member(ApiResource, db.Model):
 
     __tablename__ = "member"
+    __mapper_args__ = {"confirm_deleted_rows": False}
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
@@ -643,7 +644,7 @@ class Member(ApiResource, db.Model):
     )
 
     def __str__(self):
-        return u"%s" % self.name
+        return "%s" % self.name
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -722,6 +723,7 @@ class Member(ApiResource, db.Model):
 class Committee(ApiResource, db.Model):
 
     __tablename__ = "committee"
+    __mapper_args__ = {"confirm_deleted_rows": False}
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
@@ -780,7 +782,7 @@ class Committee(ApiResource, db.Model):
         return tmp
 
     def get_display_name(self):
-        """ Add '(Inactive)' to the display name if the committee is not active. """
+        """Add '(Inactive)' to the display name if the committee is not active."""
         return "%s%s" % (self.name, " (Inactive)" if not self.active else "")
 
     @classmethod
@@ -789,8 +791,7 @@ class Committee(ApiResource, db.Model):
 
     @classmethod
     def for_related(cls, other):
-        """ Those Committees that are linked to `other` via a foreign key.
-        """
+        """Those Committees that are linked to `other` via a foreign key."""
         ids = set(
             x[0] for x in db.session.query(func.distinct(other.committee_id)).all()
         )
@@ -823,6 +824,7 @@ class Committee(ApiResource, db.Model):
 class Membership(db.Model):
 
     __tablename__ = "committee_members"
+    __mapper_args__ = {"confirm_deleted_rows": False}
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -842,7 +844,7 @@ class Membership(db.Model):
         return False
 
     def __str__(self):
-        tmp = u" - ".join([str(self.type), str(self.member), str(self.committee)])
+        tmp = " - ".join([str(self.type), str(self.member), str(self.committee)])
         return str(tmp)
 
 
@@ -986,7 +988,7 @@ class CommitteeQuestion(ApiResource, db.Model):
     )
 
     def populate_from_code(self, code):
-        """ Populate this question with the details contained in +code+, such as
+        """Populate this question with the details contained in +code+, such as
         RNW2680-1212114.
         """
         details = QuestionAnswerScraper().details_from_name(code)
@@ -1008,7 +1010,10 @@ class CommitteeQuestion(ApiResource, db.Model):
         self.president_number = details.get("president_number")
         self.deputy_president_number = details.get("deputy_president_number")
         self.date = details.get("date")
-        self.answer_type = {"O": "oral", "W": "written",}[details.get("type") or "W"]
+        self.answer_type = {
+            "O": "oral",
+            "W": "written",
+        }[details.get("type") or "W"]
 
     def parse_answer_file(self, filename):
         # process the actual document text
@@ -1416,6 +1421,8 @@ class DailyScheduleFile(FileLinkMixin, db.Model):
 
 class CommitteeMeetingAttendance(ApiResource, db.Model):
     __tablename__ = "committee_meeting_attendance"
+    __mapper_args__ = {"confirm_deleted_rows": False}
+
     """
     Attendance abbreviations:
         A:   Absent
@@ -1476,8 +1483,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def summary(cls, period=None):
-        """ Summary of attendance by year, member and committee.
-        """
+        """Summary of attendance by year, member and committee."""
         year = func.date_part("year", CommitteeMeeting.date).label("year")
 
         rows = (
@@ -1526,7 +1532,7 @@ class CommitteeMeetingAttendance(ApiResource, db.Model):
 
     @classmethod
     def annual_attendance_trends(cls, to_year=None, period=None):
-        """ Attendance summary by year and committee. Excludes ad-hoc committees.
+        """Attendance summary by year and committee. Excludes ad-hoc committees.
         Returns row tuples: (committe_id, house name, year, n_meetings, avg_attendance, avg_members)
         """
         if period == "historical":

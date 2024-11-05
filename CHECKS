@@ -1,5 +1,5 @@
 WAIT=10
 ATTEMPTS=5
 
- //lb-new.pmg.org.za/ Parliamentary Monitoring Group
- //api.lb-new.pmg.org.za/ endpoints
+ //pmg.org.za/ Parliamentary Monitoring Group
+ //api.pmg.org.za/ endpoints

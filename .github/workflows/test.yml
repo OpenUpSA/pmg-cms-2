@@ -16,19 +16,19 @@ jobs:
       - name: Add hosts
         run: echo "127.0.0.1 pmg.test" | sudo tee -a /etc/hosts
       - name: Run tests
-        run:  docker-compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
+        run:  docker compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
       - name: Setup Dev Database
-        run: docker-compose run --rm web python setup_dev_database.py
+        run: docker compose run --rm web python setup_dev_database.py
       - name: Setup the database Stamp Head
-        run: docker-compose run --rm web python app.py db stamp head
+        run: docker compose run --rm web python app.py db stamp head
       - name: Setup the database Search Reindex All
-        run: docker-compose run --rm web python bin/search.py --reindex all
+        run: docker compose run --rm web python bin/search.py --reindex all
       - name: Start the server
-        run: docker-compose up -d
+        run: docker compose up -d
       - name: Wait for app
         run: bin/wait-for-app.sh
       - name: "Smoke test demo data check that a typical request returns the data in demodata"
         run: curl -f http://pmg.test:5000 | grep "Featured Content"
       # Run codecov passing appropriate codecov.io CI environment variables to container
       - name: codecov
-        run: docker-compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov
+        run: docker compose run --rm `bash <(curl -s https://codecov.io/env)` web codecov

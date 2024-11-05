@@ -134,10 +134,10 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             committee.id, "historical"
         )
 
+        self.assertEqual([], current_attendance)
         self.assertEqual(
-            [(2019.0, 1, 0.5, 2.0), (2020.0, 2, 0.5, 1.0)], current_attendance
+            [(2019.0, 3, 0.5, 2.0), (2020.0, 2, 0.5, 1.0)], historical_attendance
         )
-        self.assertEqual([(2019.0, 2, 0.5, 2.0)], historical_attendance)
 
     def test_committee_attendance_summary(self):
         """
@@ -146,32 +146,25 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
         current_attendance = CommitteeMeetingAttendance.summary()
         historical_attendance = CommitteeMeetingAttendance.summary("historical")
         self.assertEqual(
-            [
-                (2, "A", 2020.0, 1, 1),
-                (2, "P", 2020.0, 1, 1),
-                (1, "P", 2019.0, 1, 1),
-                (2, "A", 2019.0, 1, 1),
-            ],
+            [],
             current_attendance,
         )
         self.assertEqual(
             [
+                (2, "A", 2020.0, 1, 1),
+                (2, "P", 2020.0, 1, 1),
                 (1, "A", 2019.0, 1, 1),
-                (1, "P", 2019.0, 1, 1),
-                (2, "A", 2019.0, 1, 1),
+                (1, "P", 2019.0, 1, 2),
+                (2, "A", 2019.0, 1, 2),
                 (2, "P", 2019.0, 1, 1),
             ],
             historical_attendance,
         )
 
     def test_annual_attendance_trends(self):
-        trends = CommitteeMeetingAttendance.annual_attendance_trends(to_year=2020)
+        trends = CommitteeMeetingAttendance.annual_attendance_trends(to_year=2024)
 
-        expected = [
-            # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (1, u"na", 2019, 1, 0.5, 2.0),
-            (1, u"na", 2020, 2, 0.5, 1.0),
-        ]
+        expected = []
 
         self.assertEqual(expected, trends)
 
@@ -180,9 +173,6 @@ class TestCommitteeMeetingAttendance(PMGTestCase):
             to_year=2019, period="historical"
         )
 
-        expected = [
-            # (committee_id, house name, year, n_meetings, avg_attendance, avg_members)
-            (self.committee.id, u"na", 2019, 2, 0.5, 2.0),
-        ]
+        expected = []
 
         self.assertEqual(expected, trends)

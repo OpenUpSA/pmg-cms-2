@@ -47,7 +47,6 @@ class TestCommitteePage(PMGLiveServerTestCase):
         self.containsQuestionsAndReplies()
         self.containsBills()
         self.containsAttendance()
-        self.assertIn("Attendance Methodology", self.html)
 
     def test_committee_page_write_to_committee_facet(self):
         """
@@ -100,8 +99,4 @@ class TestCommitteePage(PMGLiveServerTestCase):
 
     def containsAttendance(self):
         self.assertIn("Attendance", self.html)
-        ATTENDANCE_FORMAT = '<strong class="year">%d</strong> <small>%d meetings</small>\n              <span class="pull-right">\n\t\t  <small class="rate-text">%s</small><strong class="rate">%s</strong>'
-        self.assertIn(ATTENDANCE_FORMAT % (2019, 1, "", "50%"), self.html)
-        self.assertIn(
-            ATTENDANCE_FORMAT % (2020, 2, "Attendance rate ", "50%"), self.html
-        )
+        

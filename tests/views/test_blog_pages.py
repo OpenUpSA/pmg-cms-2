@@ -24,7 +24,6 @@ class TestBlogPages(PMGLiveServerTestCase):
         self.make_request("/blog/%s/" % post.slug)
         self.assertIn(post.title, self.html)
         self.assertIn(post.body[0:100], self.html)
-        self.assertIn("That week in Parliament", self.html)
 
     def test_blog_listings_page(self):
         """

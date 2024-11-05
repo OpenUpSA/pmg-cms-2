@@ -40,10 +40,11 @@ from .rbac import RBACMixin
 from .reports import ReportView
 from . import widgets
 
+import warnings
+
 logger = logging.getLogger(__name__)
 
 SAST = pytz.timezone("Africa/Johannesburg")
-
 
 def strip_filter(value):
     if value is not None and hasattr(value, "strip"):
@@ -1471,240 +1472,243 @@ admin = Admin(
     template_mode="bootstrap3",
 )
 
-# ---------------------------------------------------------------------------------
-# Users
-admin.add_view(
-    UserView(User, db.session, name="Users", endpoint="user", category="Users")
-)
-admin.add_view(
-    OrganisationView(
-        Organisation,
-        db.session,
-        name="Organisations",
-        endpoint="organisation",
-        category="Users",
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Fields missing from ruleset', UserWarning)
+    # ---------------------------------------------------------------------------------
+    # Users
+    admin.add_view(
+        UserView(User, db.session, name="Users", endpoint="user", category="Users")
     )
-)
+    admin.add_view(
+        OrganisationView(
+            Organisation,
+            db.session,
+            name="Organisations",
+            endpoint="organisation",
+            category="Users",
+        )
+    )
 
-# ---------------------------------------------------------------------------------
-# Committees
-admin.add_view(
-    CommitteeView(
-        Committee,
-        db.session,
-        name="Committees",
-        endpoint="committee",
-        category="Committees",
+    # ---------------------------------------------------------------------------------
+    # Committees
+    admin.add_view(
+        CommitteeView(
+            Committee,
+            db.session,
+            name="Committees",
+            endpoint="committee",
+            category="Committees",
+        )
     )
-)
-admin.add_view(
-    CommitteeMeetingView(
-        CommitteeMeeting,
-        db.session,
-        type="committee-meeting",
-        name="Committee Meetings",
-        endpoint="committee-meeting",
-        category="Committees",
-    )
-)
-admin.add_view(
-    CallForCommentView(
-        CallForComment,
-        db.session,
-        name="Calls for Comment",
-        endpoint="call-for-comment",
-        category="Committees",
-    )
-)
-admin.add_view(
-    CommitteeQuestionView(
-        CommitteeQuestion,
-        db.session,
-        name="Questions to Committees",
-        endpoint="committee-question",
-        category="Committees",
-    )
-)
-admin.add_view(
-    MinisterView(
-        Minister,
-        db.session,
-        name="Ministers",
-        endpoint="minister",
-        category="Committees",
-    )
-)
-admin.add_view(
-    QuestionReplyView(
-        QuestionReply,
-        db.session,
-        name="Old Questions & Replies",
-        endpoint="question",
-        category="Committees",
-    )
-)
-admin.add_view(
-    TabledCommitteeReportView(
-        TabledCommitteeReport,
-        db.session,
-        name="Tabled Committee Reports",
-        endpoint="tabled-committee-report",
-        category="Committees",
-    )
-)
 
-# ---------------------------------------------------------------------------------
-# Bills
-admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint="bill"))
+    admin.add_view(
+        CommitteeMeetingView(
+            CommitteeMeeting,
+            db.session,
+            type="committee-meeting",
+            name="Committee Meetings",
+            endpoint="committee-meeting",
+            category="Committees",
+        )
+    )
+    admin.add_view(
+        CallForCommentView(
+            CallForComment,
+            db.session,
+            name="Calls for Comment",
+            endpoint="call-for-comment",
+            category="Committees",
+        )
+    )
+    admin.add_view(
+        CommitteeQuestionView(
+            CommitteeQuestion,
+            db.session,
+            name="Questions to Committees",
+            endpoint="committee-question",
+            category="Committees",
+        )
+    )
+    admin.add_view(
+        MinisterView(
+            Minister,
+            db.session,
+            name="Ministers",
+            endpoint="minister",
+            category="Committees",
+        )
+    )
+    admin.add_view(
+        QuestionReplyView(
+            QuestionReply,
+            db.session,
+            name="Old Questions & Replies",
+            endpoint="question",
+            category="Committees",
+        )
+    )
+    admin.add_view(
+        TabledCommitteeReportView(
+            TabledCommitteeReport,
+            db.session,
+            name="Tabled Committee Reports",
+            endpoint="tabled-committee-report",
+            category="Committees",
+        )
+    )
 
-# ---------------------------------------------------------------------------------
-# Other Content
-admin.add_view(
-    DailyScheduleView(
-        DailySchedule,
-        db.session,
-        name="Daily Schedules",
-        endpoint="schedule",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    FeaturedContentView(
-        Featured,
-        db.session,
-        name="Featured Content",
-        endpoint="featured",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    GazetteView(
-        Gazette,
-        db.session,
-        name="Gazettes",
-        endpoint="gazette",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    HansardView(
-        Hansard,
-        db.session,
-        type="plenary",
-        name="Hansards",
-        endpoint="hansard",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    PoliticalPartyView(
-        Party,
-        db.session,
-        name="Political Parties",
-        endpoint="party",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    ProvincialLegislatureView(
-        House,
-        db.session,
-        name="Provincial Legislatures",
-        endpoint="provincial-legislatures",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    BriefingView(
-        Briefing,
-        db.session,
-        type="media-briefing",
-        name="Media Briefings",
-        endpoint="briefing",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    RedirectView(
-        Redirect,
-        db.session,
-        category="Other Content",
-        name="Legacy Redirects",
-        endpoint="redirects",
-    )
-)
-admin.add_view(
-    PolicyDocumentView(
-        PolicyDocument,
-        db.session,
-        name="Policy Document",
-        endpoint="policy",
-        category="Other Content",
-    )
-)
-admin.add_view(
-    PageView(
-        Page,
-        db.session,
-        category="Other Content",
-        name="Static Pages",
-        endpoint="pages",
-    )
-)
-admin.add_view(
-    PostView(
-        Post, db.session, category="Other Content", name="Blog Posts", endpoint="posts"
-    )
-)
-admin.add_view(
-    FileView(
-        File,
-        db.session,
-        category="Other Content",
-        name="Uploaded Files",
-        endpoint="files",
-    )
-)
+    # ---------------------------------------------------------------------------------
+    # Bills
+    admin.add_view(BillsView(Bill, db.session, name="Bills", endpoint="bill"))
 
-# ---------------------------------------------------------------------------------
-# Email alerts
-admin.add_view(
-    EmailAlertView(category="Email Alerts", name="Send Emails", endpoint="alerts")
-)
-admin.add_view(
-    EmailTemplateView(
-        EmailTemplate,
-        db.session,
-        name="Email Templates",
-        category="Email Alerts",
-        endpoint="email-templates",
+    # ---------------------------------------------------------------------------------
+    # Other Content
+    admin.add_view(
+        DailyScheduleView(
+            DailySchedule,
+            db.session,
+            name="Daily Schedules",
+            endpoint="schedule",
+            category="Other Content",
+        )
     )
-)
-
-
-# ---------------------------------------------------------------------------------
-# Members
-admin.add_view(MemberView(Member, db.session, name="Members", endpoint="member"))
-admin.add_view(
-    CommitteeMeetingAttendanceView(
-        CommitteeMeetingAttendance,
-        db.session,
-        name="Committee Meeting Attendances",
-        endpoint="committeemeetingattendance",
-        category="Committees",
-    ),
-)
-
-# ---------------------------------------------------------------------------------
-# Reports
-admin.add_view(
-    ReportView(name="General reports", endpoint="reports", category="Reports")
-)
-admin.add_view(
-    UsageReportView(
-        name="User usage report", endpoint="usage_report", category="Reports"
+    admin.add_view(
+        FeaturedContentView(
+            Featured,
+            db.session,
+            name="Featured Content",
+            endpoint="featured",
+            category="Other Content",
+        )
     )
-)
-admin.add_view(
-    SubscriptionsView(category="Reports", name="Alert Counts", endpoint="subscriptions")
-)
+    admin.add_view(
+        GazetteView(
+            Gazette,
+            db.session,
+            name="Gazettes",
+            endpoint="gazette",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        HansardView(
+            Hansard,
+            db.session,
+            type="plenary",
+            name="Hansards",
+            endpoint="hansard",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        PoliticalPartyView(
+            Party,
+            db.session,
+            name="Political Parties",
+            endpoint="party",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        ProvincialLegislatureView(
+            House,
+            db.session,
+            name="Provincial Legislatures",
+            endpoint="provincial-legislatures",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        BriefingView(
+            Briefing,
+            db.session,
+            type="media-briefing",
+            name="Media Briefings",
+            endpoint="briefing",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        RedirectView(
+            Redirect,
+            db.session,
+            category="Other Content",
+            name="Legacy Redirects",
+            endpoint="redirects",
+        )
+    )
+    admin.add_view(
+        PolicyDocumentView(
+            PolicyDocument,
+            db.session,
+            name="Policy Document",
+            endpoint="policy",
+            category="Other Content",
+        )
+    )
+    admin.add_view(
+        PageView(
+            Page,
+            db.session,
+            category="Other Content",
+            name="Static Pages",
+            endpoint="pages",
+        )
+    )
+    admin.add_view(
+        PostView(
+            Post, db.session, category="Other Content", name="Blog Posts", endpoint="posts"
+        )
+    )
+    admin.add_view(
+        FileView(
+            File,
+            db.session,
+            category="Other Content",
+            name="Uploaded Files",
+            endpoint="files",
+        )
+    )
+
+    # ---------------------------------------------------------------------------------
+    # Email alerts
+    admin.add_view(
+        EmailAlertView(category="Email Alerts", name="Send Emails", endpoint="alerts")
+    )
+    admin.add_view(
+        EmailTemplateView(
+            EmailTemplate,
+            db.session,
+            name="Email Templates",
+            category="Email Alerts",
+            endpoint="email-templates",
+        )
+    )
+
+
+    # ---------------------------------------------------------------------------------
+    # Members
+    admin.add_view(MemberView(Member, db.session, name="Members", endpoint="member"))
+    admin.add_view(
+        CommitteeMeetingAttendanceView(
+            CommitteeMeetingAttendance,
+            db.session,
+            name="Committee Meeting Attendances",
+            endpoint="committeemeetingattendance",
+            category="Committees",
+        ),
+    )
+
+    # ---------------------------------------------------------------------------------
+    # Reports
+    admin.add_view(
+        ReportView(name="General reports", endpoint="reports", category="Reports")
+    )
+    admin.add_view(
+        UsageReportView(
+            name="User usage report", endpoint="usage_report", category="Reports"
+        )
+    )
+    admin.add_view(
+        SubscriptionsView(category="Reports", name="Alert Counts", endpoint="subscriptions")
+    )

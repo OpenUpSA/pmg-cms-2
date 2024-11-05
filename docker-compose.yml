@@ -30,6 +30,7 @@ services:
       - GOOGLE_ANALYTICS_ID=G-XN8MJJNSEE
       - GOOGLE_TAG_MANAGER_ID=GTM-MMCNPLT6
       - RUN_PERIODIC_TASKS=true
+      - MAIL_SUPPRESS_SEND=true
     ports:
       - "5000:5000"
     command: python app.py runserver

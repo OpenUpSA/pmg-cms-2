@@ -8,7 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_caching import Cache
 from flask_wtf.csrf import CSRFProtect
-from flask_mail import Mail
+from flask_mail import Mail, email_dispatched
 from flask_marshmallow import Marshmallow
 
 import sentry_sdk
@@ -24,7 +24,8 @@ if SENTRY_DSN:
         dsn=SENTRY_DSN,
         traces_sample_rate=os.environ.get("SENTRY_TRACES_SAMPLE_RATE", 0.5),
         profiles_sample_rate=os.environ.get("SENTRY_PROFILES_SAMPLE_RATE", 1),
-        integrations=[FlaskIntegration()])
+        integrations=[FlaskIntegration()],
+    )
 
 app = Flask(__name__, static_folder="static")
 CORS(app)
@@ -50,7 +51,7 @@ cache = Cache(
     app,
     config={
         "CACHE_TYPE": cache_type,
-        'CACHE_REDIS_URL': app.config["CACHE_REDIS_URL"],
+        "CACHE_REDIS_URL": app.config["CACHE_REDIS_URL"],
         "CACHE_DEFAULT_TIMEOUT": 60 * 60,
     },
 )
@@ -99,12 +100,6 @@ original_send = mail.send
 def send_email_with_sendgrid(message):
     extra_headers = {
         "filters": {
-            # "templates": {
-            #     "settings": {
-            #         "enable": "1",
-            #         "template_id": app.config["SENDGRID_TRANSACTIONAL_TEMPLATE_ID"],
-            #     }
-            # },
             "ganalytics": {
                 "settings": {
                     "enable": "1",
@@ -118,6 +113,12 @@ def send_email_with_sendgrid(message):
     message.extra_headers = {"X-SMTPAPI": json.dumps(extra_headers)}
     original_send(message)
 
+
+def log_mail_message(message, app):
+    if app.config["MAIL_SUPPRESS_SEND"] == True:
+        app.logger.debug(message)
+
+email_dispatched.connect(log_mail_message)
 
 app.extensions.get("mail").send = send_email_with_sendgrid
 

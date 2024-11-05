@@ -101,7 +101,7 @@ SENDGRID_API_KEY = env.get("SENDGRID_API_KEY")
 SENDGRID_TRANSACTIONAL_TEMPLATE_ID = "2ef9656f-db37-4072-9ed8-449368b73617"
 
 # Flask-Mail
-MAIL_SUPPRESS_SEND = env.get("MAIL_SUPPRESS_SEND", True)
+MAIL_SUPPRESS_SEND = env.get("MAIL_SUPPRESS_SEND", "true") == "true"
 MAIL_SERVER = env.get("MAIL_SERVER", "smtp.sendgrid.com")
 MAIL_PORT = int(env.get("MAIL_PORT", "465"))
 MAIL_USE_SSL = env.get("MAIL_USE_SSL", "true") == "true"
@@ -145,5 +145,4 @@ SECURITY_TRACKABLE = True
 SECURITY_CHANGEABLE = True
 
 SERVER_NAME = env.get("SERVER_NAME", "pmg.test:5000")
-FRONTEND_HOST = env.get("FRONTEND_HOST", "http://pmg.test:5000/")
 SESSION_COOKIE_DOMAIN = env.get("SESSION_COOKIE_DOMAIN", "pmg.test")

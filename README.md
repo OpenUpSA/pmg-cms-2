@@ -120,9 +120,6 @@ Sensitive or environment-specific configuration variables are set as environment
   - `pmg.org.za` in production
   - `pmg.test:5000` in development
   - Flask seems to use this for generating absolute URLs, except when the `X-Forwarded-Host` header is provided, in which case that hostname is used for absolute URLs.
-* FRONTEND_HOST - It's not currently clear if this is used anywhere
-  - `https://pmg.org.za/` in production
-  - `http://pmg.test:5000/` in development
 * SESSION_COOKIE_DOMAIN
   - `pmg.org.za` in production
   - `pmg.test` in dev

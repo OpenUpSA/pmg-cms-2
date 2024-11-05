@@ -57,3 +57,5 @@ src/
 .vscode
 
 pmg/static/bill-tracker.json
+
+*.sql

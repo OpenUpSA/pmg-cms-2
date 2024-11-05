@@ -1,12 +1,12 @@
 {
     "scripts": {
         "dokku": {
-            "postdeploy": "curl https://api.pmg.org.za/v2/bill-tracker/update/"
+            "postdeploy": "curl https://api.lb-new.pmg.org.za/v2/bill-tracker/update/"
         }
     },
     "cron": [
         {
-            "command": "curl https://api.pmg.org.za/v2/bill-tracker/update/",
+            "command": "curl https://api.lb-new.pmg.org.za/v2/bill-tracker/update/",
             "schedule": "@daily"
         }
     ]

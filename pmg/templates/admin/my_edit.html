@@ -1,77 +1,77 @@
 {% extends 'admin/model/edit.html' %}
 
 {% block body %}
-    {% if admin_view.frontend_url(model) %}
-    <div class="pull-right">
-        {% set alert_url = admin_view.alert_url(model) %}
-        {% if alert_url %}
-        <a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
-        {% endif %}
+{% if admin_view.frontend_url(model) %}
+<div class="pull-right">
+	{% set alert_url = admin_view.alert_url(model) %}
+	{% if alert_url %}
+	<a href="{{ admin_view.alert_url(model) }}" class="btn btn-default"><i class="fa fa-envelope"></i> Send alert</a>
+	{% endif %}
 	{% if admin_view.name == "Committees" %}
 	<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete_modal">
-	    Delete {{admin_view.name}}
+		Delete {{admin_view.name}}
 	</button>
 	<div class="modal fade" id="delete_modal" tabindex="-1" role="dialog">
-	    <div class="modal-dialog" role="document">
-		<div class="modal-content">
-		    <div class="panel panel-danger">
-			<div class="panel-heading">Delete Record</div>
-			<div class="panel-body">
-			    <p>You are about to delete this record. This action cannot be undone.</p>
-			    <p>Would you like to proceed?</p>
-			    <div id="reason" class="alert alert-warning" role="alert" style="display:none">
-			    </div>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="panel panel-danger">
+					<div class="panel-heading">Delete Record</div>
+					<div class="panel-body">
+						<p>You are about to delete this record. This action cannot be undone.</p>
+						<p>Would you like to proceed?</p>
+						<div id="reason" class="alert alert-warning" role="alert" style="display:none">
+						</div>
+					</div>
+					<div class="panel-footer text-center">
+						<button type="button" class="btn btn-secondary" id="cancel_delete">Cancel</button>
+						<button type="button" class="btn btn-danger" id="confirm_delete">Delete</button>
+					</div>
+				</div>
 			</div>
-			<div class="panel-footer text-center">
-			    <button type="button" class="btn btn-secondary" id="cancel_delete">Cancel</button>
-			    <button type="button" class="btn btn-danger" id="confirm_delete">Delete</button>
-			</div>
-		    </div>
 		</div>
-	    </div>
 	</div>
 	<script>
-	 window.addEventListener('load', function(event){
-	     $("#cancel_delete").click(function() {
-		 $("#delete_modal").modal("toggle");
-	     });
-	     $("#confirm_delete").click(function(event) {
-		 event.preventDefault();
-		 console.log('deleting the model');
-		 $.ajax({ 
-		     url: "../delete?id={{ model.id }}",
-		     type: "DELETE",
-		     success: function(data){
-			 if (data.success == 'ok'){
-			     console.log("Deleted");
-			     window.location.replace("{{ return_url }}");   
-			 }else{
-			     $('#reason').css('display','block');
-			     $('#reason').html(data.reason);
-			 }
-		     },
-		     error: function(xhr, data, error){
-			 console.log("unable to delete model");
-			 $('#reason').html(data.reason);
-			 console.log(xhr.statusCode);
-			 console.log(xhr.statusText);
-			 console.log(error);
-		     }
-		 });
-	     });
-	 });
+		window.addEventListener('load', function (event) {
+			$("#cancel_delete").click(function () {
+				$("#delete_modal").modal("toggle");
+			});
+			$("#confirm_delete").click(function (event) {
+				event.preventDefault();
+				$.ajax({
+					url: "../delete?id={{ model.id }}",
+					type: "DELETE",
+					beforeSend: function (xhr) {
+						xhr.setRequestHeader("X-CSRFToken", $('[name=csrf_token]').val());
+					},
+					success: function (data) {
+						if (data.success == 'ok') {
+							window.location.replace("{{ return_url }}");
+						} else {
+							$('#reason').css('display', 'block');
+							$('#reason').html(data.reason);
+						}
+					},
+					error: function (xhr, data, error) {
+						$('#reason').html(data.reason);
+						console.log(xhr.statusCode);
+						console.log(xhr.statusText);
+						console.log(error);
+					}
+				});
+			});
+		});
 	</script>
 	{% endif %}
 
-        <a href="{{ admin_view.frontend_url(model) }}" class="btn btn-primary"><i class="fa fa-eye"></i> View page</a>
-    </div>
-    {% endif %}
+	<a href="{{ admin_view.frontend_url(model) }}" class="btn btn-primary"><i class="fa fa-eye"></i> View page</a>
+</div>
+{% endif %}
 
-    {% if admin_view.name == 'Users' %}
-        {% include "admin/_user_actions.html" %}
-    {% endif %}
+{% if admin_view.name == 'Users' %}
+{% include "admin/_user_actions.html" %}
+{% endif %}
 
-    <h2>Edit {{ admin_view.name }}</h2>
+<h2>Edit {{ admin_view.name }}</h2>
 
-    {{ super() }}
+{{ super() }}
 {% endblock %}

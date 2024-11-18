@@ -42,7 +42,7 @@ PMG has over 17 years of content and most content types are returned in pages, w
 {
   "count": 117,
   "results": [ ... ],
-  "next": "http://api.pmg.org.za/committee/?page=2"
+  "next": "https://api.pmg.org.za/committee/?page=2"
 }
 ```
 
@@ -62,7 +62,7 @@ To filter a content type, provide a `filter[field]=value` query parameter.
 
 For example, for committee meetings for the NCOP Economic and Business Development committee which has a `committee_id` of 97, use:
 
-    http://api.pmg.org.za/committee-meeting/?filter[committee_id]=97
+    https://api.pmg.org.za/committee-meeting/?filter[committee_id]=97
 
 Most fields can be used as filters. You cannot filter on nested fields.
 
@@ -71,7 +71,7 @@ Searching
 
 You can search across all API content using the `/search` endpoint.
 
-    http://api.pmg.org.za/search/?q=internet
+    https://api.pmg.org.za/search/?q=internet
 
 You can adjust the results with the following parameters:
 

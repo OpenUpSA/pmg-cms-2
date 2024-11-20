@@ -39,7 +39,7 @@ services:
       - "api.pmg.test:127.0.0.1"
 
   postgres:
-    image: postgres:9.6
+    image: postgres:12.19
     environment:
       - POSTGRES_USER=pmg
       - POSTGRES_DB=pmg

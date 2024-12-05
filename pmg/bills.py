@@ -15,6 +15,7 @@ ICONS = {
     "house": "house.png",
     "president": "signed-by-president.png",
     "unknown": "bill-introduced.png",
+    "concourt": "bill-concourt.png",
 }
 
 
@@ -23,6 +24,12 @@ def get_location(event):
         return {
             "name": "Office of the President",
             "class": "president",
+        }
+
+    if event.get("type") == "bill-concourt":
+        return {
+            "name": "Constitutional Court",
+            "class": "concourt",
         }
 
     if event.get("house"):
@@ -78,10 +85,17 @@ def get_agent(event, bill):
         }
 
     elif event.get("house"):
-        info = {
-            "name": event["house"]["name"],
-            "type": "house",
-        }
+
+        if event["house"]["short_name"] == "concourt":
+            info = {
+                "name": "Constitutional Court",
+                "type": "concourt",
+            }
+        else:
+            info = {
+                "name": event["house"]["name"],
+                "type": "house",
+            }
     else:
         info = {"name": "Unknown", "type": "unknown"}
 

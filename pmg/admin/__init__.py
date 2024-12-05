@@ -1152,6 +1152,7 @@ class EventTypeSelectField(fields.SelectField):
             ("bill-signed", "Bill signed"),
             ("bill-enacted", "Bill enacted"),
             ("bill-act-commenced", "Act commenced"),
+            ("bill-concourt", "Before Constitutional Court")
         ]
 
     def populate_obj(self, obj, name):

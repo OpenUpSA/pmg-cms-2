@@ -594,6 +594,9 @@ class BillCommenced(Event):
 class BillUpdate(Event):
     __mapper_args__ = {"polymorphic_identity": "bill-updated"}
 
+class BillConcourt(Event):
+    __mapper_args__ = {"polymorphic_identity": "bill-concourt"}
+
 
 class MembershipType(db.Model):
 

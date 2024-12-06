@@ -18,6 +18,7 @@ from pmg.models import (
     Bill,
     BillType,
     BillVersion,
+    BillFile,
     BillStatus,
     Event,
     QuestionReply,
@@ -396,6 +397,7 @@ class BillSchema(ma.ModelSchema):
             "effective_date",
             "act_name",
             "versions",
+            "bill_files",
             "events",
             "created_at",
             "updated_at",
@@ -405,6 +407,7 @@ class BillSchema(ma.ModelSchema):
     status = fields.Nested("BillStatusSchema")
     place_of_introduction = fields.Nested("HouseSchema")
     versions = fields.Nested("BillVersionSchema", many=True)
+    bill_files = fields.Nested("BillFileSchema", many=True)
     events = PolyField(serialization_schema_selector=choose_event_schema, many=True)
 
     _links = ma.Hyperlinks({"self": AbsoluteUrlFor("api2.bills", id="<id>"),})
@@ -426,5 +429,12 @@ class BillVersionSchema(ma.ModelSchema):
     class Meta:
         model = BillVersion
         fields = ("id", "title", "file", "date", "enacted")
+
+    file = fields.Nested("FileSchema")
+
+class BillFileSchema(ma.ModelSchema):
+    class Meta:
+        model = BillFile
+        fields = ("id", "file_id", "file")
 
     file = fields.Nested("FileSchema")

@@ -13,7 +13,7 @@
 
 <div class="row">
   <div class="col-md-1">
-    <img src="{{ member.profile_pic_url }}" alt="{{ member.name }}">
+    <img src="{{ STATIC_HOST }}{{ member.profile_pic_url }}" alt="{{ member.name }}">
   </div>
   <div class="col-md-4">
     {{ member.bio|safe }}

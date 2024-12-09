@@ -5,7 +5,7 @@
 {% set member = model %}
 <div class="row">
   <div class="col-md-8 col-lg-offset-2">
-    <img style="max-width: 125px;" class="pull-right" src="{{ STATIC_HOST }}{{ member.profile_pic_url }}" />
+    <img style="max-width: 125px;" class="pull-right" src="{{ member.profile_pic_url }}" />
     <h1>{{ member.name }}</h1>
     <p class="lead">{{ member.house.name }}</p>
     <p class="lead">{{ member.party.name }}</p>

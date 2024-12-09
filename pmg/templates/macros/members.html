@@ -1,6 +1,6 @@
 {% macro member_badge(member, chairperson=False) -%}
   {%- if member.profile_pic_url %}
-    <a href="{{ member|member_url }}"><img class="member-profile-pic {% if chairperson %}chairperson{% endif %}" src="{{ STATIC_HOST }}{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
+    <a href="{{ member|member_url }}"><img class="member-profile-pic {% if chairperson %}chairperson{% endif %}" src="{{ member.profile_pic_url }}" alt="Profile picture: {{ member.name }}" ></a>
   {% else %}
     <p class="text-muted">No image available</p>
   {% endif %}

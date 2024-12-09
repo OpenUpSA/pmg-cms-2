@@ -46,7 +46,7 @@
     {% for member in provincial_members %}
       <div class="single-mp col-xs-12 col-sm-6 col-md-4 col-lg-3">
         <a class="content-card flex" href="{{ member | member_url }}">
-          <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+          <img class="member-profile-pic" src="{{ STATIC_HOST }}{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
           <div>
             <h4 class="card-title name">{{ member.name }}</h4>
             {% if member.party %}
@@ -75,7 +75,7 @@
               {% for member in members %}
               <div class="single-mp col-xs-12 col-sm-6 col-md-4 col-lg-3">
                   <a class="content-card flex" href="{{ member | member_url }}">
-                      <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+                      <img class="member-profile-pic" src="{{ STATIC_HOST }}{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
                       <div>
                           <h4 class="card-title name">{{ member.name }}</h3>
                               {% if member.party %}

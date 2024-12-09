@@ -49,7 +49,7 @@
           {% for member in mpls %}
             <div class="col-xs-12 col-sm-6 col-lg-4">
               <a class="content-card flex" href="{{ member | member_url }}">
-                <img class="member-profile-pic" src="{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
+                <img class="member-profile-pic" src="{{ STATIC_HOST }}{{ member.profile_pic_url or '/static/resources/images/no-profile-pic.svg' }}" alt="{{ member.name }}">
                 <div>
                   <h4 class="card-title">{{ member.name }}</h4>
                   <h5>{{ member.party.name }}</h5>

@@ -8,7 +8,7 @@
   </div>
   <div class="col-md-2 text-center">
     {% if model and model.member.profile_pic_url %}
-    <img src="http://pmg-assets.s3-eu-west-1.amazonaws.com/{{ model.member.profile_pic_url }}" style="max-width: 75px;"></img>
+    <img src="{{ STATIC_HOST }}{{ member.profile_pic_url }}" style="max-width: 75px;"></img>
     {% endif %}
   </div>
 </div>

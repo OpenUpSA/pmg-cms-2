@@ -163,6 +163,7 @@ class Bill(ApiResource, db.Model):
     versions = db.relationship(
         "BillVersion", backref="bill", cascade="all, delete, delete-orphan"
     )
+    bill_files = db.relationship("BillFile", back_populates="bill", cascade="all, delete-orphan")
 
     @property
     def code(self):
@@ -223,6 +224,15 @@ class BillVersion(db.Model):
     enacted = db.Column(
         db.Boolean, default=False, server_default=sql.expression.false(), nullable=False
     )
+
+class BillFile(db.Model):
+    __tablename__ = 'bill_file'
+    id = db.Column(db.Integer, primary_key=True)
+    bill_id = db.Column(db.Integer, db.ForeignKey('bill.id'), nullable=False)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), nullable=False)
+
+    bill = db.relationship("Bill", back_populates="bill_files")
+    file = db.relationship("File")
 
 
 class File(db.Model):

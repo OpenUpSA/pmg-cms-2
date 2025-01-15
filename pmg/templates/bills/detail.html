@@ -36,6 +36,7 @@
 </ul>
 {% endif %}
 
+
 {% if bill.status %}
   {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
     <div class="bill-status-container">
@@ -167,6 +168,21 @@
     {% endfor %}
   </div>
 </div>
+{% endif %}
+
+{% if bill.bill_files %}
+<ul class="list-inline bill-versions">
+  <li><h3>Bill files:</h3></li>
+  {% for file in bill.bill_files %}
+  <li>
+    <a href="{{ file.file.url }}" target="_blank">
+      <span class="label label-info" title="{{ file.file.title }}">
+        <i class="fa fa-file-text"></i> {{ file.file.title }}
+      </span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
 {% endif %}
 
 {% endblock %}

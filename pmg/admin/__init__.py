@@ -1260,6 +1260,20 @@ class BillHouseAjaxModelLoader(QueryAjaxModelLoader):
 
         return query.offset(offset).limit(limit).all()
 
+class InlineBillFileForm(InlineFormAdmin):
+    
+    form_columns = (
+        "id",
+        "file",
+    )
+    form_ajax_refs = {
+        "file": {
+            "fields": ("title", "file_path"),
+            "page_size": 10,
+            "placeholder": 'Select a File',
+        },
+    }
+
 
 class BillsView(MyModelView):
     column_list = (
@@ -1289,15 +1303,17 @@ class BillsView(MyModelView):
         "date_of_assent",
         "effective_date",
         "act_name",
-        "versions",
+        "versions"
     )
     column_default_sort = ("year", True)
     column_searchable_list = ("title",)
     inline_models = [
         InlineBillEventsForm(Event),
         InlineBillVersionForm(BillVersion),
+        InlineBillFileForm(BillFile),
     ]
     form_args = {
+        
         "events": {"widget": widgets.InlineBillEventsWidget()},
     }
 

@@ -1261,6 +1261,7 @@ class BillHouseAjaxModelLoader(QueryAjaxModelLoader):
         return query.offset(offset).limit(limit).all()
 
 class InlineBillFileForm(InlineFormAdmin):
+    
     form_columns = (
         "id",
         "file",
@@ -1269,6 +1270,7 @@ class InlineBillFileForm(InlineFormAdmin):
         "file": {
             "fields": ("title", "file_path"),
             "page_size": 10,
+            "placeholder": 'Select a File',
         },
     }
 
@@ -1311,6 +1313,7 @@ class BillsView(MyModelView):
         InlineBillFileForm(BillFile),
     ]
     form_args = {
+        
         "events": {"widget": widgets.InlineBillEventsWidget()},
     }
 

@@ -36,9 +36,24 @@
 </ul>
 {% endif %}
 
+{% if bill.bill_files %}
+<ul class="list-inline bill-versions">
+  <li><h3>Supporting Documents:</h3></li>
+  {% for file in bill.bill_files %}
+  <li>
+    <a href="{{ file.file.url }}" target="_blank">
+      <span class="label label-info" title="{{ file.file.title }}">
+        <i class="fa fa-file-text"></i> {{ file.file.title }}
+      </span>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 
 {% if bill.status %}
-  {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced"] -%}
+  {% if bill.status.name in ["enacted", "president", "ncop", "na", "returned-to-na", "introduced", "concourt"] -%}
     <div class="bill-status-container">
       <div class="c4sa-grey c4sa-progress"></div>
 
@@ -170,20 +185,7 @@
 </div>
 {% endif %}
 
-{% if bill.bill_files %}
-<ul class="list-inline bill-versions">
-  <li><h3>Bill files:</h3></li>
-  {% for file in bill.bill_files %}
-  <li>
-    <a href="{{ file.file.url }}" target="_blank">
-      <span class="label label-info" title="{{ file.file.title }}">
-        <i class="fa fa-file-text"></i> {{ file.file.title }}
-      </span>
-    </a>
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
+
 
 {% endblock %}
 

@@ -1216,10 +1216,6 @@ class InlineBillEventsForm(InlineFormAdmin):
         "member": {"fields": ("name",), "page_size": 25},
     }
 
-    def on_model_change(self, form, model):
-        # make sure the new date is timezone aware
-        model.date = model.date.replace(tzinfo=SAST)
-
 
 class InlineBillVersionForm(InlineFormAdmin):
     form_columns = (

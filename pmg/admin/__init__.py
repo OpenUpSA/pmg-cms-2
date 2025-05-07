@@ -44,7 +44,6 @@ import warnings
 
 logger = logging.getLogger(__name__)
 
-SAST = pytz.timezone("Africa/Johannesburg")
 
 def strip_filter(value):
     if value is not None and hasattr(value, "strip"):
@@ -554,12 +553,9 @@ class EventView(ViewWithFiles, MyModelView):
 
     form_excluded_columns = ("type",)
     column_exclude_list = ("type",)
-    column_formatters = {"date": lambda v, c, model, n: model.date.astimezone(SAST)}
 
     def on_form_prefill(self, form, id):
         super().on_form_prefill(form, id)
-        # Display date in South African time
-        form.date.data = form.date.object_data.astimezone(SAST)
 
     def __init__(self, model, session, **kwargs):
         self.type = kwargs.pop("type")
@@ -569,9 +565,6 @@ class EventView(ViewWithFiles, MyModelView):
         if is_created:
             # set some default values when creating a new record
             model.type = self.type
-        # make sure the new date is timezone aware
-        if model.date:
-            model.date = model.date.replace(tzinfo=SAST)
 
         model.autolink_bills()
 
@@ -699,13 +692,6 @@ class CommitteeMeetingView(EventView):
         InlineFile(EventFile),
         InlineCommitteeMeetingAttendance(CommitteeMeetingAttendance),
     ]
-
-    def on_model_change(self, form, model, is_created):
-        super(CommitteeMeetingView, self).on_model_change(form, model, is_created)
-        # make sure the new times are timezone aware
-        for attr in ["actual_start_time", "actual_end_time"]:
-            if getattr(model, attr):
-                setattr(model, attr, getattr(model, attr).replace(tzinfo=SAST))
 
 
 class HansardView(EventView):
@@ -1322,9 +1308,7 @@ class MinisterView(MyModelView):
 
 
 class FeaturedContentView(MyModelView):
-    def on_model_change(self, form, model, is_created):
-        # make sure the new date is timezone aware
-        model.start_date = model.start_date.replace(tzinfo=SAST)
+    column_list = ("title",)
 
 
 class FileView(MyModelView):
@@ -1436,11 +1420,6 @@ class PageView(ViewWithFiles, MyModelView):
         super(PageView, self).on_form_prefill(form, id)
         form.path.data = "/page/%s" % form.slug.data
 
-    def on_model_change(self, form, model, is_created):
-        # make sure the new date is timezone aware
-        if model.date:
-            model.date = model.date.replace(tzinfo=SAST)
-
 
 class PostView(ViewWithFiles, MyModelView):
     column_list = ("slug", "title", "date")
@@ -1469,11 +1448,6 @@ class PostView(ViewWithFiles, MyModelView):
     def on_form_prefill(self, form, id):
         super(PostView, self).on_form_prefill(form, id)
         form.path.data = "/blog/%s" % form.slug.data
-
-    def on_model_change(self, form, model, is_created):
-        # make sure the new date is timezone aware
-        if model.date:
-            model.date = model.date.replace(tzinfo=SAST)
 
 
 # initialise admin instance

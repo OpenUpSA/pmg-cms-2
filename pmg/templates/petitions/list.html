@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Petitions | PMG
+{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('petitions') }}">Petitions</a></li>
+</ol>
+{% endblock %}
+
+{% block page %}
+<div class="row">
+<div class="col petitions-title">
+  <h1>
+  <i class="fa fa-file-text-o"></i> Petitions
+</h1>
+</div>
+</div>
+
+
+
+{% if not results %}
+<p><i>There are no petitions to show.</i></p>
+{% endif %}
+
+
+<div class="petitions-list-page">
+
+  {% if not results %}
+  <p><i>There are no petitions to show.</i></p>
+  {% endif %}
+
+  <div class="petitions-grid row">
+    {% for petition in results %}
+    <div class="col-sm-12 col-md-6 col-lg-4">
+     
+      <div class="petition-card">
+        
+          
+        
+        
+        <h3 class="petition-title">
+          <a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a>
+        </h3>
+
+        <div class="petition-meta-info">
+          <div class="petition-date">{{ petition.date.strftime("%d %B %Y") if petition.date else '' }}</div>
+          
+          <div class="petition-badge">{{petition.status.name|capitalize}}</div>
+          
+          
+        </div>
+        
+        <div class="petition-description">
+          {{ petition.description|truncate(200, True) }}
+        </div>
+        
+        <div class="petition-details">
+          {% if petition.issue %}
+          <div class="petition-issue">
+            <strong>Issue</strong><br>
+            {{ petition.issue }}
+          </div>
+          {% endif %}
+          
+          
+          
+
+          {% if petition.committee %}
+          <div class="petition-committee">
+            <strong>Committees</strong><br>
+            {{ petition.committee.name }}
+          </div>
+          {% endif %}
+          {% if petition.petitioner %}
+          <div class="petition-petitioner">
+            <strong>Petitioner</strong><br>
+            {{ petition.petitioner }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>  
+    {% endfor %}
+  </div>
+  
+  {% if num_pages > 1 %}
+  <nav>
+    <ul class="pagination">
+      {% for n in range(num_pages) %}
+        <li class="{% if page == n %}active{% endif %}">
+          <a href="{{ url }}{% if n %}/{{ n }}{% endif %}">{{ n+1 }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+
+
+
+{% endblock page %}

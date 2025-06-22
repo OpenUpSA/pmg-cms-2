@@ -41,6 +41,7 @@ from pmg.models import (
     CommitteeMeeting,
     CommitteeMeetingAttendance,
     House,
+    Petition
 )
 from pmg.models.resources import Committee
 
@@ -1949,6 +1950,37 @@ def blog_post(slug):
         admin_edit_url=admin_url("posts", post.id),
         social_summary=social_summary,
         social_image=social_image,
+    )
+
+@app.route("/petitions/")
+@app.route("/petitions/<int:page>/")
+def petitions(page=0):
+    per_page = app.config.get("RESULTS_PER_PAGE", 20)
+    query = Petition.query.order_by(Petition.date.desc())
+    count = query.count()
+    petitions = query.offset(page * per_page).limit(per_page).all()
+    num_pages = int(math.ceil(float(count) / float(per_page)))
+    url = "/petitions"
+    return render_template(
+        "petitions/list.html",   
+        results=petitions,
+        num_pages=num_pages,
+        page=page,
+        url=url,
+        icon="file-text-o",   
+        title="Petitions",
+        content_type="petition",  
+    )
+
+@app.route("/petition/<int:petition_id>")
+@app.route("/petition/<int:petition_id>/")
+def petition_detail(petition_id):
+    petition = Petition.query.get_or_404(petition_id)
+    return render_template(
+        "petitions/detail.html",
+        petition=petition,
+        admin_edit_url=admin_url("petition", petition.id),
+        content_date=petition.date,
     )
 
 

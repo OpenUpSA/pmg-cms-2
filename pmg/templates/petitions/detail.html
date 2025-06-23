@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}{{ petition.title }} | PMG{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+  <li><a href="{{ url_for('petitions') }}">Petitions</a></li>
+  <li class="active">{{ petition.title|truncate(50, True) }}</li>
+</ol>
+{% endblock %}
+
+{% block page %}
+<div class="petition-detail-page">
+
+  <header class="petition-header">
+    <h1>{{ petition.title }}</h1>
+    {% if petition.issue %}
+        <h3>{{ petition.issue }}</h3>
+        {% endif %}
+    {% if petition.status %}
+    <div class="petition-badge">
+      {{ petition.status.name|capitalize }}
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="row">
+    <div class="col-sm-12 col-md-8">
+      {% if petition.description %}
+      <div class="petition-description-section">
+        <p>{{ petition.description }}</p>
+      </div>
+      {% if petition.meetings.count() %}
+      <section class="petition-meetings-section">
+        <h2>Related Committee Meetings</h2>
+        <div class="meetings-list">
+          {% for meeting in petition.meetings %}
+          <div class="meeting-item">
+            <div class="meeting-date">
+              {{ meeting.date.strftime('%d %b %Y') if meeting.date else 'Date TBA' }}
+            </div>
+            <div class="meeting-details">
+              <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}" class="meeting-title">
+                {{ meeting.title or meeting.type|title }}
+              </a>
+              {% if meeting.committee %}
+              <div class="meeting-committee">
+                <strong>Committee:</strong>
+                {{ meeting.committee.name }}</div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+      {% endif %}
+
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <dl class="petition-info">
+        <dt>Date</dt>
+        <dd>{{ petition.date.strftime("%d %B %Y") if petition.date else 'Not specified' }}</dd>
+
+        {% if petition.house %}
+        <dt>House</dt>
+        <dd>{{ petition.house.name }}</dd>
+        {% endif %}
+
+        {% if petition.committee %}
+        <dt>Committee</dt>
+        <dd>{{ petition.committee.name }}</dd>
+        {% endif %}
+
+        {% if petition.petitioner %}
+        <dt>Petitioner</dt>
+        <dd>{{ petition.petitioner }}</dd>
+        {% endif %}
+
+        {% if petition.report %}
+        <dt>Report</dt>
+        <dd><a href="{{ petition.report.url }}" target="_blank" class="btn btn-primary btn-sm">
+          <i class="fa fa-file-text"></i> View Report
+        </a></dd>
+        {% endif %}
+
+        {% if petition.hansard %}
+        <dt>Hansard</dt>
+        <dd><a href="{{ url_for('hansard', event_id=petition.hansard.id) }}" class="btn btn-info btn-sm">
+          <i class="fa fa-file-text-o"></i> View Hansard
+        </a></dd>
+        {% endif %}
+      
+
+        
+      </dl>
+
+   
+
+    </div>
+
+  </div>
+
+
+
+
+
+
+
+</div>
+{% endblock %}

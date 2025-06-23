@@ -1715,7 +1715,56 @@ class Minister(ApiResource, db.Model):
                     best = (cte, score)
 
         return best[0] if best else None
+    
+# Define the association table OUTSIDE the class
+petition_meeting_join = db.Table(
+    "petition_meeting_join",
+    db.Column("petition_id", db.Integer, db.ForeignKey("petition.id", ondelete="CASCADE")),
+    db.Column("meeting_id", db.Integer, db.ForeignKey("event.id", ondelete="CASCADE"))
+)
 
+class Petition(ApiResource, db.Model):
+    __tablename__ = "petition"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.Date(), nullable=False)
+    house_id = db.Column(db.Integer, db.ForeignKey("house.id"))
+    house = db.relationship("House", lazy="joined")
+    committee_id = db.Column(db.Integer, db.ForeignKey("committee.id"))
+    committee = db.relationship("Committee", lazy="joined")
+    issue = db.Column(db.String(255))
+    description = db.Column(db.Text())
+    petitioner = db.Column(db.String(255))
+    report_id = db.Column(db.Integer, db.ForeignKey("file.id"))
+    report = db.relationship("File", foreign_keys=[report_id])
+    hansard_id = db.Column(db.Integer, db.ForeignKey("event.id"))
+    hansard = db.relationship(
+        "Hansard", 
+        foreign_keys=[hansard_id], 
+        primaryjoin="Petition.hansard_id==Event.id"
+    )
+    # Change this line:
+    status_id = db.Column(db.Integer, db.ForeignKey("petition_status.id"))
+    status = db.relationship("PetitionStatus", lazy="joined")
+
+    meetings = db.relationship(
+        "CommitteeMeeting",           
+        secondary=petition_meeting_join,
+        backref="petitions",
+        lazy="dynamic"
+    )
+
+class PetitionStatus(db.Model):
+
+    __tablename__ = "petition_status"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.Text)
+   
+    def __str__(self):
+        return "%s (%s)" % (self.description, self.name) 
+ 
 
 # Listen for model updates
 @models_committed.connect_via(app)

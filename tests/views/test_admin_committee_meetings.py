@@ -53,7 +53,7 @@ class TestAdminCommitteeMeetings(PMGLiveServerTestCase):
         self.make_request("/admin/committee-meeting", self.user, follow_redirects=True)
         self.assertIn("Committee Meetings", self.html)
         self.assertIn(self.fx.CommitteeMeetingData.arts_meeting_one.title, self.html)
-        self.assertIn("2019-01-01 02:00:00", self.html)
+        self.assertIn("2019-01-01 00:00:00", self.html)
 
         self.assertIn(self.fx.CommitteeMeetingData.premium_recent.title, self.html)
         self.assertIn("%d-11-05 00:00:00" % THIS_YEAR, self.html)

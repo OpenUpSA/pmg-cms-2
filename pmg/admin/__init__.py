@@ -1450,6 +1450,36 @@ class PostView(ViewWithFiles, MyModelView):
         form.path.data = "/blog/%s" % form.slug.data
 
 
+class PetitionView(MyModelView):
+    form_columns = (
+        "house",
+        "committee", 
+        "report",
+        "hansard",
+        "title",
+        "date",
+        "issue",
+        "description",
+        "petitioner",
+        "status",  
+        "meetings"
+    )
+    
+    
+    form_ajax_refs = {
+        "status": {
+            "fields": ("name", "description"),
+            "page_size": 25,
+        }
+    }
+
+class PetitionStatusView(MyModelView):
+    column_default_sort = "name"
+    column_list = ("name", "description")
+    form_columns = column_list
+    edit_modal = True
+    create_modal = True
+
 # initialise admin instance
 admin = Admin(
     app,
@@ -1699,3 +1729,30 @@ with warnings.catch_warnings():
     admin.add_view(
         SubscriptionsView(category="Reports", name="Alert Counts", endpoint="subscriptions")
     )
+
+    # ---------------------------------------------------------------------------------
+    # Petitions
+    admin.add_view(
+        PetitionView(
+            Petition,
+            db.session,
+            name="Petitions",
+            endpoint="petition",
+            category="Other Content",  
+        )
+    )
+
+    admin.add_view(
+        PetitionStatusView(
+            PetitionStatus,
+            db.session,
+            name="Petition Statuses",
+            endpoint="petition-status",
+            category="Other Content",
+        )
+    )
+
+
+
+
+    

@@ -1,6 +1,6 @@
 $icon-font-path:    "../../bower_components/bootstrap-sass/assets/fonts/";
 
-$black = #333;
+$black: #333;
 
 // ** Global textual link color.
 $link-color:            #0178d8;
@@ -2105,4 +2105,141 @@ ul.menu {
 
 .renamed-committee-links {
   margin: 2em 0;
+}
+
+// Petitions list page
+
+.petitions-title {
+  padding-left: 1em;
+}
+
+.petitions-list-page {
+
+    .petitions-grid {
+      margin: 20px -15px 20px -15px;
+    }
+ 
+
+    .petition-card {
+      background-color: #fff;
+      border: 1px solid $grey-medium;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+
+      h3 {
+        font-size: 24px;
+        margin: 0 0 20px 0;
+      }
+
+      .petition-meta-info {
+        font-size: 14px;
+        margin: 0 0 20px 0;
+
+        .petition-badge {
+          display: inline-block;
+          padding: 5px;
+          margin: 5px 0 0 0;
+          border-radius: 5px;
+          color: #fff;
+          font-size: 12px;
+          background-color: #6998DD;
+
+        }
+      }
+
+      .petition-description {
+        font-size: 16px;
+        color: #000;
+        margin-bottom: 20px;
+      }
+
+      .petition-details {
+        font-size: 14px;
+        color: $grey-dark;
+        border-top: 1px solid $grey-light;
+        padding-top: 1em;
+
+        div {
+          margin: 0 0 10px 0;
+        }
+
+      }
+
+
+    }
+ 
+}
+
+
+// Petition detail page
+.petition-detail-page {
+
+  .petition-header {
+    margin-bottom:20px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 18px;
+  }
+
+  .petition-badge {
+    display: inline-block;
+    padding: 5px;
+    margin: 5px 0 0 0;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 12px;
+    background-color: #6998DD;
+
+  }
+
+  .petition-description-section {
+    font-size: 18px;
+  }
+
+  .petition-info {
+    background: $grey-light;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+
+    dt {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+  }
+
+  .petition-meetings-section {
+    margin-top: 10px;
+    border-top: 1px solid #eee;
+
+    h2 {
+      margin-bottom: 20px;
+    }
+    
+  }
+
+  .meeting-item {
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 5px 5px rgba(0,0,0,0.1);
+
+    .meeting-details a {
+      font-size: 18px;
+      display: block;
+      margin: 1em 0;
+      
+    }
+  }
+ 
 }

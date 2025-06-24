@@ -1454,7 +1454,6 @@ class PetitionView(MyModelView):
     form_columns = (
         "house",
         "committee", 
-        "report",
         "hansard",
         "title",
         "date",

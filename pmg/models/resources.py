@@ -1723,6 +1723,12 @@ petition_meeting_join = db.Table(
     db.Column("meeting_id", db.Integer, db.ForeignKey("event.id", ondelete="CASCADE"))
 )
 
+petition_committee_join = db.Table(
+    "petition_committee_join",
+    db.Column("petition_id", db.Integer, db.ForeignKey("petition.id", ondelete="CASCADE")),
+    db.Column("committee_id", db.Integer, db.ForeignKey("committee.id", ondelete="CASCADE"))
+)
+
 class Petition(ApiResource, db.Model):
     __tablename__ = "petition"
     id = db.Column(db.Integer, primary_key=True)
@@ -1730,8 +1736,14 @@ class Petition(ApiResource, db.Model):
     date = db.Column(db.Date(), nullable=False)
     house_id = db.Column(db.Integer, db.ForeignKey("house.id"))
     house = db.relationship("House", lazy="joined")
-    committee_id = db.Column(db.Integer, db.ForeignKey("committee.id"))
-    committee = db.relationship("Committee", lazy="joined")
+    
+    committees = db.relationship(
+        "Committee",
+        secondary=petition_committee_join,
+        backref=backref("petitions", lazy="dynamic"),
+        lazy="joined"
+    )
+    
     issue = db.Column(db.String(255))
     description = db.Column(db.Text())
     petitioner = db.Column(db.String(255))
@@ -1743,7 +1755,6 @@ class Petition(ApiResource, db.Model):
         foreign_keys=[hansard_id], 
         primaryjoin="Petition.hansard_id==Event.id"
     )
-    # Change this line:
     status_id = db.Column(db.Integer, db.ForeignKey("petition_status.id"))
     status = db.relationship("PetitionStatus", lazy="joined")
 
@@ -1753,7 +1764,6 @@ class Petition(ApiResource, db.Model):
         backref="petitions",
         lazy="dynamic"
     )
-
 class PetitionStatus(db.Model):
 
     __tablename__ = "petition_status"

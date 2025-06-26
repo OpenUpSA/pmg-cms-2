@@ -1453,7 +1453,7 @@ class PostView(ViewWithFiles, MyModelView):
 class PetitionView(MyModelView):
     form_columns = (
         "house",
-        "committee", 
+        "committees",  # Changed from "committee" to "committees"
         "hansard",
         "title",
         "date",
@@ -1464,12 +1464,23 @@ class PetitionView(MyModelView):
         "meetings"
     )
     
-    
     form_ajax_refs = {
         "status": {
             "fields": ("name", "description"),
             "page_size": 25,
         }
+    }
+    
+    column_list = (
+        "title",
+        "date", 
+        "house",
+        "committees",
+        "status"
+    )
+    
+    column_formatters = {
+        "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees])
     }
 
 class PetitionStatusView(MyModelView):
@@ -1479,7 +1490,6 @@ class PetitionStatusView(MyModelView):
     edit_modal = True
     create_modal = True
 
-# initialise admin instance
 admin = Admin(
     app,
     name="PMG-CMS",

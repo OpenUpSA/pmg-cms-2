@@ -32,59 +32,30 @@
   <p><i>There are no petitions to show.</i></p>
   {% endif %}
 
-  <div class="petitions-grid row">
-    {% for petition in results %}
-    <div class="col-sm-12 col-md-6 col-lg-4">
-     
-      <div class="petition-card">
-        
-        <h3 class="petition-title">
-          <a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a>
-        </h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th style="width: 40%">Title</th>
+        <th>Issue</th>
+        <th style="width: 15%">Date</th>
+        <th style="width: 10%">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for petition in results %}
+      <tr>
+        <td>
+          <strong><a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a></strong>
+        </td>
+        <td>{{ petition.issue }}</td>
+        <td>{{ petition.date.strftime("%d %B %Y") if petition.date else '' }}</td>
+        <td><div class="petition-badge">{{petition.status.name|capitalize}}</div></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 
-        <div class="petition-meta-info">
-          <div class="petition-date">{{ petition.date.strftime("%d %B %Y") if petition.date else '' }}</div>
-          
-          <div class="petition-badge">{{petition.status.name|capitalize}}</div>
-          
-          
-        </div>
-        
-        <div class="petition-description">
-          {{ petition.description|truncate(200, True) }}
-        </div>
-        
-        <div class="petition-details">
-          {% if petition.issue %}
-          <div class="petition-issue">
-            <strong>Issue</strong><br>
-            {{ petition.issue }}
-          </div>
-          {% endif %}
-          
-
-          
-          
-
-          {% if petition.committees %}
-          <div class="petition-committee">
-            <strong>Committees</strong><br>
-            {% for committee in petition.committees %}
-              <span class="badge badge-info">{{ committee.name }}</span>
-            {% endfor %}
-          </div>
-          {% endif %}
-          {% if petition.petitioner %}
-          <div class="petition-petitioner">
-            <strong>Petitioner</strong><br>
-            {{ petition.petitioner }}
-          </div>
-          {% endif %}
-        </div>
-      </div>
-    </div>  
-    {% endfor %}
-  </div>
+  
   
   {% if num_pages > 1 %}
   <nav>

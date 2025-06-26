@@ -30,11 +30,14 @@
       <div class="petition-description-section">
         <p>{{ petition.description }}</p>
       </div>
-      {% if petition.meetings.count() %}
+      {% endif %}
+
+      {% set committee_meetings = petition.linked_events|selectattr("type", "equalto", "committee-meeting")|list %}
+      
       <section class="petition-meetings-section">
         <h2>Related Committee Meetings</h2>
         <div class="meetings-list">
-          {% for meeting in petition.meetings %}
+          {% for meeting in committee_meetings|sort(attribute="date", reverse=true) %}
           <div class="meeting-item">
             <div class="meeting-date">
               {{ meeting.date.strftime('%d %b %Y') if meeting.date else 'Date TBA' }}
@@ -53,8 +56,10 @@
           {% endfor %}
         </div>
       </section>
-      {% endif %}
-      {% endif %}
+      
+
+      
+      
 
     </div>
     <div class="col-sm-12 col-md-4">
@@ -67,9 +72,13 @@
         <dd>{{ petition.house.name }}</dd>
         {% endif %}
 
-        {% if petition.committee %}
-        <dt>Committee</dt>
-        <dd>{{ petition.committee.name }}</dd>
+        {% if petition.committees %}
+        <dt>Committees</dt>
+        <dd>
+          {% for committee in petition.committees %}
+            <span class="badge badge-info">{{ committee.name }}</span>
+          {% endfor %}
+        </dd>
         {% endif %}
 
         {% if petition.petitioner %}

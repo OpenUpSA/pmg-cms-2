@@ -38,9 +38,6 @@
      
       <div class="petition-card">
         
-          
-        
-        
         <h3 class="petition-title">
           <a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a>
         </h3>
@@ -65,13 +62,16 @@
           </div>
           {% endif %}
           
+
           
           
 
-          {% if petition.committee %}
+          {% if petition.committees %}
           <div class="petition-committee">
             <strong>Committees</strong><br>
-            {{ petition.committee.name }}
+            {% for committee in petition.committees %}
+              <span class="badge badge-info">{{ committee.name }}</span>
+            {% endfor %}
           </div>
           {% endif %}
           {% if petition.petitioner %}

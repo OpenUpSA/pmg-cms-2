@@ -395,6 +395,14 @@ class Event(ApiResource, db.Model):
         backref=backref("events"),
         cascade="save-update, merge",
     )
+
+    linked_petitions = db.relationship(
+        "Petition",
+        secondary="event_petitions", 
+        backref=backref("linked_events"),
+        cascade="save-update, merge",
+    )
+    
     chairperson = db.Column(db.String(256))
 
     # did this meeting involve public participation?
@@ -464,6 +472,12 @@ event_bills = db.Table(
     "event_bills",
     db.Column("event_id", db.Integer(), db.ForeignKey("event.id", ondelete="CASCADE")),
     db.Column("bill_id", db.Integer(), db.ForeignKey("bill.id", ondelete="CASCADE")),
+)
+
+event_petitions = db.Table(
+    "event_petitions",
+    db.Column("event_id", db.Integer(), db.ForeignKey("event.id", ondelete="CASCADE")),
+    db.Column("petition_id", db.Integer(), db.ForeignKey("petition.id", ondelete="CASCADE")),
 )
 
 
@@ -1716,12 +1730,6 @@ class Minister(ApiResource, db.Model):
 
         return best[0] if best else None
     
-# Define the association table OUTSIDE the class
-petition_meeting_join = db.Table(
-    "petition_meeting_join",
-    db.Column("petition_id", db.Integer, db.ForeignKey("petition.id", ondelete="CASCADE")),
-    db.Column("meeting_id", db.Integer, db.ForeignKey("event.id", ondelete="CASCADE"))
-)
 
 petition_committee_join = db.Table(
     "petition_committee_join",
@@ -1757,13 +1765,10 @@ class Petition(ApiResource, db.Model):
     )
     status_id = db.Column(db.Integer, db.ForeignKey("petition_status.id"))
     status = db.relationship("PetitionStatus", lazy="joined")
-
-    meetings = db.relationship(
-        "CommitteeMeeting",           
-        secondary=petition_meeting_join,
-        backref="petitions",
-        lazy="dynamic"
-    )
+   
+    def __str__(self):
+        return f"{self.title} ({self.date.strftime('%Y-%m-%d') if self.date else 'No date'})"
+    
 class PetitionStatus(db.Model):
 
     __tablename__ = "petition_status"

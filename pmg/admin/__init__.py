@@ -646,6 +646,7 @@ class CommitteeMeetingView(EventView):
     column_list = ("date", "title", "committee", "featured")
     column_labels = {
         "committee": "Committee",
+        "linked_petitions": "Petitions"
     }
     column_sortable_list = (
         "date",
@@ -663,6 +664,7 @@ class CommitteeMeetingView(EventView):
         "featured",
         "public_participation",
         "bills",
+        "linked_petitions", 
         "summary",
         "body",
         "files",
@@ -687,7 +689,10 @@ class CommitteeMeetingView(EventView):
         "body": {"class": "pmg_ckeditor"},
         "summary": {"class": "pmg_ckeditor"},
     }
-    form_ajax_refs = {"bills": {"fields": ("title",), "page_size": 50}}
+    form_ajax_refs = {
+        "bills": {"fields": ("title",), "page_size": 50},
+        "linked_petitions": {"fields": ("title",), "page_size": 50}  # Changed name here too
+    }
     inline_models = [
         InlineFile(EventFile),
         InlineCommitteeMeetingAttendance(CommitteeMeetingAttendance),
@@ -1452,24 +1457,44 @@ class PostView(ViewWithFiles, MyModelView):
 
 class PetitionView(MyModelView):
     form_columns = (
-        "house",
-        "committee", 
-        "hansard",
         "title",
-        "date",
         "issue",
         "description",
         "petitioner",
-        "status",  
-        "meetings"
+        "house",
+        "date",
+        "committees", 
+        "hansard",
+        "report",
+        "status"
     )
-    
     
     form_ajax_refs = {
         "status": {
             "fields": ("name", "description"),
             "page_size": 25,
+        },
+        "report": {
+            "fields": ("title", "file_path"),
+            "page_size": 20,
+            "placeholder": "Search for a file..."
+        },
+        "hansard": {
+            "fields": ("title", "date"),
+            "page_size": 20,
+            "placeholder": "Search for a hansard..."
         }
+    }
+    
+    column_list = (
+        "title",
+        "date", 
+        "house",
+        "status"
+    )
+    
+    column_formatters = {
+        "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees])
     }
 
 class PetitionStatusView(MyModelView):
@@ -1479,7 +1504,6 @@ class PetitionStatusView(MyModelView):
     edit_modal = True
     create_modal = True
 
-# initialise admin instance
 admin = Admin(
     app,
     name="PMG-CMS",

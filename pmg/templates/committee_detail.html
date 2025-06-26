@@ -34,6 +34,7 @@
           <li><a href="#tr" data-toggle="tab">Tabled reports</a></li>
           <li><a href="#qr" data-toggle="tab">Questions and replies</a></li>
           <li><a href="#bills" data-toggle="tab">Bills</a></li>
+          <li><a href="#petitions" data-toggle="tab">Petitions</a></li>
           {% endif %}
         </ul>
       </nav>
@@ -47,6 +48,7 @@
               <option data-target="#tr" data-toggle="tab" value="#tr">Tabled reports</option>
               <option data-target="#qr" data-toggle="tab" value="#qr">Questions and replies</option>
               <option data-target="#bills" data-toggle="tab" value="#bills">Bills</option>
+              <option data-target="#petitions" data-toggle="tab" value="#petitions">Petitions</option>
               {% endif %}
             </select>
           </div>
@@ -225,7 +227,44 @@
             </p>
           {% endif %}
         </div>
+        <div class="tab-pane fade in" id="petitions">
+          {% if committee.petitions %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Petition title</th>
+                  <th class="date">Date</th>
+                  <th>Issue</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for petition in committee.petitions|sort(attribute='date', reverse=true) %}
+                  <tr class="item">
+                    <td class="name">
+                      <a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a>
+                    </td>
+                    <td class="date">
+                      {{ petition.date|pretty_date }}
+                    </td>
+                    <td class="issue">
+                      {{ petition.issue or '-' }}
+                    </td>
+                    <td class="status">
+                      {{ petition.status.name if petition.status else '-' }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <p>
+              There are no petitions related to this committee.
+            </p>
+          {% endif %}
+        </div> <!-- /Petitions -->
       </div>
+      
     </div> <!-- /Reports -->
   {% endif %}
 

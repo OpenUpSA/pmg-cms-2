@@ -434,6 +434,23 @@ def committee_detail(committee_id):
     else:
         attendance_rank = None
 
+    cte = Committee.query.get(committee_id)
+    if cte:
+        committee_petitions = []
+        for petition in cte.petitions.all():
+            petition_data = {
+                'id': petition.id,
+                'title': petition.title,
+                'date': petition.date.isoformat() if petition.date else None,
+                'issue': petition.issue,
+                'status': {'name': petition.status.name} if petition.status else None
+            }
+            committee_petitions.append(petition_data)
+        
+        committee['petitions'] = committee_petitions
+    else:
+        committee['petitions'] = []
+
     bills = load_from_api(
         "v2/committees/%s/bills" % committee_id,
         fields=["id", "title", "status", "date_of_introduction", "code"],
@@ -460,7 +477,7 @@ def committee_detail(committee_id):
         attendance_rank=attendance_rank,
         admin_edit_url=admin_url("committee", committee_id),
         bills=bills,
-        from_page=from_page,
+        from_page=from_page
     )
 
 

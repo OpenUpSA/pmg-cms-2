@@ -705,6 +705,9 @@ class HansardView(EventView):
         "title",
         "date",
     )
+    column_labels = {
+        "linked_petitions": "Petitions"
+    }
     column_sortable_list = (
         "title",
         "house",
@@ -717,6 +720,7 @@ class HansardView(EventView):
         "house",
         "title",
         "bills",
+        "linked_petitions",
         "body",
         "files",
     )
@@ -726,7 +730,10 @@ class HansardView(EventView):
     form_widget_args = {
         "body": {"class": "pmg_ckeditor"},
     }
-    form_ajax_refs = {"bills": {"fields": ("title",), "page_size": 50}}
+    form_ajax_refs = {
+        "bills": {"fields": ("title",), "page_size": 50},
+        "linked_petitions": {"fields": ("title",), "page_size": 50}
+    }
     inline_models = [InlineFile(EventFile)]
 
 

@@ -1,4 +1,5 @@
-.bill-status-container {
+.bill-status-container,
+.petition-status-container {
   position: relative;
   line-height: 1;
   height: 155px;
@@ -120,4 +121,12 @@
   .label2 { top: 120px; left: 225px; }
   .label3 { top: 120px; left: 428px; }
   .label4 { top: 120px; left: 650px; }
+}
+
+
+.petition-status-container {
+  .label1:after { content: unset; }
+  .label2:after { content: unset; }
+  .label3:after { content: unset; }
+  .label4:after { content: unset; }
 }

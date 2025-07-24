@@ -2160,22 +2160,21 @@ ul.menu {
   }
 
   h1 {
-    font-size: 24px;
+   
     margin-bottom: 20px;
   }
 
-  h2 {
-    font-size: 18px;
-  }
+ 
 
   .petition-badge {
     display: inline-block;
-    padding: 5px;
+    padding: 5px 10px;;
     margin: 5px 0 0 0;
     border-radius: 5px;
     color: #fff;
     font-size: 12px;
-    background-color: #6998DD;
+    background-color: #5bc0de;
+    font-weight: bold;
 
   }
 
@@ -2199,27 +2198,49 @@ ul.menu {
 
   .petition-meetings-section {
     margin-top: 10px;
-    border-top: 1px solid #eee;
-
+   
     h2 {
-      margin-bottom: 20px;
+      background-color: #6495ed;
+      padding: 5px;
+      color: #fff;
+      margin-bottom: 0;
+      border-radius: 5px 5px 0 0;
+    }
+    .meetings-list {
+      border: 1px solid #6495ed;
+      border-radius: 0 0 5px 5px;
     }
     
   }
 
-  .meeting-item {
-    border: 1px solid #eee;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
-    margin-bottom: 15px;
-
-    .meeting-details a {
-      font-size: 18px;
-      display: block;
-      margin: 1em 0;
-      
+  .petition-hansards-section {
+    margin-top: 10px;
+   
+    h2 {
+      background-color: #f7c923;
+      padding: 5px;
+      color: #fff;
+      margin-bottom: 0;
+      border-radius: 5px 5px 0 0;
+    }
+    .hansards-list {
+      border: 1px solid #f7c923;
+      border-radius: 0 0 5px 5px;
     }
   }
- 
+
+  .meeting-item, .hansard-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .meeting-details a, .hansard-details a {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 5px;
+    }
+  }
 }

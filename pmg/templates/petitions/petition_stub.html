@@ -1,0 +1,54 @@
+{% if result._source %}
+  {% if result.highlight.title %}
+    {% set title = result.highlight.title|search_snippet %}
+  {% else %}
+    {% set title = result._source.title %}
+  {% endif %}
+  {% set issue = result._source.issue %}
+  {% set id = result._id %}
+  {% else %}
+  {% set title = result.title|escape %}
+  {% set issue = result.issue %}
+  {% set id = result.id %}
+  {% set date = result.date | pretty_date %}
+  {% set description = result.description %}
+  {% set status = result.status %}
+{% endif %}
+
+<div class="petition-stub">
+  <div class="row">
+    <div class="col-xs-12 col-md-9">
+      <h4><a href="/petitions/{{id}}">{{ title|safe }}</a></h4>
+      <h5>
+        <span class="type">Petition |</span>
+        {% if issue %}
+        <span class="issue">{{ issue }}</span>
+        {% endif %}
+        {% if date %}
+        <span class="date">| {{ date }}</span>
+        {% endif %}
+      </h5>
+        {% if description %}
+        <p class="description">{{ description|truncate(300, True) }}</p>
+        {% endif %}
+
+
+    </div>
+    <div class="col-xs-12 col-md-3 text-right">
+        {% if status %}
+        <span class="label label-info" style="display: inline-block; margin-top: 1.2em; margin-right: 0.5em;">{{ status.name }}</span>
+        {% endif %}
+    </div>
+    
+  </div>
+
+  {% if result.highlight %}
+  <p>
+  {% if result.highlight.description %}
+    {{ result.highlight.description|search_snippet|ellipse|safe }}
+  {% elif result.highlight.issue %}
+    {{ result.highlight.issue|search_snippet|ellipse|safe }}
+  {% endif %}
+  </p>
+  {% endif %}
+</div>

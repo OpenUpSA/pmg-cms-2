@@ -1970,9 +1970,13 @@ def blog_post(slug):
     )
 
 @app.route("/petitions/")
-@app.route("/petitions/<int:page>/")
+def petitions_home(): 
+    return render_template("petitions/index.html")
+
+@app.route("/petitions/all/")
+@app.route("/petitions/current/")
 def petitions(page=0):
-    per_page = app.config.get("RESULTS_PER_PAGE", 20)
+    per_page = 1000
     query = Petition.query.order_by(Petition.date.desc())
     count = query.count()
     petitions = query.offset(page * per_page).limit(per_page).all()
@@ -1989,8 +1993,12 @@ def petitions(page=0):
         content_type="petition",  
     )
 
-@app.route("/petition/<int:petition_id>")
-@app.route("/petition/<int:petition_id>/")
+@app.route("/petitions/explained")
+def petitions_explained():
+    return render_template("petitions/explained.html")
+
+@app.route("/petitions/<int:petition_id>")
+@app.route("/petitions/<int:petition_id>/")
 def petition_detail(petition_id):
     petition = Petition.query.get_or_404(petition_id)
     return render_template(

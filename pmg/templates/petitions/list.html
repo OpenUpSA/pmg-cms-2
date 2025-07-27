@@ -1,76 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}
-  Petitions | PMG
-{% endblock %}
-
 {% block breadcrumb %}
 <ol class="breadcrumb">
-  <li><a href="{{ url_for('petitions') }}">Petitions</a></li>
+  <li><a href="/petitions">Petitions</a></li>
 </ol>
 {% endblock %}
 
 {% block page %}
-<div class="row">
-<div class="col petitions-title">
-  <h1>
-  <i class="fa fa-file-text-o"></i> Petitions
+<h1>
+  <i class="fa fa-icon fa-file-text-o"></i>
+  Petitions
 </h1>
-</div>
-</div>
 
+<div class="space-bottom">
+  <div class="row">
+   
 
+    <div class="col-sm-{% if year_list %}5{% else %}6{% endif %}">
+      <form action="/search">
+        <input type="hidden" name="filter[type]" value="petition">
+        <div class="input-group">
+          <input type="text" name="q" placeholder="Search for petitions" class="form-control">
+          <span class="input-group-btn">
+            <button type="submit" class="btn btn-success">Search</button>
+          </span>
+        </div>
+      </form>
+    </div>
+
+   
+  </div>
+</div>
 
 {% if not results %}
-<p><i>There are no petitions to show.</i></p>
+<p><i>
+  {% if year %}
+  There are no petitions to show for the year {{ year }}.
+  {% else %}
+  There are no petitions to show.
+  {% endif %}
+</i></p>
 {% endif %}
 
-
-<div class="petitions-list-page">
-
-  {% if not results %}
-  <p><i>There are no petitions to show.</i></p>
-  {% endif %}
-
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th style="width: 40%">Title</th>
-        <th>Issue</th>
-        <th style="width: 15%">Date</th>
-        <th style="width: 10%">Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for petition in results %}
-      <tr>
-        <td>
-          <strong><a href="{{ url_for('petition_detail', petition_id=petition.id) }}">{{ petition.title }}</a></strong>
-        </td>
-        <td>{{ petition.issue }}</td>
-        <td>{{ petition.date.strftime("%d %B %Y") if petition.date else '' }}</td>
-        <td><div class="petition-badge">{{petition.status.name|capitalize}}</div></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  
-  
-  {% if num_pages > 1 %}
-  <nav>
-    <ul class="pagination">
-      {% for n in range(num_pages) %}
-        <li class="{% if page == n %}active{% endif %}">
-          <a href="{{ url }}{% if n %}/{{ n }}{% endif %}">{{ n+1 }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  </nav>
-  {% endif %}
-
-</div>
-
-
+<table class="table table-condensed table-hover table-striped content-list">
+  {% for result in results %}
+    <tr>
+      <td>{% include 'petitions/petition_stub.html' %}</td>
+    </tr>
+  {% endfor %}
+</table>
 
 {% endblock page %}
+

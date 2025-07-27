@@ -2108,6 +2108,22 @@ ul.menu {
   margin: 2em 0;
 }
 
+
+// Petitions Home
+
+.petitions-tiles {
+  margin-top: 2em;
+
+  .thumbnail,
+  .thumbnail:hover {
+    text-decoration: none;
+  }
+
+  h3 {
+    margin-top: 0px;
+  }
+}
+
 // Petitions list page
 
 .petitions-title {

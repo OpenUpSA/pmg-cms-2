@@ -1,5 +1,5 @@
 PMG API
-=======
+=======https://static.pmg.orgopenpgp.org © 2024 by Brain Zulu is licensed under CC BY 4.0￼￼
 
 The API for the PMG website is freely available at https://api.pmg.org.za. Here we document what's in the API and how to use it.
 

@@ -12,17 +12,45 @@
 {% block page %}
 <div class="petition-detail-page">
 
-  <header class="petition-header">
-    <h1>{{ petition.title }}</h1>
-    {% if petition.issue %}
-        <h3>{{ petition.issue }}</h3>
-        {% endif %}
-    {% if petition.status %}
-    <div class="petition-badge">
-      {{ petition.status.name|capitalize }}
+  <div class="row">
+    <div class="col">
+      <header class="petition-header">
+        <h1>{{ petition.title }}</h1>
+        {% if petition.issue %}
+            <h3>{{ petition.issue }}</h3>
+            {% endif %}
+        {% if petition.status %}
+      <div class="petition-badge">
+        {{ petition.status.name|capitalize }}
+      </div>
+      {% endif %}    
+      </header>
+
+     
     </div>
-    {% endif %}
-  </header>
+    
+  </div>
+
+  <div class="petition-status-container">
+          <div class="c4sa-grey c4sa-progress"></div>
+
+          {% if petition.status.id in petition_stages %}
+            <div class="c4sa-stage stage{{ petition_stages[petition.status.id] }}">
+          {% else %}
+            <div class="c4sa-stage stage1">
+          {% endif %}
+            <div class="c4sa-green c4sa-progress stage"></div>
+            <div class="c4sa-dot dot1"></div>
+            <div class="c4sa-dot dot2"></div>
+            <div class="c4sa-dot dot3"></div>
+            <div class="c4sa-dot dot4"></div>
+            <div class="process_dot"></div>
+            <div class="c4sa-label label1">Tabled</div>
+            <div class="c4sa-label label2">Under consideration in {{house}}</div>
+            <div class="c4sa-label label3">Report tabled, to be adopted in House</div>
+            <div class="c4sa-label label4">Finalised</div>
+          </div>
+        </div>
 
   <div class="row">
     <div class="col-sm-12 col-md-8">
@@ -34,18 +62,20 @@
 
       {% set committee_meetings = petition.linked_events|selectattr("type", "equalto", "committee-meeting")|list %}
       
+      {% if committee_meetings %}
       <section class="petition-meetings-section">
         <h2>Related Committee Meetings</h2>
         <div class="meetings-list">
-          {% for meeting in committee_meetings|sort(attribute="date", reverse=true) %}
+          {% for meeting in committee_meetings|sort(attribute="date") %}
           <div class="meeting-item">
-            <div class="meeting-date">
-              {{ meeting.date.strftime('%d %b %Y') if meeting.date else 'Date TBA' }}
-            </div>
+            
             <div class="meeting-details">
               <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}" class="meeting-title">
                 {{ meeting.title or meeting.type|title }}
               </a>
+              <div class="meeting-date">
+              {{ meeting.date.strftime('%d %b %Y') if meeting.date else 'Date TBA' }}
+            </div>
               {% if meeting.committee %}
               <div class="meeting-committee">
                 <strong>Committee:</strong>
@@ -56,10 +86,35 @@
           {% endfor %}
         </div>
       </section>
-      
+      {% endif %}
 
       
-      
+      {% set hansards = petition.linked_events|selectattr("type", "equalto", "plenary")|list %}
+      {% if hansards %}
+      <section class="petition-hansards-section">
+        <h2>Related Hansards</h2>
+        <div class="hansards-list">
+          {% for hansard in hansards|sort(attribute="date") %}
+          <div class="hansard-item">
+            <div class="hansard-details">
+              <a href="{{ url_for('hansard', event_id=hansard.id) }}" class="hansard-title">
+                {{ hansard.title or 'Hansard' }}
+              </a>
+              <div class="hansard-date">
+                {{ hansard.date.strftime('%d %b %Y') if hansard.date else 'Date TBA' }}
+              </div>
+              {% if hansard.house %}
+              <div class="hansard-house">
+                <strong>House:</strong>
+                {{ hansard.house.name }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
 
     </div>
     <div class="col-sm-12 col-md-4">
@@ -93,12 +148,7 @@
         </a></dd>
         {% endif %}
 
-        {% if petition.hansard %}
-        <dt>Hansard</dt>
-        <dd><a href="{{ url_for('hansard', event_id=petition.hansard.id) }}" class="btn btn-info btn-sm">
-          <i class="fa fa-file-text-o"></i> View Hansard
-        </a></dd>
-        {% endif %}
+        
       
 
         

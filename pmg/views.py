@@ -2001,9 +2001,27 @@ def petitions_explained():
 @app.route("/petitions/<int:petition_id>/")
 def petition_detail(petition_id):
     petition = Petition.query.get_or_404(petition_id)
+    
+
+    # This is not good and should be reconsidered. 
+    # It currently uses the ids as set in admin. Not a good idea.
+
+    petition_stages = {
+        3: "2",  # House (NA or NCOP)
+        2: "3",  # Report published
+        1: "4",  # Petition finalised
+    }
+
+    if petition.house == "National Assembly":
+        house = "NA"
+    else:
+        house = "NCOP"
+
     return render_template(
         "petitions/detail.html",
         petition=petition,
+        house=house,
+        petition_stages=petition_stages,
         admin_edit_url=admin_url("petition", petition.id),
         content_date=petition.date,
     )

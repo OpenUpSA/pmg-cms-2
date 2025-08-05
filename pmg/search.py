@@ -58,6 +58,7 @@ class Search:
             ("gazette", "Gazettes"),
             ("daily_schedule", "Daily Schedules"),
             ("post", "Blog Posts"),
+            ("petition", "Petitions"),
         ]
     )
 
@@ -555,6 +556,15 @@ class Transforms:
         Gazette: {"title": "title", "date": "start_date",},
         DailySchedule: {"title": "title", "fulltext": "body", "date": "start_date",},
         Post: {"title": "title", "fulltext": "body", "date": "date", "slug": "slug",},
+        Petition: {
+            "title": "title",
+            "description": "description",
+            "attachments": "issue",
+            "date": "date",
+            "petitioner": "petitioner",
+            "house_name": "house.name",
+            "house_name_short": "house.name_short",
+        },
     }
 
     @classmethod

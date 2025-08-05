@@ -49,6 +49,9 @@ webassets-external
 app.*.js
 app.*.css
 
+# Keep production config
+config/config.py
+
 config/production/alembic.ini
 pmg/static/stylesheets/
 

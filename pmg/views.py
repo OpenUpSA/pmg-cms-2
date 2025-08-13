@@ -2101,6 +2101,11 @@ def pr6_articles(section, slug):
     return render_template("pr6/article.html", section=section, article=slug)
 
 
+@app.route("/conference", methods=["GET"])
+def conference():
+    return render_template("conference/landing.html")
+
+
 @app.route("/favicon.ico")
 def favicon():
     return send_from_directory(

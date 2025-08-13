@@ -110,6 +110,11 @@
     text-align: center;
 }
 
+.conference-section .conference-hero img {
+    width: 100%;
+} 
+
+
 /* Conference Title Section */
 .conference-section .conference-title-section {
     background: white;

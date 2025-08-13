@@ -1,0 +1,674 @@
+/* Conference Page Styles - All styles scoped to .conference-section */
+
+.conference-section {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Grid System for Conference */
+.conference-section .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+}
+
+.conference-section .row [class^="col-"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-sizing: border-box;
+}
+
+.conference-section .col-1 {
+    flex: 0 0 8.33333333%;
+    max-width: 8.33333333%;
+}
+
+.conference-section .col-2 {
+    flex: 0 0 16.66666667%;
+    max-width: 16.66666667%;
+}
+
+.conference-section .col-3 {
+    flex: 0 0 25%;
+    max-width: 25%;
+    margin-bottom: 1.5em;
+}
+
+.conference-section .col-4 {
+    flex: 0 0 33.33333333%;
+    max-width: 33.33333333%;
+    margin-bottom: 1.5em;
+}
+
+.conference-section .col-5 {
+    flex: 0 0 41.66666667%;
+    max-width: 41.66666667%;
+}
+
+.conference-section .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.conference-section .col-7 {
+    flex: 0 0 58.33333333%;
+    max-width: 58.33333333%;
+}
+
+.conference-section .col-8 {
+    flex: 0 0 66.66666667%;
+    max-width: 66.66666667%;
+}
+
+.conference-section .col-9 {
+    flex: 0 0 75%;
+    max-width: 75%;
+}
+
+.conference-section .col-10 {
+    flex: 0 0 83.33333333%;
+    max-width: 83.33333333%;
+}
+
+.conference-section .col-11 {
+    flex: 0 0 91.66666667%;
+    max-width: 91.66666667%;
+}
+
+.conference-section .col-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+}
+
+/* Clearfix for Rows */
+.conference-section .row::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+@media screen and (max-width: 768px) {
+    .conference-section .row {
+        display: block;
+    }
+    
+    .conference-section .row [class^="col-"] {
+        margin-bottom: 1.5em;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+
+
+/* Hero Section */
+.conference-section .conference-hero {
+    width: 100%;
+    text-align: center;
+}
+
+/* Conference Title Section */
+.conference-section .conference-title-section {
+    background: white;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.conference-section .conference-title-section h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: #007937;
+}
+
+.conference-section .conference-title-section h2 {
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-weight: bold;
+}
+
+.conference-section .conference-title-section .conference-details {
+    margin-bottom: 2rem;
+    font-weight: bold;
+}
+
+.conference-section .conference-title-section .conference-location,
+.conference-section .conference-title-section .conference-date,
+.conference-section .conference-title-section .conference-format {
+    font-size: 1.8rem;
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.conference-section .conference-title-section .btn-outline {
+    background-color: transparent;
+    color: #007937;
+    border-color: #007937;
+}
+
+.conference-section .conference-title-section .btn-outline:hover {
+    background-color: #007937;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.conference-section .hero-overlay {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+}
+
+.conference-section .hero-content h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.conference-section .hero-content h2 {
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.conference-section .conference-date {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.8;
+}
+
+.conference-section .hero-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.conference-section .btn {
+    padding: 0.75rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: inline-block;
+}
+
+.conference-section .btn-primary {
+    background-color: #dd9702;
+    color: white;
+    border-color: #dd9702;
+}
+
+.conference-section .btn-primary:hover {
+    background-color: #c4860a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(221, 151, 2, 0.4);
+}
+
+.conference-section .btn-outline {
+    background-color: transparent;
+    color: white;
+    border-color: white;
+}
+
+.conference-section .btn-outline:hover {
+    background-color: white;
+    color: #333;
+    transform: translateY(-2px);
+}
+
+/* Navigation */
+.conference-section .conference-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    transition: all 0.3s ease;
+}
+
+.conference-section .conference-nav.sticky {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+}
+
+.conference-section .nav-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    gap: 3rem;
+}
+
+.conference-section .nav-links a {
+    text-decoration: none;
+    color: #007937;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.conference-section .nav-links a:hover {
+    color: #dd9702;
+}
+
+.conference-section .nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 50%;
+    background-color: #dd9702;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.conference-section .nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Sections */
+.conference-section section {
+    padding: 4rem 0;
+}
+
+/* Overview Section */
+.conference-section .conference-overview {
+    background: #f8f8f8;
+    padding: 4rem;
+}
+
+.conference-section .conference-overview .lead {
+    font-size: 18px;
+    font-weight: 400;
+    color: #007937;
+    margin-bottom: 1.5rem;
+}
+
+.conference-section .conference-overview p {
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.conference-section .conference-stats {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.conference-section .stat-item {
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.conference-section .stat-item:last-child {
+    border-bottom: none;
+}
+
+.conference-section .stat-item h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #007937;
+    margin-bottom: 0.5rem;
+}
+
+.conference-section .stat-item p {
+    color: #666;
+    font-weight: 500;
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Programme Section */
+.conference-section .programme-placeholder,
+.conference-section .videos-placeholder {
+    background: #f8f8f8;
+    padding: 3rem;
+    border-radius: 15px;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.conference-section .placeholder-content {
+    color: #333;
+}
+
+.conference-section .placeholder-content p {
+    font-size: 16px;
+    margin-bottom: 1rem;
+}
+
+/* Programme Framework */
+.conference-section .programme-framework {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.conference-section .programme-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.conference-section .programme-intro h3 {
+    color: #007937;
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.conference-section .programme-theme {
+    font-size: 18px;
+    color: #333;
+    font-style: italic;
+}
+
+.conference-section .programme-day {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.conference-section .day-title {
+    color: #007937;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f8f8f8;
+}
+
+.conference-section .day-schedule {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.conference-section .schedule-item {
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.conference-section .schedule-item:last-child {
+    border-bottom: none;
+}
+
+.conference-section .schedule-item.lunch {
+    background-color: #f8f8f8;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0.5rem 0;
+}
+
+.conference-section .time-slot {
+    flex-shrink: 0;
+    width: 120px;
+    font-weight: 600;
+    color: #dd9702;
+    font-size: 16px;
+}
+
+.conference-section .session-content {
+    flex: 1;
+}
+
+.conference-section .session-content p {
+    margin-bottom: 0.8rem;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.conference-section .session-content p:last-child {
+    margin-bottom: 0;
+}
+
+.conference-section .session-content strong {
+    color: #007937;
+}
+
+.conference-section .session-content em {
+    color: #666;
+    font-style: italic;
+}
+
+/* Programme Responsive */
+@media (max-width: 768px) {
+    .conference-section .schedule-item {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .conference-section .time-slot {
+        width: auto;
+        font-size: 14px;
+    }
+    
+    .conference-section .programme-day {
+        padding: 1.5rem;
+    }
+}
+
+/* Register Section */
+.conference-section .conference-register {
+    background: linear-gradient(135deg, #007937 0%, #005f2a 100%);
+    color: white;
+}
+
+.conference-section .conference-register .section-title {
+    color: white;
+}
+
+.conference-section .registration-content {
+    text-align: center;
+}
+
+.conference-section .registration-info .lead {
+    font-size: 18px;
+    margin-bottom: 2rem;
+}
+
+.conference-section .register-link-container {
+    margin: 2rem 0;
+}
+
+.conference-section .register-btn {
+    font-size: 18px;
+    padding: 1rem 3rem;
+    background-color: #dd9702;
+    color: white;
+    border-color: #dd9702;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.conference-section .register-btn:hover {
+    background-color: #c4860a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(221, 151, 2, 0.4);
+    text-decoration: none;
+    color: white;
+}
+
+/* Conference Resources Section */
+.conference-section .conference-resources {
+    background: #f8f8f8;
+}
+
+.conference-section .resources-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.conference-section .resource-item {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.conference-section .resource-item h3 {
+    color: #007937;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.conference-section .resource-item p {
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Contact Section */
+.conference-section .conference-contact {
+    background: white;
+}
+
+.conference-section .contact-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.conference-section .contact-info .lead {
+    font-size: 24px;
+    color: #007937;
+    margin-bottom: 2rem;
+}
+
+.conference-section .contact-person {
+    background: #f8f8f8;
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.conference-section .contact-person h3 {
+    color: #007937;
+    margin-bottom: 0.5rem;
+    font-size: 20px;
+}
+
+.conference-section .contact-person a {
+    color: #333;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.conference-section .contact-person a:hover {
+    text-decoration: underline;
+}
+
+.conference-section .about-organizations {
+    padding-left: 2rem;
+}
+
+.conference-section .about-organizations h3 {
+    color: #007937;
+    margin-bottom: 1.5rem;
+    font-size: 22px;
+}
+
+.conference-section .about-organizations p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.conference-section .about-organizations strong {
+    color: #007937;
+}
+
+.conference-section .section-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #007937;
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.conference-section .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #dd9702, #007937);
+    border-radius: 2px;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .conference-section .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .conference-section .hero-content h2 {
+        font-size: 1.2rem;
+    }
+    
+    .conference-section .nav-links {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .conference-section .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .conference-section .btn {
+        width: 250px;
+    }
+    
+    .conference-section section {
+        padding: 2rem 0;
+    }
+    
+    .conference-section .about-organizations {
+        padding-left: 0;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .conference-section .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .conference-section .section-title {
+        font-size: 2rem;
+    }
+    
+    .conference-section .nav-links {
+        gap: 1rem;
+        font-size: 0.95rem;
+    }
+}

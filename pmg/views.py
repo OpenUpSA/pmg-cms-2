@@ -41,7 +41,8 @@ from pmg.models import (
     CommitteeMeeting,
     CommitteeMeetingAttendance,
     House,
-    Petition
+    Petition,
+    PetitionFile
 )
 from pmg.models.resources import Committee
 
@@ -2000,7 +2001,9 @@ def petitions_explained():
 @app.route("/petitions/<int:petition_id>")
 @app.route("/petitions/<int:petition_id>/")
 def petition_detail(petition_id):
-    petition = Petition.query.get_or_404(petition_id)
+    petition = Petition.query.options(
+        db.joinedload(Petition.supporting_files).joinedload(PetitionFile.file)
+    ).get_or_404(petition_id)
     
 
     # This is not good and should be reconsidered. 

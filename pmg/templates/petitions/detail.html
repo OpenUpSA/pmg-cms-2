@@ -12,8 +12,30 @@
 {% block page %}
 <div class="petition-detail-page">
 
+  <div class="petition-status-container">
+          <div class="c4sa-grey c4sa-progress"></div>
+
+          {% if petition.status.id in petition_stages %}
+            <div class="c4sa-stage stage{{ petition_stages[petition.status.id] }}">
+          {% else %}
+            <div class="c4sa-stage stage1">
+          {% endif %}
+            <div class="c4sa-green c4sa-progress stage"></div>
+            <div class="c4sa-dot dot1"></div>
+            <div class="c4sa-dot dot2"></div>
+            <div class="c4sa-dot dot3"></div>
+            <div class="c4sa-dot dot4"></div>
+            <div class="process_dot"></div>
+            <div class="c4sa-label label1">Tabled</div>
+            <div class="c4sa-label label2">Under consideration by committee</div>
+            <div class="c4sa-label label3">Under consideration by House</div>
+            <div class="c4sa-label label4">Finalised</div>
+          </div>
+        
+      </div>
+
   <div class="row">
-    <div class="col">
+    <div class="col-sm-12">
       <header class="petition-header">
         <h1>{{ petition.title }}</h1>
         {% if petition.issue %}
@@ -31,26 +53,7 @@
     
   </div>
 
-  <div class="petition-status-container">
-          <div class="c4sa-grey c4sa-progress"></div>
-
-          {% if petition.status.id in petition_stages %}
-            <div class="c4sa-stage stage{{ petition_stages[petition.status.id] }}">
-          {% else %}
-            <div class="c4sa-stage stage1">
-          {% endif %}
-            <div class="c4sa-green c4sa-progress stage"></div>
-            <div class="c4sa-dot dot1"></div>
-            <div class="c4sa-dot dot2"></div>
-            <div class="c4sa-dot dot3"></div>
-            <div class="c4sa-dot dot4"></div>
-            <div class="process_dot"></div>
-            <div class="c4sa-label label1">Tabled</div>
-            <div class="c4sa-label label2">Under consideration in {{house}}</div>
-            <div class="c4sa-label label3">Report tabled, to be adopted in House</div>
-            <div class="c4sa-label label4">Finalised</div>
-          </div>
-        </div>
+  
 
   <div class="row">
     <div class="col-sm-12 col-md-8">
@@ -70,7 +73,7 @@
           <div class="meeting-item">
             
             <div class="meeting-details">
-              <a href="{{ url_for('committee_meeting', event_id=meeting.id) }}" class="meeting-title">
+              <a href="/committee-meeting/{{meeting.id}}" class="meeting-title">
                 {{ meeting.title or meeting.type|title }}
               </a>
               <div class="meeting-date">
@@ -79,7 +82,8 @@
               {% if meeting.committee %}
               <div class="meeting-committee">
                 <strong>Committee:</strong>
-                {{ meeting.committee.name }}</div>
+               <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id) }}">{{ meeting.committee.name }}</a>
+              </div>
               {% endif %}
             </div>
           </div>
@@ -116,10 +120,33 @@
       </section>
       {% endif %}
 
+      {% if petition.featured_file %}
+      <div class="petition-document-content">
+        <h2>Petition Document</h2>
+        
+        <div class="petition-document-wrapper" data-url="{{ petition.featured_file.url }}">
+          <div class="clearfix">
+            <a href="{{ petition.featured_file.url }}" class="btn btn-default pull-right" target="_blank">
+              <i class="fa fa-file-text"></i> Download{% if petition.featured_file.file_bytes %} ({{ petition.featured_file.file_bytes | filesizeformat }}){% endif %}
+            </a>
+            <h4>{{ petition.featured_file.title }}</h4>
+          </div>
+
+          {% if petition.featured_file.file_mime == "application/pdf" %}
+            <div class="petition-document-viewer">
+              <button class="btn btn-primary load-pdf">Show PDF{% if petition.featured_file.file_bytes %} ({{ petition.featured_file.file_bytes | filesizeformat }}){% endif %}</button>
+            </div>
+          {% else %}
+            <p class="alert alert-info"><i>A preview of this file is not available. Please download it instead.</i></p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
     </div>
     <div class="col-sm-12 col-md-4">
       <dl class="petition-info">
-        <dt>Date tabled</dt>
+        <dt>Date petition tabled</dt>
         <dd>{{ petition.date.strftime("%d %B %Y") if petition.date else 'Not specified' }}</dd>
 
         {% if petition.house %}
@@ -147,12 +174,24 @@
           <i class="fa fa-file-text"></i> View Report
         </a></dd>
         {% endif %}
-
-        
-      
-
         
       </dl>
+
+      {% set non_featured_files = petition.supporting_files|rejectattr("featured")|list %}
+      {% if non_featured_files %}
+      <div class="petition-supporting-files">
+        <h3>Supporting Documents</h3>
+        <ul class="list-unstyled">
+          {% for petition_file in non_featured_files %}
+          <li class="supporting-file-item">
+            <a href="{{ petition_file.file.url }}" target="_blank" class="btn btn-default btn-sm btn-block">
+              <i class="fa fa-file-text"></i> {{ petition_file.file.title }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
 
    
 
@@ -167,4 +206,95 @@
 
 
 </div>
+{% endblock %}
+
+{% block javascript %}
+  {{ super() }}
+  {% if petition.featured_file %}
+  <script type="text/javascript" src="/static/resources/javascript/vendor/pdfjs/pdf.js"></script>
+  <script>PDFJS.workerSrc = '/static/resources/javascript/vendor/pdfjs/pdf.worker.js';</script>
+  <script>
+    $(function() {
+      function showPetitionPdf() {
+        var wrapper = document.querySelector('.petition-document-viewer'),
+            url = document.querySelector('.petition-document-wrapper').getAttribute('data-url');
+
+        if (wrapper.getAttribute('data-loaded')) return;
+
+        console.log('Loading PDF from URL:', url + '?direct=1');
+        $(wrapper).empty();
+        $(wrapper).append('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading PDF...</div>');
+
+        // Always try with direct=1 first to avoid CORS issues
+        PDFJS.getDocument(url + '?direct=1').then(function(pdf) {
+          console.log('PDF loaded successfully with direct=1, pages:', pdf.numPages);
+          wrapper.setAttribute('data-loaded', true);
+          $(wrapper).empty();
+
+          function renderPage(page) {
+            renderPetitionPdfPage(pdf, page, wrapper);
+          }
+
+          for (var i = 1; i <= pdf.numPages; i++) {
+            pdf.getPage(i).then(renderPage);
+          }
+
+        }, function (reason) {
+          console.error('PDF loading failed with direct=1, trying direct URL:', reason);
+          
+          // Fallback to direct URL (may fail due to CORS in dev)
+          PDFJS.getDocument(url).then(function(pdf) {
+            console.log('PDF loaded successfully with direct URL, pages:', pdf.numPages);
+            wrapper.setAttribute('data-loaded', true);
+            $(wrapper).empty();
+
+            function renderPage(page) {
+              renderPetitionPdfPage(pdf, page, wrapper);
+            }
+
+            for (var i = 1; i <= pdf.numPages; i++) {
+              pdf.getPage(i).then(renderPage);
+            }
+
+          }, function (reason2) {
+            console.error('PDF loading failed completely:', reason2);
+            $(wrapper).empty();
+            $(wrapper).append('<div class="alert alert-danger">Failed to load PDF. <br><small>Error: ' + (reason2.message || 'Unknown error') + '</small></div>');
+          });
+        });
+      }
+
+      function renderPetitionPdfPage(pdf, pdfPage, wrapper) {
+        var scale, viewport, canvas;
+
+        if (wrapper.clientWidth > 800) {
+          scale = 1.25;
+        } else {
+          scale = (wrapper.clientWidth - 40) / pdfPage.getViewport(1).width;
+        }
+
+        viewport = pdfPage.getViewport(scale);
+        canvas = document.createElement('canvas');
+        wrapper.appendChild(canvas);
+
+        // Prepare canvas using PDF page dimensions
+        var context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Render PDF page into canvas context
+        pdfPage.render({
+          canvasContext: context,
+          viewport: viewport
+        });
+      }
+
+      // Show petition PDF when button clicked
+      $('.petition-document-content .load-pdf').on('click', function(e) {
+        e.preventDefault();
+        showPetitionPdf();
+      });
+    });
+  </script>
+  {% endif %}
 {% endblock %}

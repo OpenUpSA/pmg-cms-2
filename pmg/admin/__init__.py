@@ -1269,6 +1269,52 @@ class InlineBillFileForm(InlineFormAdmin):
     }
 
 
+class InlinePetitionFileForm(InlineFormAdmin):
+    """Inline file admin for petition supporting documents.
+    Allows choosing an existing file or uploading a new one.
+    """
+    
+    form_columns = (
+        "petition_id",
+        "file_id", 
+        "file",
+        "featured",
+    )
+    form_widget_args = {
+        "petition_id": {"style": "display: none;"},
+        "file_id": {"style": "display: none;"},
+    }
+    column_labels = {
+        "file": "Supporting Document",
+        "featured": "Featured (main petition document)",
+    }
+    form_ajax_refs = {
+        "file": {
+            "fields": ("title", "file_path"),
+            "page_size": 10,
+            "placeholder": 'Select a File',
+        },
+    }
+
+    def postprocess_form(self, form_class):
+        # add a field for handling the file upload
+        form_class.upload = fields.FileField("Upload a file")
+        form_class.file.kwargs["validators"] = []
+        form_class.file.kwargs["allow_blank"] = True
+        form_class.title = fields.TextField("Title")
+        return form_class
+
+    def on_model_change(self, form, model):
+        # save file, if it is present
+        file_data = request.files.get(form.upload.name)
+        if file_data:
+            # always create a new file, don't overwrite
+            model.file = File()
+            model.file.from_upload(file_data)
+        if form.title.data:
+            model.file.title = form.title.data
+
+
 class BillsView(MyModelView):
     column_list = (
         "code",
@@ -1473,14 +1519,11 @@ class PetitionView(MyModelView):
         "committees", 
         "hansard",
         "report",
+        "supporting_files",
         "status"
     )
     
     form_ajax_refs = {
-        "status": {
-            "fields": ("name", "description"),
-            "page_size": 25,
-        },
         "report": {
             "fields": ("title", "file_path"),
             "page_size": 20,
@@ -1493,6 +1536,13 @@ class PetitionView(MyModelView):
         }
     }
     
+    form_args = {
+        "status": {
+            "query_factory": lambda: db.session.query(PetitionStatus).order_by(PetitionStatus.step),
+            "get_label": lambda status: f"{status.step}: {status.name}"
+        }
+    }
+    
     column_list = (
         "title",
         "date", 
@@ -1501,12 +1551,17 @@ class PetitionView(MyModelView):
     )
     
     column_formatters = {
-        "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees])
+        "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees]),
+        "status": lambda v, c, m, n: f"{m.status.step}: {m.status.name}" if m.status else ""
     }
+    
+    inline_models = [
+        InlinePetitionFileForm(PetitionFile),
+    ]
 
 class PetitionStatusView(MyModelView):
     column_default_sort = "name"
-    column_list = ("name", "description")
+    column_list = ("name", "step", "description")
     form_columns = column_list
     edit_modal = True
     create_modal = True

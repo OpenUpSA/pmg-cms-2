@@ -1737,6 +1737,19 @@ petition_committee_join = db.Table(
     db.Column("committee_id", db.Integer, db.ForeignKey("committee.id", ondelete="CASCADE"))
 )
 
+class PetitionFile(FileLinkMixin, db.Model):
+    __tablename__ = "petition_files"
+    
+    petition_id = db.Column(db.Integer, db.ForeignKey("petition.id"), primary_key=True)
+    file_id = db.Column(db.Integer, db.ForeignKey("file.id"), primary_key=True)
+    featured = db.Column(db.Boolean, default=False, nullable=False)
+    
+    petition = db.relationship("Petition", back_populates="supporting_files")
+    file = db.relationship("File")
+    
+    def __repr__(self):
+        return f"<PetitionFile petition={self.petition_id} file={self.file_id} featured={self.featured}>"
+
 class Petition(ApiResource, db.Model):
     __tablename__ = "petition"
     id = db.Column(db.Integer, primary_key=True)
@@ -1755,8 +1768,18 @@ class Petition(ApiResource, db.Model):
     issue = db.Column(db.String(255))
     description = db.Column(db.Text())
     petitioner = db.Column(db.String(255))
+    
+    # The actual petition document file
+    petition_file_id = db.Column(db.Integer, db.ForeignKey("file.id"))
+    petition_file = db.relationship("File", foreign_keys=[petition_file_id])
+    
+    # Final report on the petition
     report_id = db.Column(db.Integer, db.ForeignKey("file.id"))
     report = db.relationship("File", foreign_keys=[report_id])
+    
+    # Supporting documents (many-to-many relationship)
+    supporting_files = db.relationship("PetitionFile", back_populates="petition", cascade="all, delete-orphan")
+    
     hansard_id = db.Column(db.Integer, db.ForeignKey("event.id"))
     hansard = db.relationship(
         "Hansard", 
@@ -1765,15 +1788,38 @@ class Petition(ApiResource, db.Model):
     )
     status_id = db.Column(db.Integer, db.ForeignKey("petition_status.id"))
     status = db.relationship("PetitionStatus", lazy="joined")
+
+    def api_files(self):
+        """Return all files associated with this petition for API responses."""
+        files = []
+        if self.petition_file:
+            files.append(self.petition_file)
+        if self.report:
+            files.append(self.report)
+        files.extend([f.file for f in self.supporting_files])
+        return files
+
+    @property
+    def featured_file(self):
+        """Return the featured petition file (main petition document) if one exists."""
+        for petition_file in self.supporting_files:
+            if petition_file.featured:
+                return petition_file.file
+        return None
    
     def __str__(self):
         return f"{self.title} ({self.date.strftime('%Y-%m-%d') if self.date else 'No date'})"
+
+
+
+
     
 class PetitionStatus(db.Model):
 
     __tablename__ = "petition_status"
 
     id = db.Column(db.Integer, primary_key=True)
+    step = db.Column(db.Integer, nullable=False)
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.Text)
    

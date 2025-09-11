@@ -2180,6 +2180,10 @@ ul.menu {
 
   .petition-description-section {
     font-size: 18px;
+    border: 1px solid #ccc;
+    padding: 1em;
+    background-color: #f8f8f8;
+    border-radius: 5px;
   }
 
   .petition-info {
@@ -2239,10 +2243,14 @@ ul.menu {
       border-bottom: none;
     }
 
-    .meeting-details a, .hansard-details a {
+    .meeting-details a.meeting-title, .hansard-details a {
       font-size: 18px;
       display: block;
       margin-bottom: 5px;
     }
+  }
+
+  .meeting-committee, .hansard-house {
+    margin-top: 10px;
   }
 }

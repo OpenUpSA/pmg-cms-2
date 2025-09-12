@@ -448,8 +448,21 @@
 }
 
 .conference-section .session-content strong {
-    color: #007937;
+    color: #333;
 }
+
+.conference-section .session-content strong.featured {
+    color: #007937;
+    font-size: 18px;
+}
+
+
+
+.conference-section .session-content.rec-content {
+}
+
+
+
 
 .conference-section .session-content em {
     color: #666;

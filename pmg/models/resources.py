@@ -1819,7 +1819,7 @@ class PetitionStatus(db.Model):
     __tablename__ = "petition_status"
 
     id = db.Column(db.Integer, primary_key=True)
-    step = db.Column(db.Integer, nullable=False)
+    step = db.Column(db.Integer, nullable=True)
     name = db.Column(db.String(50), unique=True, nullable=False)
     description = db.Column(db.Text)
    

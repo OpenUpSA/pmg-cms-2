@@ -33,10 +33,11 @@
     <div class="conference-nav sticky-top">
         <div class="container">
             <ul class="nav-links">
-                <li><a href="#programme">Programme</a></li>
-                <li><a href="#register">Register</a></li>
-                <li><a href="#resources">Conference Resources</a></li>
+                <li><a href="#overview">Overview</a></li>
                 <li><a href="#videos">Videos</a></li>
+                <li><a href="#programme">Programme</a></li>
+                <!-- <li><a href="#register">Register</a></li> -->
+                <li><a href="#resources">Conference Resources</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -71,10 +72,27 @@
             </div>
         </section>
 
+        <!-- Videos Section -->
+        <section id="videos" class="conference-videos">
+            <h2 class="section-title">Videos</h2>
+            <h3 class="section-subtitle">Highlights from the 5th Africa PEMO Conference in Pretoria</h3>
+            <div class="videos-placeholder">
+                <div class="placeholder-content">
+                    <iframe width="100%" height="500" src="https://www.youtube.com/embed/_5SBZc28Z3s?si=NHV8Tjkto5NCKRLV" title="Highlights from the 5th Africa PEMO Conference in Pretoria!z" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
         <!-- Programme Section -->
         <section id="programme" class="conference-programme">
             <h2 class="section-title">Programme</h2>
-            <div class="programme-framework">
+            <div class="programme-toggle-container">
+                <button class="programme-toggle-btn" onclick="toggleProgramme()">
+                    <span class="toggle-text">View conference programme</span>
+                    <span class="toggle-icon">▼</span>
+                </button>
+            </div>
+            <div class="programme-framework" id="programme-content" style="display: none;">
                 <div class="programme-intro">
                     <h3>Draft Programme Framework</h3>
                     <p class="programme-theme"><strong>Getting Back on Track:</strong> Renewing the Dialogue Between the Legislatures and Civil Society</p>
@@ -340,7 +358,7 @@
         </section>
 
         <!-- Register Section -->
-        <section id="register" class="conference-register">
+        <!-- <section id="register" class="conference-register">
             <h2 class="section-title">Register</h2>
             <div class="registration-content">
                 <div class="registration-info">
@@ -355,7 +373,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
 
         <!-- Conference Resources Section -->
         <section id="resources" class="conference-resources">
@@ -364,20 +382,59 @@
                 <div class="resource-item">
                     <h3>Concept Paper</h3>
                     <p>See the <a target="_blank" href="/static/resources/images/conference/concept-note.docx">concept paper</a> for detailed information about the conference objectives and framework.</p>
+                </div>
                 
+                <div class="resource-item">
+                    <h3>Conference Report</h3>
+                    <p>Read the complete <a target="_blank" href="/static/resources/docs/conference/Conference Report.pdf">conference report</a> with detailed insights and outcomes from the 5th Annual APMON Conference.</p>
+                </div>
+                
+                <div class="resource-item">
+                    <h3>Daily Summaries</h3>
+                    <p>Access detailed summaries for each day of the conference:</p>
+                    <ul>
+                        <li><a target="_blank" href="/static/resources/docs/conference/Day1.pdf">Day 1 Summary</a> - Opening sessions and keynote addresses</li>
+                        <li><a target="_blank" href="/static/resources/docs/conference/Day2.pdf">Day 2 Summary</a> - Thematic sessions and regional discussions</li>
+                        <li><a target="_blank" href="/static/resources/docs/conference/Day3.pdf">Day 3 Summary</a> - Action planning and closing remarks</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <!-- Videos Section -->
-        <section id="videos" class="conference-videos">
-            <h2 class="section-title">Videos</h2>
-            <div class="videos-placeholder">
-                <div class="placeholder-content">
-                    <p>Conference videos will be added after the event.</p>
-                </div>
+        
+
+        <!-- Gallery Section -->
+        <section id="videos" class="conference-gallery">
+            <h2 class="section-title">Gallery</h2>
+            <p style="text-align: center;">For more images see the full gallery <a href="https://pemoconference25.pixieset.com/" target="_blank">here</a>.</p>
+            <div class="masonry-gallery">
+                {% if gallery_images %}
+                    {% for image in gallery_images %}
+                    <div class="gallery-item" data-lightbox-index="{{ loop.index0 }}">
+                        <img src="/static/resources/images/conference/gallery/{{ image }}" 
+                             alt="Conference Gallery Image {{ loop.index }}"
+                             loading="lazy">
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No gallery images available at the moment.</p>
+                {% endif %}
             </div>
         </section>
+
+        <!-- Lightbox Modal -->
+        <div id="lightbox" class="lightbox">
+            <div class="lightbox-overlay"></div>
+            <div class="lightbox-content">
+                <button class="lightbox-close">&times;</button>
+                <button class="lightbox-prev">&#8249;</button>
+                <button class="lightbox-next">&#8250;</button>
+                <img id="lightbox-image" src="" alt="">
+                <div class="lightbox-counter">
+                    <span id="lightbox-current">1</span> / <span id="lightbox-total">1</span>
+                </div>
+            </div>
+        </div>
 
         <!-- Contact Section -->
         <section id="contact" class="conference-contact">
@@ -431,6 +488,205 @@
             nav.classList.remove('sticky');
         }
     });
+
+    // Masonry Gallery Implementation
+    function initMasonry() {
+        const gallery = document.querySelector('.masonry-gallery');
+        if (!gallery) return;
+
+        const items = gallery.querySelectorAll('.gallery-item');
+        if (items.length === 0) return;
+
+        // Function to calculate columns based on screen width
+        function getColumns() {
+            const width = window.innerWidth;
+            if (width >= 992) return 3;
+            if (width >= 576) return 2;
+            return 1;
+        }
+
+        function layoutMasonry() {
+            const columns = getColumns();
+            const columnWidth = gallery.offsetWidth / columns;
+            const columnHeights = new Array(columns).fill(0);
+
+            // Reset gallery styles
+            gallery.style.position = 'relative';
+            gallery.style.height = 'auto';
+
+            items.forEach((item, index) => {
+                // Find the shortest column
+                const shortestColumn = columnHeights.indexOf(Math.min(...columnHeights));
+                
+                // Position the item
+                item.style.position = 'absolute';
+                item.style.left = (shortestColumn * columnWidth) + 'px';
+                item.style.top = columnHeights[shortestColumn] + 'px';
+                item.style.width = (columnWidth - 16) + 'px'; // 16px for gap
+                
+                // Update column height
+                columnHeights[shortestColumn] += item.offsetHeight + 16; // 16px gap
+            });
+
+            // Set gallery height to tallest column
+            gallery.style.height = Math.max(...columnHeights) + 'px';
+        }
+
+        // Wait for images to load before calculating layout
+        function waitForImages() {
+            const images = gallery.querySelectorAll('img');
+            let loadedCount = 0;
+            
+            if (images.length === 0) {
+                layoutMasonry();
+                return;
+            }
+
+            images.forEach(img => {
+                if (img.complete) {
+                    loadedCount++;
+                } else {
+                    img.addEventListener('load', () => {
+                        loadedCount++;
+                        if (loadedCount === images.length) {
+                            layoutMasonry();
+                        }
+                    });
+                }
+            });
+
+            if (loadedCount === images.length) {
+                layoutMasonry();
+            }
+        }
+
+        // Initialize masonry
+        waitForImages();
+
+        // Re-layout on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(layoutMasonry, 250);
+        });
+    }
+
+    // Lightbox Implementation
+    function initLightbox() {
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxCurrent = document.getElementById('lightbox-current');
+        const lightboxTotal = document.getElementById('lightbox-total');
+        const closeBtn = document.querySelector('.lightbox-close');
+        const prevBtn = document.querySelector('.lightbox-prev');
+        const nextBtn = document.querySelector('.lightbox-next');
+        const overlay = document.querySelector('.lightbox-overlay');
+
+        if (!lightbox || galleryItems.length === 0) return;
+
+        let currentIndex = 0;
+        const images = Array.from(galleryItems).map(item => {
+            const img = item.querySelector('img');
+            return {
+                src: img.src,
+                alt: img.alt
+            };
+        });
+
+        // Set total count
+        lightboxTotal.textContent = images.length;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            lightboxImage.src = images[currentIndex].src;
+            lightboxImage.alt = images[currentIndex].alt;
+            lightboxCurrent.textContent = currentIndex + 1;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function showNext() {
+            currentIndex = (currentIndex + 1) % images.length;
+            lightboxImage.src = images[currentIndex].src;
+            lightboxImage.alt = images[currentIndex].alt;
+            lightboxCurrent.textContent = currentIndex + 1;
+        }
+
+        function showPrev() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            lightboxImage.src = images[currentIndex].src;
+            lightboxImage.alt = images[currentIndex].alt;
+            lightboxCurrent.textContent = currentIndex + 1;
+        }
+
+        // Event listeners
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', () => openLightbox(index));
+        });
+
+        closeBtn.addEventListener('click', closeLightbox);
+        overlay.addEventListener('click', closeLightbox);
+        nextBtn.addEventListener('click', showNext);
+        prevBtn.addEventListener('click', showPrev);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+
+            switch(e.key) {
+                case 'Escape':
+                    closeLightbox();
+                    break;
+                case 'ArrowLeft':
+                    showPrev();
+                    break;
+                case 'ArrowRight':
+                    showNext();
+                    break;
+            }
+        });
+
+        // Hide navigation if only one image
+        if (images.length <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+    }
+
+    // Initialize both masonry and lightbox when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        initMasonry();
+        initLightbox();
+    });
+
+    // Programme Accordion Toggle
+    function toggleProgramme() {
+        const programmeContent = document.getElementById('programme-content');
+        const toggleBtn = document.querySelector('.programme-toggle-btn');
+        const toggleText = document.querySelector('.toggle-text');
+        
+        if (programmeContent.style.display === 'none') {
+            // Show programme
+            programmeContent.style.display = 'block';
+            programmeContent.classList.add('expanded');
+            programmeContent.classList.remove('collapsed');
+            toggleBtn.classList.add('active');
+            toggleText.textContent = 'Hide conference programme';
+        } else {
+            // Hide programme
+            programmeContent.style.display = 'none';
+            programmeContent.classList.add('collapsed');
+            programmeContent.classList.remove('expanded');
+            toggleBtn.classList.remove('active');
+            toggleText.textContent = 'View conference programme';
+        }
+    }
 </script>
 
 {% endblock %}

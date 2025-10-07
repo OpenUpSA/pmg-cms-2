@@ -628,6 +628,15 @@
     position: relative;
 }
 
+.conference-section .section-subtitle {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #555;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+
 .conference-section .section-title::after {
     content: '';
     position: absolute;
@@ -689,4 +698,258 @@
         gap: 1rem;
         font-size: 0.95rem;
     }
+}
+
+/* Gallery Masonry Styles */
+.conference-section .masonry-gallery {
+    margin-top: 2rem;
+    position: relative;
+    width: 100%;
+}
+
+.conference-section .masonry-gallery .gallery-item {
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.conference-section .masonry-gallery .gallery-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.conference-section .masonry-gallery .gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+}
+
+/* Lightbox Styles */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+}
+
+.lightbox.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    cursor: pointer;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    z-index: 10001;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.lightbox-close:hover {
+    opacity: 0.7;
+}
+
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    z-index: 10001;
+}
+
+.lightbox-prev {
+    left: -80px;
+}
+
+.lightbox-next {
+    right: -80px;
+}
+
+.lightbox-prev:hover,
+.lightbox-next:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* Responsive lightbox */
+@media (max-width: 768px) {
+    .lightbox-prev {
+        left: 10px;
+    }
+    
+    .lightbox-next {
+        right: 10px;
+    }
+    
+    .lightbox-close {
+        top: 10px;
+        right: 10px;
+    }
+    
+    .lightbox-counter {
+        bottom: 10px;
+    }
+}
+
+/* Fallback for browsers without JavaScript */
+@supports not (position: absolute) {
+    .conference-section .masonry-gallery {
+        columns: 3;
+        column-gap: 1rem;
+    }
+    
+    .conference-section .masonry-gallery .gallery-item {
+        break-inside: avoid;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    @supports not (position: absolute) {
+        .conference-section .masonry-gallery {
+            columns: 2;
+        }
+    }
+}
+
+@media (max-width: 576px) {
+    @supports not (position: absolute) {
+        .conference-section .masonry-gallery {
+            columns: 1;
+        }
+    }
+}
+
+/* Programme Accordion Styles */
+.conference-section .programme-toggle-container {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.conference-section .programme-toggle-btn {
+    background: #dd9702;
+    border: 2px solid #dd9702;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    text-decoration: none;
+}
+
+.conference-section .programme-toggle-btn:hover {
+    background: #c28602;
+    border-color: #c28602;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(221, 151, 2, 0.3);
+}
+
+.conference-section .programme-toggle-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(221, 151, 2, 0.3);
+}
+
+.conference-section .programme-toggle-btn.active {
+    background: #b87502;
+    border-color: #b87502;
+    color: white;
+}
+
+.conference-section .toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 14px;
+}
+
+.conference-section .programme-toggle-btn.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.conference-section .programme-framework {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.conference-section .programme-framework.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+}
+
+.conference-section .programme-framework.expanded {
+    max-height: none;
+    opacity: 1;
 }

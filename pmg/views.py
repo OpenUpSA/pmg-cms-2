@@ -2106,7 +2106,17 @@ def pr6_articles(section, slug):
 
 @app.route("/conference", methods=["GET"])
 def conference():
-    return render_template("conference/landing.html")
+    import os
+    # Get all images from the gallery folder
+    gallery_path = os.path.join(app.static_folder, 'resources/images/conference/gallery')
+    gallery_images = []
+    
+    if os.path.exists(gallery_path):
+        for filename in os.listdir(gallery_path):
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                gallery_images.append(filename)
+    
+    return render_template("conference/landing.html", gallery_images=gallery_images)
 
 
 @app.route("/favicon.ico")

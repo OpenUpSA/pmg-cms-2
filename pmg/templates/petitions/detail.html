@@ -55,6 +55,16 @@
   display: inline-block;
   margin-right: 0.5em;
 }
+
+.petition-event h5 a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+.petition-event h5 a:hover {
+  color: #23527c;
+  text-decoration: underline;
+}
 </style>
 {% endblock %}
 
@@ -178,7 +188,8 @@
                             {% endif %}
                           </div>
                           <div class="col-xs-8 col-md-10">
-                            {% if event.__class__.__name__ == 'Event' %}
+                            {% if event.__class__.__name__ == 'CommitteeMeeting' %}
+                           
                             <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
                             {% if event.summary %}
                             <p class="text-muted"><small>{{ event.summary|truncate(200, True) }}</small></p>

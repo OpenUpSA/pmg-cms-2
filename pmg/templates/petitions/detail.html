@@ -159,9 +159,13 @@
                     <div class="media">
                       <div class="media-left">
                         {% if event.__class__.__name__ == 'Event' %}
-                        <img class="media-object stage-icon" src="/static/resources/images/bills/committee-discussion.png">
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
                         {% else %}
-                        <img class="media-object stage-icon" src="/static/resources/images/bills/bill-concourt.png">
+                        {% if event.type %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
+                        {% else %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
+                        {% endif %}
                         {% endif %}
                       </div>
                       <div class="media-body">
@@ -232,9 +236,13 @@
                     <div class="media">
                       <div class="media-left">
                         {% if event.__class__.__name__ == 'Event' %}
-                        <img class="media-object stage-icon" src="/static/resources/images/bills/committee-discussion.png">
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
                         {% else %}
-                        <img class="media-object stage-icon" src="/static/resources/images/bills/bill-concourt.png">
+                        {% if event.type %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
+                        {% else %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
+                        {% endif %}
                         {% endif %}
                       </div>
                       <div class="media-body">

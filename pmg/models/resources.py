@@ -1819,8 +1819,8 @@ class PetitionEvent(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date(), nullable=False)
-    title = db.Column(db.String(1024), nullable=False)
-    type = db.Column(db.String(100), nullable=True)  # e.g., 'committee-consideration', 'status-update', 'referral'
+    title = db.Column(db.String(1024), nullable=True)
+    type = db.Column(db.String(100), nullable=True)  
     description = db.Column(db.Text(), nullable=True)
     
     # Foreign key to petition

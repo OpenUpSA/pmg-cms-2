@@ -1811,9 +1811,60 @@ class Petition(ApiResource, db.Model):
         return f"{self.title} ({self.date.strftime('%Y-%m-%d') if self.date else 'No date'})"
 
 
-
-
+class PetitionEvent(db.Model):
+    """Events specifically related to petitions, such as committee considerations, 
+    status updates, and other milestones in a petition's lifecycle."""
     
+    __tablename__ = "petition_event"
+    
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date(), nullable=False)
+    title = db.Column(db.String(1024), nullable=True)
+    type = db.Column(db.String(100), nullable=True)  
+    description = db.Column(db.Text(), nullable=True)
+    
+    # Foreign key to petition
+    petition_id = db.Column(
+        db.Integer, 
+        db.ForeignKey("petition.id", ondelete="CASCADE"), 
+        nullable=False, 
+        index=True
+    )
+    petition = db.relationship(
+        "Petition", 
+        backref=backref("events", order_by="PetitionEvent.date", cascade="all, delete-orphan")
+    )
+    
+    # Foreign key to petition status (if status is set, then just date must appear)
+    status_id = db.Column(db.Integer, db.ForeignKey("petition_status.id"), nullable=True)
+    status = db.relationship("PetitionStatus", lazy="joined")
+    
+    # Optional committee reference for committee-related events
+    committee_id = db.Column(
+        db.Integer, 
+        db.ForeignKey("committee.id", ondelete="SET NULL"), 
+        nullable=True,
+        index=True
+    )
+    committee = db.relationship("Committee", lazy="joined")
+    
+    def __str__(self):
+        return f"{self.title} ({self.date.strftime('%Y-%m-%d')})"
+    
+    def to_dict(self, include_related=False):
+        """Convert to dictionary for API responses."""
+        return {
+            'id': self.id,
+            'date': self.date.isoformat() if self.date else None,
+            'title': self.title,
+            'type': self.type,
+            'description': self.description,
+            'status': self.status.to_dict() if self.status else None,
+            'committee': self.committee.to_dict() if self.committee else None,
+            'petition_id': self.petition_id
+        }
+
+
 class PetitionStatus(db.Model):
 
     __tablename__ = "petition_status"

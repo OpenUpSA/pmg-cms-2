@@ -2,6 +2,72 @@
 
 {% block title %}{{ petition.title }} | PMG{% endblock %}
 
+{% block head %}
+<style>
+.petition-status-1 {
+  border-color: #f5f5f5 !important;
+}
+
+.petition-status-1 .panel-heading {
+  background-color: #f5f5f5 !important;
+  border-color: #f5f5f5 !important;
+  color: #333 !important;
+}
+
+.petition-status-2 {
+  border-color: #6495ed !important;
+}
+
+.petition-status-2 .panel-heading {
+  background-color: #6495ed !important;
+  border-color: #6495ed !important;
+  color: white !important;
+}
+
+.petition-status-3 {
+  border-color: #90ee90 !important;
+}
+
+.petition-status-3 .panel-heading {
+  background-color: #90ee90 !important;
+  border-color: #90ee90 !important;
+  color: #333 !important;
+}
+
+.petition-status-4 {
+  border-color: #337ab7 !important;
+}
+
+.petition-status-4 .panel-heading {
+  background-color: #337ab7 !important;
+  border-color: #337ab7 !important;
+  color: white !important;
+}
+
+.petition-status-1 .panel-title,
+.petition-status-2 .panel-title,
+.petition-status-3 .panel-title,
+.petition-status-4 .panel-title {
+  font-weight: normal !important;
+}
+
+.label-info, .label-primary, .label-success {
+  display: inline-block;
+  margin-right: 0.5em;
+}
+
+.petition-event h5 a {
+  color: #337ab7;
+  text-decoration: none;
+}
+
+.petition-event h5 a:hover {
+  color: #23527c;
+  text-decoration: underline;
+}
+</style>
+{% endblock %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
   <li><a href="{{ url_for('petitions') }}">Petitions</a></li>
@@ -11,223 +77,322 @@
 
 {% block page %}
 <div class="petition-detail-page">
-
-  <div class="petition-status-container">
-          <div class="c4sa-grey c4sa-progress"></div>
-
-          {% if petition.status.id in petition_stages %}
-            <div class="c4sa-stage stage{{ petition_stages[petition.status.id] }}">
-          {% else %}
-            <div class="c4sa-stage stage1">
-          {% endif %}
-            <div class="c4sa-green c4sa-progress stage"></div>
-            <div class="c4sa-dot dot1"></div>
-            <div class="c4sa-dot dot2"></div>
-            <div class="c4sa-dot dot3"></div>
-            <div class="c4sa-dot dot4"></div>
-            <div class="process_dot"></div>
-            <div class="c4sa-label label1">Tabled</div>
-            <div class="c4sa-label label2">Under consideration by committee</div>
-            <div class="c4sa-label label3">Under consideration by House</div>
-            <div class="c4sa-label label4">Finalised</div>
-          </div>
-        
-      </div>
-
   <div class="row">
     <div class="col-sm-12">
       <header class="petition-header">
-        <h1>{{ petition.title }}</h1>
+        <h1>
+          <i class="fa fa-file-text-o"></i> {{ petition.title }}
+        </h1>
+
         {% if petition.issue %}
-            <h3>{{ petition.issue }}</h3>
-            {% endif %}
-        {% if petition.status %}
-      <div class="petition-badge">
-        {{ petition.status.name|capitalize }}
-      </div>
-      {% endif %}    
+        <p class="lead">{{ petition.issue }}</p>
+        {% endif %}
+
+        {% if petition.supporting_files %}
+        <ul class="list-inline bill-versions">
+          <li><h3>Supporting Documents:</h3></li>
+          {% for petition_file in petition.supporting_files %}
+          <li>
+            <a href="{{ petition_file.file.url }}" target="_blank">
+              <span class="label label-info" title="{{ petition_file.file.title }}">
+                <i class="fa fa-file-text"></i> {{ petition_file.file.title }}
+              </span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if petition.report %}
+        <ul class="list-inline bill-versions">
+          <li><h3>Reports:</h3></li>
+          <li>
+            <a href="{{ petition.report.url }}" target="_blank">
+              <span class="label label-success" title="{{ petition.report.title }}">
+                <i class="fa fa-file-text"></i> {{ petition.report.title }}
+              </span>
+            </a>
+          </li>
+        </ul>
+        {% endif %}
       </header>
 
-     
-    </div>
-    
-  </div>
-
-  
-
-  <div class="row">
-    <div class="col-sm-12 col-md-8">
       {% if petition.description %}
       <div class="petition-description-section">
         <p>{{ petition.description }}</p>
       </div>
       {% endif %}
 
-      {% set committee_meetings = petition.linked_events|selectattr("type", "equalto", "committee-meeting")|list %}
-      
-      {% if committee_meetings %}
-      <section class="petition-meetings-section">
-        <h2>Related Committee Meetings</h2>
-        <div class="meetings-list">
-          {% for meeting in committee_meetings|sort(attribute="date") %}
-          <div class="meeting-item">
-            
-            <div class="meeting-details">
-              <a href="/committee-meeting/{{meeting.id}}" class="meeting-title">
-                {{ meeting.title or meeting.type|title }}
-              </a>
-              <div class="meeting-date">
-              {{ meeting.date.strftime('%d %b %Y') if meeting.date else 'Date TBA' }}
-            </div>
-              {% if meeting.committee %}
-              <div class="meeting-committee">
-                <strong>Committee:</strong>
-               <a href="{{ url_for('committee_detail', committee_id=meeting.committee.id) }}">{{ meeting.committee.name }}</a>
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
-
-      
-      {% set hansards = petition.linked_events|selectattr("type", "equalto", "plenary")|list %}
-      {% if hansards %}
-      <section class="petition-hansards-section">
-        <h2>Related Hansards</h2>
-        <div class="hansards-list">
-          {% for hansard in hansards|sort(attribute="date") %}
-          <div class="hansard-item">
-            <div class="hansard-details">
-              <a href="{{ url_for('hansard', event_id=hansard.id) }}" class="hansard-title">
-                {{ hansard.title or 'Hansard' }}
-              </a>
-              <div class="hansard-date">
-                {{ hansard.date.strftime('%d %b %Y') if hansard.date else 'Date TBA' }}
-              </div>
-              {% if hansard.house %}
-              <div class="hansard-house">
-                <strong>House:</strong>
-                {{ hansard.house.name }}
-              </div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </section>
-      {% endif %}
-
-      {% if petition.featured_file %}
-      <div class="petition-document-content">
-        <h2>Petition Document</h2>
+      <div class="petition-status-container">
+        <div class="c4sa-grey c4sa-progress"></div>
+       
+          <div class="c4sa-stage stage{{ petition.status.step }}">
         
-        <div class="petition-document-wrapper" data-url="{{ petition.featured_file.url }}">
+          <div class="c4sa-green c4sa-progress stage"></div>
+          <div class="c4sa-dot dot1"></div>
+          <div class="c4sa-dot dot2"></div>
+          <div class="c4sa-dot dot3"></div>
+          <div class="c4sa-dot dot4"></div>
+          <div class="process_dot"></div>
+          <div class="c4sa-label label1">Tabled</div>
+          <div class="c4sa-label label2">Under consideration by committee</div>
+          <div class="c4sa-label label3">Under consideration by House</div>
+          <div class="c4sa-label label4">Finalised</div>
+        </div>
+      </div>
+
+    </div>  
+
+    <!-- Petition Progress Events -->
+    <div class="bill-events">
+  {% if status_blocks %}
+    <h2>Petition history</h2>
+    
+    {% for block in status_blocks %}
+      {% if block.status %}
+        <div class="panel panel-primary petition-status-{{ block.step }}">
+          <div class="panel-heading">
+            <h3 class="panel-title">
+              {{ block.status.name }}
+              {% if block.status.description %}
+              <span class="text-muted">- {{ block.status.description }}</span>
+              {% endif %}
+            </h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-12">
+                {% if block.events %}
+                <div class="petition-history">
+                  {% for event in block.events %}
+                  <div class="petition-event">
+                    <div class="media">
+                      <div class="media-left">
+                        {% if event.__class__.__name__ == 'Event' %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
+                        {% else %}
+                        {% if event.type %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
+                        {% else %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
+                        {% endif %}
+                        {% endif %}
+                      </div>
+                      <div class="media-body">
+                        <div class="row">
+                          <div class="col-xs-4 col-md-2 text-muted">
+                            {% if event.date %}
+                              {{ event.date.strftime('%d %b %Y') }}
+                            {% else %}
+                              Date TBA
+                            {% endif %}
+                          </div>
+                          <div class="col-xs-8 col-md-10">
+                            {% if event.__class__.__name__ == 'CommitteeMeeting' %}
+                           
+                            <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
+                            {% if event.summary %}
+                            <p class="text-muted"><small>{{ event.summary|truncate(200, True) }}</small></p>
+                            {% elif event.body %}
+                            <p class="text-muted"><small>{{ event.body|truncate(200, True) }}</small></p>
+                            {% endif %}
+                            {% else %}
+                            <h5>{{ event.title }}</h5>
+                            {% if event.description %}
+                            <p class="text-muted"><small>{{ event.description }}</small></p>
+                            {% endif %}
+                            {% endif %}
+                            
+                            <div class="event-details">
+                              {% if event.__class__.__name__ == 'Event' %}
+                              <span class="label label-info">Committee Meeting</span>
+                              {% else %}
+                              {% if event.type %}
+                              <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
+                              {% endif %}
+                              {% endif %}
+                              
+                              {% if event.committee %}
+                              <span class="label label-success">{{ event.committee.name }}</span>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% if not loop.last %}<hr>{% endif %}
+                  {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">No events recorded for this status yet.</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <!-- Events without status -->
+        {% if block.events %}
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Other Events</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="petition-history">
+                  {% for event in block.events %}
+                  <div class="petition-event">
+                    <div class="media">
+                      <div class="media-left">
+                        {% if event.__class__.__name__ == 'Event' %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
+                        {% else %}
+                        {% if event.type %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
+                        {% else %}
+                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
+                        {% endif %}
+                        {% endif %}
+                      </div>
+                      <div class="media-body">
+                        <div class="row">
+                          <div class="col-xs-4 col-md-2 text-muted">
+                            {% if event.date %}
+                              {{ event.date.strftime('%d %b %Y') }}
+                            {% else %}
+                              Date TBA
+                            {% endif %}
+                          </div>
+                          <div class="col-xs-8 col-md-10">
+                            {% if event.__class__.__name__ == 'Event' %}
+                            <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
+                            {% if event.summary %}
+                            <p class="text-muted"><small>{{ event.summary|truncate(200, True) }}</small></p>
+                            {% elif event.body %}
+                            <p class="text-muted"><small>{{ event.body|truncate(200, True) }}</small></p>
+                            {% endif %}
+                            {% else %}
+                            <h5>{{ event.title }}</h5>
+                            {% if event.description %}
+                            <p class="text-muted"><small>{{ event.description }}</small></p>
+                            {% endif %}
+                            {% endif %}
+                            
+                            <div class="event-details">
+                              {% if event.__class__.__name__ == 'Event' %}
+                              <span class="label label-info">Committee Meeting</span>
+                              {% else %}
+                              {% if event.type %}
+                              <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
+                              {% endif %}
+                              {% endif %}
+                              
+                              {% if event.committee %}
+                              <span class="label label-success">{{ event.committee.name }}</span>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {% if not loop.last %}<hr>{% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  {% else %}
+  <p class="text-muted">No events have been recorded for this petition yet.</p>
+  {% endif %}
+    </div>
+
+    <!-- Document Viewer Section -->
+    {% if petition.supporting_files %}
+    {% set sorted_files = petition.supporting_files|sort(attribute='featured', reverse=true) %}
+    <div class="petition-document-content">
+      <h2>Documents</h2>
+
+      <ul class="nav nav-tabs">
+        {% for petition_file in sorted_files %}
+        <li role="presentation" class="{% if loop.first %}active{% endif %}">
+          <a href="#petition-document-{{ loop.index }}" data-toggle="tab" role="tab">
+            <strong>{{ petition_file.file.title }}</strong>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="tab-content">
+        {% for petition_file in sorted_files %}
+        <div role="tabpanel" class="tab-pane {% if loop.first %}active{% endif %}" id="petition-document-{{ loop.index }}">
           <div class="clearfix">
-            <a href="{{ petition.featured_file.url }}" class="btn btn-default pull-right" target="_blank">
-              <i class="fa fa-file-text"></i> Download{% if petition.featured_file.file_bytes %} ({{ petition.featured_file.file_bytes | filesizeformat }}){% endif %}
+            <a href="{{ petition_file.file.url }}" target="_blank" class="btn btn-default pull-right">
+              <i class="fa fa-file-text"></i> Download{% if petition_file.file.file_bytes %} ({{ petition_file.file.file_bytes | filesizeformat }}){% endif %}
             </a>
-            <h4>{{ petition.featured_file.title }}</h4>
+            <h4>{{ petition_file.file.title }}</h4>
           </div>
 
-          {% if petition.featured_file.file_mime == "application/pdf" %}
-            <div class="petition-document-viewer">
-              <button class="btn btn-primary load-pdf">Show PDF{% if petition.featured_file.file_bytes %} ({{ petition.featured_file.file_bytes | filesizeformat }}){% endif %}</button>
-            </div>
+          {% if petition_file.file.file_mime == "application/pdf" %}
+          <div class="petition-document-wrapper" data-url="{{ petition_file.file.url }}">
+            <button class="btn btn-primary load-pdf">Show PDF{% if petition_file.file.file_bytes %} ({{ petition_file.file.file_bytes | filesizeformat }}){% endif %}</button>
+          </div>
           {% else %}
-            <p class="alert alert-info"><i>A preview of this file is not available. Please download it instead.</i></p>
+          <div class="text-center" style="padding: 40px;">
+            <p class="lead">Download doc</p>
+            <a href="{{ petition_file.file.url }}" target="_blank" class="btn btn-primary btn-lg">
+              <i class="fa fa-download"></i> Download Document{% if petition_file.file.file_bytes %} ({{ petition_file.file.file_bytes | filesizeformat }}){% endif %}
+            </a>
+          </div>
           {% endif %}
         </div>
+        {% endfor %}
       </div>
-      {% endif %}
-
     </div>
-    <div class="col-sm-12 col-md-4">
-      <dl class="petition-info">
-        <dt>Date petition tabled</dt>
-        <dd>{{ petition.date.strftime("%d %B %Y") if petition.date else 'Not specified' }}</dd>
-
-        {% if petition.house %}
-        <dt>House</dt>
-        <dd>{{ petition.house.name }}</dd>
-        {% endif %}
-
-        {% if petition.committees %}
-        <dt>Committees</dt>
-        <dd>
-          {% for committee in petition.committees %}
-            <span class="badge badge-info">{{ committee.name }}</span>
-          {% endfor %}
-        </dd>
-        {% endif %}
-
-        {% if petition.petitioner %}
-        <dt>Petitioner</dt>
-        <dd>{{ petition.petitioner }}</dd>
-        {% endif %}
-
-        {% if petition.report %}
-        <dt>Report</dt>
-        <dd><a href="{{ petition.report.url }}" target="_blank" class="btn btn-primary btn-sm">
-          <i class="fa fa-file-text"></i> View Report
-        </a></dd>
-        {% endif %}
-        
-      </dl>
-
-      {% set non_featured_files = petition.supporting_files|rejectattr("featured")|list %}
-      {% if non_featured_files %}
-      <div class="petition-supporting-files">
-        <h3>Supporting Documents</h3>
-        <ul class="list-unstyled">
-          {% for petition_file in non_featured_files %}
-          <li class="supporting-file-item">
-            <a href="{{ petition_file.file.url }}" target="_blank" class="btn btn-default btn-sm btn-block">
-              <i class="fa fa-file-text"></i> {{ petition_file.file.title }}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
-   
-
-    </div>
+    {% endif %}
 
   </div>
-
-
-
-
-
-
-
 </div>
 {% endblock %}
 
 {% block javascript %}
-  {{ super() }}
-  {% if petition.featured_file %}
-  <script type="text/javascript" src="/static/resources/javascript/vendor/pdfjs/pdf.js"></script>
-  <script>PDFJS.workerSrc = '/static/resources/javascript/vendor/pdfjs/pdf.worker.js';</script>
-  <script>
-    $(function() {
-      function showPetitionPdf() {
-        var wrapper = document.querySelector('.petition-document-viewer'),
-            url = document.querySelector('.petition-document-wrapper').getAttribute('data-url');
+{{ super() }}
+{% if petition.supporting_files %}
+<script type="text/javascript" src="/static/resources/javascript/vendor/pdfjs/pdf.js"></script>
+<script>PDFJS.workerSrc = '/static/resources/javascript/vendor/pdfjs/pdf.worker.js';</script>
+<script>
+  $(function() {
+    function showPetitionPdf(button) {
+      var tabPane = $(button).closest('.tab-pane'),
+          wrapper = tabPane.find('.petition-document-wrapper')[0],
+          url = wrapper.getAttribute('data-url');
 
-        if (wrapper.getAttribute('data-loaded')) return;
+      if (wrapper.getAttribute('data-loaded')) return;
 
-        console.log('Loading PDF from URL:', url + '?direct=1');
+      $(wrapper).empty();
+      $(wrapper).append('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading PDF...</div>');
+
+      PDFJS.getDocument(url + '?direct=1').then(function(pdf) {
+        wrapper.setAttribute('data-loaded', true);
         $(wrapper).empty();
-        $(wrapper).append('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading PDF...</div>');
 
-        // Always try with direct=1 first to avoid CORS issues
-        PDFJS.getDocument(url + '?direct=1').then(function(pdf) {
-          console.log('PDF loaded successfully with direct=1, pages:', pdf.numPages);
+        function renderPage(page) {
+          renderPetitionPdfPage(pdf, page, wrapper);
+        }
+
+        for (var i = 1; i <= pdf.numPages; i++) {
+          pdf.getPage(i).then(renderPage);
+        }
+
+      }, function (reason) {
+        
+        PDFJS.getDocument(url).then(function(pdf) {
           wrapper.setAttribute('data-loaded', true);
           $(wrapper).empty();
 
@@ -239,62 +404,51 @@
             pdf.getPage(i).then(renderPage);
           }
 
-        }, function (reason) {
-          console.error('PDF loading failed with direct=1, trying direct URL:', reason);
-          
-          // Fallback to direct URL (may fail due to CORS in dev)
-          PDFJS.getDocument(url).then(function(pdf) {
-            console.log('PDF loaded successfully with direct URL, pages:', pdf.numPages);
-            wrapper.setAttribute('data-loaded', true);
-            $(wrapper).empty();
-
-            function renderPage(page) {
-              renderPetitionPdfPage(pdf, page, wrapper);
-            }
-
-            for (var i = 1; i <= pdf.numPages; i++) {
-              pdf.getPage(i).then(renderPage);
-            }
-
-          }, function (reason2) {
-            console.error('PDF loading failed completely:', reason2);
-            $(wrapper).empty();
-            $(wrapper).append('<div class="alert alert-danger">Failed to load PDF. <br><small>Error: ' + (reason2.message || 'Unknown error') + '</small></div>');
-          });
+        }, function (reason2) {
+          $(wrapper).empty();
+          $(wrapper).append('<div class="alert alert-danger">Failed to load PDF. <br><small>Error: ' + (reason2.message || 'Unknown error') + '</small></div>');
         });
-      }
-
-      function renderPetitionPdfPage(pdf, pdfPage, wrapper) {
-        var scale, viewport, canvas;
-
-        if (wrapper.clientWidth > 800) {
-          scale = 1.25;
-        } else {
-          scale = (wrapper.clientWidth - 40) / pdfPage.getViewport(1).width;
-        }
-
-        viewport = pdfPage.getViewport(scale);
-        canvas = document.createElement('canvas');
-        wrapper.appendChild(canvas);
-
-        // Prepare canvas using PDF page dimensions
-        var context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        // Render PDF page into canvas context
-        pdfPage.render({
-          canvasContext: context,
-          viewport: viewport
-        });
-      }
-
-      // Show petition PDF when button clicked
-      $('.petition-document-content .load-pdf').on('click', function(e) {
-        e.preventDefault();
-        showPetitionPdf();
       });
+    }
+
+    function renderPetitionPdfPage(pdf, pdfPage, wrapper) {
+      var scale, viewport, canvas;
+
+      if (wrapper.clientWidth > 800) {
+        scale = 1.25;
+      } else {
+        scale = (wrapper.clientWidth - 40) / pdfPage.getViewport(1).width;
+      }
+
+      viewport = pdfPage.getViewport(scale);
+      canvas = document.createElement('canvas');
+      wrapper.appendChild(canvas);
+
+      var context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      pdfPage.render({
+        canvasContext: context,
+        viewport: viewport
+      });
+    }
+
+    $('.petition-document-content .load-pdf').on('click', function(e) {
+      e.preventDefault();
+      showPetitionPdf(this);
     });
-  </script>
-  {% endif %}
+
+    // Handle tab switching to ensure proper content display
+    $('.petition-document-content a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      // When a new tab is shown, make sure its content is visible
+      var target = $(e.target).attr("href");
+      $(target).addClass('active').siblings().removeClass('active');
+      
+      // Also update the nav tabs
+      $(e.target).parent().addClass('active').siblings().removeClass('active');
+    });
+  });
+</script>
+{% endif %}
 {% endblock %}

@@ -20,6 +20,7 @@ from flask_security.changeable import change_user_password
 from flask_security.confirmable import confirm_user
 from flask import jsonify
 from wtforms import fields
+from wtforms.fields import SelectField
 from wtforms import widgets as wtforms_widgets
 from wtforms.validators import data_required
 from sqlalchemy import func
@@ -1269,6 +1270,53 @@ class InlineBillFileForm(InlineFormAdmin):
     }
 
 
+class InlinePetitionEventForm(InlineFormAdmin):
+    """Inline event admin for petition events.
+    Allows adding timeline events to petitions.
+    """
+    
+    form_columns = (
+        "id",
+        "status",
+        "date",
+        "title",
+        "type",
+        "description",
+    )
+    
+    form_args = {
+        "date": {
+            "validators": [data_required()],
+            "description": "Date when this event occurred"
+        },
+        "title": {
+            "description": "Brief title describing what happened"
+        },
+        "type": {
+            "choices": [
+                ('', 'Select type...'),
+                ('introduced', 'Introduced'),
+                ('meeting', 'Meeting'),
+                ('document', 'Document'),
+                ('finalised', 'Finalised'),
+                ('other', 'Other')
+            ]
+        },
+        "description": {
+            "description": "Detailed description of the event"
+        },
+        "status": {
+            "query_factory": lambda: db.session.query(PetitionStatus).order_by(PetitionStatus.step),
+            "get_label": lambda status: f"{status.step}: {status.name}",
+            "description": "Set petition status if this event changes the status"
+        }
+    }
+    
+    form_overrides = {
+        'type': SelectField
+    }
+
+
 class InlinePetitionFileForm(InlineFormAdmin):
     """Inline file admin for petition supporting documents.
     Allows choosing an existing file or uploading a new one.
@@ -1512,29 +1560,15 @@ class PetitionView(MyModelView):
     form_columns = (
         "title",
         "issue",
+        "date",
         "description",
         "petitioner",
-        "house",
-        "date",
-        "committees", 
-        "hansard",
-        "report",
         "supporting_files",
-        "status"
+        "status",
+        "events"
     )
     
-    form_ajax_refs = {
-        "report": {
-            "fields": ("title", "file_path"),
-            "page_size": 20,
-            "placeholder": "Search for a file..."
-        },
-        "hansard": {
-            "fields": ("title", "date"),
-            "page_size": 20,
-            "placeholder": "Search for a hansard..."
-        }
-    }
+    form_ajax_refs = {}
     
     form_args = {
         "status": {
@@ -1547,15 +1581,18 @@ class PetitionView(MyModelView):
         "title",
         "date", 
         "house",
-        "status"
+        "status",
+        "events_count"
     )
     
     column_formatters = {
         "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees]),
-        "status": lambda v, c, m, n: f"{m.status.step}: {m.status.name}" if m.status else ""
+        "status": lambda v, c, m, n: f"{m.status.step}: {m.status.name}" if m.status else "",
+        "events_count": lambda v, c, m, n: len(m.events) if m.events else 0
     }
     
     inline_models = [
+        InlinePetitionEventForm(PetitionEvent),
         InlinePetitionFileForm(PetitionFile),
     ]
 

@@ -23,6 +23,9 @@ from pmg.models import (
     Event,
     QuestionReply,
     DailySchedule,
+    Petition,
+    PetitionEvent,
+    PetitionStatus,
 )
 from pmg.utils import externalise_url
 
@@ -438,3 +441,59 @@ class BillFileSchema(ma.ModelSchema):
         fields = ("id", "file_id", "file")
 
     file = fields.Nested("FileSchema")
+
+
+class PetitionStatusSchema(ma.ModelSchema):
+    class Meta:
+        model = PetitionStatus
+        fields = ("id", "step", "name", "description")
+
+
+class PetitionEventSchema(ma.ModelSchema):
+    class Meta:
+        model = PetitionEvent
+        fields = (
+            "id",
+            "date",
+            "title",
+            "type",
+            "description",
+            "status",
+            "committee",
+            "petition_id",
+        )
+
+    status = fields.Nested("PetitionStatusSchema")
+    committee = fields.Nested("CommitteeSchema")
+
+
+class PetitionSchema(ma.ModelSchema):
+    class Meta:
+        model = Petition
+        fields = (
+            "id",
+            "title",
+            "date",
+            "house",
+            "committees",
+            "issue",
+            "description",
+            "petitioner",
+            "petition_file",
+            "report",
+            "supporting_files",
+            "hansard",
+            "status",
+            "events",
+            "created_at",
+            "updated_at",
+        )
+
+    house = fields.Nested("HouseSchema")
+    committees = fields.Nested("CommitteeSchema", many=True)
+    petition_file = fields.Nested("FileSchema")
+    report = fields.Nested("FileSchema")
+    supporting_files = fields.Nested("FileSchema", many=True, attribute="api_files")
+    hansard = fields.Nested("EventSchema")
+    status = fields.Nested("PetitionStatusSchema")
+    events = fields.Nested("PetitionEventSchema", many=True)

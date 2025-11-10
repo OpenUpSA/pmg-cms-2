@@ -1560,6 +1560,7 @@ class PetitionView(MyModelView):
     form_columns = (
         "title",
         "issue",
+        "date",
         "description",
         "petitioner",
         "supporting_files",

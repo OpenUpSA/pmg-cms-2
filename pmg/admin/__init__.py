@@ -701,6 +701,10 @@ class CommitteeMeetingView(EventView):
 
 
 class HansardView(EventView):
+    def __init__(self, *args, **kwargs):
+        print("DEBUG: HansardView constructor called")
+        super().__init__(*args, **kwargs)
+    
     column_list = (
         "house",
         "title",
@@ -728,6 +732,82 @@ class HansardView(EventView):
     form_args = {
         "house": {"validators": [data_required()]},
     }
+
+    def on_model_change(self, form, model, is_created):
+        """This is called for both create and update operations."""
+        print(f"DEBUG on_model_change: is_created={is_created}, model.id={getattr(model, 'id', 'NEW')}")
+        print(f"DEBUG: linked_petitions count: {len(model.linked_petitions)}")
+        
+        # Call the parent method
+        super().on_model_change(form, model, is_created)
+        
+        # Only handle updates, not creates (petition events should be created after hansard exists)
+        if not is_created and model.id:
+            self.handle_petition_events(model)
+
+    def update_model(self, form, model):
+        print("DEBUG: HansardView update_model called")
+        return super().update_model(form, model)
+
+    def handle_petition_events(self, model):
+        """Create petition events for linked petitions."""
+        try:
+            print(f"DEBUG handle_petition_events: Processing hansard {model.id}")
+            
+            # Get current linked petitions
+            current_petition_ids = set(p.id for p in model.linked_petitions)
+            print(f"DEBUG: Current petition IDs: {current_petition_ids}")
+            
+            # For each linked petition, ensure there's a system-generated event
+            for petition_id in current_petition_ids:
+                petition = Petition.query.get(petition_id)
+                if petition:
+                    # Check if we already have a system-generated event for this combination
+                    existing_event = PetitionEvent.query.filter_by(
+                        petition_id=petition.id,
+                        system_generated=True
+                    ).filter(
+                        PetitionEvent.description.contains(f'hansard-{model.id}')
+                    ).first()
+                    
+                    if not existing_event:
+                        # Create system-generated petition event
+                        hansard_event = PetitionEvent(
+                            petition_id=petition.id,
+                            date=model.date.date() if model.date else datetime.date.today(),
+                            title=f"Parliamentary discussion - {model.title}" if model.title else "Parliamentary discussion",
+                            type="hansard_discussion",
+                            description=f"Petition discussed in parliamentary session. Hansard reference: hansard-{model.id}",
+                            system_generated=True
+                        )
+                        db.session.add(hansard_event)
+                        print(f"DEBUG: Created petition event for petition {petition.id}")
+                    else:
+                        print(f"DEBUG: Event already exists for petition {petition.id}")
+            
+            # Remove system-generated events for petitions that are no longer linked
+            all_system_events = PetitionEvent.query.filter_by(
+                system_generated=True
+            ).filter(
+                PetitionEvent.description.contains(f'hansard-{model.id}')
+            ).all()
+            
+            for event in all_system_events:
+                if event.petition_id not in current_petition_ids:
+                    db.session.delete(event)
+                    print(f"DEBUG: Deleted petition event {event.id} for petition {event.petition_id}")
+            
+            # Commit the changes
+            db.session.commit()
+            print("DEBUG: Successfully committed petition event changes")
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"DEBUG: Error in handle_petition_events: {e}")
+            import traceback
+            traceback.print_exc()
+            flash(f"Warning: Failed to create/update petition events: {e}", 'warning')
+
     form_widget_args = {
         "body": {"class": "pmg_ckeditor"},
     }
@@ -1282,7 +1362,46 @@ class InlinePetitionEventForm(InlineFormAdmin):
         "title",
         "type",
         "description",
+        "system_generated",
     )
+    
+    # Display system_generated as read-only
+    form_widget_args = {
+        'system_generated': {
+            'readonly': True,
+            'disabled': True
+        }
+    }
+    
+    def on_form_prefill(self, form, id):
+        """Make system-generated events read-only by disabling form fields."""
+        if id:
+            # Get the petition event object
+            petition_event = self.model.query.get(id)
+            if petition_event and petition_event.system_generated:
+                # Make all fields read-only for system-generated events
+                for field_name in form._fields:
+                    if hasattr(form._fields[field_name], 'render_kw'):
+                        if form._fields[field_name].render_kw is None:
+                            form._fields[field_name].render_kw = {}
+                        form._fields[field_name].render_kw['readonly'] = True
+                        form._fields[field_name].render_kw['disabled'] = True
+                    elif hasattr(form._fields[field_name], 'widget'):
+                        # For select fields and other widgets
+                        if hasattr(form._fields[field_name].widget, 'input_type'):
+                            form._fields[field_name].render_kw = {'readonly': True, 'disabled': True}
+    
+    def is_editable(self, model):
+        """Prevent editing of system-generated petition events."""
+        if hasattr(model, 'system_generated') and model.system_generated:
+            return False
+        return True
+    
+    def can_delete(self, model):
+        """Prevent deletion of system-generated petition events."""
+        if hasattr(model, 'system_generated') and model.system_generated:
+            return False
+        return True
     
     form_args = {
         "date": {
@@ -1299,6 +1418,7 @@ class InlinePetitionEventForm(InlineFormAdmin):
                 ('meeting', 'Meeting'),
                 ('document', 'Document'),
                 ('finalised', 'Finalised'),
+                ('hansard_discussion', 'Parliamentary Discussion'),
                 ('other', 'Other')
             ]
         },
@@ -1309,6 +1429,9 @@ class InlinePetitionEventForm(InlineFormAdmin):
             "query_factory": lambda: db.session.query(PetitionStatus).order_by(PetitionStatus.step),
             "get_label": lambda status: f"{status.step}: {status.name}",
             "description": "Set petition status if this event changes the status"
+        },
+        "system_generated": {
+            "description": "Automatically generated from parliamentary discussions (hansards)"
         }
     }
     

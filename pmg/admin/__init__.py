@@ -1362,6 +1362,7 @@ class InlinePetitionEventForm(InlineFormAdmin):
         "title",
         "type",
         "description",
+        "committee_report",
         "system_generated",
     )
     
@@ -1370,7 +1371,16 @@ class InlinePetitionEventForm(InlineFormAdmin):
         'system_generated': {
             'readonly': True,
             'disabled': True
+        },
+        'committee_report': {
+            'placeholder': 'Select a Committee Report',
         }
+    }
+    form_ajax_refs = {
+        "committee_report": {
+            "fields": ("title",),
+            "page_size": 25,
+        },
     }
     
     def on_form_prefill(self, form, id):
@@ -1417,6 +1427,7 @@ class InlinePetitionEventForm(InlineFormAdmin):
                 ('introduced', 'Introduced'),
                 ('meeting', 'Meeting'),
                 ('document', 'Document'),
+                ('report', 'Report'),
                 ('finalised', 'Finalised'),
                 ('hansard_discussion', 'Parliamentary Discussion'),
                 ('other', 'Other')
@@ -1432,6 +1443,9 @@ class InlinePetitionEventForm(InlineFormAdmin):
         },
         "system_generated": {
             "description": "Automatically generated from parliamentary discussions (hansards)"
+        },
+        "committee_report": {
+            "description": "Link to a committee report if relevant"
         }
     }
     

@@ -2155,6 +2155,18 @@ ul.menu {
 // Petition detail page
 .petition-detail-page {
 
+  .petition-document-content .tab-content {
+    padding: 2em;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 600px;
+    overflow-y: scroll
+  }
+
+  .petition-document-wrapper {
+    margin-top: 1em;
+  }
+
   .petition-header {
     margin-bottom:20px;
   }

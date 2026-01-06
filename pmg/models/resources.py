@@ -1948,6 +1948,7 @@ class PetitionStatus(db.Model):
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
     from pmg.search import Search
+    from pyelasticsearch.exceptions import InvalidJsonResponseError, Timeout
 
     searcher = Search()
 
@@ -1963,8 +1964,10 @@ def on_models_changed(sender, changes):
             )
 
             if change == "delete":
-                # deleted
-                searcher.delete_obj(obj.__class__, obj.id)
+                try:
+                    searcher.delete_obj(obj.__class__, obj.id)
+                except (InvalidJsonResponseError, Timeout) as e:
+                    logger.error(f"ES error during delete indexing for {obj}: {e}")
             else:
                 # updated or inserted
 
@@ -1974,6 +1977,8 @@ def on_models_changed(sender, changes):
                     # the object is stale
                     obj = s.query(obj.__class__).get(obj.id)
                     searcher.add_obj(obj)
+                except (InvalidJsonResponseError, Timeout) as e:
+                    logger.error(f"ES error during add/update indexing for {obj}: {e}")
                 finally:
                     s.close()
 

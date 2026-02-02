@@ -1696,6 +1696,7 @@ class PostView(ViewWithFiles, MyModelView):
 class PetitionView(MyModelView):
     form_columns = (
         "title",
+        "house",
         "issue",
         "date",
         "description",

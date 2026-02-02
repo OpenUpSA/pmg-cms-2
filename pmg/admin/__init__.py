@@ -1357,7 +1357,6 @@ class InlinePetitionEventForm(InlineFormAdmin):
     
     form_columns = (
         "id",
-        "status",
         "date",
         "title",
         "type",
@@ -1435,11 +1434,6 @@ class InlinePetitionEventForm(InlineFormAdmin):
         },
         "description": {
             "description": "Detailed description of the event"
-        },
-        "status": {
-            "query_factory": lambda: db.session.query(PetitionStatus).order_by(PetitionStatus.step),
-            "get_label": lambda status: f"{status.step}: {status.name}",
-            "description": "Set petition status if this event changes the status"
         },
         "system_generated": {
             "description": "Automatically generated from parliamentary discussions (hansards)"

@@ -450,54 +450,8 @@ class Event(ApiResource, db.Model):
                 )
                 self.bills.append(bill)
 
-    def create_petition_events(self):
-        """Create PetitionEvent records for all linked petitions when a petition is linked to this event (hansard)."""
-        from .resources import PetitionEvent  # Import here to avoid circular imports
-        
-        for petition in self.linked_petitions:
-            # Check if we already have a system-generated event for this hansard-petition combination
-            existing_event = PetitionEvent.query.filter_by(
-                petition_id=petition.id,
-                system_generated=True
-            ).filter(
-                PetitionEvent.description.contains(f'hansard-{self.id}')
-            ).first()
-            
-            if not existing_event:
-                # Create a new petition event for this hansard discussion
-                hansard_event = PetitionEvent(
-                    petition_id=petition.id,
-                    date=self.date.date() if self.date else datetime.date.today(),
-                    title=f"Parliamentary discussion - {self.title}" if self.title else "Parliamentary discussion",
-                    type="hansard_discussion",
-                    description=f"Petition discussed in parliamentary session. Hansard reference: hansard-{self.id}",
-                    system_generated=True
-                )
-                
-                db.session.add(hansard_event)
-                logger.info(
-                    "Auto-creating petition event for petition '%s' linked to hansard '%s' (%s)"
-                    % (petition.id, self.title, self.id)
-                )
-
-    def remove_petition_events(self, petition_id):
-        """Remove system-generated PetitionEvent records when a petition is unlinked from this event."""
-        from .resources import PetitionEvent  # Import here to avoid circular imports
-        
-        # Find and remove system-generated events for this hansard-petition combination
-        system_events = PetitionEvent.query.filter_by(
-            petition_id=petition_id,
-            system_generated=True
-        ).filter(
-            PetitionEvent.description.contains(f'hansard-{self.id}')
-        ).all()
-        
-        for event in system_events:
-            db.session.delete(event)
-            logger.info(
-                "Auto-removing petition event for petition '%s' unlinked from hansard '%s' (%s)"
-                % (petition_id, self.title, self.id)
-            )
+    # Removed create_petition_events and remove_petition_events methods
+    # to prevent system-generated events when linking petitions to hansards
 
     def __str__(self):
         if self.type == "committee-meeting":

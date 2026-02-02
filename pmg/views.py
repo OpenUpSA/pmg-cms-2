@@ -42,7 +42,8 @@ from pmg.models import (
     CommitteeMeetingAttendance,
     House,
     Petition,
-    PetitionFile
+    PetitionFile,
+    Hansard
 )
 from pmg.models.resources import Committee
 
@@ -1206,6 +1207,9 @@ def hansard(event_id):
     event = load_from_api("hansard", event_id)
     audio, related_docs = classify_attachments(event.get("files", []))
 
+    # Load the hansard object from database to get linked petitions
+    hansard_obj = Hansard.query.get(event_id)
+
     return render_template(
         "hansard_detail.html",
         event=event,
@@ -1214,6 +1218,7 @@ def hansard(event_id):
         content_date=event["date"],
         admin_edit_url=admin_url("hansard", event_id),
         SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"],
+        linked_petitions=hansard_obj.linked_petitions if hansard_obj else []
     )
 
 

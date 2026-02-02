@@ -741,72 +741,13 @@ class HansardView(EventView):
         # Call the parent method
         super().on_model_change(form, model, is_created)
         
-        # Only handle updates, not creates (petition events should be created after hansard exists)
-        if not is_created and model.id:
-            self.handle_petition_events(model)
+        # Removed handle_petition_events call - no longer creating system-generated events
 
     def update_model(self, form, model):
         print("DEBUG: HansardView update_model called")
         return super().update_model(form, model)
 
-    def handle_petition_events(self, model):
-        """Create petition events for linked petitions."""
-        try:
-            print(f"DEBUG handle_petition_events: Processing hansard {model.id}")
-            
-            # Get current linked petitions
-            current_petition_ids = set(p.id for p in model.linked_petitions)
-            print(f"DEBUG: Current petition IDs: {current_petition_ids}")
-            
-            # For each linked petition, ensure there's a system-generated event
-            for petition_id in current_petition_ids:
-                petition = Petition.query.get(petition_id)
-                if petition:
-                    # Check if we already have a system-generated event for this combination
-                    existing_event = PetitionEvent.query.filter_by(
-                        petition_id=petition.id,
-                        system_generated=True
-                    ).filter(
-                        PetitionEvent.description.contains(f'hansard-{model.id}')
-                    ).first()
-                    
-                    if not existing_event:
-                        # Create system-generated petition event
-                        hansard_event = PetitionEvent(
-                            petition_id=petition.id,
-                            date=model.date.date() if model.date else datetime.date.today(),
-                            title=f"Parliamentary discussion - {model.title}" if model.title else "Parliamentary discussion",
-                            type="hansard_discussion",
-                            description=f"Petition discussed in parliamentary session. Hansard reference: hansard-{model.id}",
-                            system_generated=True
-                        )
-                        db.session.add(hansard_event)
-                        print(f"DEBUG: Created petition event for petition {petition.id}")
-                    else:
-                        print(f"DEBUG: Event already exists for petition {petition.id}")
-            
-            # Remove system-generated events for petitions that are no longer linked
-            all_system_events = PetitionEvent.query.filter_by(
-                system_generated=True
-            ).filter(
-                PetitionEvent.description.contains(f'hansard-{model.id}')
-            ).all()
-            
-            for event in all_system_events:
-                if event.petition_id not in current_petition_ids:
-                    db.session.delete(event)
-                    print(f"DEBUG: Deleted petition event {event.id} for petition {event.petition_id}")
-            
-            # Commit the changes
-            db.session.commit()
-            print("DEBUG: Successfully committed petition event changes")
-            
-        except Exception as e:
-            db.session.rollback()
-            print(f"DEBUG: Error in handle_petition_events: {e}")
-            import traceback
-            traceback.print_exc()
-            flash(f"Warning: Failed to create/update petition events: {e}", 'warning')
+    # Removed handle_petition_events method - no longer creating system-generated events
 
     form_widget_args = {
         "body": {"class": "pmg_ckeditor"},
@@ -1368,6 +1309,13 @@ class InlinePetitionEventForm(InlineFormAdmin):
         "committee_report",
         "description",
     )
+    
+    def get_query(self):
+        """Override to filter out system-generated events."""
+        return self.session.query(self.model).filter(
+            (self.model.system_generated == False) | 
+            (self.model.system_generated == None)
+        )
     
     # Display committee_report with description
     form_args = {

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
+{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills, related_petitions %}
 
 {% block title %}Hansard | {{ event.title }} | PMG{% endblock %}
 
@@ -58,6 +58,10 @@
 
       {% if event.bills %}
         {{ related_bills(event.bills) }}
+      {% endif %}
+
+      {% if linked_petitions %}
+        {{ related_petitions(linked_petitions) }}
       {% endif %}
     </div>
 

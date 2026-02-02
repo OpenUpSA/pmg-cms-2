@@ -196,6 +196,13 @@
                             {% elif event.body %}
                             <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
                             {% endif %}
+                            {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
+                            <h5><a href="/hansard/{{ event.id }}">{{ event.title }}</a></h5>
+                            {% if event.summary %}
+                            <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
+                            {% elif event.body %}
+                            <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
+                            {% endif %}
                             {% else %}
                             {% if event.type == 'report' and event.committee_report %}
                             <h5><a href="/tabled-committee-report/{{ event.committee_report.id }}">{{ event.title }}</a></h5>
@@ -210,6 +217,8 @@
                             <div class="event-details">
                               {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
                               <span class="label label-info">Committee Meeting</span>
+                              {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
+                              <span class="label label-info">Hansard</span>
                               {% else %}
                               {% if event.type %}
                               <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>

@@ -197,7 +197,11 @@
                             <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
                             {% endif %}
                             {% else %}
+                            {% if event.type == 'report' and event.committee_report %}
+                            <h5><a href="/tabled-committee-report/{{ event.committee_report.id }}">{{ event.title }}</a></h5>
+                            {% else %}
                             <h5>{{ event.title }}</h5>
+                            {% endif %}
                             {% if event.description %}
                             <p class="text-muted"><small>{{ event.description }}</small></p>
                             {% endif %}

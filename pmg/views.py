@@ -855,6 +855,12 @@ def committee_meeting(event_id):
             + "."
         )
 
+    # Find petitions that are linked to this committee meeting
+    from pmg.models.resources import Petition
+    related_petitions = db.session.query(Petition).filter(
+        Petition.linked_events.any(id=event_id)
+    ).all()
+
     return render_template(
         "committee_meeting.html",
         event=event,
@@ -863,6 +869,7 @@ def committee_meeting(event_id):
         related_docs=related_docs,
         attendance=attendance,
         premium_committees=premium_committees,
+        related_petitions=related_petitions,
         content_date=event["date"],
         social_summary=social_summary,
         admin_edit_url=admin_url("committee-meeting", event_id),
@@ -934,9 +941,21 @@ def tabled_committee_report(tabled_committee_report_id):
         "tabled-committee-report", tabled_committee_report_id
     )
     logger.debug(tabled_committee_report)
+    
+    # Find petitions that reference this committee report
+    from pmg.models.resources import Petition, PetitionEvent
+    related_petitions = db.session.query(Petition).join(PetitionEvent).filter(
+        PetitionEvent.committee_report_id == tabled_committee_report_id
+    ).distinct().all()
+    
+    logger.debug(f"Found {len(related_petitions)} related petitions for report {tabled_committee_report_id}")
+    for p in related_petitions:
+        logger.debug(f"Related petition: {p.id} - {p.title}")
+    
     return render_template(
         "tabled_committee_report_detail.html",
         tabled_committee_report=tabled_committee_report,
+        related_petitions=related_petitions,
         content_date=tabled_committee_report["start_date"],
         admin_edit_url=admin_url("tabled-committee-report", tabled_committee_report_id),
     )
@@ -2006,7 +2025,9 @@ def petition_detail(petition_id):
     ).get_or_404(petition_id)
 
     # Sort all events by date, handling both datetime and date objects
-    all_events = list(petition.events) + list(petition.linked_events)
+    # Show manual petition events + linked committee meetings
+    manual_events = [event for event in petition.events if not event.system_generated]
+    all_events = manual_events + list(petition.linked_events)
     
     def get_sort_date(event):
         if event.date is None:

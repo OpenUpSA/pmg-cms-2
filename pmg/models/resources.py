@@ -1912,7 +1912,11 @@ class PetitionEvent(db.Model):
         nullable=True,
         index=True
     )
-    committee_report = db.relationship("TabledCommitteeReport", lazy="joined")
+    committee_report = db.relationship(
+        "TabledCommitteeReport", 
+        backref=backref("petition_events", lazy="dynamic"),
+        lazy="joined"
+    )
     
     def __str__(self):
         return f"{self.title} ({self.date.strftime('%Y-%m-%d')})"

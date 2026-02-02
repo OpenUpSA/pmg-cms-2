@@ -19,7 +19,7 @@
 {% block page %}
 <div class="row">
   <div class="col-sm-8">
-    <h1><i class="fa fa-briefcase"></i> {{ tabled_committee_report.title }}</h1>
+    <h1><i class="fa fa-file-text-o"></i> {{ tabled_committee_report.title }}</h1>
 
     {% if tabled_committee_report.committee %}
     <h4><a href="/committee/{{tabled_committee_report.committee.id}}">{{ tabled_committee_report.committee.name }}</a></h4>
@@ -30,6 +30,27 @@
 
   <div class="col-sm-4">
     {{ attachments_panel("Documents", tabled_committee_report.files, 'fa-file-pdf-o') }}
+    
+    {% if related_petitions %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-file-text-o"></i> Related Petitions</h3>
+      </div>
+      <div class="list-group" style="margin-bottom: 0;">
+        {% for petition in related_petitions %}
+        <a href="{{ url_for('petition_detail', petition_id=petition.id) }}" class="list-group-item">
+          <h4 class="list-group-item-heading">{{ petition.title }}</h4>
+          {% if petition.issue %}
+          <p class="list-group-item-text">{{ petition.issue|truncate(100, True) }}</p>
+          {% endif %}
+          {% if petition.house %}
+          <small class="text-muted">{{ petition.house.name }}</small>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 

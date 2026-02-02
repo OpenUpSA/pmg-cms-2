@@ -1170,11 +1170,6 @@ class PolicyDocumentView(ViewWithFiles, MyModelView):
 
 
 class TabledCommitteeReportView(ViewWithFiles, MyModelView):
-    column_list = (
-        "committee",
-        "title",
-        "start_date",
-    )
     column_default_sort = ("start_date", True)
     column_searchable_list = ("title",)
     form_widget_args = {
@@ -1183,11 +1178,21 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     form_columns = (
         "committee",
         "title",
-        "start_date",
+        "start_date", 
         "body",
         "files",
     )
-    inline_models = [InlineFile(TabledCommitteeReportFile)]
+    
+    # Regular column list 
+    column_list = (
+        "committee",
+        "title",
+        "start_date",
+    )
+    
+    inline_models = [
+        InlineFile(TabledCommitteeReportFile),
+    ]
 
 
 class EmailTemplateView(MyModelView):
@@ -1360,58 +1365,11 @@ class InlinePetitionEventForm(InlineFormAdmin):
         "date",
         "title",
         "type",
-        "description",
         "committee_report",
-        "system_generated",
+        "description",
     )
     
-    # Display system_generated as read-only
-    form_widget_args = {
-        'system_generated': {
-            'readonly': True,
-            'disabled': True
-        },
-        'committee_report': {
-            'placeholder': 'Select a Committee Report',
-        }
-    }
-    form_ajax_refs = {
-        "committee_report": {
-            "fields": ("title",),
-            "page_size": 25,
-        },
-    }
-    
-    def on_form_prefill(self, form, id):
-        """Make system-generated events read-only by disabling form fields."""
-        if id:
-            # Get the petition event object
-            petition_event = self.model.query.get(id)
-            if petition_event and petition_event.system_generated:
-                # Make all fields read-only for system-generated events
-                for field_name in form._fields:
-                    if hasattr(form._fields[field_name], 'render_kw'):
-                        if form._fields[field_name].render_kw is None:
-                            form._fields[field_name].render_kw = {}
-                        form._fields[field_name].render_kw['readonly'] = True
-                        form._fields[field_name].render_kw['disabled'] = True
-                    elif hasattr(form._fields[field_name], 'widget'):
-                        # For select fields and other widgets
-                        if hasattr(form._fields[field_name].widget, 'input_type'):
-                            form._fields[field_name].render_kw = {'readonly': True, 'disabled': True}
-    
-    def is_editable(self, model):
-        """Prevent editing of system-generated petition events."""
-        if hasattr(model, 'system_generated') and model.system_generated:
-            return False
-        return True
-    
-    def can_delete(self, model):
-        """Prevent deletion of system-generated petition events."""
-        if hasattr(model, 'system_generated') and model.system_generated:
-            return False
-        return True
-    
+    # Display committee_report with description
     form_args = {
         "date": {
             "validators": [data_required()],
@@ -1432,15 +1390,19 @@ class InlinePetitionEventForm(InlineFormAdmin):
                 ('other', 'Other')
             ]
         },
+        "committee_report": {
+            "description": "Select a committee report if this event relates to one"
+        },
         "description": {
             "description": "Detailed description of the event"
         },
         "system_generated": {
             "description": "Automatically generated from parliamentary discussions (hansards)"
-        },
-        "committee_report": {
-            "description": "Link to a committee report if relevant"
         }
+    }
+    
+    form_ajax_refs = {
+        "committee_report": {"fields": ("title", "start_date"), "page_size": 50}
     }
     
     form_overrides = {
@@ -1694,7 +1656,6 @@ class PetitionView(MyModelView):
         "issue",
         "date",
         "description",
-        "petitioner",
         "supporting_files",
         "status",
         "events"
@@ -1714,13 +1675,15 @@ class PetitionView(MyModelView):
         "date", 
         "house",
         "status",
-        "events_count"
+        "events_count",
+        "linked_meetings_summary"
     )
     
     column_formatters = {
         "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees]),
         "status": lambda v, c, m, n: f"{m.status.step}: {m.status.name}" if m.status else "",
-        "events_count": lambda v, c, m, n: len(m.events) if m.events else 0
+        "events_count": lambda v, c, m, n: len(m.events) if m.events else 0,
+        "linked_meetings_summary": lambda v, c, m, n: f"{len([e for e in m.linked_events if e.type == 'committee-meeting'])} meetings" if m.linked_events else "No meetings"
     }
     
     inline_models = [

@@ -1,5 +1,5 @@
 {% extends "committee_layout.html" %}
-{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills %}
+{% from 'macros/attachments.html' import audio_attachments, related_attachments, related_bills, related_petitions as petitions_macro %}
 
 {% block title %}{{ event.title }} | PMG{% endblock %}
 
@@ -114,6 +114,10 @@
 
     {% if event.bills %}
       {{ related_bills(event.bills) }}
+    {% endif %}
+
+    {% if related_petitions %}
+      {{ petitions_macro(related_petitions) }}
     {% endif %}
 
     <div class="panel panel-default attendance">

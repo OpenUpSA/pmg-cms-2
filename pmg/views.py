@@ -2002,11 +2002,42 @@ def petitions_home():
 @app.route("/petitions/current/")
 def petitions(page=0):
     per_page = 1000
-    query = Petition.query.order_by(Petition.date.desc())
+    
+    # Get filter parameters from request
+    year = request.args.get('year')
+    house_name = request.args.get('house')
+    
+    # Build the query with filters
+    query = Petition.query
+    
+    # Filter by year if specified
+    if year and year != 'all':
+        try:
+            year_int = int(year)
+            query = query.filter(func.extract('year', Petition.date) == year_int)
+        except ValueError:
+            pass  # Invalid year, ignore filter
+    
+    # Filter by house if specified
+    if house_name and house_name != 'all':
+        query = query.join(House).filter(House.name == house_name)
+    
+    query = query.order_by(Petition.date.desc())
+    
     count = query.count()
     petitions = query.offset(page * per_page).limit(per_page).all()
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/petitions"
+    
+    # Generate year options (2006-2026) as a list for buttons, like bills
+    year_list = list(range(2026, 2005, -1))  # Descending order like bills, back to 2006
+    
+    # Get house options - only specific houses
+    house_options = [
+        {'name': 'National Assembly'},
+        {'name': 'National Council of Provinces'}
+    ]
+    
     return render_template(
         "petitions/list.html",   
         results=petitions,
@@ -2015,7 +2046,11 @@ def petitions(page=0):
         url=url,
         icon="file-text-o",   
         title="Petitions",
-        content_type="petition",  
+        content_type="petition",
+        year_list=year_list,
+        year=year,  # Current selected year
+        houses=house_options,
+        selected_house=house_name,
     )
 
 @app.route("/petitions/explained")

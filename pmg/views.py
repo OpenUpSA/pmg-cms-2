@@ -2004,76 +2004,24 @@ def petition_detail(petition_id):
     petition = Petition.query.options(
         db.joinedload(Petition.supporting_files).joinedload(PetitionFile.file)
     ).get_or_404(petition_id)
+
+    # Sort all events by date, handling both datetime and date objects
+    all_events = list(petition.events) + list(petition.linked_events)
     
-
-    # This is not good and should be reconsidered. 
-    # It currently uses the ids as set in admin. Not a good idea.
-
-    petition_stages = {
-        3: "2",  # House (NA or NCOP)
-        2: "3",  # Report published
-        1: "4",  # Petition finalised
-    }
-
-    if petition.house == "National Assembly":
-        house = "NA"
-    else:
-        house = "NCOP"
-
-    # Build status blocks for petition timeline
-    # Get all timeline events (petition events + committee meetings)
-    committee_meetings = [e for e in petition.linked_events if e.type == "committee-meeting"]
-    all_timeline_events = list(petition.events) + committee_meetings
-    
-    # Sort all events by date (handle both datetime and date objects)
     def get_sort_date(event):
         if event.date is None:
-            return date(9999, 12, 31)
+            return date(9999, 12, 31)  # Put events with no date at the end
         elif isinstance(event.date, datetime):
             return event.date.date()
         else:
             return event.date
     
-    all_timeline_events.sort(key=get_sort_date)
-    
-    # Group events by chronological status transitions
-    status_blocks = []
-    current_status = None
-    current_events = []
-    
-    for event in all_timeline_events:
-        if hasattr(event, 'status') and event.status:
-            # This event has a status - always start a new block (even if same status)
-            # because it represents a new timeline moment
-            if current_events or current_status:
-                # Save the previous block if it has events or a status
-                status_blocks.append({
-                    'status': current_status,
-                    'events': current_events,
-                    'step': petition_stages.get(current_status.id, '1') if current_status else '1'
-                })
-            
-            # Start new block with this status
-            current_status = event.status
-            current_events = []  # Don't include the status event itself
-        else:
-            # Event with no status - add to current block
-            current_events.append(event)
-    
-    # Add the final block
-    if current_events or current_status:
-        status_blocks.append({
-            'status': current_status,
-            'events': current_events,
-            'step': petition_stages.get(current_status.id, '1') if current_status else '1'
-        })
+    all_events.sort(key=get_sort_date)
 
     return render_template(
         "petitions/detail.html",
         petition=petition,
-        house=house,
-        petition_stages=petition_stages,
-        status_blocks=status_blocks,
+        all_events=all_events,
         admin_edit_url=admin_url("petition", petition.id),
         content_date=petition.date,
     )

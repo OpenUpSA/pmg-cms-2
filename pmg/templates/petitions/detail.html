@@ -143,32 +143,33 @@
 
     </div>  
 
-    <!-- Petition Progress Events -->
+    <!-- Petition Events -->
     <div class="bill-events">
-  {% if status_blocks %}
-    <h2>Petition history</h2>
-    
-    {% for block in status_blocks %}
-      {% if block.status %}
-        <div class="panel panel-primary petition-status-{{ block.step }}">
+      <h2>Petition History</h2>
+      
+      {% if all_events %}
+        {% if petition.house and petition.house.name == 'National Assembly' %}
+        <div class="panel panel-default bill-location NA">
           <div class="panel-heading">
-            <h3 class="panel-title">
-              {{ block.status.name }}
-              {% if block.status.description %}
-              <span class="text-muted">- {{ block.status.description }}</span>
-              {% endif %}
-            </h3>
+            <h4 class="panel-title">National Assembly</h4>
           </div>
+        {% elif petition.house and petition.house.name == 'National Council of Provinces' %}
+        <div class="panel panel-default bill-location NCOP">
+          <div class="panel-heading">
+            <h4 class="panel-title">National Council of Provinces</h4>
+          </div>
+        {% else %}
+        <div class="panel panel-default">
+        {% endif %}
           <div class="panel-body">
             <div class="row">
               <div class="col-sm-12">
-                {% if block.events %}
                 <div class="petition-history">
-                  {% for event in block.events %}
+                  {% for event in all_events %}
                   <div class="petition-event">
                     <div class="media">
                       <div class="media-left">
-                        {% if event.__class__.__name__ == 'Event' %}
+                        {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
                         <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
                         {% else %}
                         {% if event.type %}
@@ -188,13 +189,12 @@
                             {% endif %}
                           </div>
                           <div class="col-xs-8 col-md-10">
-                            {% if event.__class__.__name__ == 'CommitteeMeeting' %}
-                           
+                            {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
                             <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
                             {% if event.summary %}
-                            <p class="text-muted"><small>{{ event.summary|truncate(200, True) }}</small></p>
+                            <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
                             {% elif event.body %}
-                            <p class="text-muted"><small>{{ event.body|truncate(200, True) }}</small></p>
+                            <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
                             {% endif %}
                             {% else %}
                             <h5>{{ event.title }}</h5>
@@ -204,7 +204,7 @@
                             {% endif %}
                             
                             <div class="event-details">
-                              {% if event.__class__.__name__ == 'Event' %}
+                              {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
                               <span class="label label-info">Committee Meeting</span>
                               {% else %}
                               {% if event.type %}
@@ -224,93 +224,13 @@
                   {% if not loop.last %}<hr>{% endif %}
                   {% endfor %}
                 </div>
-                {% else %}
-                <p class="text-muted">No events recorded for this status yet.</p>
-                {% endif %}
               </div>
             </div>
           </div>
         </div>
       {% else %}
-        <!-- Events without status -->
-        {% if block.events %}
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Other Events</h3>
-          </div>
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="petition-history">
-                  {% for event in block.events %}
-                  <div class="petition-event">
-                    <div class="media">
-                      <div class="media-left">
-                        {% if event.__class__.__name__ == 'Event' %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
-                        {% else %}
-                        {% if event.type %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
-                        {% else %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
-                        {% endif %}
-                        {% endif %}
-                      </div>
-                      <div class="media-body">
-                        <div class="row">
-                          <div class="col-xs-4 col-md-2 text-muted">
-                            {% if event.date %}
-                              {{ event.date.strftime('%d %b %Y') }}
-                            {% else %}
-                              Date TBA
-                            {% endif %}
-                          </div>
-                          <div class="col-xs-8 col-md-10">
-                            {% if event.__class__.__name__ == 'Event' %}
-                            <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
-                            {% if event.summary %}
-                            <p class="text-muted"><small>{{ event.summary|truncate(200, True) }}</small></p>
-                            {% elif event.body %}
-                            <p class="text-muted"><small>{{ event.body|truncate(200, True) }}</small></p>
-                            {% endif %}
-                            {% else %}
-                            <h5>{{ event.title }}</h5>
-                            {% if event.description %}
-                            <p class="text-muted"><small>{{ event.description }}</small></p>
-                            {% endif %}
-                            {% endif %}
-                            
-                            <div class="event-details">
-                              {% if event.__class__.__name__ == 'Event' %}
-                              <span class="label label-info">Committee Meeting</span>
-                              {% else %}
-                              {% if event.type %}
-                              <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
-                              {% endif %}
-                              {% endif %}
-                              
-                              {% if event.committee %}
-                              <span class="label label-success">{{ event.committee.name }}</span>
-                              {% endif %}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {% if not loop.last %}<hr>{% endif %}
-                  {% endfor %}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
+        <p class="text-muted">No events have been recorded for this petition yet.</p>
       {% endif %}
-    {% endfor %}
-  {% else %}
-  <p class="text-muted">No events have been recorded for this petition yet.</p>
-  {% endif %}
     </div>
 
     <!-- Document Viewer Section -->

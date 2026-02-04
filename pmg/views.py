@@ -43,6 +43,7 @@ from pmg.models import (
     House,
     Petition,
     PetitionFile,
+    PetitionStatus,
     Hansard
 )
 from pmg.models.resources import Committee
@@ -2003,12 +2004,19 @@ def petitions_home():
 def petitions(page=0):
     per_page = 1000
     
+    # Determine if this is current or all petitions based on URL
+    is_current = '/current/' in request.path
+    
     # Get filter parameters from request
     year = request.args.get('year')
     house_name = request.args.get('house')
     
     # Build the query with filters
     query = Petition.query
+    
+    # For current petitions, filter out those with status step = 4 (finalized)
+    if is_current:
+        query = query.join(PetitionStatus).filter(PetitionStatus.step != 4)
     
     # Filter by year if specified
     if year and year != 'all':
@@ -2020,12 +2028,14 @@ def petitions(page=0):
     
     # Filter by house if specified
     if house_name and house_name != 'all':
-        query = query.join(House).filter(House.name == house_name)
+        house = House.query.filter(House.name == house_name).first()
+        if house:
+            query = query.filter(Petition.house_id == house.id)
     
     query = query.order_by(Petition.date.desc())
     
     count = query.count()
-    petitions = query.offset(page * per_page).limit(per_page).all()
+    petitions_results = query.offset(page * per_page).limit(per_page).all()
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/petitions"
     
@@ -2040,12 +2050,12 @@ def petitions(page=0):
     
     return render_template(
         "petitions/list.html",   
-        results=petitions,
+        results=petitions_results,
         num_pages=num_pages,
         page=page,
         url=url,
         icon="file-text-o",   
-        title="Petitions",
+        title="Current Petitions" if is_current else "All Petitions",
         content_type="petition",
         year_list=year_list,
         year=year,  # Current selected year

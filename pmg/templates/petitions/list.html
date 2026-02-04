@@ -9,7 +9,7 @@
 {% block page %}
 <h1>
   <i class="fa fa-icon fa-file-text-o"></i>
-  Petitions
+  {{ title }}
   {% if year %}
   from {{ year }}
   {% endif %}
@@ -21,7 +21,11 @@
       <div class="col-sm-8">
         <div class="btn-group">
           {% for i in year_list %}
+          {% if '/current/' in request.path %}
+          <a href="/petitions/current/?year={{ i }}{% if selected_house and selected_house != 'all' %}&house={{ selected_house }}{% endif %}" role="button" class="btn btn-default{% if year == i|string %} active{% endif %}">{{ i }}</a>
+          {% else %}
           <a href="/petitions/all/?year={{ i }}{% if selected_house and selected_house != 'all' %}&house={{ selected_house }}{% endif %}" role="button" class="btn btn-default{% if year == i|string %} active{% endif %}">{{ i }}</a>
+          {% endif %}
           {% endfor %}
         </div>
       </div>

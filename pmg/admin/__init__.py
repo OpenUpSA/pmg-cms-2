@@ -741,72 +741,13 @@ class HansardView(EventView):
         # Call the parent method
         super().on_model_change(form, model, is_created)
         
-        # Only handle updates, not creates (petition events should be created after hansard exists)
-        if not is_created and model.id:
-            self.handle_petition_events(model)
+        # Removed handle_petition_events call - no longer creating system-generated events
 
     def update_model(self, form, model):
         print("DEBUG: HansardView update_model called")
         return super().update_model(form, model)
 
-    def handle_petition_events(self, model):
-        """Create petition events for linked petitions."""
-        try:
-            print(f"DEBUG handle_petition_events: Processing hansard {model.id}")
-            
-            # Get current linked petitions
-            current_petition_ids = set(p.id for p in model.linked_petitions)
-            print(f"DEBUG: Current petition IDs: {current_petition_ids}")
-            
-            # For each linked petition, ensure there's a system-generated event
-            for petition_id in current_petition_ids:
-                petition = Petition.query.get(petition_id)
-                if petition:
-                    # Check if we already have a system-generated event for this combination
-                    existing_event = PetitionEvent.query.filter_by(
-                        petition_id=petition.id,
-                        system_generated=True
-                    ).filter(
-                        PetitionEvent.description.contains(f'hansard-{model.id}')
-                    ).first()
-                    
-                    if not existing_event:
-                        # Create system-generated petition event
-                        hansard_event = PetitionEvent(
-                            petition_id=petition.id,
-                            date=model.date.date() if model.date else datetime.date.today(),
-                            title=f"Parliamentary discussion - {model.title}" if model.title else "Parliamentary discussion",
-                            type="hansard_discussion",
-                            description=f"Petition discussed in parliamentary session. Hansard reference: hansard-{model.id}",
-                            system_generated=True
-                        )
-                        db.session.add(hansard_event)
-                        print(f"DEBUG: Created petition event for petition {petition.id}")
-                    else:
-                        print(f"DEBUG: Event already exists for petition {petition.id}")
-            
-            # Remove system-generated events for petitions that are no longer linked
-            all_system_events = PetitionEvent.query.filter_by(
-                system_generated=True
-            ).filter(
-                PetitionEvent.description.contains(f'hansard-{model.id}')
-            ).all()
-            
-            for event in all_system_events:
-                if event.petition_id not in current_petition_ids:
-                    db.session.delete(event)
-                    print(f"DEBUG: Deleted petition event {event.id} for petition {event.petition_id}")
-            
-            # Commit the changes
-            db.session.commit()
-            print("DEBUG: Successfully committed petition event changes")
-            
-        except Exception as e:
-            db.session.rollback()
-            print(f"DEBUG: Error in handle_petition_events: {e}")
-            import traceback
-            traceback.print_exc()
-            flash(f"Warning: Failed to create/update petition events: {e}", 'warning')
+    # Removed handle_petition_events method - no longer creating system-generated events
 
     form_widget_args = {
         "body": {"class": "pmg_ckeditor"},
@@ -1170,11 +1111,6 @@ class PolicyDocumentView(ViewWithFiles, MyModelView):
 
 
 class TabledCommitteeReportView(ViewWithFiles, MyModelView):
-    column_list = (
-        "committee",
-        "title",
-        "start_date",
-    )
     column_default_sort = ("start_date", True)
     column_searchable_list = ("title",)
     form_widget_args = {
@@ -1183,11 +1119,21 @@ class TabledCommitteeReportView(ViewWithFiles, MyModelView):
     form_columns = (
         "committee",
         "title",
-        "start_date",
+        "start_date", 
         "body",
         "files",
     )
-    inline_models = [InlineFile(TabledCommitteeReportFile)]
+    
+    # Regular column list 
+    column_list = (
+        "committee",
+        "title",
+        "start_date",
+    )
+    
+    inline_models = [
+        InlineFile(TabledCommitteeReportFile),
+    ]
 
 
 class EmailTemplateView(MyModelView):
@@ -1357,62 +1303,21 @@ class InlinePetitionEventForm(InlineFormAdmin):
     
     form_columns = (
         "id",
-        "status",
         "date",
         "title",
         "type",
-        "description",
         "committee_report",
-        "system_generated",
+        "description",
     )
     
-    # Display system_generated as read-only
-    form_widget_args = {
-        'system_generated': {
-            'readonly': True,
-            'disabled': True
-        },
-        'committee_report': {
-            'placeholder': 'Select a Committee Report',
-        }
-    }
-    form_ajax_refs = {
-        "committee_report": {
-            "fields": ("title",),
-            "page_size": 25,
-        },
-    }
+    def get_query(self):
+        """Override to filter out system-generated events."""
+        return self.session.query(self.model).filter(
+            (self.model.system_generated == False) | 
+            (self.model.system_generated == None)
+        )
     
-    def on_form_prefill(self, form, id):
-        """Make system-generated events read-only by disabling form fields."""
-        if id:
-            # Get the petition event object
-            petition_event = self.model.query.get(id)
-            if petition_event and petition_event.system_generated:
-                # Make all fields read-only for system-generated events
-                for field_name in form._fields:
-                    if hasattr(form._fields[field_name], 'render_kw'):
-                        if form._fields[field_name].render_kw is None:
-                            form._fields[field_name].render_kw = {}
-                        form._fields[field_name].render_kw['readonly'] = True
-                        form._fields[field_name].render_kw['disabled'] = True
-                    elif hasattr(form._fields[field_name], 'widget'):
-                        # For select fields and other widgets
-                        if hasattr(form._fields[field_name].widget, 'input_type'):
-                            form._fields[field_name].render_kw = {'readonly': True, 'disabled': True}
-    
-    def is_editable(self, model):
-        """Prevent editing of system-generated petition events."""
-        if hasattr(model, 'system_generated') and model.system_generated:
-            return False
-        return True
-    
-    def can_delete(self, model):
-        """Prevent deletion of system-generated petition events."""
-        if hasattr(model, 'system_generated') and model.system_generated:
-            return False
-        return True
-    
+    # Display committee_report with description
     form_args = {
         "date": {
             "validators": [data_required()],
@@ -1433,20 +1338,19 @@ class InlinePetitionEventForm(InlineFormAdmin):
                 ('other', 'Other')
             ]
         },
+        "committee_report": {
+            "description": "Select a committee report if this event relates to one"
+        },
         "description": {
             "description": "Detailed description of the event"
         },
-        "status": {
-            "query_factory": lambda: db.session.query(PetitionStatus).order_by(PetitionStatus.step),
-            "get_label": lambda status: f"{status.step}: {status.name}",
-            "description": "Set petition status if this event changes the status"
-        },
         "system_generated": {
             "description": "Automatically generated from parliamentary discussions (hansards)"
-        },
-        "committee_report": {
-            "description": "Link to a committee report if relevant"
         }
+    }
+    
+    form_ajax_refs = {
+        "committee_report": {"fields": ("title", "start_date"), "page_size": 50}
     }
     
     form_overrides = {
@@ -1696,10 +1600,10 @@ class PostView(ViewWithFiles, MyModelView):
 class PetitionView(MyModelView):
     form_columns = (
         "title",
+        "house",
         "issue",
         "date",
         "description",
-        "petitioner",
         "supporting_files",
         "status",
         "events"
@@ -1719,13 +1623,15 @@ class PetitionView(MyModelView):
         "date", 
         "house",
         "status",
-        "events_count"
+        "events_count",
+        "linked_meetings_summary"
     )
     
     column_formatters = {
         "committees": lambda v, c, m, n: ", ".join([committee.name for committee in m.committees]),
         "status": lambda v, c, m, n: f"{m.status.step}: {m.status.name}" if m.status else "",
-        "events_count": lambda v, c, m, n: len(m.events) if m.events else 0
+        "events_count": lambda v, c, m, n: len(m.events) if m.events else 0,
+        "linked_meetings_summary": lambda v, c, m, n: f"{len([e for e in m.linked_events if e.type == 'committee-meeting'])} meetings" if m.linked_events else "No meetings"
     }
     
     inline_models = [

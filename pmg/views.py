@@ -42,7 +42,9 @@ from pmg.models import (
     CommitteeMeetingAttendance,
     House,
     Petition,
-    PetitionFile
+    PetitionFile,
+    PetitionStatus,
+    Hansard
 )
 from pmg.models.resources import Committee
 
@@ -855,6 +857,12 @@ def committee_meeting(event_id):
             + "."
         )
 
+    # Find petitions that are linked to this committee meeting
+    from pmg.models.resources import Petition
+    related_petitions = db.session.query(Petition).filter(
+        Petition.linked_events.any(id=event_id)
+    ).all()
+
     return render_template(
         "committee_meeting.html",
         event=event,
@@ -863,6 +871,7 @@ def committee_meeting(event_id):
         related_docs=related_docs,
         attendance=attendance,
         premium_committees=premium_committees,
+        related_petitions=related_petitions,
         content_date=event["date"],
         social_summary=social_summary,
         admin_edit_url=admin_url("committee-meeting", event_id),
@@ -934,9 +943,21 @@ def tabled_committee_report(tabled_committee_report_id):
         "tabled-committee-report", tabled_committee_report_id
     )
     logger.debug(tabled_committee_report)
+    
+    # Find petitions that reference this committee report
+    from pmg.models.resources import Petition, PetitionEvent
+    related_petitions = db.session.query(Petition).join(PetitionEvent).filter(
+        PetitionEvent.committee_report_id == tabled_committee_report_id
+    ).distinct().all()
+    
+    logger.debug(f"Found {len(related_petitions)} related petitions for report {tabled_committee_report_id}")
+    for p in related_petitions:
+        logger.debug(f"Related petition: {p.id} - {p.title}")
+    
     return render_template(
         "tabled_committee_report_detail.html",
         tabled_committee_report=tabled_committee_report,
+        related_petitions=related_petitions,
         content_date=tabled_committee_report["start_date"],
         admin_edit_url=admin_url("tabled-committee-report", tabled_committee_report_id),
     )
@@ -1187,6 +1208,9 @@ def hansard(event_id):
     event = load_from_api("hansard", event_id)
     audio, related_docs = classify_attachments(event.get("files", []))
 
+    # Load the hansard object from database to get linked petitions
+    hansard_obj = Hansard.query.get(event_id)
+
     return render_template(
         "hansard_detail.html",
         event=event,
@@ -1195,6 +1219,7 @@ def hansard(event_id):
         content_date=event["date"],
         admin_edit_url=admin_url("hansard", event_id),
         SOUNDCLOUD_APP_KEY_ID=app.config["SOUNDCLOUD_APP_KEY_ID"],
+        linked_petitions=hansard_obj.linked_petitions if hansard_obj else []
     )
 
 
@@ -1978,20 +2003,64 @@ def petitions_home():
 @app.route("/petitions/current/")
 def petitions(page=0):
     per_page = 1000
-    query = Petition.query.order_by(Petition.date.desc())
+    
+    # Determine if this is current or all petitions based on URL
+    is_current = '/current/' in request.path
+    
+    # Get filter parameters from request
+    year = request.args.get('year')
+    house_name = request.args.get('house')
+    
+    # Build the query with filters
+    query = Petition.query
+    
+    # For current petitions, filter out those with status step = 4 (finalized)
+    if is_current:
+        query = query.join(PetitionStatus).filter(PetitionStatus.step != 4)
+    
+    # Filter by year if specified
+    if year and year != 'all':
+        try:
+            year_int = int(year)
+            query = query.filter(func.extract('year', Petition.date) == year_int)
+        except ValueError:
+            pass  # Invalid year, ignore filter
+    
+    # Filter by house if specified
+    if house_name and house_name != 'all':
+        house = House.query.filter(House.name == house_name).first()
+        if house:
+            query = query.filter(Petition.house_id == house.id)
+    
+    query = query.order_by(Petition.date.desc())
+    
     count = query.count()
-    petitions = query.offset(page * per_page).limit(per_page).all()
+    petitions_results = query.offset(page * per_page).limit(per_page).all()
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/petitions"
+    
+    # Generate year options (2006-2026) as a list for buttons, like bills
+    year_list = list(range(2026, 2005, -1))  # Descending order like bills, back to 2006
+    
+    # Get house options - only specific houses
+    house_options = [
+        {'name': 'National Assembly'},
+        {'name': 'National Council of Provinces'}
+    ]
+    
     return render_template(
         "petitions/list.html",   
-        results=petitions,
+        results=petitions_results,
         num_pages=num_pages,
         page=page,
         url=url,
         icon="file-text-o",   
-        title="Petitions",
-        content_type="petition",  
+        title="Current Petitions" if is_current else "All Petitions",
+        content_type="petition",
+        year_list=year_list,
+        year=year,  # Current selected year
+        houses=house_options,
+        selected_house=house_name,
     )
 
 @app.route("/petitions/explained")
@@ -2004,76 +2073,26 @@ def petition_detail(petition_id):
     petition = Petition.query.options(
         db.joinedload(Petition.supporting_files).joinedload(PetitionFile.file)
     ).get_or_404(petition_id)
+
+    # Sort all events by date, handling both datetime and date objects
+    # Show manual petition events + linked committee meetings
+    manual_events = [event for event in petition.events if not event.system_generated]
+    all_events = manual_events + list(petition.linked_events)
     
-
-    # This is not good and should be reconsidered. 
-    # It currently uses the ids as set in admin. Not a good idea.
-
-    petition_stages = {
-        3: "2",  # House (NA or NCOP)
-        2: "3",  # Report published
-        1: "4",  # Petition finalised
-    }
-
-    if petition.house == "National Assembly":
-        house = "NA"
-    else:
-        house = "NCOP"
-
-    # Build status blocks for petition timeline
-    # Get all timeline events (petition events + committee meetings)
-    committee_meetings = [e for e in petition.linked_events if e.type == "committee-meeting"]
-    all_timeline_events = list(petition.events) + committee_meetings
-    
-    # Sort all events by date (handle both datetime and date objects)
     def get_sort_date(event):
         if event.date is None:
-            return date(9999, 12, 31)
+            return date(9999, 12, 31)  # Put events with no date at the end
         elif isinstance(event.date, datetime):
             return event.date.date()
         else:
             return event.date
     
-    all_timeline_events.sort(key=get_sort_date)
-    
-    # Group events by chronological status transitions
-    status_blocks = []
-    current_status = None
-    current_events = []
-    
-    for event in all_timeline_events:
-        if hasattr(event, 'status') and event.status:
-            # This event has a status - always start a new block (even if same status)
-            # because it represents a new timeline moment
-            if current_events or current_status:
-                # Save the previous block if it has events or a status
-                status_blocks.append({
-                    'status': current_status,
-                    'events': current_events,
-                    'step': petition_stages.get(current_status.id, '1') if current_status else '1'
-                })
-            
-            # Start new block with this status
-            current_status = event.status
-            current_events = []  # Don't include the status event itself
-        else:
-            # Event with no status - add to current block
-            current_events.append(event)
-    
-    # Add the final block
-    if current_events or current_status:
-        status_blocks.append({
-            'status': current_status,
-            'events': current_events,
-            'step': petition_stages.get(current_status.id, '1') if current_status else '1'
-        })
+    all_events.sort(key=get_sort_date)
 
     return render_template(
         "petitions/detail.html",
         petition=petition,
-        house=house,
-        petition_stages=petition_stages,
-        status_blocks=status_blocks,
+        all_events=all_events,
         admin_edit_url=admin_url("petition", petition.id),
         content_date=petition.date,
     )

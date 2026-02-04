@@ -9,28 +9,53 @@
 {% block page %}
 <h1>
   <i class="fa fa-icon fa-file-text-o"></i>
-  Petitions
+  {{ title }}
+  {% if year %}
+  from {{ year }}
+  {% endif %}
 </h1>
 
 <div class="space-bottom">
   <div class="row">
-   
-
-    <div class="col-sm-{% if year_list %}5{% else %}6{% endif %}">
-      <form action="/search">
-        <input type="hidden" name="filter[type]" value="petition">
-        <div class="input-group">
-          <input type="text" name="q" placeholder="Search for petitions" class="form-control">
-          <span class="input-group-btn">
-            <button type="submit" class="btn btn-success">Search</button>
-          </span>
+    {% if year_list %}
+      <div class="col-sm-8">
+        <div class="btn-group">
+          {% for i in year_list %}
+          {% if '/current/' in request.path %}
+          <a href="/petitions/current/?year={{ i }}{% if selected_house and selected_house != 'all' %}&house={{ selected_house }}{% endif %}" role="button" class="btn btn-default{% if year == i|string %} active{% endif %}">{{ i }}</a>
+          {% else %}
+          <a href="/petitions/all/?year={{ i }}{% if selected_house and selected_house != 'all' %}&house={{ selected_house }}{% endif %}" role="button" class="btn btn-default{% if year == i|string %} active{% endif %}">{{ i }}</a>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    
+    <div class="col-sm-4">
+      <form id="house-filter-form" method="get">
+        {% if year %}
+        <input type="hidden" name="year" value="{{ year }}">
+        {% endif %}
+        <div class="form-group">
+          <label for="house-filter" class="sr-only">House</label>
+          <select id="house-filter" name="house" class="form-control">
+            <option value="all" {% if not selected_house or selected_house == 'all' %}selected{% endif %}>All Houses</option>
+            {% for house in houses %}
+            <option value="{{ house.name }}" {% if selected_house == house.name %}selected{% endif %}>{{ house.name }}</option>
+            {% endfor %}
+          </select>
         </div>
       </form>
     </div>
-
-   
   </div>
 </div>
+
+<script>
+  // Auto-submit form when house filter changes
+  document.getElementById('house-filter').addEventListener('change', function() {
+    document.getElementById('house-filter-form').submit();
+  });
+</script>
 
 {% if not results %}
 <p><i>

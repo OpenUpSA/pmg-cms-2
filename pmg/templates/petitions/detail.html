@@ -198,11 +198,11 @@
                             {% endif %} -->
                             {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
                             <h5><a href="/hansard/{{ event.id }}">{{ event.title }}</a></h5>
-                            {% if event.summary %}
+                            <!-- {% if event.summary %}
                             <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
                             {% elif event.body %}
                             <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
-                            {% endif %}
+                            {% endif %} -->
                             {% else %}
                             {% if event.type == 'report' and event.committee_report %}
                             <h5><a href="/tabled-committee-report/{{ event.committee_report.id }}">{{ event.title }}</a></h5>

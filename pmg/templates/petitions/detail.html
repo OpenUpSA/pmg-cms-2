@@ -191,11 +191,11 @@
                           <div class="col-xs-8 col-md-10">
                             {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
                             <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
-                            {% if event.summary %}
+                            <!-- {% if event.summary %}
                             <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
                             {% elif event.body %}
                             <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
-                            {% endif %}
+                            {% endif %} -->
                             {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
                             <h5><a href="/hansard/{{ event.id }}">{{ event.title }}</a></h5>
                             {% if event.summary %}

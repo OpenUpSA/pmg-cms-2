@@ -39,7 +39,7 @@ Flask-WTF==1.0.0
 funcsigs==0.4
 gevent==22.10.2
 greenlet==2.0.2
-gunicorn==19.9.0
+gunicorn==22.0.0
 h11==0.11.0
 h2==3.1.1
 hpack==3.0.0

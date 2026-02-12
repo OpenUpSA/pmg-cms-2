@@ -1,7 +1,7 @@
 from mock import patch
 from tests import PMGLiveServerTestCase
 from tests.fixtures import dbfixture, HouseData
-from pyelasticsearch import ElasticSearch
+from elasticsearch import Elasticsearch
 
 
 class TestSearchPage(PMGLiveServerTestCase):
@@ -15,12 +15,12 @@ class TestSearchPage(PMGLiveServerTestCase):
         self.fx.teardown()
         super(TestSearchPage, self).tearDown()
 
-    
 
-    @patch.object(ElasticSearch, "search")
+
+    @patch.object(Elasticsearch, "search")
     def __call__(self, result=None, search_mock=None):
         search_mock.return_value = {
-            u"hits": {u"hits": [], u"total": 25, u"max_score": 1.1129572},
+            u"hits": {u"hits": [], u"total": {u"value": 25, u"relation": u"eq"}, u"max_score": 1.1129572},
             u"_shards": {u"successful": 5, u"failed": 1, u"total": 5},
             u"took": 167,
             u"aggregations": {
@@ -58,7 +58,7 @@ class TestSearchPage(PMGLiveServerTestCase):
         super(TestSearchPage, self).__call__(result)
 
     def test_search_page(self):
-        
+
         search_term = "content"
         self.make_request("/search/?q=%s" % search_term)
         self.assertIn(search_term, self.html)

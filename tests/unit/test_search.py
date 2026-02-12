@@ -1,4 +1,4 @@
-from mock import patch
+from mock import patch, MagicMock
 from nose.tools import *  # noqa
 import arrow
 
@@ -6,13 +6,14 @@ from tests import PMGTestCase
 from pmg import app
 from pmg.models import db, CommitteeMeeting, Post
 from pmg.search import Search, Transforms
-from pyelasticsearch import ElasticSearch
+from elasticsearch import Elasticsearch
 
 
 class TestSearch(PMGTestCase):
-    @patch.object(ElasticSearch, "bulk_index")
+    @patch.object(Elasticsearch, "bulk")
     @patch.multiple(Search, reindex_changes=True)
-    def test_new_object_reindexed(self, bulk_index):
+    def test_new_object_reindexed(self, bulk):
+        bulk.return_value = {"errors": False, "items": []}
         with app.app_context():
             cm = CommitteeMeeting()
             cm.date = arrow.now().datetime
@@ -20,11 +21,12 @@ class TestSearch(PMGTestCase):
             db.session.add(cm)
             db.session.commit()
 
-            assert_true(bulk_index.called)
+            assert_true(bulk.called)
 
-    @patch.object(ElasticSearch, "bulk_index")
+    @patch.object(Elasticsearch, "bulk")
     @patch.multiple(Search, reindex_changes=True)
-    def test_updated_object_reindexed(self, bulk_index):
+    def test_updated_object_reindexed(self, bulk):
+        bulk.return_value = {"errors": False, "items": []}
         with app.app_context():
             cm = CommitteeMeeting()
             cm.date = arrow.now().datetime
@@ -32,18 +34,19 @@ class TestSearch(PMGTestCase):
             db.session.add(cm)
             db.session.commit()
 
-            assert_true(bulk_index.called)
-            bulk_index.reset_mock()
+            assert_true(bulk.called)
+            bulk.reset_mock()
 
             # now update it
             cm.title = "Updated"
             db.session.commit()
-            assert_true(bulk_index.called)
+            assert_true(bulk.called)
 
-    @patch.object(ElasticSearch, "bulk_index")
-    @patch.object(ElasticSearch, "delete")
+    @patch.object(Elasticsearch, "bulk")
+    @patch.object(Elasticsearch, "delete")
     @patch.multiple(Search, reindex_changes=True)
-    def test_deleted_object_reindexed(self, delete, bulk_index):
+    def test_deleted_object_reindexed(self, delete, bulk):
+        bulk.return_value = {"errors": False, "items": []}
         with app.app_context():
             cm = CommitteeMeeting()
             cm.date = arrow.now().datetime
@@ -51,22 +54,23 @@ class TestSearch(PMGTestCase):
             db.session.add(cm)
             db.session.commit()
 
-            assert_true(bulk_index.called)
-            bulk_index.reset_mock()
+            assert_true(bulk.called)
+            bulk.reset_mock()
 
             # now delete it
             db.session.delete(cm)
             db.session.commit()
-            assert_false(bulk_index.called)
+            assert_false(bulk.called)
             assert_true(delete.called)
 
-    @patch.object(ElasticSearch, "bulk_index")
+    @patch.object(Elasticsearch, "bulk")
     @patch.multiple(Search, reindex_changes=True)
-    def test_index_blog_post(self, bulk_index):
+    def test_index_blog_post(self, bulk):
+        bulk.return_value = {"errors": False, "items": []}
         with app.app_context():
             post = self.create_post()
 
-            assert_true(bulk_index.called)
+            assert_true(bulk.called)
 
     def test_search_data_types(self):
         models_to_index = [

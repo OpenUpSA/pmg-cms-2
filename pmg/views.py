@@ -205,6 +205,14 @@ def inject_free_before_year():
     return {"free_before_date": None}
 
 
+@app.context_processor
+def inject_deployment_info():
+    return {
+        "server_name": os.environ.get("SERVER_NAME", "unknown"),
+        "git_commit": os.environ.get("GIT_REV", "unknown"),
+    }
+
+
 @app.route("/")
 @cache.memoize(
     make_name=lambda fname: cache_key(request),

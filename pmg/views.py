@@ -208,8 +208,8 @@ def inject_free_before_year():
 @app.context_processor
 def inject_deployment_info():
     return {
-        "server_name": os.environ.get("SERVER_NAME", "unknown"),
-        "git_commit": os.environ.get("GIT_REV", "unknown"),
+        "deployment_server_name": os.environ.get("DEPLOYMENT_SERVER", "unknown"),
+        "deployment_git_commit": os.environ.get("GIT_REV", "unknown"),
     }
 
 

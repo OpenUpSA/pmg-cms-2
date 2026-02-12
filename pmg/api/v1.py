@@ -291,6 +291,11 @@ def search():
 
     aggs = searchresult["aggregations"]
 
+    # In ES 7, hits.total is an object {"value": N, "relation": "eq"}
+    total_hits = searchresult["hits"]["total"]
+    if isinstance(total_hits, dict):
+        total_hits = total_hits["value"]
+
     # ensure all results have a highlight field
     for result in searchresult["hits"]["hits"]:
         result.setdefault("highlight", {})
@@ -300,8 +305,8 @@ def search():
         "results": searchresult["hits"]["hits"],
         "page": page,
         "per_page": per_page,
-        "pages": int(math.ceil(searchresult["hits"]["total"] / float(per_page))),
-        "hits": searchresult["hits"]["total"],
+        "pages": int(math.ceil(total_hits / float(per_page))),
+        "hits": total_hits,
         "max_score": searchresult["hits"]["max_score"],
         "bincount": {
             "types": aggs["types"]["types"]["buckets"],

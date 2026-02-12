@@ -13,7 +13,7 @@ loggers:
     level: INFO
   sqlalchemy.engine:
     level: INFO
-  pyelasticsearch:
+  elasticsearch:
     level: INFO
 root:
   handlers: [console]

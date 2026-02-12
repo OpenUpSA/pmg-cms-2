@@ -17,7 +17,7 @@ loggers:
     level: WARN
   rebuild_db:
     level: DEBUG
-  pyelasticsearch:
+  elasticsearch:
     level: INFO
   gunicorn:
     level: INFO

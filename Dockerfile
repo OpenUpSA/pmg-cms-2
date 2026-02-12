@@ -24,6 +24,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY . .
+
+RUN mkdir -p pmg/static/stylesheets pmg/static/javascript pmg/static/.webassets-cache
+
 RUN chown -R appuser:appuser /app
 
 USER appuser

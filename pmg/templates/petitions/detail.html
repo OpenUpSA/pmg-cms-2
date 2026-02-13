@@ -88,6 +88,23 @@
         <p class="lead">{{ petition.issue }}</p>
         {% endif %}
 
+        {% if petition.committees %}
+        <div class="petition-committees">
+          <h3>Related Committees:</h3>
+          <ul class="list-inline">
+            {% for committee in petition.committees %}
+            <li>
+              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <span class="label label-primary">
+                  <i class="fa fa-users"></i> {{ committee.name }}
+                </span>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
         {% if petition.supporting_files %}
         <ul class="list-inline bill-versions">
           <li><h3>Supporting Documents:</h3></li>

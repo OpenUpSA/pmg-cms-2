@@ -2087,15 +2087,31 @@ def petition_detail(petition_id):
     manual_events = [event for event in petition.events if not event.system_generated]
     all_events = manual_events + list(petition.linked_events)
     
-    def get_sort_date(event):
+    def get_sort_key(event):
+        # Get the date
         if event.date is None:
-            return date(9999, 12, 31)  # Put events with no date at the end
+            event_date = date(9999, 12, 31)  # Put events with no date at the end
         elif isinstance(event.date, datetime):
-            return event.date.date()
+            event_date = event.date.date()
         else:
-            return event.date
+            event_date = event.date
+        
+        # Determine event type priority (lower number = appears first)
+        # CommitteeMeetings and committee-meeting events come first
+        # Reports come last on the same day
+        event_class = event.__class__.__name__
+        event_type = getattr(event, 'type', None)
+        
+        if event_class == 'CommitteeMeeting' or event_type == 'committee-meeting':
+            priority = 1  # Meetings first
+        elif event_type == 'report':
+            priority = 3  # Reports last
+        else:
+            priority = 2  # Other events in the middle
+        
+        return (event_date, priority)
     
-    all_events.sort(key=get_sort_date)
+    all_events.sort(key=get_sort_key)
 
     return render_template(
         "petitions/detail.html",

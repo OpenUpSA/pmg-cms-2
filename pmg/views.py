@@ -2047,8 +2047,8 @@ def petitions(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/petitions"
     
-    # Generate year options (2006-2026) as a list for buttons, like bills
-    year_list = list(range(2026, 2005, -1))  # Descending order like bills, back to 2006
+    # Generate year options (2023-2026) as a list for buttons
+    year_list = list(range(2026, 2022, -1))  # Descending order, back to 2023
     
     # Get house options - only specific houses
     house_options = [

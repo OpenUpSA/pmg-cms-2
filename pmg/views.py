@@ -2112,11 +2112,51 @@ def petition_detail(petition_id):
         return (event_date, priority)
     
     all_events.sort(key=get_sort_key)
+    
+    # Group events by committee for better display
+    # Similar to bill history grouping
+    def get_event_committee(event):
+        """Get the committee for an event, if any"""
+        event_class = event.__class__.__name__
+        if event_class == 'CommitteeMeeting':
+            return event.committee
+        elif hasattr(event, 'committee') and event.committee:
+            return event.committee
+        return None
+    
+    grouped_events = []
+    current_committee = None
+    current_group = []
+    
+    for event in all_events:
+        event_committee = get_event_committee(event)
+        
+        # If this event has the same committee as the previous one, add to current group
+        if event_committee and event_committee == current_committee:
+            current_group.append(event)
+        else:
+            # Save the previous group if it exists
+            if current_group:
+                grouped_events.append({
+                    'committee': current_committee,
+                    'events': current_group
+                })
+            
+            # Start a new group
+            current_committee = event_committee
+            current_group = [event]
+    
+    # Don't forget the last group
+    if current_group:
+        grouped_events.append({
+            'committee': current_committee,
+            'events': current_group
+        })
 
     return render_template(
         "petitions/detail.html",
         petition=petition,
-        all_events=all_events,
+        grouped_events=grouped_events,
         admin_edit_url=admin_url("petition", petition.id),
         content_date=petition.date,
     )

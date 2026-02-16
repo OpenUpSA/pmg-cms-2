@@ -483,15 +483,11 @@ class Search:
 
         aggs = {
             "types": {
-                "filter": {
-                    "bool": {"must": type_agg_filters} if type_agg_filters else {"match_all": {}}
-                },
+                "filter": {"bool": {"must": type_agg_filters}} if type_agg_filters else {"match_all": {}},
                 "aggs": {"types": {"terms": {"field": "_doc_type", "size": 50}}},
             },
             "years": {
-                "filter": {
-                    "bool": {"must": year_agg_filters} if year_agg_filters else {"match_all": {}}
-                },
+                "filter": {"bool": {"must": year_agg_filters}} if year_agg_filters else {"match_all": {}},
                 "aggs": {
                     "years": {"date_histogram": {"field": "date", "calendar_interval": "year"}}
                 },

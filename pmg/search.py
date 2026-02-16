@@ -63,8 +63,25 @@ class Search:
         ]
     )
 
+    def ensure_index(self):
+        """Ensure the index, mapping and ingest pipeline exist.
+
+        Safe to call repeatedly — will not error if they already exist.
+        """
+        try:
+            if not self.es.indices.exists(index=self.index_name):
+                self.create_index()
+            else:
+                # Ensure pipeline and mapping are up-to-date
+                self.setup_attachment_pipeline()
+                self.mapping()
+        except Exception:
+            self.logger.exception("Error ensuring index exists")
+            raise
+
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
+        self.ensure_index()
         self.drop_index(data_type)
         models = [
             m
@@ -133,12 +150,22 @@ class Search:
     def add_obj(self, obj):
         self.add(obj.resource_content_type, Transforms.serialise(obj))
 
+    @staticmethod
+    def _make_doc_id(data_type, item_id):
+        """Create a unique document ID by prefixing with the data_type.
+
+        This prevents ID collisions between different model types that may
+        share the same numeric primary key (e.g. a Bill with id=1 and a
+        CommitteeMeeting with id=1).
+        """
+        return "%s_%s" % (data_type, item_id)
+
     def add_many(self, data_type, items):
         """Bulk index documents. Uses the ingest pipeline for types with attachments"""
         actions = []
         use_pipeline = any("attachment_data" in item for item in items)
         for item in items:
-            doc_id = item.pop("id")
+            doc_id = self._make_doc_id(data_type, item.pop("id"))
             item["_doc_type"] = data_type
             action = {"index": {"_index": self.index_name, "_id": doc_id}}
             actions.append(json.dumps(action))
@@ -166,13 +193,13 @@ class Search:
 
     def delete(self, data_type, uid):
         try:
-            self.es.delete(index=self.index_name, id=uid)
+            self.es.delete(index=self.index_name, id=self._make_doc_id(data_type, uid))
         except NotFoundError:
             pass
 
     def get(self, data_type, uid):
         try:
-            return self.es.get(index=self.index_name, id=uid)
+            return self.es.get(index=self.index_name, id=self._make_doc_id(data_type, uid))
         except Exception:
             return False
 

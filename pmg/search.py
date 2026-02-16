@@ -8,6 +8,7 @@ from collections import OrderedDict
 import re
 import copy
 import pickle
+import datetime
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import NotFoundError, RequestError, ConnectionError, ConnectionTimeout
@@ -712,6 +713,10 @@ class Transforms:
             val = cls.get_val(obj, field)
             if isinstance(val, str):
                 val = BeautifulSoup(val, "html.parser").get_text().strip()
+            elif isinstance(val, (datetime.datetime, datetime.date)):
+                # ES 7's strict_date_optional_time requires ISO 8601 with 'T' separator.
+                # Python's str(datetime) uses a space separator which ES rejects.
+                val = val.isoformat()
             item[key] = val
 
         return item

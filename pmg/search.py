@@ -472,16 +472,25 @@ class Search:
         q = {
             "function_score": {
                 "query": q,
-                "gauss": {
-                    "date": {
-                        # Scores must decay, starting at docs from 7 days ago
-                        # such that docs 30 days ago are at 0.6.
-                        # See https://www.elastic.co/blog/found-function-scoring
-                        "offset": "7d",
-                        "scale": "30d",
-                        "decay": 0.6,
+                "functions": [
+                    {
+                        "gauss": {
+                            "date": {
+                                # Scores must decay, starting at docs from 7 days ago
+                                # such that docs 30 days ago are at 0.6.
+                                # See https://www.elastic.co/blog/found-function-scoring
+                                "offset": "7d",
+                                "scale": "30d",
+                                "decay": 0.6,
+                            }
+                        },
+                        # Only apply decay to documents that have a date field.
+                        # Documents without a date (e.g. Committee, Member) get score 1
+                        # from this function and are ranked purely by text relevance.
+                        "filter": {"exists": {"field": "date"}},
                     }
-                },
+                ],
+                "boost_mode": "multiply",
             }
         }
 

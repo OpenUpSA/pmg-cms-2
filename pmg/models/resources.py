@@ -182,17 +182,14 @@ class Bill(ApiResource, db.Model):
 
     @property
     def latest_version_for_indexing(self):
-        """ElasticSearch-friendly indexing the version PDFs.
-        See https://github.com/elastic/elasticsearch-mapper-attachments
-        """
+        """Return base64-encoded PDF content for the ingest-attachment pipeline."""
         version = self.latest_version
         if not version:
-            # don't return None
-            return []
+            return None
         try:
-            return base64.encodestring(version.file.get_bytes())
-        except AttributeError as e:
-            return []
+            return base64.b64encode(version.file.get_bytes()).decode("ascii")
+        except AttributeError:
+            return None
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)
@@ -1906,7 +1903,7 @@ class PetitionStatus(db.Model):
 @models_committed.connect_via(app)
 def on_models_changed(sender, changes):
     from pmg.search import Search
-    from pyelasticsearch.exceptions import InvalidJsonResponseError, Timeout
+    from elasticsearch.exceptions import ConnectionError, ConnectionTimeout, SerializationError
 
     searcher = Search()
 
@@ -1924,7 +1921,7 @@ def on_models_changed(sender, changes):
             if change == "delete":
                 try:
                     searcher.delete_obj(obj.__class__, obj.id)
-                except (InvalidJsonResponseError, Timeout) as e:
+                except (ConnectionError, ConnectionTimeout, SerializationError) as e:
                     logger.error(f"ES error during delete indexing for {obj}: {e}")
             else:
                 # updated or inserted
@@ -1935,7 +1932,7 @@ def on_models_changed(sender, changes):
                     # the object is stale
                     obj = s.query(obj.__class__).get(obj.id)
                     searcher.add_obj(obj)
-                except (InvalidJsonResponseError, Timeout) as e:
+                except (ConnectionError, ConnectionTimeout, SerializationError) as e:
                     logger.error(f"ES error during add/update indexing for {obj}: {e}")
                 finally:
                     s.close()

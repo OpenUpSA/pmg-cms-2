@@ -1,4 +1,4 @@
-{% if result._id.startswith('committee-question') %}
+{% if result._source.slug_prefix == 'committee-question' %}
   {% include 'committee_question_stub.html' %}
 {% else %}
   {% include 'question_reply_stub.html' %}

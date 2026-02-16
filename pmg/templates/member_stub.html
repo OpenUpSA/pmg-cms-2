@@ -5,7 +5,7 @@
     {% set title = result._source.title %}
   {% endif %}
   {% set link = result._source.url %}
-  {% set id = result._id %}
+  {% set id = result._source.model_id %}
 {% else %}
   {% set title = result.name %}
   {% set id = result.id %}

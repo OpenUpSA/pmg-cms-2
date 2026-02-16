@@ -8,9 +8,10 @@ from collections import OrderedDict
 import re
 import copy
 import pickle
+import datetime
 
-from pyelasticsearch import ElasticSearch
-from pyelasticsearch.exceptions import ElasticHttpNotFoundError
+from elasticsearch import Elasticsearch
+from elasticsearch.exceptions import NotFoundError, RequestError, ConnectionError, ConnectionTimeout
 import pytz
 
 from bs4 import BeautifulSoup
@@ -21,21 +22,22 @@ from pmg.models.posts import Post
 from pmg.models.base import resource_slugs
 
 PHRASE_RE = re.compile(r'"([^"]*)("|$)')
-MAX_INDEXABLE_BYTES = 104857600  # Limit ElasticSearch/Netty has by default
+MAX_INDEXABLE_BYTES = 104857600  # Limit Elasticsearch/Netty has by default
+ATTACHMENT_PIPELINE = "attachment_pipeline"
 
 
 class Search:
 
     esserver = app.config["ES_SERVER"]
     index_name = "pmg"
-    search_fields = ["title^2", "description", "fulltext", "attachments"]
+    search_fields = ["title^2", "description", "fulltext", "attachment.content"]
     exact_search_fields = [
         "title.exact^2",
         "description.exact",
         "fulltext.exact",
-        "attachments_exact",
+        "attachment_content_exact",
     ]
-    es = ElasticSearch(esserver)
+    es = Elasticsearch(esserver)
     per_batch = 200
     logger = logging.getLogger(__name__)
 
@@ -62,15 +64,26 @@ class Search:
         ]
     )
 
+    def ensure_index(self):
+        """Ensure the index, mapping and ingest pipeline exist.
+
+        Safe to call repeatedly — will not error if they already exist.
+        """
+        try:
+            if not self.es.indices.exists(index=self.index_name):
+                self.create_index()
+            else:
+                # Ensure pipeline and mapping are up-to-date
+                self.setup_attachment_pipeline()
+                self.mapping()
+        except Exception:
+            self.logger.exception("Error ensuring index exists")
+            raise
+
     def reindex_all(self, data_type):
         """ Index all content of a data_type """
-        try:
-            self.drop_index(data_type)
-        except:
-            self.logger.warn("Couldn't find %s index" % data_type)
-
-        self.mapping(data_type)
-
+        self.ensure_index()
+        self.drop_index(data_type)
         models = [
             m
             for m in list(resource_slugs.values())
@@ -123,15 +136,55 @@ class Search:
         return ok_items
 
     def drop_index(self, data_type):
-        self.logger.info("Dropping %s index" % data_type)
-        self.es.delete_all(self.index_name, data_type)
-        self.logger.info("Dropped %s index" % data_type)
+        """Delete all documents of a given data_type from the index"""
+        self.logger.info("Dropping %s documents" % data_type)
+        try:
+            self.es.delete_by_query(
+                index=self.index_name,
+                body={"query": {"term": {"_doc_type": data_type}}},
+                conflicts="proceed",
+            )
+        except NotFoundError:
+            self.logger.warn("Index %s not found while dropping %s" % (self.index_name, data_type))
+        self.logger.info("Dropped %s documents" % data_type)
 
     def add_obj(self, obj):
         self.add(obj.resource_content_type, Transforms.serialise(obj))
 
+    @staticmethod
+    def _make_doc_id(data_type, item_id):
+        """Create a unique document ID by prefixing with the data_type.
+
+        This prevents ID collisions between different model types that may
+        share the same numeric primary key (e.g. a Bill with id=1 and a
+        CommitteeMeeting with id=1).
+        """
+        return "%s_%s" % (data_type, item_id)
+
     def add_many(self, data_type, items):
-        self.es.bulk_index(self.index_name, data_type, items)
+        """Bulk index documents. Uses the ingest pipeline for types with attachments"""
+        actions = []
+        use_pipeline = any("attachment_data" in item for item in items)
+        for item in items:
+            doc_id = self._make_doc_id(data_type, item.pop("id"))
+            item["_doc_type"] = data_type
+            action = {"index": {"_index": self.index_name, "_id": doc_id}}
+            actions.append(json.dumps(action))
+            actions.append(json.dumps(item, default=str))
+
+        body = "\n".join(actions) + "\n"
+
+        kwargs = {"index": self.index_name, "body": body}
+        if use_pipeline:
+            kwargs["pipeline"] = ATTACHMENT_PIPELINE
+
+        result = self.es.bulk(**kwargs)
+        if result.get("errors"):
+            for item in result["items"]:
+                if "error" in item.get("index", {}):
+                    self.logger.error(
+                        "Bulk index error: %s", item["index"]["error"]
+                    )
 
     def add(self, data_type, item):
         self.add_many(data_type, [item])
@@ -141,88 +194,134 @@ class Search:
 
     def delete(self, data_type, uid):
         try:
-            self.es.delete(self.index_name, data_type, uid)
-        except ElasticHttpNotFoundError:
+            self.es.delete(index=self.index_name, id=self._make_doc_id(data_type, uid))
+        except NotFoundError:
             pass
 
     def get(self, data_type, uid):
         try:
-            return self.es.get(self.index_name, data_type, uid)
-        except:
+            return self.es.get(index=self.index_name, id=self._make_doc_id(data_type, uid))
+        except Exception:
             return False
 
     def indexable(self, obj):
         """ Should this object be indexed for searching? """
         return self.reindex_changes and obj.__class__ in Transforms.convert_rules
 
-    def mapping(self, data_type):
+    def setup_attachment_pipeline(self):
+        """Create or update the pipeline for processing attachment file data"""
+        pipeline_body = {
+            "description": "Extract text from attachment data",
+            "processors": [
+                {
+                    "attachment": {
+                        "field": "attachment_data",
+                        "target_field": "attachment",
+                        "indexed_chars": -1,
+                        "ignore_missing": True,
+                    }
+                },
+                {
+                    "set": {
+                        "field": "attachment_content_exact",
+                        "value": "{{attachment.content}}",
+                        "ignore_empty_value": True,
+                    }
+                },
+                {
+                    "remove": {
+                        "field": "attachment_data",
+                        "ignore_missing": True,
+                    }
+                },
+            ],
+        }
+        self.es.ingest.put_pipeline(id=ATTACHMENT_PIPELINE, body=pipeline_body)
+        self.logger.info("Ingest attachment pipeline created/updated.")
+
+    def mapping(self):
+        """Put the index mapping. In ES 7 there are no doc types,
+        so we use a single mapping for all document types and
+        distinguish them with a _doc_type field"""
         mapping = {
             "properties": {
+                "_doc_type": {"type": "keyword"},
                 "title": {
-                    "type": "string",
+                    "type": "text",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
-                    "store": "yes",
+                    "store": True,
                     "fields": {
                         "exact": {
-                            "type": "string",
+                            "type": "text",
                             "analyzer": "english_exact",
                             "term_vector": "with_positions_offsets",
                         },
                     },
                 },
                 "fulltext": {
-                    "type": "string",
+                    "type": "text",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
-                    "store": "yes",
+                    "store": True,
                     "fields": {
                         "exact": {
-                            "type": "string",
+                            "type": "text",
                             "analyzer": "english_exact",
                             "term_vector": "with_positions_offsets",
                         },
                     },
                 },
                 "description": {
-                    "type": "string",
+                    "type": "text",
                     "analyzer": "english",
                     "index_options": "offsets",
                     "term_vector": "with_positions_offsets",
-                    "store": "yes",
+                    "store": True,
                     "fields": {
                         "exact": {
-                            "type": "string",
+                            "type": "text",
                             "analyzer": "english_exact",
                             "term_vector": "with_positions_offsets",
                         },
                     },
                 },
-                "number": {"type": "integer",},
-                "year": {"type": "integer",},
-                "attachments": {
-                    "type": "attachment",
-                    "fields": {
-                        "attachments": {
-                            "type": "string",
+                "number": {"type": "integer"},
+                "year": {"type": "integer"},
+                # attachment.content is populated by the ingest-attachment pipeline
+                "attachment": {
+                    "properties": {
+                        "content": {
+                            "type": "text",
                             "analyzer": "english",
                             "term_vector": "with_positions_offsets",
-                            "store": "yes",
-                            "copy_to": "attachments_exact",
-                        },
-                    },
+                            "store": True,
+                        }
+                    }
                 },
-                "attachments_exact": {
-                    "type": "string",
+                "attachment_content_exact": {
+                    "type": "text",
                     "analyzer": "english_exact",
-                    "store": "yes",
+                    "store": True,
                     "term_vector": "with_positions_offsets",
                 },
+                "date": {"type": "date", "ignore_malformed": True},
+                "created_at": {"type": "date"},
+                "updated_at": {"type": "date"},
+                "committee_id": {"type": "integer"},
+                "committee_name": {"type": "keyword"},
+                "minister_id": {"type": "integer"},
+                "house_name": {"type": "keyword"},
+                "house_name_short": {"type": "keyword"},
+                "model_id": {"type": "integer"},
+                "url": {"type": "keyword"},
+                "api_url": {"type": "keyword"},
+                "slug_prefix": {"type": "keyword"},
             }
         }
-        self.es.put_mapping(self.index_name, data_type, mapping)
+        self.es.indices.put_mapping(index=self.index_name, body=mapping)
 
     def build_filters(
         self,
@@ -233,30 +332,51 @@ class Search:
         updated_since,
         exclude_document_types,
     ):
-        filters = {}
+        filters = []
 
         if start_date and end_date:
-            filters["date"] = {"range": {"date": {"gte": start_date, "lte": end_date,}}}
+            filters.append({"range": {"date": {"gte": start_date, "lte": end_date}}})
 
         if committee:
-            filters["committe"] = {"term": {"committee_id": committee}}
+            filters.append({"term": {"committee_id": committee}})
 
         if document_type:
-            filters["document_type"] = {
-                "term": {"_type": document_type},
-            }
+            filters.append({"term": {"_doc_type": document_type}})
 
         if exclude_document_types:
-            filters["document_type_excludes"] = {
-                "not": {
-                    "or": [{"term": {"_type": dt}} for dt in exclude_document_types],
+            filters.append({
+                "bool": {
+                    "must_not": [
+                        {"term": {"_doc_type": dt}} for dt in exclude_document_types
+                    ]
                 }
-            }
+            })
 
         if updated_since:
-            filters["updated_at"] = {"range": {"updated_at": {"gte": updated_since,}}}
+            filters.append({"range": {"updated_at": {"gte": updated_since}}})
 
         return filters
+
+    def _split_filters(self, filters, exclude_key=None):
+        # tag filters by what they filter on
+        tagged = []
+        for f in filters:
+            if "range" in f and "date" in f["range"]:
+                tagged.append(("date", f))
+            elif "term" in f and "_doc_type" in f["term"]:
+                tagged.append(("document_type", f))
+            elif "bool" in f and "must_not" in f["bool"]:
+                tagged.append(("document_type_excludes", f))
+            elif "term" in f and "committee_id" in f["term"]:
+                tagged.append(("committee", f))
+            elif "range" in f and "updated_at" in f["range"]:
+                tagged.append(("updated_at", f))
+            else:
+                tagged.append((None, f))
+
+        if exclude_key:
+            return [f for tag, f in tagged if tag != exclude_key]
+        return [f for _, f in tagged]
 
     def build_query(self, query):
         """ Build and return the query and highlight query portions of an ES call.
@@ -298,9 +418,6 @@ class Search:
                         "query": terms,
                         "fields": self.search_fields,
                         "type": "best_fields",
-                        # this helps skip stopwords, see
-                        # http://www.elasticsearch.org/blog/stop-stopping-stop-words-a-look-at-common-terms-query/
-                        "cutoff_frequency": 0.0007,
                         "operator": "and",
                     }
                 }
@@ -323,6 +440,8 @@ class Search:
 
         return q, highlight_q
 
+    MAX_RESULT_WINDOW = 10000
+
     def search(
         self,
         query,
@@ -335,6 +454,10 @@ class Search:
         updated_since=None,
         exclude_document_types=None,
     ):
+        # Cap from + size to stay within ES's max_result_window
+        if es_from + size > self.MAX_RESULT_WINDOW:
+            es_from = max(self.MAX_RESULT_WINDOW - size, 0)
+
         filters = self.build_filters(
             start_date,
             end_date,
@@ -349,38 +472,40 @@ class Search:
         q = {
             "function_score": {
                 "query": q,
-                "gauss": {
-                    "date": {
-                        # Scores must decay, starting at docs from 7 days ago
-                        # such that docs 30 days ago are at 0.6.
-                        # See https://www.elastic.co/blog/found-function-scoring
-                        "offset": "7d",
-                        "scale": "30d",
-                        "decay": 0.6,
+                "functions": [
+                    {
+                        "gauss": {
+                            "date": {
+                                # Scores must decay, starting at docs from 7 days ago
+                                # such that docs 30 days ago are at 0.6.
+                                # See https://www.elastic.co/blog/found-function-scoring
+                                "offset": "7d",
+                                "scale": "30d",
+                                "decay": 0.6,
+                            }
+                        },
+                        # Only apply decay to documents that have a date field.
+                        # Documents without a date (e.g. Committee, Member) get score 1
+                        # from this function and are ranked purely by text relevance.
+                        "filter": {"exists": {"field": "date"}},
                     }
-                },
+                ],
+                "boost_mode": "multiply",
             }
         }
 
+        type_agg_filters = self._split_filters(filters, exclude_key="document_type")
+        year_agg_filters = self._split_filters(filters, exclude_key="date")
+
         aggs = {
             "types": {
-                "filter": {
-                    "and": {
-                        "filters": [
-                            v for k, v in list(filters.items()) if k != "document_type"
-                        ]
-                    }
-                },
-                "aggs": {"types": {"terms": {"field": "_type"}}},
+                "filter": {"bool": {"must": type_agg_filters}} if type_agg_filters else {"match_all": {}},
+                "aggs": {"types": {"terms": {"field": "_doc_type", "size": 50}}},
             },
             "years": {
-                "filter": {
-                    "and": {
-                        "filters": [v for k, v in list(filters.items()) if k != "date"]
-                    }
-                },
+                "filter": {"bool": {"must": year_agg_filters}} if year_agg_filters else {"match_all": {}},
                 "aggs": {
-                    "years": {"date_histogram": {"field": "date", "interval": "year"},}
+                    "years": {"date_histogram": {"field": "date", "calendar_interval": "year"}}
                 },
             },
         }
@@ -390,12 +515,12 @@ class Search:
             "size": size,
             "sort": {"_score": {"order": "desc"}},
             # don't return big fields
-            "_source": {"exclude": ["fulltext", "description", "attachments"]},
+            "_source": {"excludes": ["fulltext", "description", "attachment", "attachment_data", "attachment_content_exact"]},
             "query": q,
             # filter the results after the query, so that the per-aggregation filters
             # aren't impacted by these filters. See
-            # http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/_post_filter.html
-            "post_filter": {"and": {"filters": list(filters.values())}},
+            # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/filter-search-results.html#post-filter
+            "post_filter": {"bool": {"must": filters}} if filters else {"match_all": {}},
             "aggs": aggs,
             "highlight": {
                 "pre_tags": ["<mark>"],
@@ -418,14 +543,14 @@ class Search:
                         "matched_fields": ["fulltext", "fulltext.exact"],
                         "type": "fvh",
                     },
-                    "attachments": {"number_of_fragments": 2,},
-                    "attachments_exact": {"number_of_fragments": 2,},
+                    "attachment.content": {"number_of_fragments": 2},
+                    "attachment_content_exact": {"number_of_fragments": 2},
                 },
             },
         }
 
         self.logger.debug("query_statement: %s" % json.dumps(q, indent=2))
-        return self.es.search(q, index=self.index_name)
+        return self.es.search(index=self.index_name, body=q)
 
     def reindex_everything(self):
         data_types = Transforms.data_types()
@@ -440,27 +565,38 @@ class Search:
     def delete_everything(self):
         self.logger.info("Deleting index '%s'..." % self.index_name)
         try:
-            self.es.delete_index(self.index_name)
+            self.es.indices.delete(index=self.index_name)
             self.logger.info("Index '%s' deleted." % self.index_name)
-        except ElasticHttpNotFoundError:
+        except NotFoundError:
             self.logger.info("Index '%s' not found." % self.index_name)
 
     def create_index(self):
         self.logger.info("Creating index '%s'..." % self.index_name)
         settings = {
-            "analysis": {
-                "analyzer": {
-                    "english_exact": {"tokenizer": "standard", "filter": ["lowercase"]}
+            "settings": {
+                "analysis": {
+                    "analyzer": {
+                        "english_exact": {"tokenizer": "standard", "filter": ["lowercase"]}
+                    }
                 }
             }
         }
-        self.es.create_index(self.index_name, settings=settings)
+        try:
+            self.es.indices.create(index=self.index_name, body=settings)
+        except RequestError as e:
+            if "resource_already_exists_exception" in str(e):
+                self.logger.info("Index '%s' already exists." % self.index_name)
+            else:
+                raise
+
+        self.setup_attachment_pipeline()
+        self.mapping()
 
 
 class Transforms:
     """
     Each API model in PMG has different fields, so we need to describe how to map
-    the model into something that can be indexed by ElasticSearch.
+    the model into something that can be indexed by Elasticsearch.
 
     Most models correspond directly to a single content type in ES. One or two
     of them are combined into one type so that we can support legacy and modern
@@ -512,11 +648,11 @@ class Transforms:
             "year": "year",
             "number": "number",
             "code": "code",
-            "attachments": "latest_version_for_indexing",
+            "attachment_data": "latest_version_for_indexing",
             "house_name": "place_of_introduction.name",
             "house_name_short": "place_of_introduction.name_short",
         },
-        Hansard: {"title": "title", "fulltext": "body", "date": "date",},
+        Hansard: {"title": "title", "fulltext": "body", "date": "date"},
         Briefing: {
             "title": "title",
             "description": "summary",
@@ -552,14 +688,14 @@ class Transforms:
             "house_name": "committee.house.name",
             "house_name_short": "committee.house.name_short",
         },
-        PolicyDocument: {"title": "title", "date": "start_date",},
-        Gazette: {"title": "title", "date": "start_date",},
-        DailySchedule: {"title": "title", "fulltext": "body", "date": "start_date",},
-        Post: {"title": "title", "fulltext": "body", "date": "date", "slug": "slug",},
+        PolicyDocument: {"title": "title", "date": "start_date"},
+        Gazette: {"title": "title", "date": "start_date"},
+        DailySchedule: {"title": "title", "fulltext": "body", "date": "start_date"},
+        Post: {"title": "title", "fulltext": "body", "date": "date", "slug": "slug"},
         Petition: {
             "title": "title",
             "description": "description",
-            "attachments": "issue",
+            "fulltext": "issue",
             "date": "date",
             "petitioner": "petitioner",
             "house_name": "house.name",
@@ -586,6 +722,10 @@ class Transforms:
             val = cls.get_val(obj, field)
             if isinstance(val, str):
                 val = BeautifulSoup(val, "html.parser").get_text().strip()
+            elif isinstance(val, (datetime.datetime, datetime.date)):
+                # ES 7's strict_date_optional_time requires ISO 8601 with 'T' separator.
+                # Python's str(datetime) uses a space separator which ES rejects.
+                val = val.isoformat()
             item[key] = val
 
         return item

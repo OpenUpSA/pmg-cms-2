@@ -2047,8 +2047,8 @@ def petitions(page=0):
     num_pages = int(math.ceil(float(count) / float(per_page)))
     url = "/petitions"
     
-    # Generate year options (2006-2026) as a list for buttons, like bills
-    year_list = list(range(2026, 2005, -1))  # Descending order like bills, back to 2006
+    # Generate year options (2023-2026) as a list for buttons
+    year_list = list(range(2026, 2022, -1))  # Descending order, back to 2023
     
     # Get house options - only specific houses
     house_options = [
@@ -2087,20 +2087,76 @@ def petition_detail(petition_id):
     manual_events = [event for event in petition.events if not event.system_generated]
     all_events = manual_events + list(petition.linked_events)
     
-    def get_sort_date(event):
+    def get_sort_key(event):
+        # Get the date
         if event.date is None:
-            return date(9999, 12, 31)  # Put events with no date at the end
+            event_date = date(9999, 12, 31)  # Put events with no date at the end
         elif isinstance(event.date, datetime):
-            return event.date.date()
+            event_date = event.date.date()
         else:
-            return event.date
+            event_date = event.date
+        
+        # Determine event type priority (lower number = appears first)
+        # CommitteeMeetings and committee-meeting events come first
+        # Reports come last on the same day
+        event_class = event.__class__.__name__
+        event_type = getattr(event, 'type', None)
+        
+        if event_class == 'CommitteeMeeting' or event_type == 'committee-meeting':
+            priority = 1  # Meetings first
+        elif event_type == 'report':
+            priority = 3  # Reports last
+        else:
+            priority = 2  # Other events in the middle
+        
+        return (event_date, priority)
     
-    all_events.sort(key=get_sort_date)
+    all_events.sort(key=get_sort_key)
+    
+    # Group events by committee for better display
+    # Similar to bill history grouping
+    def get_event_committee(event):
+        """Get the committee for an event, if any"""
+        event_class = event.__class__.__name__
+        if event_class == 'CommitteeMeeting':
+            return event.committee
+        elif hasattr(event, 'committee') and event.committee:
+            return event.committee
+        return None
+    
+    grouped_events = []
+    current_committee = None
+    current_group = []
+    
+    for event in all_events:
+        event_committee = get_event_committee(event)
+        
+        # If this event has the same committee as the previous one, add to current group
+        if event_committee and event_committee == current_committee:
+            current_group.append(event)
+        else:
+            # Save the previous group if it exists
+            if current_group:
+                grouped_events.append({
+                    'committee': current_committee,
+                    'events': current_group
+                })
+            
+            # Start a new group
+            current_committee = event_committee
+            current_group = [event]
+    
+    # Don't forget the last group
+    if current_group:
+        grouped_events.append({
+            'committee': current_committee,
+            'events': current_group
+        })
 
     return render_template(
         "petitions/detail.html",
         petition=petition,
-        all_events=all_events,
+        grouped_events=grouped_events,
         admin_edit_url=admin_url("petition", petition.id),
         content_date=petition.date,
     )

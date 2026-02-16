@@ -88,6 +88,23 @@
         <p class="lead">{{ petition.issue }}</p>
         {% endif %}
 
+        {% if petition.committees %}
+        <div class="petition-committees">
+          <h3>Related Committees:</h3>
+          <ul class="list-inline">
+            {% for committee in petition.committees %}
+            <li>
+              <a href="{{ url_for('committee_detail', committee_id=committee.id) }}">
+                <span class="label label-primary">
+                  <i class="fa fa-users"></i> {{ committee.name }}
+                </span>
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
         {% if petition.supporting_files %}
         <ul class="list-inline bill-versions">
           <li><h3>Supporting Documents:</h3></li>
@@ -147,7 +164,7 @@
     <div class="bill-events">
       <h2>Petition History</h2>
       
-      {% if all_events %}
+      {% if grouped_events %}
         {% if petition.house and petition.house.name == 'National Assembly' %}
         <div class="panel panel-default bill-location NA">
           <div class="panel-heading">
@@ -161,85 +178,72 @@
         {% else %}
         <div class="panel panel-default">
         {% endif %}
-          <div class="panel-body">
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="petition-history">
-                  {% for event in all_events %}
-                  <div class="petition-event">
-                    <div class="media">
-                      <div class="media-left">
-                        {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
-                        {% else %}
-                        {% if event.type %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ event.type }}.png">
-                        {% else %}
-                        <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
-                        {% endif %}
-                        {% endif %}
-                      </div>
-                      <div class="media-body">
-                        <div class="row">
-                          <div class="col-xs-4 col-md-2 text-muted">
-                            {% if event.date %}
-                              {{ event.date.strftime('%d %b %Y') }}
-                            {% else %}
-                              Date TBA
-                            {% endif %}
-                          </div>
-                          <div class="col-xs-8 col-md-10">
-                            {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
-                            <h5><a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a></h5>
-                            <!-- {% if event.summary %}
-                            <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
-                            {% elif event.body %}
-                            <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
-                            {% endif %} -->
-                            {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
-                            <h5><a href="/hansard/{{ event.id }}">{{ event.title }}</a></h5>
-                            <!-- {% if event.summary %}
-                            <p class="text-muted"><small>{{ event.summary|truncate(200, True)|safe }}</small></p>
-                            {% elif event.body %}
-                            <p class="text-muted"><small>{{ event.body|truncate(200, True)|safe }}</small></p>
-                            {% endif %} -->
-                            {% else %}
-                            {% if event.type == 'report' and event.committee_report %}
-                            <h5><a href="/tabled-committee-report/{{ event.committee_report.id }}">{{ event.title }}</a></h5>
-                            {% else %}
-                            <h5>{{ event.title }}</h5>
-                            {% endif %}
-                            {% if event.description %}
-                            <p class="text-muted"><small>{{ event.description }}</small></p>
-                            {% endif %}
-                            {% endif %}
-                            
-                            <div class="event-details">
-                              {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
-                              <span class="label label-info">Committee Meeting</span>
-                              {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
-                              <span class="label label-info">Hansard</span>
-                              {% else %}
-                              {% if event.type %}
-                              <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
-                              {% endif %}
-                              {% endif %}
-                              
-                              {% if event.committee %}
-                              <span class="label label-success">{{ event.committee.name }}</span>
-                              {% endif %}
-                            </div>
-                          </div>
+          
+          <ul class="list-group">
+            {% for group in grouped_events %}
+            <li class="list-group-item">
+              <div class="media">
+                <div class="media-left">
+                  {% set first_event = group.events[0] %}
+                  {% if first_event.__class__.__name__ == 'CommitteeMeeting' or first_event.type == 'committee-meeting' %}
+                  <img class="media-object stage-icon" src="/static/resources/images/petitions/meeting.png">
+                  {% else %}
+                  {% if first_event.type %}
+                  <img class="media-object stage-icon" src="/static/resources/images/petitions/{{ first_event.type }}.png">
+                  {% else %}
+                  <img class="media-object stage-icon" src="/static/resources/images/petitions/other.png">
+                  {% endif %}
+                  {% endif %}
+                </div>
+                
+                <div class="media-body">
+                  {% if group.committee %}
+                  <h5 class="media-heading">
+                    <a href="{{ url_for('committee_detail', committee_id=group.committee.id) }}">{{ group.committee.name }}</a>
+                  </h5>
+                  {% endif %}
+                  
+                  <ul class="list-unstyled">
+                    {% for event in group.events %}
+                    <li>
+                      <div class="row">
+                        <div class="col-xs-4 col-md-2 text-muted">
+                          {% if event.date %}
+                            {{ event.date.strftime('%d %b %Y') }}
+                          {% else %}
+                            Date TBA
+                          {% endif %}
+                        </div>
+                        <div class="col-xs-8 col-md-10">
+                          {% if event.__class__.__name__ == 'CommitteeMeeting' or event.type == 'committee-meeting' %}
+                          <a href="/committee-meeting/{{ event.id }}">{{ event.title }}</a>
+                          {% elif event.__class__.__name__ == 'Hansard' or event.type == 'plenary' %}
+                          <a href="/hansard/{{ event.id }}">{{ event.title }}</a>
+                          {% else %}
+                          {% if event.type == 'report' and event.committee_report %}
+                          <a href="/tabled-committee-report/{{ event.committee_report.id }}">{{ event.title }}</a>
+                          {% else %}
+                          {{ event.title }}
+                          {% endif %}
+                          {% if event.description %}
+                          <br><span class="text-muted"><small>{{ event.description }}</small></span>
+                          {% endif %}
+                          {% endif %}
+                          
+                          {% if event.type and event.type != 'committee-meeting' %}
+                          <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
+                          {% endif %}
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  {% if not loop.last %}<hr>{% endif %}
-                  {% endfor %}
+                    </li>
+                    {% endfor %}
+                  </ul>
                 </div>
               </div>
-            </div>
-          </div>
+            </li>
+            {% endfor %}
+          </ul>
+          
         </div>
       {% else %}
         <p class="text-muted">No events have been recorded for this petition yet.</p>

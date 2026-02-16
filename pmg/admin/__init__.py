@@ -441,10 +441,11 @@ class OrganisationView(MyModelView):
 class CommitteeView(MyModelView):
 
     can_delete = True
-    column_list = ("name", "house", "ad_hoc", "memberships")
+    column_list = ("name", "house", "ad_hoc", "memberships", "petitions_count")
     column_labels = {
         "memberships": "Members",
         "minister": "Associated Minister",
+        "petitions_count": "Petitions",
     }
     column_sortable_list = (
         "name",
@@ -455,6 +456,7 @@ class CommitteeView(MyModelView):
     column_searchable_list = ("name",)
     column_formatters = dict(
         memberships=macro("render_membership_count"),
+        petitions_count=lambda v, c, m, n: m.petitions.count() if m.petitions else 0,
     )
     form_columns = (
         "name",
@@ -467,6 +469,7 @@ class CommitteeView(MyModelView):
         "about",
         "contact_details",
         "memberships",
+        "petitions",
     )
     form_widget_args = {
         "about": {"class": "pmg_ckeditor"},
@@ -1601,6 +1604,7 @@ class PetitionView(MyModelView):
     form_columns = (
         "title",
         "house",
+        "committees",
         "issue",
         "date",
         "description",
@@ -1622,6 +1626,7 @@ class PetitionView(MyModelView):
         "title",
         "date", 
         "house",
+        "committees",
         "status",
         "events_count",
         "linked_meetings_summary"

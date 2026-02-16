@@ -118,7 +118,7 @@
       <ul class="list-unstyled item-list search-list">
         {% for result in search.results %}
         <li>
-          {% include result._type + '_stub.html' %}
+          {% include result._source._doc_type + '_stub.html' %}
         </li>
         {% endfor %}
       </ul>

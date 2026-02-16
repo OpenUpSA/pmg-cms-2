@@ -439,6 +439,8 @@ class Search:
 
         return q, highlight_q
 
+    MAX_RESULT_WINDOW = 10000
+
     def search(
         self,
         query,
@@ -451,6 +453,10 @@ class Search:
         updated_since=None,
         exclude_document_types=None,
     ):
+        # Cap from + size to stay within ES's max_result_window
+        if es_from + size > self.MAX_RESULT_WINDOW:
+            es_from = max(self.MAX_RESULT_WINDOW - size, 0)
+
         filters = self.build_filters(
             start_date,
             end_date,

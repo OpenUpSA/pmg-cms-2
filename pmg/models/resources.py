@@ -182,17 +182,14 @@ class Bill(ApiResource, db.Model):
 
     @property
     def latest_version_for_indexing(self):
-        """ElasticSearch-friendly indexing the version PDFs.
-        See https://github.com/elastic/elasticsearch-mapper-attachments
-        """
+        """Return base64-encoded PDF content for the ingest-attachment pipeline."""
         version = self.latest_version
         if not version:
-            # don't return None
-            return []
+            return None
         try:
-            return base64.encodestring(version.file.get_bytes())
-        except AttributeError as e:
-            return []
+            return base64.b64encode(version.file.get_bytes()).decode("ascii")
+        except AttributeError:
+            return None
 
     def to_dict(self, include_related=False):
         tmp = serializers.model_to_dict(self, include_related=include_related)

@@ -695,7 +695,7 @@ class Transforms:
         Petition: {
             "title": "title",
             "description": "description",
-            "attachment_data": "issue",
+            "fulltext": "issue",
             "date": "date",
             "petitioner": "petitioner",
             "house_name": "house.name",

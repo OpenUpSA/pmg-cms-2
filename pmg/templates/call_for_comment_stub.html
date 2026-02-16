@@ -5,7 +5,7 @@
     {% set title = result._source.title %}
   {% endif %}
   {% set date = result._source.date %}
-  {% set id = result._id %}
+  {% set id = result._source.model_id %}
   {% if  result._source.committee_id %}
     {% set committee_id = result._source.committee_id %}
   {% endif %}

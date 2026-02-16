@@ -1,7 +1,7 @@
 {% if result._source %}
   {% set title = result._source.title %}
   {% set date = result._source.date %}
-  {% set id = result._id %}
+  {% set id = result._source.model_id %}
 {% else %}
   {% set title = result.title %}
   {% set date = result.start_date %}

@@ -65,7 +65,7 @@
   .dot1,
   .stage2 .dot2, .stage3 .dot2, .stage4 .dot2, .stage5 .dot2,
   .stage3 .dot3, .stage4 .dot3, .stage5 .dot3,
-  .stage5 .dot4
+  .stage4 .dot4, .stage5 .dot4
   {
     width: 45px;
     height: 45px;
@@ -129,4 +129,6 @@
   .label2:after { content: unset; }
   .label3:after { content: unset; }
   .label4:after { content: unset; }
+
+  .stage4 .process_dot { visibility: hidden; }
 }

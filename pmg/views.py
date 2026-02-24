@@ -2085,7 +2085,52 @@ def petition_detail(petition_id):
     # Sort all events by date, handling both datetime and date objects
     # Show manual petition events + linked committee meetings
     manual_events = [event for event in petition.events if not event.system_generated]
-    all_events = manual_events + list(petition.linked_events)
+
+    # Handle "hansard" petition events: these provide a custom title for a linked hansard.
+    # Match by date. If a linked hansard exists on the same date, combine them (custom title
+    # from the petition event, link/id from the hansard). If no matching hansard exists,
+    # skip the petition event entirely.
+    class _HansardOverride:
+        """Wraps a linked Hansard but uses a custom title from a PetitionEvent."""
+        def __init__(self, hansard, petition_event):
+            self.id = hansard.id
+            self.type = 'plenary'
+            self.title = petition_event.title
+            self.date = hansard.date
+            self.description = petition_event.description
+            self.committee = getattr(petition_event, 'committee', None)
+
+    linked_events = list(petition.linked_events)
+    hansard_petition_events = [e for e in manual_events if e.type == 'hansard']
+    other_manual_events = [e for e in manual_events if e.type != 'hansard']
+
+    # Build a date-keyed map of linked hansards
+    def _event_date(e):
+        return e.date.date() if isinstance(e.date, datetime) else e.date
+
+    linked_hansards_by_date = {
+        _event_date(e): e
+        for e in linked_events
+        if getattr(e, 'type', None) == 'plenary'
+    }
+
+    overridden_hansard_dates = set()
+    hansard_overrides = []
+    for pe in hansard_petition_events:
+        pe_date = pe.date if not isinstance(pe.date, datetime) else pe.date.date()
+        matched = linked_hansards_by_date.get(pe_date)
+        if matched:
+            hansard_overrides.append(_HansardOverride(matched, pe))
+            overridden_hansard_dates.add(pe_date)
+        # If no matched hansard, the petition event is silently dropped
+
+    # Exclude linked hansards that have been overridden
+    remaining_linked = [
+        e for e in linked_events
+        if not (getattr(e, 'type', None) == 'plenary' and _event_date(e) in overridden_hansard_dates)
+    ]
+
+    all_events = other_manual_events + remaining_linked + hansard_overrides
     
     def get_sort_key(event):
         # Get the date

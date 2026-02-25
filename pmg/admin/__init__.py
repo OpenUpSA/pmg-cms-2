@@ -1337,6 +1337,7 @@ class InlinePetitionEventForm(InlineFormAdmin):
                 ('document', 'Document'),
                 ('report', 'Report'),
                 ('finalised', 'Finalised'),
+                ('hansard', 'Hansard'),
                 ('hansard_discussion', 'Parliamentary Discussion'),
                 ('other', 'Other')
             ]

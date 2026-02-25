@@ -106,8 +106,8 @@
         {% endif %}
 
         {% if petition.supporting_files %}
-        <ul class="list-inline bill-versions">
-          <li><h3>Supporting Documents:</h3></li>
+        <h3>Supporting Documents:</h3>
+        <ul class="list-inline">
           {% for petition_file in petition.supporting_files %}
           <li>
             <a href="{{ petition_file.file.url }}" target="_blank">
@@ -121,8 +121,8 @@
         {% endif %}
 
         {% if petition.report %}
-        <ul class="list-inline bill-versions">
-          <li><h3>Reports:</h3></li>
+        <h3>Reports:</h3>
+        <ul class="list-inline">
           <li>
             <a href="{{ petition.report.url }}" target="_blank">
               <span class="label label-success" title="{{ petition.report.title }}">
@@ -232,6 +232,7 @@
                           {% endif %}
                           
                           {% if event.type and event.type != 'committee-meeting' %}
+                          <br/>
                           <span class="label label-info">{{ event.type|title|replace('-', ' ') }}</span>
                           {% endif %}
                         </div>

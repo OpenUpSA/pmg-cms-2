@@ -486,6 +486,9 @@ class Search:
                                 "decay": 0.3,
                             }
                         },
+                        # Weight the recency bonus high enough to meaningfully
+                        # influence ranking alongside text relevance scores.
+                        "weight": 100,
                         "filter": {"exists": {"field": "date"}},
                     },
                     {
@@ -500,7 +503,7 @@ class Search:
                         },
                     }
                 ],
-                "boost_mode": "multiply",
+                "boost_mode": "sum",
             }
         }
 

@@ -484,10 +484,18 @@ class Search:
                                 "decay": 0.3,
                             }
                         },
-                        # Only apply decay to documents that have a date field.
-                        # Documents without a date (e.g. Committee, Member) get score 1
-                        # from this function and are ranked purely by text relevance.
                         "filter": {"exists": {"field": "date"}},
+                    },
+                    {
+                        # Documents without a date field (e.g. due to missing or
+                        # malformed dates) get a low fixed score so they don't
+                        # outrank recent dated documents.
+                        "weight": 0.1,
+                        "filter": {
+                            "bool": {
+                                "must_not": {"exists": {"field": "date"}}
+                            }
+                        },
                     }
                 ],
                 "boost_mode": "multiply",

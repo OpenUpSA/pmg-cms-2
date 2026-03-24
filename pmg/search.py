@@ -474,10 +474,12 @@ class Search:
                 "query": q,
                 "functions": [
                     {
-                        "gauss": {
+                        "exp": {
                             "date": {
-                                # Scores must decay, starting at docs from 7 days ago
-                                # such that docs 30 days ago are at 0.3.
+                                # Exponential decay starting at docs from 7 days ago
+                                # such that docs 30 days past the offset are at 0.3.
+                                # exp drops off much more steeply than gauss for
+                                # very old documents.
                                 # See https://www.elastic.co/blog/found-function-scoring
                                 "offset": "7d",
                                 "scale": "30d",

@@ -16,7 +16,7 @@ jobs:
       - name: Add hosts
         run: echo "127.0.0.1 pmg.test" | sudo tee -a /etc/hosts
       - name: Run tests
-        run:  docker compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage tests
+        run:  docker compose -f docker-compose.yml -f docker-compose-test.yml run --rm web nosetests --with-coverage --cover-package=pmg tests
       - name: Setup Dev Database
         run: docker compose run --rm web python setup_dev_database.py
       - name: Setup the database Stamp Head

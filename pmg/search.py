@@ -477,11 +477,11 @@ class Search:
                         "gauss": {
                             "date": {
                                 # Scores must decay, starting at docs from 7 days ago
-                                # such that docs 30 days ago are at 0.6.
+                                # such that docs 30 days ago are at 0.3.
                                 # See https://www.elastic.co/blog/found-function-scoring
                                 "offset": "7d",
                                 "scale": "30d",
-                                "decay": 0.6,
+                                "decay": 0.3,
                             }
                         },
                         # Only apply decay to documents that have a date field.

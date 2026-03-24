@@ -102,7 +102,7 @@ class TestSearch(PMGTestCase):
             assert_in("Blog post header", data["fulltext"])
             assert_not_in("<h1>", data["fulltext"])
             assert_equals(post.slug, data["slug"])
-            assert_equals(post.date, data["date"])
+            assert_equals(post.date.isoformat(), data["date"])
 
     def create_post(self):
         post = Post()

@@ -476,19 +476,17 @@ class Search:
                     {
                         "exp": {
                             "date": {
-                                # Exponential decay starting at docs from 7 days ago
-                                # such that docs 30 days past the offset are at 0.3.
-                                # exp drops off much more steeply than gauss for
-                                # very old documents.
-                                # See https://www.elastic.co/blog/found-function-scoring
+
+                                # Exponential decay with a long scale so that
+                                # recent are more boosted
                                 "offset": "7d",
-                                "scale": "30d",
-                                "decay": 0.3,
+                                "scale": "365d",
+                                "decay": 0.1,
                             }
                         },
                         # Weight the recency bonus high enough to meaningfully
                         # influence ranking alongside text relevance scores.
-                        "weight": 100,
+                        "weight": 200,
                         "filter": {"exists": {"field": "date"}},
                     },
                     {

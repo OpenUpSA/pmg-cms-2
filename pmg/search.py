@@ -143,6 +143,7 @@ class Search:
                 index=self.index_name,
                 body={"query": {"term": {"_doc_type": data_type}}},
                 conflicts="proceed",
+                request_timeout=300,
             )
         except NotFoundError:
             self.logger.warn("Index %s not found while dropping %s" % (self.index_name, data_type))

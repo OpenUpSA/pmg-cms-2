@@ -127,9 +127,8 @@ def load_from_api(
             next_response_json = out
             i = 0
             while next_response_json.get("next") and i < 1000:
-                next_response = http.request(
-                    "GET", next_response_json.get("next"), headers=headers
-                )
+                next_url = localise_url(next_response_json.get("next"))
+                next_response = http.request("GET", next_url, headers=headers)
                 next_response_json = response_json(next_response)
                 out["results"] += next_response_json["results"]
                 i += 1
@@ -141,6 +140,14 @@ def load_from_api(
         logger.error("Error connecting to backend service: %s" % e, exc_info=e)
         flash("Error connecting to backend service.", "danger")
         raise e
+
+
+def localise_url(url):
+    if url.startswith("http"):
+        url = url.split("/", 3)[3]
+    if url.startswith("/"):
+        url = url[1:]
+    return API_URL + url
 
 
 def response_json(resp):

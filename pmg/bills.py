@@ -20,12 +20,6 @@ ICONS = {
 
 
 def get_location(event):
-    if event.get("type") in ["bill-signed", "bill-act-commenced", "bill-enacted"]:
-        return {
-            "name": "Office of the President",
-            "class": "president",
-        }
-
     if event.get("type") == "bill-concourt":
         return {
             "name": "Constitutional Court",
@@ -49,6 +43,15 @@ def get_location(event):
             "name": event["committee"]["name"],
             "url": url_for("committee_detail", committee_id=event["committee"]["id"]),
             "class": "",
+        }
+
+    # Default location for bill-signed, bill-enacted and bill-act-commenced
+    # is the Office of the President, but only when the event isn't tied to a
+    # specific house or committee.
+    if event.get("type") in ["bill-signed", "bill-act-commenced", "bill-enacted"]:
+        return {
+            "name": "Office of the President",
+            "class": "president",
         }
 
     return {"name": "Unknown", "class": ""}

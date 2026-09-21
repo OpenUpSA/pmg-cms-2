@@ -1,9 +1,12 @@
-Parliamentary Monitoring Group website
+New: Our new PMG Platform: Open House Project website
 ======================================
 
 Parliamentary monitoring application for use by the Parliamentary Monitoring Group in Cape Town, South Africa.
 See: https://www.pmg.org.za.
 
+
+New: Our new PMG Platform: Open House Project
+https://openhouse.pmg.org.za/
 ## What does this project do
 
 Allow citizens and other interested parties to monitor what's going on in the South African parliament. With specific

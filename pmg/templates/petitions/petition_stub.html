@@ -4,8 +4,8 @@
   {% else %}
     {% set title = result._source.title %}
   {% endif %}
-  {% set issue = result._source.issue %}
   {% set id = result._source.model_id %}
+  {% set date = result._source.date|pretty_date %}
   {% else %}
   {% set title = result.title|escape %}
   {% set issue = result.issue %}
@@ -46,8 +46,8 @@
   <p>
   {% if result.highlight.description %}
     {{ result.highlight.description|search_snippet|ellipse|safe }}
-  {% elif result.highlight.issue %}
-    {{ result.highlight.issue|search_snippet|ellipse|safe }}
+  {% elif result.highlight.fulltext %}
+    {{ result.highlight.fulltext|search_snippet|ellipse|safe }}
   {% endif %}
   </p>
   {% endif %}

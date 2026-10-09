@@ -379,14 +379,23 @@ class Search:
             return [f for tag, f in tagged if tag != exclude_key]
         return [f for _, f in tagged]
 
-    def build_query(self, query):
+    def build_query(self, query, exact=False):
         """ Build and return the query and highlight query portions of an ES call.
         This splits handles both phrases and simple terms.
+
+        If exact is True, unquoted terms are treated as a single exact
+        (case-insensitive, unstemmed) phrase, so only exact matches are returned.
         """
 
         phrases = [p[0].strip() for p in PHRASE_RE.findall(query)]
         phrases = [p for p in phrases if p]
         terms = PHRASE_RE.sub("", query).strip()
+
+        if exact:
+            terms = " ".join(PHRASE_RE.sub(" ", query).split())
+            if terms:
+                phrases.append(terms)
+            terms = ""
 
         if not terms and not phrases:
             raise ValueError("No search given")
@@ -454,6 +463,7 @@ class Search:
         committee=False,
         updated_since=None,
         exclude_document_types=None,
+        exact=False,
     ):
         # Cap from + size to stay within ES's max_result_window
         if es_from + size > self.MAX_RESULT_WINDOW:
@@ -468,7 +478,7 @@ class Search:
             exclude_document_types,
         )
 
-        q, highlight_q = self.build_query(query)
+        q, highlight_q = self.build_query(query, exact=exact)
 
         q = {
             "function_score": {

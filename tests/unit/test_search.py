@@ -117,3 +117,33 @@ class TestSearch(PMGTestCase):
         db.session.commit()
 
         return post
+
+    def test_build_query_exact_unquoted_terms_are_exact_phrase(self):
+        q, _ = Search().build_query("Health Promotion Levy", exact=True)
+        assert_equals(
+            [m["multi_match"] for m in q["bool"]["must"]],
+            [
+                {
+                    "query": "Health Promotion Levy",
+                    "fields": Search.exact_search_fields,
+                    "type": "phrase",
+                }
+            ],
+        )
+
+    def test_build_query_exact_quoted_and_unquoted(self):
+        q, _ = Search().build_query('"health promotion"  sugar   tax', exact=True)
+        queries = [m["multi_match"]["query"] for m in q["bool"]["must"]]
+        assert_equals(queries, ["health promotion", "sugar tax"])
+        for m in q["bool"]["must"]:
+            assert_equals(m["multi_match"]["fields"], Search.exact_search_fields)
+            assert_equals(m["multi_match"]["type"], "phrase")
+
+    def test_build_query_empty(self):
+        assert_raises(ValueError, Search().build_query, '  ""  ', exact=True)
+
+    def test_build_query_not_exact_by_default(self):
+        q, _ = Search().build_query("health promotion levy")
+        mm = q["bool"]["must"][0]["multi_match"]
+        assert_equals(mm["type"], "best_fields")
+        assert_equals(mm["fields"], Search.search_fields)

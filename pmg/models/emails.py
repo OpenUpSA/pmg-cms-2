@@ -119,9 +119,13 @@ class SavedSearch(db.Model):
     def find_new_hits(self):
         from pmg.search import Search
 
-        # find hits updated since the last time we did this search
+        # find hits updated since the last time we did this search; alerts
+        # only include exact matches
         search = Search().search(
-            self.search, document_type=self.content_type, committee=self.committee_id
+            self.search,
+            document_type=self.content_type,
+            committee=self.committee_id,
+            exact=True,
         )
 
         if "hits" not in search:

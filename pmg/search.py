@@ -30,6 +30,7 @@ class Search:
 
     esserver = app.config["ES_SERVER"]
     index_name = "pmg"
+    search_fields = ["title^2", "description", "fulltext", "attachment.content"]
     exact_search_fields = [
         "title.exact^2",
         "description.exact",
@@ -378,36 +379,70 @@ class Search:
             return [f for tag, f in tagged if tag != exclude_key]
         return [f for _, f in tagged]
 
-    def build_query(self, query):
+    def build_query(self, query, exact=False):
         """ Build and return the query and highlight query portions of an ES call.
-        Only exact, case-insensitive phrase matches are returned.
-        Quoted phrases must each match exactly, and any unquoted terms are
-        treated as a single exact phrase.
+        This splits handles both phrases and simple terms.
+
+        If exact is True, unquoted terms are treated as a single exact
+        (case-insensitive, unstemmed) phrase, so only exact matches are returned.
         """
 
         phrases = [p[0].strip() for p in PHRASE_RE.findall(query)]
-        terms = " ".join(PHRASE_RE.sub(" ", query).split())
-        phrases = [p for p in phrases + [terms] if p]
+        phrases = [p for p in phrases if p]
+        terms = PHRASE_RE.sub("", query).strip()
 
-        if not phrases:
+        if exact:
+            terms = " ".join(PHRASE_RE.sub(" ", query).split())
+            if terms:
+                phrases.append(terms)
+            terms = ""
+
+        if not terms and not phrases:
             raise ValueError("No search given")
 
-        q = {
-            "bool": {
-                "must": [
-                    {
-                        "multi_match": {
-                            "query": p,
-                            "fields": self.exact_search_fields,
-                            "type": "phrase",
-                        },
+        q = {"bool": {"must": []}}
+
+        if phrases:
+            # match to a phrase
+            q["bool"]["must"].extend(
+                {
+                    "multi_match": {
+                        "query": p,
+                        "fields": self.exact_search_fields,
+                        "type": "phrase",
+                    },
+                }
+                for p in phrases
+            )
+
+        if terms:
+            # We do two queries, one is a general term query across the fields,
+            # the other is a phrase query. At the very least, items *must*
+            # match the term search, and items are preferred if they
+            # also match the phrase search.
+
+            q["bool"]["must"].append(
+                {
+                    # best across all the fields
+                    "multi_match": {
+                        "query": terms,
+                        "fields": self.search_fields,
+                        "type": "best_fields",
+                        "operator": "and",
                     }
-                    for p in phrases
-                ]
+                }
+            )
+            q["bool"]["should"] = {
+                # try to match to a phrase
+                "multi_match": {
+                    "query": terms,
+                    "fields": self.search_fields,
+                    "type": "phrase",
+                },
             }
-        }
 
         highlight_q = copy.deepcopy(q)
+        highlight_q["bool"].pop("should", None)
         # boost phrase matches in highlight query
         for mm in [m["multi_match"] for m in highlight_q["bool"]["must"]]:
             if mm["type"] == "phrase":
@@ -428,6 +463,7 @@ class Search:
         committee=False,
         updated_since=None,
         exclude_document_types=None,
+        exact=False,
     ):
         # Cap from + size to stay within ES's max_result_window
         if es_from + size > self.MAX_RESULT_WINDOW:
@@ -442,7 +478,7 @@ class Search:
             exclude_document_types,
         )
 
-        q, highlight_q = self.build_query(query)
+        q, highlight_q = self.build_query(query, exact=exact)
 
         q = {
             "function_score": {

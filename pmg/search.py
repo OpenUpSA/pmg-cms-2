@@ -30,7 +30,6 @@ class Search:
 
     esserver = app.config["ES_SERVER"]
     index_name = "pmg"
-    search_fields = ["title^2", "description", "fulltext", "attachment.content"]
     exact_search_fields = [
         "title.exact^2",
         "description.exact",
@@ -381,59 +380,34 @@ class Search:
 
     def build_query(self, query):
         """ Build and return the query and highlight query portions of an ES call.
-        This splits handles both phrases and simple terms.
+        Only exact, case-insensitive phrase matches are returned.
+        Quoted phrases must each match exactly, and any unquoted terms are
+        treated as a single exact phrase.
         """
 
         phrases = [p[0].strip() for p in PHRASE_RE.findall(query)]
-        phrases = [p for p in phrases if p]
-        terms = PHRASE_RE.sub("", query).strip()
+        terms = " ".join(PHRASE_RE.sub(" ", query).split())
+        phrases = [p for p in phrases + [terms] if p]
 
-        if not terms and not phrases:
+        if not phrases:
             raise ValueError("No search given")
 
-        q = {"bool": {"must": []}}
-
-        if phrases:
-            # match to a phrase
-            q["bool"]["must"].extend(
-                {
-                    "multi_match": {
-                        "query": p,
-                        "fields": self.exact_search_fields,
-                        "type": "phrase",
-                    },
-                }
-                for p in phrases
-            )
-
-        if terms:
-            # We do two queries, one is a general term query across the fields,
-            # the other is a phrase query. At the very least, items *must*
-            # match the term search, and items are preferred if they
-            # also match the phrase search.
-
-            q["bool"]["must"].append(
-                {
-                    # best across all the fields
-                    "multi_match": {
-                        "query": terms,
-                        "fields": self.search_fields,
-                        "type": "best_fields",
-                        "operator": "and",
+        q = {
+            "bool": {
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": p,
+                            "fields": self.exact_search_fields,
+                            "type": "phrase",
+                        },
                     }
-                }
-            )
-            q["bool"]["should"] = {
-                # try to match to a phrase
-                "multi_match": {
-                    "query": terms,
-                    "fields": self.search_fields,
-                    "type": "phrase",
-                },
+                    for p in phrases
+                ]
             }
+        }
 
         highlight_q = copy.deepcopy(q)
-        highlight_q["bool"].pop("should", None)
         # boost phrase matches in highlight query
         for mm in [m["multi_match"] for m in highlight_q["bool"]["must"]]:
             if mm["type"] == "phrase":

@@ -62,12 +62,16 @@ class CommitteeSchema(ma.ModelSchema):
             "premium",
             "monitored",
             "minister",
+            "additional_ministers",
             "last_active_year",
             "_links",
         )
 
     house = fields.Nested("HouseSchema")
     minister = fields.Nested("MinisterSchema", exclude=["committee"])
+    additional_ministers = fields.Nested(
+        "MinisterSchema", exclude=["committee"], many=True
+    )
     _links = ma.Hyperlinks(
         {
             "self": AbsoluteUrlFor("api2.committees", id="<id>"),

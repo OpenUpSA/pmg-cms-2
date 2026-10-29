@@ -1,7 +1,11 @@
+import datetime
+
 from tests import PMGLiveServerTestCase
+from pmg.models import db, Committee, CommitteeQuestion, Minister
 from tests.fixtures import (
     dbfixture,
     HouseData,
+    MinisterData,
     CommitteeData,
     CommitteeMeetingData,
     CallForCommentData,
@@ -60,6 +64,47 @@ class TestCommitteePage(PMGLiveServerTestCase):
                 self.assertIn("Write to this committee", self.html)
             else:
                 self.assertNotIn("Write to this committee", self.html)
+
+    def test_committee_page_additional_ministers(self):
+        """
+        Questions to a committee's additional ministers are shown alongside
+        those to its main minister.
+        """
+        committee = Committee.query.get(self.fx.CommitteeData.arts.id)
+        president = Minister.query.get(MinisterData.president.id)
+        committee.additional_ministers.append(president)
+        question = CommitteeQuestion(
+            minister=president,
+            house_id=self.fx.HouseData.na.id,
+            code="NA99",
+            question_number=99,
+            written_number=99,
+            answer_type="written",
+            date=datetime.date(2019, 2, 1),
+            year=2019,
+            question="A question to the President about the Presidency",
+            answer="An answer",
+            asked_by_name="Questioner, Mr Q",
+        )
+        db.session.add(question)
+        db.session.commit()
+
+        try:
+            self.make_request("/committee/%s/" % committee.id)
+            self.assertIn("NA99 by Questioner, Mr Q", self.html)
+            self.assertIn(
+                self.fx.CommitteeQuestionData.arts_committee_question_one.question[0:30],
+                self.html,
+            )
+            self.assertIn("All questions to the President", self.html)
+            self.assertIn(
+                "All questions to the %s" % MinisterData.minister_of_arts.name,
+                self.html,
+            )
+        finally:
+            db.session.delete(question)
+            committee.additional_ministers = []
+            db.session.commit()
 
     def containsCommitteeMeetings(self):
         self.assertIn("Committee meetings", self.html)

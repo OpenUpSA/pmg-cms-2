@@ -445,6 +445,7 @@ class CommitteeView(MyModelView):
     column_labels = {
         "memberships": "Members",
         "minister": "Associated Minister",
+        "additional_ministers": "Additional Ministers",
         "petitions_count": "Petitions",
     }
     column_sortable_list = (
@@ -466,6 +467,7 @@ class CommitteeView(MyModelView):
         "monitored",
         "house",
         "minister",
+        "additional_ministers",
         "about",
         "contact_details",
         "memberships",

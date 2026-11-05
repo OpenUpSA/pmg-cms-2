@@ -475,6 +475,14 @@ def minister_questions_combined():
     """
     filters = get_filters()
 
+    minister_ids = None
+    raw_minister_ids = request.args.get("filter[minister_id]", "")
+    if "," in raw_minister_ids:
+        try:
+            minister_ids = [int(x) for x in raw_minister_ids.split(",") if x.strip()]
+        except ValueError:
+            raise ApiException(400, "Invalid minister_id filter")
+
     # To make pagination possible, we grab a combined list of IDs,
     # paginate that list, and then fetch the details.
 
@@ -493,6 +501,8 @@ def minister_questions_combined():
             q1 = q1.filter(committee_question_year == f["year"])
         else:
             q1 = q1.filter_by(**f)
+    if minister_ids:
+        q1 = q1.filter(CommitteeQuestion.minister_id.in_(minister_ids))
 
     q2 = db.session.query(
         QuestionReply.id,
@@ -504,6 +514,8 @@ def minister_questions_combined():
             q2 = q2.filter(question_reply_year == f["year"])
         else:
             q2 = q2.filter_by(**f)
+    if minister_ids:
+        q2 = q2.filter(QuestionReply.minister_id.in_(minister_ids))
 
     query = q1.union_all(q2).order_by(desc(text("date")))
     query, count, next = paginate_request_query(query)

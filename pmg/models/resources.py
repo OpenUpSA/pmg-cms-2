@@ -794,6 +794,15 @@ class Committee(ApiResource, db.Model):
     minister = db.relationship(
         "Minister", backref=backref("committee", uselist=False), lazy=True
     )
+    # Further ministers whose questions are shown on this committee's page
+    additional_ministers = db.relationship(
+        "Minister", secondary="committee_additional_minister", lazy=True
+    )
+
+    @property
+    def all_ministers(self):
+        ministers = [self.minister] if self.minister else []
+        return ministers + [m for m in self.additional_ministers if m not in ministers]
 
     # Time after last meeting after which ad-hoc committees are considered inactive
     AD_HOC_INACTIVE_DAYS = 365
@@ -1730,6 +1739,23 @@ class Minister(ApiResource, db.Model):
 
         return best[0] if best else None
     
+
+committee_additional_minister = db.Table(
+    "committee_additional_minister",
+    db.Column(
+        "committee_id",
+        db.Integer,
+        db.ForeignKey("committee.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+    db.Column(
+        "minister_id",
+        db.Integer,
+        db.ForeignKey("minister.id", ondelete="CASCADE"),
+        primary_key=True,
+    ),
+)
+
 
 petition_committee_join = db.Table(
     "petition_committee_join",

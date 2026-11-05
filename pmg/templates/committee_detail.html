@@ -183,7 +183,9 @@
               {% endfor %}
             </table>
             <p>
-              <a href="{{ url_for('question_replies') }}?filter%5Bcommittee%5D={{ committee.id }}" class="btn btn-default">All questions to the Minister</a>
+              {% for minister in ministers %}
+              <a href="{{ url_for('question_replies', **{'filter[minister]': minister.id}) }}" class="btn btn-default">All questions to the {{ minister.name }}</a>
+              {% endfor %}
             </p>
             {% else %}
             <p>

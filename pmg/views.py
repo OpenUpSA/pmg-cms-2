@@ -388,12 +388,17 @@ def committee_detail(committee_id):
         [m for m in membership if not m["chairperson"]], key=sorter
     )  # noqa
 
-    minister = committee.get("minister")
+    ministers = [committee["minister"]] if committee.get("minister") else []
+    ministers += [
+        m
+        for m in committee.get("additional_ministers") or []
+        if m["id"] not in [x["id"] for x in ministers]
+    ]
     recent_questions = []
-    if minister:
+    if ministers:
         recent_questions = load_from_api(
             "minister-questions-combined",
-            params={"filter[minister_id]": minister["id"]},
+            params={"filter[minister_id]": ",".join(str(m["id"]) for m in ministers)},
         )["results"]
 
     # meetings
@@ -482,6 +487,7 @@ def committee_detail(committee_id):
         has_meetings=len(all_meetings) > 0,
         starting_filter=starting_filter,
         recent_questions=recent_questions,
+        ministers=ministers,
         social_summary=social_summary,
         current_attendance_summary=current_attendance_summary,
         historical_attendance_summary=historical_attendance_summary,
